@@ -1,0 +1,27 @@
+{
+    "name" : "pcsg/grouppasswordmanager",
+    "type" : "quiqqer-module",
+    "description" : "Modul zur Verwaltung und dem Teilen von Passwörtern für Benutzer/Gruppen.",
+    "version" : "dev-dev",
+
+    "authors" : [{
+        "name": "Patrick Müller",
+        "email": "p.mueller@pcsg.de",
+        "homepage": "http://www.pcsg.de",
+        "role": "Developer"
+    }],
+
+    "support" : {
+        "email" : "support@pcsg.de"
+    },
+
+    "require": {
+        "quiqqer/quiqqer" : "*@dev"
+    },
+
+    "autoload": {
+        "psr-0" : {
+            "Pcsg" : "src/"
+        }
+    }
+}
