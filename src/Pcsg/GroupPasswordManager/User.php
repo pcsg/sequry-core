@@ -28,14 +28,4 @@ class User extends QUI\Users\User
     {
 
     }
-
-    public static function test()
-    {
-        $hash = Password::hash(
-            'pferd',
-            Password::generateSalt()
-        );
-
-        \QUI\System\Log::writeRecursive( $hash );
-    }
 }

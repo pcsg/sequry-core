@@ -30,14 +30,14 @@ namespace Pcsg\GroupPasswordManager\Security;
  * @license  http://www.opensource.org/licenses/BSD-2-Clause BSD 2-Clause License
  * @link     http://github.com/DomBlack/php-scrypt
  */
-abstract class Password
+abstract class Scrypt
 {
 
     /**
      *
      * @var int The key length
      */
-    private static $_keyLength = 32;
+    private static $_keyLength = 512;
 
     /**
      * Get the byte-length of the given string
@@ -144,7 +144,7 @@ abstract class Password
             $salt = str_replace(array('+', '$'), array('.', ''), base64_encode($salt));
         }
 
-        $hash = scrypt($password, $salt, $N, $r, $p, self::$_keyLength);
+        $hash = \scrypt($password, $salt, $N, $r, $p, self::$_keyLength);
 
         return $N . '$' . $r . '$' . $p . '$' . $salt . '$' . $hash;
     }
