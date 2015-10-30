@@ -17,7 +17,7 @@
 
     "require": {
         "quiqqer/quiqqer" : "*@dev",
-        "defuse/php-encryption": "1.*"
+        "defuse/php-encryption": "2.*"
     },
 
     "autoload": {

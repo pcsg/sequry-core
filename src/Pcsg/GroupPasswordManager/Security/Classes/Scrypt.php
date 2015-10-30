@@ -1,6 +1,6 @@
 <?php
 
-namespace Pcsg\GroupPasswordManager\Security;
+namespace Pcsg\GroupPasswordManager\Security\Classes;
 
 /**
  * This file contains an example helper classes for the php-scrypt extension.
@@ -37,7 +37,7 @@ abstract class Scrypt
      *
      * @var int The key length
      */
-    private static $_keyLength = 512;
+    private static $_keyLength = 128;
 
     /**
      * Get the byte-length of the given string
@@ -115,15 +115,15 @@ abstract class Scrypt
     /**
      * Create a password hash
      *
-     * @param string $password The clear text password
-     * @param string $salt     The salt to use, or null to generate a random one
-     * @param int    $N        The CPU difficultly (must be a power of 2, > 1)
-     * @param int    $r        The memory difficultly
-     * @param int    $p        The parallel difficultly
+     * @param string $password        The clear text password
+     * @param string $salt (optional) The salt to use, or null to generate a random one
+     * @param int    $N               The CPU difficultly (must be a power of 2, > 1)
+     * @param int    $r               The memory difficultly
+     * @param int    $p               The parallel difficultly
      *
      * @return string The hashed password
      */
-    public static function hash($password, $salt = false, $N = 16384, $r = 8, $p = 1)
+    public static function hash($password, $salt = null, $N = 16384, $r = 8, $p = 1)
     {
         if ($N == 0 || ($N & ($N - 1)) != 0) {
             throw new \InvalidArgumentException("N must be > 0 and a power of 2");

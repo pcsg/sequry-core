@@ -6,15 +6,8 @@
 
 namespace Pcsg\GroupPasswordManager;
 
-use FontLib\Table\Type\loca;
-use Pcsg\GroupPasswordManager\Security\Password;
-use Pcsg\GroupPasswordManager\Security\Scrypt;
+use Pcsg\GroupPasswordManager\Security\Hash;
 use QUI;
-use QUI\Utils\System\File as File;
-use QUI\Projects\Media\Utils as MediaUtils;
-use Hklused\Machines;
-use Hklused\Machines\CategoryManager as CM;
-use SimpleExcel\SimpleExcel;
 
 /**
  * Console tool for HKL used import
@@ -59,11 +52,9 @@ class Console extends QUI\System\Console\Tool
     {
         $this->writeLn("Generiere Hash aus Passwort");
 
-        $hash = Scrypt::hash(
-            'pferd'
-        );
+        $hash = Hash::createHash('Pferd');
 
-        $this->writeLn("Hash: " . $hash);
+        $this->writeLn("Hash: \n\n" . $hash . "\n\n");
 
         $this->writeLn("Generiere Schlüsselpaar");
 
@@ -71,10 +62,11 @@ class Console extends QUI\System\Console\Tool
             'digest_alg' => 'sha512',
             'private_key_bits' => 4096,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
-            'encrypt_key' => true
+            'encrypt_key' => true,
+            'ecnrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC
         ));
 
-        openssl_pkey_export($Res, $privateKey);
+        openssl_pkey_export($Res, $privateKey, "pferd");
 
         $this->writeLn("Private key: " . $privateKey);
     }

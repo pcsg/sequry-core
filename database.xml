@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+
+    <global>
+        <table name="pcsg_gpm_passwords" no-auto-update="1" no-site-reference="1">
+            <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
+            <field type="TEXT">title</field>
+            <field type="TEXT">description</field>
+            <field type="TEXT">password_data</field>
+        </table>
+
+        <table name="pcsg_gpm_user_passwords" no-auto-update="1" no-site-reference="1">
+            <field type="BIGINT(20) UNSIGNED NOT NULL">user_id</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">password_id</field>
+            <field type="TEXT">password_key</field>
+        </table>
+    </global>
+
+</database>
