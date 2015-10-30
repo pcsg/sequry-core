@@ -3,7 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Modules\Encrypt;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\EncryptWrapper;
-use
+use phpseclib\Crypt\AES as AESClass;
 
 /**
  * This class provides a hashing API for the pcsg/grouppasswordmanager module
@@ -13,25 +13,22 @@ class AES implements EncryptWrapper
     /**
      * Creates a hash value from a given string
      *
-     * @param String $str - A String
-     * @param String $salt (optional)
+     * @param String $plainText - Data to be encrypted
+     * @param String $key - Encryption key
      */
-    public static function createHash($str, $salt = null)
+    public static function encrypt($plainText, $key)
     {
-        // @todo exceptions einbauen
 
-        return ScryptClass::hash($str, $salt);
     }
 
     /**
      * Compares two hashes
      *
-     * @param $expected
-     * @param $actual
-     * @return Bool - true if equal; false if not equal
+     * @param String $cipherText - Data to be decrypted
+     * @param String $key - Decryption key
      */
-    public static function compareHash($expected, $actual)
+    public static function decrypt($cipherText, $key)
     {
-        return ScryptClass::compareStrings($expected, $actual);
+
     }
 }
