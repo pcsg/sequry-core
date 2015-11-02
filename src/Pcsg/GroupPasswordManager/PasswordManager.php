@@ -20,6 +20,9 @@ use QUI;
  */
 class PasswordManager
 {
+    const TBL_PASSWORDS = 'pcsg_gpm_password';
+    const TBL_USER_PASSWORDS = 'pcsg_gpm_user_passwords';
+
     /**
      * constructor
      *

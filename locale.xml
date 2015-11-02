@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<locales>
+
+    <groups name="pcsg/grouppasswordmanager" datatype="php">
+
+        <!-- Class: Password -->
+        <locale name="exception.password.not.found">
+            <de><![CDATA[Das Passwort mit der ID [passwordId] wurde nicht gefunden.]]></de>
+        </locale>
+        <locale name="exception.password.decryption.error">
+            <de><![CDATA[Das Passwort mit der ID [passwordId] konnte nicht erfolgreich entschlüsselt werden.]]></de>
+        </locale>
+
+    </groups>
+
+    <groups name="pcsg/grouppasswordmanager" datatype="php,js">
+
+    </groups>
+
+    <groups name="pcsg/grouppasswordmanager" datatype="js">
+
+    </groups>
+
+</locales>
