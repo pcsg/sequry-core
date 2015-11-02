@@ -2,6 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
+use Pcsg\GroupPasswordManager\Security\Interfaces\HashWrapper;
+
 /**
  * This class provides a hashing API for the pcsg/grouppasswordmanager module
  */
@@ -10,6 +12,13 @@ class Hash
     const HASH_MODULE = 'Scrypt'; // @todo in config auslagern
 
     /**
+     * HashWrapper Class Object for the configured hash module
+     *
+     * @var HashWrapper
+     */
+    protected static $_HashModule = null;
+    
+    /**
      * Creates a hash value from a given string
      *
      * @param String $str - A String
@@ -17,7 +26,7 @@ class Hash
      */
     public static function createHash($str, $salt = null)
     {
-        return self::_getHashWrapper()->createHash($str, $salt);
+        return self::_getHashModule()->createHash($str, $salt);
     }
 
     /**
@@ -29,11 +38,18 @@ class Hash
      */
     public static function compareHash($expected, $actual)
     {
-        return self::_getHashWrapper()->compareHash($expected, $actual);
+        return self::_getHashModule()->compareHash($expected, $actual);
     }
 
-    protected static function _getHashWrapper()
+    /**
+     * @return HashWrapper
+     */
+    protected static function _getHashModule()
     {
+        if (!is_null(self::$_HashModule)) {
+            return self::$_HashModule;
+        }
+
         $moduleClass = '\Pcsg\GroupPasswordManager\Security\Modules\Hash\\';
         $moduleClass .= self::HASH_MODULE;
 
@@ -42,6 +58,8 @@ class Hash
             return false;
         }
 
-        return new $moduleClass();
+        self::$_HashModule = new $moduleClass();
+
+        return self::$_HashModule;
     }
 }

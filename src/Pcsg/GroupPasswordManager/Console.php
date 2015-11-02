@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GroupPasswordManager\Security\Encrypt;
 use Pcsg\GroupPasswordManager\Security\Hash;
 use QUI;
 
@@ -16,6 +17,8 @@ use QUI;
  */
 class Console extends QUI\System\Console\Tool
 {
+    protected $_userpw = '';
+
     /**
      * Konstruktor
      */
@@ -33,16 +36,10 @@ class Console extends QUI\System\Console\Tool
                 $this->_LC->get('hklused/import', 'import.description')
             );
 
-        // add arguments
-//        $this->addArgument(
-//            'machines',
-//            $this->_LC->get(
-//                'hklused/import',
-//                'import.params.machines.description'
-//            ),
-//            'm',
-//            true
-//        );
+        $this->addArgument('pw', 'User-Passwort');
+        $this->addArgument('zd', 'Zu verschlüsselnde Zugangsdaten', false, true);
+        $this->addArgument('zdid', 'ID der zu entschlüsselnden Zugangsdaten', false, true);
+        $this->addArgument('mode', 'genkey; setzd; getzd');
     }
 
     /**
@@ -50,24 +47,149 @@ class Console extends QUI\System\Console\Tool
      */
     public function execute()
     {
-        $this->writeLn("Generiere Hash aus Passwort");
+        $this->_userpw = $this->getArgument('pw');
 
-        $hash = Hash::createHash('Pferd');
+        switch ($this->getArgument('mode')) {
+            case 'genkey':
+                    $this->_genKey();
+                break;
 
-        $this->writeLn("Hash: \n\n" . $hash . "\n\n");
+            case 'setzd':
+                    $this->_setZd();
+                break;
 
-        $this->writeLn("Generiere Schlüsselpaar");
+            case 'getzd':
+                    $this->_getZd();
+                break;
+            
+            default:
+                $this->writeLn("unknown mode");
+                exit;
+        }
+
+        $this->writeLn("Fertig.");
+    }
+
+    protected function _genKey()
+    {
+        $this->writeLn("Generiere Schlüsselpaar mit Passwort: " . $this->_userpw);
 
         $Res = openssl_pkey_new(array(
             'digest_alg' => 'sha512',
             'private_key_bits' => 4096,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
             'encrypt_key' => true,
-            'ecnrypt_key_cipher' => OPENSSL_CIPHER_AES_256_CBC
+            'ecnrypt_key_cipher' => OPENSSL_CIPHER_AES_128_CBC
         ));
 
-        openssl_pkey_export($Res, $privateKey, "pferd");
+        $publicKey = openssl_pkey_get_details($Res);
+        $publicKey = $publicKey['key'];
 
-        $this->writeLn("Private key: " . $privateKey);
+        $userPassHash = Hash::createHash($this->_userpw, 'salt'); // @todo korrekter salt
+        openssl_pkey_export($Res, $privateKey, $this->_userpw);
+
+        $encryptedPrivateKey = Encrypt::encrypt(
+            $privateKey,
+            $userPassHash
+        );
+
+        QUI::getDataBase()->insert(
+            'pcsg_gpm_users',
+            array(
+                'user_id' => QUI::getUserBySession()->getId(),
+                'public_key' => $publicKey,
+                'private_key' => $encryptedPrivateKey
+            )
+        );
+    }
+
+    protected function _setZd()
+    {
+        $zd = $this->getArgument('zd');
+
+        $newPass = PasswordManager::create(
+            "Mein Passwort",
+            "Dies ist eine Passwort-Beschreibung",
+            $zd
+        );
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'public_key'
+            ),
+            'from' => 'pcsg_gpm_users',
+            'where' => array(
+                'user_id' => QUI::getUserBySession()->getId()
+            )
+        ));
+
+        $publicKey = $result[0]['public_key'];
+
+//        $ciphertext = '';
+        openssl_public_encrypt($newPass['key'], $ciphertext, $publicKey);
+
+        QUI::getDataBase()->insert(
+            'pcsg_gpm_user_passwords',
+            array(
+                'user_id' => QUI::getUserBySession()->getId(),
+                'password_id' => $newPass['id'],
+                'password_key' => $ciphertext
+            )
+        );
+    }
+
+    protected function _getZd()
+    {
+        $id = $this->getArgument('zdid');
+
+        // get private key of user
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'private_key'
+            ),
+            'from' => 'pcsg_gpm_users',
+            'where' => array(
+                'user_id' => QUI::getUserBySession()->getId()
+            )
+        ));
+
+        $privateKeyEncrypted = $result[0]['private_key'];
+
+        $privateKeyProtected = Encrypt::decrypt(
+            $privateKeyEncrypted,
+            Hash::createHash($this->_userpw, 'salt') // @todo korrekter salt
+        );
+
+        $Res = openssl_pkey_get_private(
+            $privateKeyProtected,
+            $this->_userpw
+        );
+
+        openssl_pkey_export($Res, $privateKey);
+
+        // get encrypted password data
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'password_key'
+            ),
+            'from' => 'pcsg_gpm_user_passwords',
+            'where' => array(
+                'user_id' => QUI::getUserBySession()->getId(),
+                'password_id' => $id
+            )
+        ));
+
+        $passwordKeyEncrypted = $result[0]['password_key'];
+
+        openssl_private_decrypt(
+            $passwordKeyEncrypted,
+            $passwordKey,
+            $privateKey
+        );
+
+        $password = PasswordManager::get($id, $passwordKey);
+
+        \QUI\System\Log::writeRecursive( "passwort ausgabe:::" );
+        \QUI\System\Log::writeRecursive( $password );
     }
 }

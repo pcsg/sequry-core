@@ -37,7 +37,7 @@ abstract class Scrypt
      *
      * @var int The key length
      */
-    private static $_keyLength = 128;
+    private static $_keyLength = 16;
 
     /**
      * Get the byte-length of the given string
@@ -123,7 +123,7 @@ abstract class Scrypt
      *
      * @return string The hashed password
      */
-    public static function hash($password, $salt = null, $N = 16384, $r = 8, $p = 1)
+    public static function createHash($password, $salt = null, $N = 16384, $r = 8, $p = 1)
     {
         if ($N == 0 || ($N & ($N - 1)) != 0) {
             throw new \InvalidArgumentException("N must be > 0 and a power of 2");
@@ -144,9 +144,12 @@ abstract class Scrypt
             $salt = str_replace(array('+', '$'), array('.', ''), base64_encode($salt));
         }
 
+        \QUI\System\Log::writeRecursive( $salt );
+        \QUI\System\Log::writeRecursive( self::$_keyLength );
         $hash = \scrypt($password, $salt, $N, $r, $p, self::$_keyLength);
 
-        return $N . '$' . $r . '$' . $p . '$' . $salt . '$' . $hash;
+        return mb_substr($hash, 0, self::$_keyLength); // @todo Check: sicher?
+//        return $N . '$' . $r . '$' . $p . '$' . $salt . '$' . $hash;
     }
 
     /**

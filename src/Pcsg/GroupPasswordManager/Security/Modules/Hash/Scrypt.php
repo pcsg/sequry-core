@@ -15,12 +15,12 @@ class Scrypt implements HashWrapper
      *
      * @param String $str - A String
      * @param String $salt (optional)
+     * @return String - hashed string
      */
     public static function createHash($str, $salt = null)
     {
         // @todo exceptions einbauen
-
-        return ScryptClass::hash($str, $salt);
+        return ScryptClass::createHash($str, $salt);
     }
 
     /**
