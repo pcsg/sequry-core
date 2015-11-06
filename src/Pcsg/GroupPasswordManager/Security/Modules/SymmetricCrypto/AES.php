@@ -1,8 +1,8 @@
 <?php
 
-namespace Pcsg\GroupPasswordManager\Security\Modules\Encrypt;
+namespace Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\EncryptWrapper;
+use Pcsg\GroupPasswordManager\Security\Interfaces\SymmetricCryptoWrapper;
 use phpseclib\Crypt\AES as AESClass;
 
 /**
@@ -10,7 +10,7 @@ use phpseclib\Crypt\AES as AESClass;
  *
  * AES-256
  */
-class AES implements EncryptWrapper
+class AES implements SymmetricCryptoWrapper
 {
     /**
      * Key size in bits

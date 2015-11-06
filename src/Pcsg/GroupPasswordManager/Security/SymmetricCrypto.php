@@ -2,21 +2,21 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\EncryptWrapper;
+use Pcsg\GroupPasswordManager\Security\Interfaces\SymmetricCryptoWrapper;
 
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
  */
-class Encrypt
+class SymmetricCrypto
 {
-    const ENCRYPTION_MODULE = 'AES'; // @todo in config auslagern
+    const CRYPTO_MODULE = 'AES'; // @todo in config auslagern
 
     /**
      * HashWrapper Class Object for the configured hash module
      *
-     * @var EncryptWrapper
+     * @var SymmetricCryptoWrapper
      */
-    protected static $_EncryptModule = null;
+    protected static $_CryptoModule = null;
 
     /**
      * Encrypts a plaintext string
@@ -27,7 +27,7 @@ class Encrypt
      */
     public static function encrypt($plainText, $key)
     {
-        return self::_getEncryptModule()->encrypt($plainText, $key);
+        return self::_getCryptoModule()->encrypt($plainText, $key);
     }
 
     /**
@@ -39,28 +39,30 @@ class Encrypt
      */
     public static function decrypt($cipherText, $key)
     {
-        return self::_getEncryptModule()->decrypt($cipherText, $key);
+        return self::_getCryptoModule()->decrypt($cipherText, $key);
     }
 
     /**
-     * @return EncryptWrapper
+     * Get Crypto Module for symmetric encryption/decryption
+     *
+     * @return SymmetricCryptoWrapper
      */
-    protected static function _getEncryptModule()
+    protected static function _getCryptoModule()
     {
-        if (!is_null(self::$_EncryptModule)) {
-            return self::$_EncryptModule;
+        if (!is_null(self::$_CryptoModule)) {
+            return self::$_CryptoModule;
         }
 
-        $moduleClass = '\Pcsg\GroupPasswordManager\Security\Modules\Encrypt\\';
-        $moduleClass .= self::ENCRYPTION_MODULE;
+        $moduleClass = '\Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto\\';
+        $moduleClass .= self::CRYPTO_MODULE;
 
         if (!class_exists($moduleClass)) {
             // @todo throw exception
             return false;
         }
 
-        self::$_EncryptModule = new $moduleClass();
+        self::$_CryptoModule = new $moduleClass();
 
-        return self::$_EncryptModule;
+        return self::$_CryptoModule;
     }
 }

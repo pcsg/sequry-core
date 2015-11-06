@@ -10,6 +10,32 @@
         <locale name="exception.password.decryption.error">
             <de><![CDATA[Das Passwort mit der ID [passwordId] konnte nicht erfolgreich entschlüsselt werden.]]></de>
         </locale>
+        <locale name="exception.password.payload.wrong.datatype">
+            <de><![CDATA[Die Nutzdaten für das Passwort mit der ID [passwordId] konnte nicht gesetzt werden.]]></de>
+        </locale>
+
+        <!-- Class: CryptoUser -->
+        <locale name="exception.cryptouser.no.pw.hash">
+            <de><![CDATA[Die Session-Daten des Benutzers mit der ID [userId] enthalten nicht die notwendigen Daten, um eine sichere Verschlüsselung zu gewährleisten. Bitte wenden Sie sich an einen Administator]]></de>
+        </locale>
+        <locale name="exception.cryptouser.encrypt.no.public.key">
+            <de><![CDATA[Der Benutzer mit der ID [userId] hat noch keinen öffentlichen Schlüssel (public key) und kann daher keine Daten verschlüsseln. Der Benutzer muss sich zuerst einloggen und ein gültiges Schlüsselpaar generieren oder hochladen.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.encrypt.no.private.key">
+            <de><![CDATA[Der Benutzer mit der ID [userId] hat noch keinen privaten Schlüssel (private key) und kann daher keine Daten entschlüsseln. Der Benutzer muss sich zuerst einloggen und ein gültiges Schlüsselpaar generieren oder hochladen.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.encrypt.error">
+            <de><![CDATA[Beim verschlüsseln von Daten mit dem öffentlichen Schlüssel des Benutzers mit der ID [userId] ist ein Fehler aufgetreten. Die Daten konnten nicht verschlüsselt werden. Bitt wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.decrypt.error">
+            <de><![CDATA[Beim entschlüsseln von Daten mit dem privaten Schlüssel des Benutzers mit der ID [userId] ist ein Fehler aufgetreten. Die Daten konnten nicht entschlüsselt werden. Bitt wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.generatekeypair.user.not.logged.in">
+            <de><![CDATA[Schlüsselpaar für Benutzer mit der ID [userId] konnte nicht generiert werden. Es wurde versucht, ein Schlüsselpaar für einen anderen Nutzer zu generieren. Nur ein eingeloggter Benutzer selbst kann ein neues Schlüsselpaar für sich setzen.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.generatekeypair.error">
+            <de><![CDATA[Bei der Erstellung eines neuen Schlüsselpaars für den Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
 
     </groups>
 

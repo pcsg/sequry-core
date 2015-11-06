@@ -6,20 +6,20 @@
 
 namespace Pcsg\GroupPasswordManager;
 
-use Pcsg\GroupPasswordManager\Security\Encrypt;
-use Pcsg\GroupPasswordManager\Security\Hash;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
 
 /**
  * Password Class
  *
- * Represents a secret passphrase and/or login information that is stored
- * encrypted.
+ * Represents secret information that is stored encrypted.
  *
  * @author www.pcsg.de (Patrick Müller)
  */
 class Password extends QUI\QDOM
 {
+
+
     /**
      * Password ID in database
      *
@@ -35,11 +35,18 @@ class Password extends QUI\QDOM
     protected $_key = null;
 
     /**
-     * Password data - this is the information that is encrypted
+     * Password payload - this is the information that is encrypted
      *
      * @var Array|String
      */
-    protected $_data = null;
+    protected $_payload = null;
+
+    /**
+     * User ID of initial Password creator (owner)
+     *
+     * @var Integer
+     */
+    protected $_ownerId = null;
 
     /**
      * constructor
@@ -54,7 +61,7 @@ class Password extends QUI\QDOM
 
         // get password entry from database
         $result = $DB->fetch(array(
-            'from' => PasswordManager::TBL_PASSWORDS,
+            'from' => Manager::TBL_PASSWORDS,
             'where' => array(
                 'id' => $id
             ),
@@ -79,7 +86,7 @@ class Password extends QUI\QDOM
 
         // try to decrypt the data and check for successful decryption
         try {
-            $plainText = Encrypt::decrypt($encryptedData, $key);
+            $plainText = SymmetricCrypto::decrypt($encryptedData, $key);
             $plainText = json_decode($plainText, true);
 
             // check for json error
@@ -90,16 +97,21 @@ class Password extends QUI\QDOM
             }
 
             // integrity check
-            if (!isset($plainText['data'])
+            // @todo überarbeiten
+            if (!isset($plainText['payload'])
                 || !isset($plainText['hash'])
-                || empty($plainText['hash'])) {
+                || empty($plainText['hash'])
+                || !isset($plainText['ownerId'])
+                || empty($plainText['ownerId'])) {
                 throw new QUI\Exception(
                     'Tha plaintext array did not contain the expected keys.'
                 );
             }
 
+            $this->_payload = $plainText['payload'];
+
             $hash = $plainText['hash'];
-            $newHash = hash('sha256', json_encode($plainText['data']));
+            $newHash = $this->_getPayloadHash();
 
             if ($hash !== $newHash) {
                 throw new QUI\Exception(
@@ -107,7 +119,7 @@ class Password extends QUI\QDOM
                 );
             }
         } catch (\Exception $Exception) {
-            \QUI\System\Log::addError(
+            QUI\System\Log::addError(
                 'Password #' . $id . ' could not be decrypted: '
                 . $Exception->getMessage()
             );
@@ -122,7 +134,6 @@ class Password extends QUI\QDOM
             );
         }
 
-        $this->_data = $plainText['data'];
         $this->_key = $key;
 
         $this->setAttributes(array(
@@ -150,22 +161,63 @@ class Password extends QUI\QDOM
      * This data will be encrypted, so ONLY USE this function for any
      * sensitive information!
      *
-     * @param Array|String $data
+     * @param Array|String $payload
      * @throws QUI\Exception
      */
-    public function setData($data)
+    public function setPayload($payload)
     {
-        if (!is_array($data)
-            && !is_string($data)) {
+        if (!is_array($payload)
+            && !is_string($payload)) {
             throw new QUI\Exception(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',
-                    'exception.password.decryption.error',
+                    'exception.password.payload.wrong.datatype',
                     array('passwordId' => $this->_id)
                 ),
                 1001
             );
         }
+
+        $this->_payload = $payload;
     }
 
+    /**
+     * Returns the database id of this password
+     *
+     * @return Integer
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
+    /**
+     * Returns the private key that is used to encrypt this password
+     *
+     * @return String
+     */
+    public function getKey()
+    {
+        return $this->_key;
+    }
+
+    /**
+     * Return user id of the password creator
+     *
+     * @return int
+     */
+    public function getOwnerId()
+    {
+        return $this->_ownerId;
+    }
+
+    /**
+     * Return payload hash for verifying data integrity
+     *
+     * @return string
+     */
+    protected function _getPayloadHash()
+    {
+        return hash('sha256', json_encode($this->_payload));
+    }
 }

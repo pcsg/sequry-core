@@ -24,7 +24,7 @@ class Hash
      * @param String $str - A String
      * @param String $salt (optional)
      */
-    public static function createHash($str, $salt = null)
+    public static function create($str, $salt = null)
     {
         return self::_getHashModule()->createHash($str, $salt);
     }
@@ -36,7 +36,7 @@ class Hash
      * @param $actual
      * @return Bool - true if equal; false if not equal
      */
-    public static function compareHash($expected, $actual)
+    public static function compare($expected, $actual)
     {
         return self::_getHashModule()->compareHash($expected, $actual);
     }

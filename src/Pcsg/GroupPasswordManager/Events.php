@@ -17,8 +17,6 @@ use Pcsg\GroupPasswordManager\Security as Security;
  */
 class Events
 {
-    const VAR_PWHASH = 'pcsg_gpw_pwhash';
-
     public static function onUserLogin($User)
     {
         if (!isset($_REQUEST['password'])) {
@@ -26,8 +24,11 @@ class Events
         }
 
         QUI::getSession()->set(
-            self::VAR_PWHASH,
-            Security\Hash::createHash($_REQUEST['password'])
+            CryptoUser::ATTRIBUTE_PWHASH,
+            Security\Hash::create(
+                $_REQUEST['password'],
+                QUI::conf('globals', 'salt')
+            )
         );
     }
 }

@@ -5,7 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a encryption/decryption API for the pcsg/grouppasswordmanager module
  */
-interface EncryptWrapper
+interface SymmetricCryptoWrapper
 {
     /**
      * Encrypts a plaintext string

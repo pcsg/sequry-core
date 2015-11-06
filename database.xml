@@ -5,7 +5,7 @@
         <table name="pcsg_gpm_users" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY">user_id</field>
             <field type="TEXT">public_key</field>
-            <field type="BLOB">private_key</field>
+            <field type="TEXT">private_key</field>
         </table>
 
         <table name="pcsg_gpm_passwords" no-auto-update="1" no-site-reference="1">
@@ -19,6 +19,7 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL">user_id</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">password_id</field>
             <field type="BLOB">password_key</field>
+            <primary>user_id,password_id</primary>
         </table>
     </global>
 

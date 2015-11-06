@@ -6,8 +6,10 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Encrypt;
 use Pcsg\GroupPasswordManager\Security\Hash;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
 
 /**
@@ -49,6 +51,8 @@ class Console extends QUI\System\Console\Tool
     {
         $this->_userpw = $this->getArgument('pw');
 
+        QUI::getSession()->set(CryptoUser::ATTRIBUTE_PWHASH, $this->_userpw); // this is only for console testing purposes
+
         switch ($this->getArgument('mode')) {
             case 'genkey':
                     $this->_genKey();
@@ -72,70 +76,24 @@ class Console extends QUI\System\Console\Tool
 
     protected function _genKey()
     {
-        $this->writeLn("Generiere Schlüsselpaar mit Passwort: " . $this->_userpw);
+        $CryptoUser = new CryptoUser(QUI::getUserBySession()->getId());
 
-        $Res = openssl_pkey_new(array(
-            'digest_alg' => 'sha512',
-            'private_key_bits' => 4096,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-            'encrypt_key' => true,
-            'ecnrypt_key_cipher' => OPENSSL_CIPHER_AES_128_CBC
-        ));
-
-        $publicKey = openssl_pkey_get_details($Res);
-        $publicKey = $publicKey['key'];
-
-        $userPassHash = Hash::createHash($this->_userpw, 'salt'); // @todo korrekter salt
-        openssl_pkey_export($Res, $privateKey, $this->_userpw);
-
-        $encryptedPrivateKey = Encrypt::encrypt(
-            $privateKey,
-            $userPassHash
-        );
-
-        QUI::getDataBase()->insert(
-            'pcsg_gpm_users',
-            array(
-                'user_id' => QUI::getUserBySession()->getId(),
-                'public_key' => $publicKey,
-                'private_key' => $encryptedPrivateKey
-            )
-        );
+        $this->writeLn("Generiere Schlüsselpaar...");
+        $CryptoUser->generateKeyPair();
+        $this->writeLn("Fertig.");
     }
 
     protected function _setZd()
     {
         $zd = $this->getArgument('zd');
 
-        $newPass = PasswordManager::create(
+        $Password = Manager::createPassword(
             "Mein Passwort",
             "Dies ist eine Passwort-Beschreibung",
             $zd
         );
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'public_key'
-            ),
-            'from' => 'pcsg_gpm_users',
-            'where' => array(
-                'user_id' => QUI::getUserBySession()->getId()
-            )
-        ));
 
-        $publicKey = $result[0]['public_key'];
-
-//        $ciphertext = '';
-        openssl_public_encrypt($newPass['key'], $ciphertext, $publicKey);
-
-        QUI::getDataBase()->insert(
-            'pcsg_gpm_user_passwords',
-            array(
-                'user_id' => QUI::getUserBySession()->getId(),
-                'password_id' => $newPass['id'],
-                'password_key' => $ciphertext
-            )
-        );
     }
 
     protected function _getZd()
@@ -155,17 +113,10 @@ class Console extends QUI\System\Console\Tool
 
         $privateKeyEncrypted = $result[0]['private_key'];
 
-        $privateKeyProtected = Encrypt::decrypt(
+        $privateKeyProtected = SymmetricCrypto::decrypt(
             $privateKeyEncrypted,
-            Hash::createHash($this->_userpw, 'salt') // @todo korrekter salt
+            Hash::create($this->_userpw, 'salt') // @todo korrekter salt
         );
-
-        $Res = openssl_pkey_get_private(
-            $privateKeyProtected,
-            $this->_userpw
-        );
-
-        openssl_pkey_export($Res, $privateKey);
 
         // get encrypted password data
         $result = QUI::getDataBase()->fetch(array(
@@ -181,13 +132,13 @@ class Console extends QUI\System\Console\Tool
 
         $passwordKeyEncrypted = $result[0]['password_key'];
 
-        openssl_private_decrypt(
+        $passwordKey = AsymmetricCrypto::decrypt(
             $passwordKeyEncrypted,
-            $passwordKey,
-            $privateKey
+            $privateKeyProtected,
+            $this->_userpw
         );
 
-        $password = PasswordManager::get($id, $passwordKey);
+        $password = Manager::getPassword($id, $passwordKey);
 
         \QUI\System\Log::writeRecursive( "passwort ausgabe:::" );
         \QUI\System\Log::writeRecursive( $password );
