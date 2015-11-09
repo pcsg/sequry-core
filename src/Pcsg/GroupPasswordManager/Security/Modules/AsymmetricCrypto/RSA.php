@@ -110,8 +110,8 @@ class RSA implements AsymmetricCryptoWrapper
         try {
             $Res = openssl_pkey_new(array(
                 'digest_alg' => 'sha512',
-                'private_key_bits' => self::KEY_SIZE,
-                'private_key_type' => OPENSSL_KEYTYPE_RSA,
+                'privateKey_bits' => self::KEY_SIZE,
+                'privateKey_type' => OPENSSL_KEYTYPE_RSA,
                 'encrypt_key' => !is_null($password),
                 'encrypt_key_cipher' => OPENSSL_CIPHER_AES_128_CBC
             ));
@@ -133,8 +133,7 @@ class RSA implements AsymmetricCryptoWrapper
             );
 
             if ($privateKeyExport === false
-                || empty($privateKey)
-                || !isset($privateKey['key'])) {
+                || empty($privateKey)) {
                 throw new QUI\Exception(openssl_error_string());
             }
         } catch (\Exception $Exception) {

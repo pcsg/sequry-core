@@ -3,23 +3,24 @@
 
     <global>
         <table name="pcsg_gpm_users" no-auto-update="1" no-site-reference="1">
-            <field type="BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY">user_id</field>
-            <field type="TEXT">public_key</field>
-            <field type="TEXT">private_key</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY">userId</field>
+            <field type="TEXT">publicKey</field>
+            <field type="TEXT">privateKey</field>
         </table>
 
         <table name="pcsg_gpm_passwords" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="TEXT">title</field>
             <field type="TEXT">description</field>
-            <field type="BLOB">password_data</field>
+            <field type="BLOB">passwordData</field>
+            <field type="BLOB">passwordMac</field>
         </table>
 
         <table name="pcsg_gpm_user_passwords" no-auto-update="1" no-site-reference="1">
-            <field type="BIGINT(20) UNSIGNED NOT NULL">user_id</field>
-            <field type="BIGINT(20) UNSIGNED NOT NULL">password_id</field>
-            <field type="BLOB">password_key</field>
-            <primary>user_id,password_id</primary>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">passwordId</field>
+            <field type="BLOB">passwordKey</field>
+            <primary>userId,passwordId</primary>
         </table>
     </global>
 

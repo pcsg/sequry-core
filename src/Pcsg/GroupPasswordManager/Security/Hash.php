@@ -26,19 +26,7 @@ class Hash
      */
     public static function create($str, $salt = null)
     {
-        return self::_getHashModule()->createHash($str, $salt);
-    }
-
-    /**
-     * Compares two hashes
-     *
-     * @param $expected
-     * @param $actual
-     * @return Bool - true if equal; false if not equal
-     */
-    public static function compare($expected, $actual)
-    {
-        return self::_getHashModule()->compareHash($expected, $actual);
+        return self::_getHashModule()->create($str, $salt);
     }
 
     /**

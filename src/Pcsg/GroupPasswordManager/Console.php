@@ -87,60 +87,21 @@ class Console extends QUI\System\Console\Tool
     {
         $zd = $this->getArgument('zd');
 
-        $Password = Manager::createPassword(
+        Manager::createPassword(
             "Mein Passwort",
             "Dies ist eine Passwort-Beschreibung",
             $zd
         );
-
-
     }
 
     protected function _getZd()
     {
         $id = $this->getArgument('zdid');
 
-        // get private key of user
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'private_key'
-            ),
-            'from' => 'pcsg_gpm_users',
-            'where' => array(
-                'user_id' => QUI::getUserBySession()->getId()
-            )
-        ));
+        $CryptoUser = new CryptoUser(QUI::getUserBySession()->getId());
 
-        $privateKeyEncrypted = $result[0]['private_key'];
+        $Password = $CryptoUser->getPassword($id, $this->_userpw);
 
-        $privateKeyProtected = SymmetricCrypto::decrypt(
-            $privateKeyEncrypted,
-            Hash::create($this->_userpw, 'salt') // @todo korrekter salt
-        );
-
-        // get encrypted password data
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'password_key'
-            ),
-            'from' => 'pcsg_gpm_user_passwords',
-            'where' => array(
-                'user_id' => QUI::getUserBySession()->getId(),
-                'password_id' => $id
-            )
-        ));
-
-        $passwordKeyEncrypted = $result[0]['password_key'];
-
-        $passwordKey = AsymmetricCrypto::decrypt(
-            $passwordKeyEncrypted,
-            $privateKeyProtected,
-            $this->_userpw
-        );
-
-        $password = Manager::getPassword($id, $passwordKey);
-
-        \QUI\System\Log::writeRecursive( "passwort ausgabe:::" );
-        \QUI\System\Log::writeRecursive( $password );
+        \QUI\System\Log::writeRecursive( $Password->getPayload() );
     }
 }

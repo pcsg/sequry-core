@@ -144,8 +144,6 @@ abstract class Scrypt
             $salt = str_replace(array('+', '$'), array('.', ''), base64_encode($salt));
         }
 
-        \QUI\System\Log::writeRecursive( $salt );
-        \QUI\System\Log::writeRecursive( self::$_keyLength );
         $hash = \scrypt($password, $salt, $N, $r, $p, self::$_keyLength);
 
         return mb_substr($hash, 0, self::$_keyLength); // @todo Check: sicher?

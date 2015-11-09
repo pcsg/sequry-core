@@ -17,21 +17,8 @@ class Scrypt implements HashWrapper
      * @param String $salt (optional)
      * @return String - hashed string
      */
-    public static function createHash($str, $salt = null)
+    public static function create($str, $salt = null)
     {
-        // @todo exceptions einbauen
         return ScryptClass::createHash($str, $salt);
-    }
-
-    /**
-     * Compares two hashes
-     *
-     * @param $expected
-     * @param $actual
-     * @return Bool - true if equal; false if not equal
-     */
-    public static function compareHash($expected, $actual)
-    {
-        return ScryptClass::compareStrings($expected, $actual);
     }
 }

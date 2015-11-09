@@ -7,6 +7,7 @@
 namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
 
 /**
@@ -66,7 +67,7 @@ class CryptoUser
     public function __construct($userId)
     {
         // check if user exists
-        $User = QUI::getUsers()->get($userId);
+        QUI::getUsers()->get($userId);
 
         if ($userId === QUI::getUserBySession()->getId()) {
             $this->_isCurrentUser = true;
@@ -93,12 +94,12 @@ class CryptoUser
         try {
             $result = QUI::getDataBase()->fetch(array(
                 'select' => array(
-                    'public_key',
-                    'private_key'
+                    'publicKey',
+                    'privateKey'
                 ),
                 'from' => Manager::TBL_USERS,
                 'where' => array(
-                    'user_id' => $this->_id
+                    'userId' => $this->_id
                 ),
                 'limit' => 1
             ));
@@ -110,14 +111,14 @@ class CryptoUser
             $this->_hasDbEntry = true;
         }
 
-        if (isset($result[0]['public_key'])
-            && !empty($result[0]['public_key'])) {
-            $this->_publicKey = $result[0]['public_key'];
+        if (isset($result[0]['publicKey'])
+            && !empty($result[0]['publicKey'])) {
+            $this->_publicKey = $result[0]['publicKey'];
         }
 
-        if (isset($result[0]['private_key'])
-            && !empty($result[0]['private_key'])) {
-            $this->_publicKey = $result[0]['private_key'];
+        if (isset($result[0]['privateKey'])
+            && !empty($result[0]['privateKey'])) {
+            $this->_privateKey = $result[0]['privateKey'];
         }
     }
 
@@ -243,6 +244,9 @@ class CryptoUser
             );
         }
 
+        $this->_publicKey = $keyPair['publicKey'];
+        $this->_privateKey = $keyPair['privateKey'];
+
         if (!$this->_testKeyPair()) {
             throw new QUI\Exception(
                 QUI::getLocale()->get(
@@ -253,9 +257,6 @@ class CryptoUser
             );
         }
 
-        $this->_publicKey = $keyPair['publicKey'];
-        $this->_privateKey = $keyPair['privateKey'];
-
         // @todo einkommentieren!
 //        $this->_reEncryptPasswordKeys();
 
@@ -264,20 +265,20 @@ class CryptoUser
                 QUI::getDataBase()->update(
                     Manager::TBL_USERS,
                     array(
-                        'public_key' => $this->_publicKey,
-                        'private_key' => $this->_privateKey
+                        'publicKey' => $this->_publicKey,
+                        'privateKey' => $this->_privateKey
                     ),
                     array(
-                        'user_id' => $this->_id
+                        'userId' => $this->_id
                     )
                 );
             } else {
                 QUI::getDataBase()->insert(
                     Manager::TBL_USERS,
                     array(
-                        'user_id' => $this->_id,
-                        'public_key' => $this->_publicKey,
-                        'private_key' => $this->_privateKey
+                        'userId' => $this->_id,
+                        'publicKey' => $this->_publicKey,
+                        'privateKey' => $this->_privateKey
                     )
                 );
 
@@ -285,7 +286,7 @@ class CryptoUser
             }
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'User #' . $this->_id . ' could save key pair in users table: '
+                'User #' . $this->_id . ' could not save key pair in users table: '
                 . $Exception->getMessage()
             );
 
@@ -325,9 +326,29 @@ class CryptoUser
 
     }
 
+    /**
+     * Returns user id
+     *
+     * @return Integer
+     */
+    public function getId()
+    {
+        return $this->_id;
+    }
+
     public function setKeyPair()
     {
 
+    }
+
+    /**
+     * Returns public key of user
+     *
+     * @return String
+     */
+    public function getPublicKey()
+    {
+        return $this->_publicKey;
     }
 
     /**
@@ -341,6 +362,51 @@ class CryptoUser
     }
 
     /**
+     * Get an encrypted Password object
+     *
+     * @param Integer $passwordId - Password ID in database
+     * @param String $passphrase - Password for protected user private key
+     * @return Password
+     * @throws QUI\Exception
+     */
+    public function getPassword($passwordId, $passphrase)
+    {
+        try {
+            $result = QUI::getDataBase()->fetch(array(
+                'select' => array(
+                    'passwordKey'
+                ),
+                'from' => Manager::TBL_USER_PASSWORDS,
+                'where' => array(
+                    'userId' => $this->_id,
+                    'passwordId' => $passwordId
+                ),
+                'limit' => 1
+            ));
+        } catch (\Exception $Exception) {
+
+        }
+
+        if (empty($result)) {
+            throw new QUI\Exception(
+                QUI::getLocale()->get(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptouser.getpassword.no.right',
+                    array('passwordId' => $passwordId)
+                )
+            );
+        }
+
+        $key = AsymmetricCrypto::decrypt(
+            $result[0]['passwordKey'],
+            $this->_privateKey,
+            $passphrase
+        );
+
+        return new Password($passwordId, $key);
+    }
+
+    /**
      * @todo
      *
      * Re-encrypts all password keys with the current public key of this user
@@ -351,10 +417,10 @@ class CryptoUser
             $result = QUI::getDataBase()->fetch(array(
                 'select' => array(
                     'id',
-                    'password_key'
+                    'passwordKey'
                 ),
                 'where' => array(
-                    'user_id' => $this->_id
+                    'userId' => $this->_id
                 )
             ));
         } catch (\Exception $Exception) {

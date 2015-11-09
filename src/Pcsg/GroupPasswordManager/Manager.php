@@ -7,6 +7,7 @@
 namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GroupPasswordManager\Security\Hash;
+use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
 
@@ -17,7 +18,7 @@ use QUI;
  */
 class Manager
 {
-    const TBL_PASSWORDS = 'pcsg_gpm_password';
+    const TBL_PASSWORDS = 'pcsg_gpm_passwords';
     const TBL_USER_PASSWORDS = 'pcsg_gpm_user_passwords';
     const TBL_USERS = 'pcsg_gpm_users';
 
@@ -29,6 +30,7 @@ class Manager
      * @param Array|String $payload - Payload (password data)
      * @param QUI\Users\User $User (optional) - Owner of the password [default: Session User]
      * @return Password
+     * @throws QUI\Exception
      */
     public static function createPassword($title, $description, $payload, $User = null)
     {
@@ -36,33 +38,56 @@ class Manager
             $User = QUI::getUserBySession();
         }
 
+        $title = trim($title);
+        $description = trim($description);
+
+        if (empty($title)
+            || empty($description)) {
+            throw new QUI\Exception(
+                QUI::getLocale()->get(
+                    'pcsg/grouppasswordmanager',
+                    'exception.manager.create.password.missing.title.description'
+                )
+            );
+        }
+
         // encrypt data
-        $hash = hash('sha256', json_encode($payload));
         $password = array(
             'payload' => $payload,
-            'hash' => $hash,
-            'ownerId' => $User->getId(),
-            'edit' => array() // contains all user ids of users that can edit this password
+            'ownerId' => $User->getId()
         );
 
         $password = json_encode($password);
         $passwordKey = Hash::create($password);
+        $passwordMAC = MAC::create($password, $passwordKey);
+
+        \QUI\System\Log::writeRecursive( "---- start" );
+        \QUI\System\Log::writeRecursive( $password );
+        \QUI\System\Log::writeRecursive( $passwordKey );
 
         $cipherText = SymmetricCrypto::encrypt($password, $passwordKey);
 
+        \QUI\System\Log::writeRecursive( "---- end" );
+
         QUI::getDataBase()->insert(
-            'pcsg_gpm_passwords',
+            self::TBL_PASSWORDS,
             array(
                 'title' => $title,
                 'description' => $description,
-                'password_data' => $cipherText
+                'passwordData' => $cipherText,
+                'passwordMac' => $passwordMAC
             )
         );
 
-        return new Password(
+        $Password = new Password(
             QUI::getDataBase()->getPDO()->lastInsertId(),
             $passwordKey
         );
+
+        // add basic view right for owner
+        $Password->addViewUser(new CryptoUser($User->getId()));
+
+        return $Password;
     }
 
 //    /**

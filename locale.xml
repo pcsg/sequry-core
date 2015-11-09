@@ -3,6 +3,11 @@
 
     <groups name="pcsg/grouppasswordmanager" datatype="php">
 
+        <!-- Class: Manager -->
+        <locale name="exception.manager.create.password.missing.title.description">
+            <de><![CDATA[Der Passwort-Eintrag konnte nicht erstellt werden. Ein Passwort-Eintrag benötigt einen Titel und eine Kurzbeschreibung.]]></de>
+        </locale>
+
         <!-- Class: Password -->
         <locale name="exception.password.not.found">
             <de><![CDATA[Das Passwort mit der ID [passwordId] wurde nicht gefunden.]]></de>
@@ -12,6 +17,33 @@
         </locale>
         <locale name="exception.password.payload.wrong.datatype">
             <de><![CDATA[Die Nutzdaten für das Passwort mit der ID [passwordId] konnte nicht gesetzt werden.]]></de>
+        </locale>
+        <locale name="exception.password.addviewuser.no.rights">
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Ansichtsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+        </locale>
+        <locale name="exception.password.addviewuser.error">
+            <de><![CDATA[Beim Hinzufügen des Ansichtsrechts für das Passwort mit der ID [passwordId] für Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.password.removviewtuser.no.rights">
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Ansichtsrechte entziehen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+        </locale>
+        <locale name="exception.password.removviewtuser.no.user">
+            <de><![CDATA[Sie können dem Benutzer mit der ID [userId] für das Passwort mit der ID [passwordId] keine Ansichtsrechte entziehen, weil dieser das Recht nicht besitzt.]]></de>
+        </locale>
+        <locale name="exception.password.removviewtuser.error">
+            <de><![CDATA[Beim Enziehen des Ansichtsrechts für Benutzer mit der ID [userId] für das Passwort mit der ID [passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.password.addedituser.no.rights">
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Bearbeitungsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+        </locale>
+        <locale name="exception.password.removeedituser.no.rights">
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Bearbeitungsrechte entziehen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+        </locale>
+        <locale name="exception.password.removeedituser.no.user">
+            <de><![CDATA[Sie können dem Benutzer mit der ID [userId] für das Passwort mit der ID [passwordId] keine Bearbeitungsrechte entziehen, weil dieser das Recht nicht besitzt.]]></de>
+        </locale>
+        <locale name="exception.password.save.error">
+            <de><![CDATA[Das Password mit der ID [passwordId] konnte nicht gespeichert werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- Class: CryptoUser -->
@@ -35,6 +67,9 @@
         </locale>
         <locale name="exception.cryptouser.generatekeypair.error">
             <de><![CDATA[Bei der Erstellung eines neuen Schlüsselpaars für den Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.getpassword.no.right">
+            <de><![CDATA[Sie haben kein Zugriffsrecht auf das Passwort mit der ID [passwordId].]]></de>
         </locale>
 
     </groups>
