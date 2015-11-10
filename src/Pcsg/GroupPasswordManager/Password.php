@@ -9,6 +9,7 @@ namespace Pcsg\GroupPasswordManager;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -117,7 +118,7 @@ class Password extends QUI\QDOM
             $macComputed = MAC::create($plainText, $key);
 
             // Check integrity and authenticity
-            if ($mac !== $macComputed) {
+            if (!Utils::compareStrings($mac, $macComputed)) {
                 throw new QUI\Exception(
                     'The MAC hashes did not match.'
                 );

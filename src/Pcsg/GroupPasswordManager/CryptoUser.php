@@ -8,6 +8,7 @@ namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -248,6 +249,11 @@ class CryptoUser
         $this->_privateKey = $keyPair['privateKey'];
 
         if (!$this->_testKeyPair()) {
+            QUI\System\Log::addError(
+                'User #' . $this->_id . ' could generate new key pair: '
+                . ' key pair test failed.'
+            );
+
             throw new QUI\Exception(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',
@@ -442,6 +448,6 @@ class CryptoUser
         $rndEncrypted = $this->encrypt($rnd);
         $rndDecrypted = $this->decrypt($rndEncrypted);
 
-        return $rnd === $rndDecrypted;
+        return Utils::compareStrings($rnd, $rndDecrypted);
     }
 }
