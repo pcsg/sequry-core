@@ -168,6 +168,8 @@ class Password extends QUI\QDOM
     }
 
     /**
+     * @todo maybe protected
+     *
      * Save current password state to database
      *
      * @return Boolean - success
@@ -431,7 +433,7 @@ class Password extends QUI\QDOM
                     'exception.password.removeviewuser.no.rights',
                     array('passwordId' => $this->_id)
                 ),
-                1001 // @todo korrekten error code
+                401
             );
         }
 
@@ -447,7 +449,7 @@ class Password extends QUI\QDOM
                         'userId' => $cryptoUserId
                     )
                 ),
-                1001 // @todo korrekten error code
+                420
             );
         }
 
@@ -473,7 +475,7 @@ class Password extends QUI\QDOM
                         'userId' => $cryptoUserId
                     )
                 ),
-                1001 // @todo korrekten error code
+                500
             );
         }
 
@@ -506,7 +508,7 @@ class Password extends QUI\QDOM
                     'exception.password.addedituser.no.rights',
                     array('passwordId' => $this->_id)
                 ),
-                1001 // @todo korrekten error code
+                401
             );
         }
 
@@ -537,7 +539,7 @@ class Password extends QUI\QDOM
                     'exception.password.removeedituser.no.rights',
                     array('passwordId' => $this->_id)
                 ),
-                1001 // @todo korrekten error code
+                401
             );
         }
 
@@ -553,10 +555,68 @@ class Password extends QUI\QDOM
                         'userId' => $cryptoUserId
                     )
                 ),
-                1001 // @todo korrekten error code
+                401
             );
         }
 
         unset($this->_editUsers[$cryptoUserId]);
+    }
+
+    /**
+     * Deletes the password
+     *
+     * @return Boolean - success
+     * @throws QUI\Exception
+     */
+    public function delete()
+    {
+        $userId = QUI::getUserBySession()->getId();
+
+        if ($userId !== $this->_ownerId) {
+            throw new QUI\Exception(
+                QUI::getLocale()->get(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.delete.no.rights',
+                    array('passwordId' => $this->_id)
+                ),
+                401
+            );
+        }
+
+        try {
+            // delete password
+            QUI::getDataBase()->delete(
+                Manager::TBL_PASSWORDS,
+                array(
+                    'id' => $this->_id
+                )
+            );
+
+            // delete user entries for password
+            QUI::getDataBase()->delete(
+                Manager::TBL_USER_PASSWORDS,
+                array(
+                    'passwordId' => $this->_id
+                )
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError(
+                'Could not delete password #' . $this->_id . ': '
+                . $Exception->getMessage()
+            );
+
+            throw new QUI\Exception(
+                QUI::getLocale()->get(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.delete.error',
+                    array(
+                        'passwordId' => $this->_id
+                    )
+                ),
+                500
+            );
+        }
+
+        return true;
     }
 }

@@ -41,7 +41,7 @@ class Console extends QUI\System\Console\Tool
         $this->addArgument('pw', 'User-Passwort');
         $this->addArgument('zd', 'Zu verschlüsselnde Zugangsdaten', false, true);
         $this->addArgument('zdid', 'ID der zu entschlüsselnden Zugangsdaten', false, true);
-        $this->addArgument('mode', 'genkey; setzd; getzd');
+        $this->addArgument('mode', 'genkey; setzd; getzd; editzd');
     }
 
     /**
@@ -65,7 +65,11 @@ class Console extends QUI\System\Console\Tool
             case 'getzd':
                     $this->_getZd();
                 break;
-            
+
+            case 'editzd':
+                    $this->_editZd();
+                break;
+
             default:
                 $this->writeLn("unknown mode");
                 exit;
@@ -80,7 +84,7 @@ class Console extends QUI\System\Console\Tool
 
         $this->writeLn("Generiere Schlüsselpaar...");
         $CryptoUser->generateKeyPair();
-        $this->writeLn("Fertig.");
+        $this->writeLn("Fertig.\n\n");
     }
 
     protected function _setZd()
@@ -100,8 +104,44 @@ class Console extends QUI\System\Console\Tool
 
         $CryptoUser = new CryptoUser(QUI::getUserBySession()->getId());
 
+        $this->writeLn("Entschlüssele Passwort #$id...");
+        $start = explode(" ",microtime());
+
         $Password = $CryptoUser->getPassword($id, $this->_userpw);
 
-        \QUI\System\Log::writeRecursive( $Password->getPayload() );
+        $end = explode(" ",microtime());
+        $time = $end[0] - $start[0];
+        $this->write(" Erfolg. (Zeit zum Entschlüsseln: " . $time . "ms)");
+
+        $this->writeLn("Entschlüsselte Daten:\n");
+        $this->writeLn($Password->getPayload());
+    }
+
+    protected function _editZd()
+    {
+        $id = $this->getArgument('zdid');
+        $zd = $this->getArgument('zd');
+
+        $CryptoUser = new CryptoUser(QUI::getUserBySession()->getId());
+
+        $this->writeLn("Entschlüssele Passwort #$id...");
+        $start = explode(" ",microtime());
+
+        $Password = $CryptoUser->getPassword($id, $this->_userpw);
+
+        $end = explode(" ",microtime());
+        $time = $end[0] - $start[0];
+        $this->write(" Erfolg. (Zeit zum Entschlüsseln: " . $time . "ms)");
+
+        $Password->setPayload($zd);
+
+        $this->writeLn("Speichere Passwort #$id mit neuen Nutzdaten...");
+        $start = explode(" ",microtime());
+
+        $Password->save();
+
+        $end = explode(" ",microtime());
+        $time = $end[0] - $start[0];
+        $this->write(" Erfolg. (Zeit zum Speichern: " . $time . "ms)");
     }
 }

@@ -45,6 +45,12 @@
         <locale name="exception.password.save.error">
             <de><![CDATA[Das Password mit der ID [passwordId] konnte nicht gespeichert werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.password.delete.no.rights">
+            <de><![CDATA[Sie haben nicht die nötigen Rechte, um das Passwort mit der ID [passwordId] zu löschen.]]></de>
+        </locale>
+        <locale name="exception.password.delete.error">
+            <de><![CDATA[Beim Löschen des Passworts mit der ID [passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.no.pw.hash">
