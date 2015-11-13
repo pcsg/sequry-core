@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file contains \Pcsg\GroupPasswordManager\CryptoUser
+ * This file contains \Pcsg\GroupPasswordManager\CryptoGroup
  */
 
 namespace Pcsg\GroupPasswordManager;
@@ -12,87 +12,59 @@ use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
- * User Class
+ * Group Class
  *
- * Represents a password manager User that can retrieve encrypted passwords
+ * Represents a password manager Group that can retrieve encrypted passwords
  * if it has the necessary rights.
  *
  * @author www.pcsg.de (Patrick Müller)
  */
-class CryptoUser
+class CryptoGroup
 {
     const ATTRIBUTE_PWHASH = 'pcsg_gpw_pwhash';
 
     /**
-     * User ID
+     * Group ID
      *
      * @var Integer
      */
     protected $_id = null;
 
     /**
-     * User public key
+     * Group public key
      *
      * @var String
      */
     protected $_publicKey = null;
 
     /**
-     * User private key (protected)
+     * Group private key (protected)
      *
      * @var String
      */
     protected $_privateKey = null;
 
     /**
-     * Hashed user password for private key
-     *
-     * @var String
-     */
-    protected $_pwHash = null;
-
-    /**
-     * Is the user in the user_passwords table?
+     * Is the user in the user_groups table?
      *
      * @var bool
      */
     protected $_hasDbEntry = false;
 
     /**
-     * Is this the current session user?
+     * Constructor
      *
-     * @var bool
+     * @param Integer $groupId - Group ID
+     * @throws QUI\Exception
      */
-    protected $_isCurrentUser = false;
-
-    public function __construct($userId)
+    public function __construct($groupId)
     {
-        // check if QUIQQER user exists
-        QUI::getUsers()->get($userId);
+        // check if user exists
+        QUI::getGroups()->get($groupId);
 
-        // check if crypto user is session user
-        if ($userId === QUI::getUserBySession()->getId()) {
-            $this->_isCurrentUser = true;
-        }
+        $this->_id = $groupId;
 
-        if ($this->_isCurrentUser) {
-            $this->_pwHash = QUI::getSession()->get($this::ATTRIBUTE_PWHASH);
-
-            if (empty($this->_pwHash)) {
-                throw new QUI\Exception(
-                    QUI::getLocale()->get(
-                        'pcsg/grouppasswordmanager',
-                        'exception.cryptouser.no.pw.hash',
-                        array('userId' => $this->_id)
-                    ),
-                    500
-                );
-            }
-        }
-
-        $this->_id = $userId;
-
-        // get crypto user data
+        // get crypto group data
         try {
             $result = QUI::getDataBase()->fetch(array(
                 'select' => array(
@@ -106,7 +78,7 @@ class CryptoUser
                 'limit' => 1
             ));
         } catch (\Exception $Exception) {
-
+            // nothing
         }
 
         if (!empty($result)) {

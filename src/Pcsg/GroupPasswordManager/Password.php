@@ -599,7 +599,9 @@ class Password extends QUI\QDOM
                     'passwordId' => $this->_id
                 )
             );
+
         } catch (\Exception $Exception) {
+
             QUI\System\Log::addError(
                 'Could not delete password #' . $this->_id . ': '
                 . $Exception->getMessage()
@@ -613,7 +615,7 @@ class Password extends QUI\QDOM
                         'passwordId' => $this->_id
                     )
                 ),
-                500
+                10000
             );
         }
 

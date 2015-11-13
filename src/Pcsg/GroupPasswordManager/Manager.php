@@ -18,9 +18,17 @@ use QUI;
  */
 class Manager
 {
+    // Password tables
     const TBL_PASSWORDS = 'pcsg_gpm_passwords';
-    const TBL_USER_PASSWORDS = 'pcsg_gpm_user_passwords';
+
+    // User tables
     const TBL_USERS = 'pcsg_gpm_users';
+    const TBL_USER_PASSWORDS = 'pcsg_gpm_user_passwords';
+    const TBL_USER_GROUPS = 'pcsg_gpm_user_groups';
+
+    // Group tables
+    const TBL_GROUPS = 'pcsg_gpm_groups';
+    const TBL_GROUP_PASSWORDS = 'pcsg_gpm_group_passwords';
 
     /**
      * Create a new encrypted password entry
@@ -88,6 +96,11 @@ class Manager
         $Password->addViewUser(new CryptoUser($User->getId()));
 
         return $Password;
+    }
+
+    public static function createCryptoUser()
+    {
+
     }
 
 //    /**

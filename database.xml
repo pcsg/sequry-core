@@ -4,22 +4,44 @@
     <global>
         <table name="pcsg_gpm_users" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY">userId</field>
-            <field type="TEXT">publicKey</field>
-            <field type="TEXT">privateKey</field>
+            <field type="BLOB NOT NULL">publicKey</field>
+            <field type="BLOB NOT NULL">privateKey</field>
         </table>
 
         <table name="pcsg_gpm_passwords" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
-            <field type="TEXT">title</field>
+            <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
-            <field type="BLOB">passwordData</field>
-            <field type="BLOB">passwordMac</field>
+            <field type="BLOB NOT NULL">passwordData</field>
+            <field type="BLOB NOT NULL">passwordMac</field>
         </table>
 
         <table name="pcsg_gpm_user_passwords" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">passwordId</field>
-            <field type="BLOB">passwordKey</field>
+            <field type="BLOB NOT NULL">passwordKey</field>
+            <primary>userId,passwordId</primary>
+        </table>
+
+        <table name="pcsg_gpm_groups" no-auto-update="1" no-site-reference="1">
+            <field type="BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY">id</field>
+            <field type="TEXT NOT NULL">title</field>
+            <field type="TEXT">description</field>
+            <field type="BLOB NOT NULL">publicKey</field>
+            <field type="BLOB NOT NULL">privateKey</field>
+        </table>
+
+        <table name="pcsg_gpm_group_passwords" no-auto-update="1" no-site-reference="1">
+            <field type="BIGINT(20) UNSIGNED NOT NULL">groupId</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">passwordId</field>
+            <field type="BLOB NOT NULL">passwordKey</field>
+            <primary>userId,passwordId</primary>
+        </table>
+
+        <table name="pcsg_gpm_user_groups" no-auto-update="1" no-site-reference="1">
+            <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">groupId</field>
+            <field type="BLOB NOT NULL">groupKey</field>
             <primary>userId,passwordId</primary>
         </table>
     </global>

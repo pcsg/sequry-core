@@ -53,6 +53,9 @@
         </locale>
 
         <!-- Class: CryptoUser -->
+        <locale name="exception.cryptouser.not.found">
+            <de><![CDATA[Die Session-Daten des Benutzers mit der ID [userId] enthalten nicht die notwendigen Daten, um eine sichere Verschlüsselung zu gewährleisten. Bitte wenden Sie sich an einen Administator]]></de>
+        </locale>
         <locale name="exception.cryptouser.no.pw.hash">
             <de><![CDATA[Die Session-Daten des Benutzers mit der ID [userId] enthalten nicht die notwendigen Daten, um eine sichere Verschlüsselung zu gewährleisten. Bitte wenden Sie sich an einen Administator]]></de>
         </locale>
