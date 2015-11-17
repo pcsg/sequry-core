@@ -36,21 +36,26 @@ class Manager
      * @param String $title - Password title
      * @param String $description - Short description for the password
      * @param Array|String $payload - Payload (password data)
-     * @param QUI\Users\User $User (optional) - Owner of the password [default: Session User]
+     * @param QUI\Users\User $Owner (optional) - Owner of the password [default: Session User]
      * @return Password
      * @throws QUI\Exception
      */
-    public static function createPassword($title, $description, $payload, $User = null)
-    {
-        if (is_null($User)) {
-            $User = QUI::getUserBySession();
+    public static function createPassword(
+        $title,
+        $description,
+        $payload,
+        $Owner = null
+    ) {
+        if (is_null($Owner)) {
+            $Owner = QUI::getUserBySession();
         }
 
-        $title = trim($title);
+        $title       = trim($title);
         $description = trim($description);
 
         if (empty($title)
-            || empty($description)) {
+            || empty($description)
+        ) {
             throw new QUI\Exception(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',
@@ -62,20 +67,14 @@ class Manager
         // encrypt data
         $password = array(
             'payload' => $payload,
-            'ownerId' => $User->getId()
+            'ownerId' => $Owner->getId()
         );
 
-        $password = json_encode($password);
+        $password    = json_encode($password);
         $passwordKey = Hash::create($password);
         $passwordMAC = MAC::create($password, $passwordKey);
 
-        \QUI\System\Log::writeRecursive( "---- start" );
-        \QUI\System\Log::writeRecursive( $password );
-        \QUI\System\Log::writeRecursive( $passwordKey );
-
         $cipherText = SymmetricCrypto::encrypt($password, $passwordKey);
-
-        \QUI\System\Log::writeRecursive( "---- end" );
 
         QUI::getDataBase()->insert(
             self::TBL_PASSWORDS,
@@ -93,14 +92,33 @@ class Manager
         );
 
         // add basic view right for owner
-        $Password->addViewUser(new CryptoUser($User->getId()));
+        $Password->addViewUser(new CryptoUser($Owner->getId()));
 
         return $Password;
     }
 
-    public static function createCryptoUser()
+    /**
+     * @param QUI\Groups\Group $Group - The QUIQQER Group
+     * @param QUI\Users\User $Owner (optional) - Owner of the group [default: Session User]
+     * @return CryptoGroup
+     */
+    public static function createCryptoGroup($Group, $Owner = null)
     {
 
+    }
+
+    /**
+     * Creates a CryptoUser with public/private key pair related to a QUIQQER User
+     *
+     * @param QUI\Users\User $User - Related QUIQQER User
+     * @return CryptoUser
+     */
+    public static function createCryptoUser(QUI\Users\User $User)
+    {
+        $CrpyotUser = new CryptoUser($User->getId());
+        $CrpyotUser->generateKeyPair();
+
+        return $CrpyotUser;
     }
 
 //    /**

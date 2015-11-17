@@ -328,6 +328,37 @@ class Password extends QUI\QDOM
     }
 
     /**
+     * Sets a new owner for this password
+     *
+     * @param CryptoUser $User - New Owner
+     * @return Boolean - success
+     * @throws QUI\Exception
+     */
+    public function setOwner(CryptoUser $User)
+    {
+        $Setter = QUI::getUserBySession();
+
+        // A new owner can only be set by the current owner, a super user or
+        // if there is currently no owner
+        if ($Setter->getId() !== $this->_ownerId
+            && !$Setter->isSU()
+            && !empty($this->_ownerId)) {
+            throw new QUI\Exception(
+                QUI::getLocale()->get(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.setowner.no.rights',
+                    array('passwordId' => $this->_id)
+                ),
+                401
+            );
+        }
+
+        $this->_ownerId = $User->getId();
+
+        return $this->save();
+    }
+
+    /**
      * Return history data
      */
     public function getHistory()

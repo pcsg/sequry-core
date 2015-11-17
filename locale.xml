@@ -51,6 +51,9 @@
         <locale name="exception.password.delete.error">
             <de><![CDATA[Beim Löschen des Passworts mit der ID [passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
         </locale>
+        <locale name="exception.password.setowner.no.rights">
+            <de><![CDATA[Sie haben nicht die nötigen Rechte, um den Besitzer für das Passwort mit der ID [passwordId] zu setzen.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
