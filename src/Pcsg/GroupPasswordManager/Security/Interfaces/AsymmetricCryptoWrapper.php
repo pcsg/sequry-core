@@ -24,14 +24,13 @@ interface AsymmetricCryptoWrapper
      * @param String $password (optional) - Password for private key
      * @return String - The plaintext (decrypted ciphertext)
      */
-    public static function decrypt($cipherText, $privateKey, $password = null);
+    public static function decrypt($cipherText, $privateKey);
 
 
     /**
      * Generates a new public/private key pair
      *
-     * @param String $password (optional) - Password to protect the private key
      * @return Array - "privateKey" and "publicKey"
      */
-    public static function generateKeyPair($password = null);
+    public static function generateKeyPair();
 }

@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\AsymmetricCrypto;
 
+use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\AsymmetricCryptoWrapper;
 
@@ -12,13 +13,6 @@ use Pcsg\GroupPasswordManager\Security\Interfaces\AsymmetricCryptoWrapper;
  */
 class RSA implements AsymmetricCryptoWrapper
 {
-    /**
-     * Key size in bits
-     *
-     * @var Integer
-     */
-    const KEY_SIZE = 4096;
-
     /**
      * Encrypts a plaintext string
      *
@@ -37,7 +31,7 @@ class RSA implements AsymmetricCryptoWrapper
             }
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'Plaintext encryption with publiy key failed: '
+                'RSA :: Plaintext encryption with publiy key failed: '
                 . $Exception->getMessage()
             );
         }
@@ -50,34 +44,11 @@ class RSA implements AsymmetricCryptoWrapper
      *
      * @param String $cipherText - Data to be decrypted
      * @param String $privateKey - Private decryption key
-     * @param String $password (optional) - Password for private key
      * @return String - The plaintext (decrypted ciphertext)
      * @throws QUI\Exception
      */
-    public static function decrypt($cipherText, $privateKey, $password = null)
+    public static function decrypt($cipherText, $privateKey)
     {
-        // Try to get private key if password protected
-        if (!is_null($password)) {
-            try {
-                $Res = openssl_pkey_get_private($privateKey, $password);
-
-                if ($Res === false) {
-                    throw new QUI\Exception(openssl_error_string());
-                }
-
-                $getPrivateKey = openssl_pkey_export($Res, $privateKey);
-
-                if ($getPrivateKey === false) {
-                    throw new QUI\Exception(openssl_error_string());
-                }
-            } catch (\Exception $Exception) {
-                throw new QUI\Exception(
-                    'Private key could not be decrypted: '
-                    . $Exception->getMessage()
-                );
-            }
-        }
-
         try {
             $decrypt = openssl_private_decrypt(
                 $cipherText,
@@ -90,7 +61,7 @@ class RSA implements AsymmetricCryptoWrapper
             }
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'Ciphertext decryption with private key failed: '
+                'RSA :: Ciphertext decryption with private key failed: '
                 . $Exception->getMessage()
             );
         }
@@ -99,21 +70,19 @@ class RSA implements AsymmetricCryptoWrapper
     }
 
     /**
-     * Generates a new public/private key pair
+     * Generates a new, random public/private key pair
      *
-     * @param String $password (optional) - Password to protect the private key
      * @return Array - "privateKey" and "publicKey"
      * @throws QUI\Exception
      */
-    public static function generateKeyPair($password = null)
+    public static function generateKeyPair()
     {
         try {
             $Res = openssl_pkey_new(array(
                 'digest_alg' => 'sha512',
-                'privateKey_bits' => self::KEY_SIZE,
+                'privateKey_bits' => AsymmetricCrypto::KEY_SIZE_ENCRYPTION,
                 'privateKey_type' => OPENSSL_KEYTYPE_RSA,
-                'encrypt_key' => !is_null($password),
-                'encrypt_key_cipher' => OPENSSL_CIPHER_AES_128_CBC
+                'encrypt_key' => false
             ));
 
             if ($Res === false) {
@@ -138,7 +107,7 @@ class RSA implements AsymmetricCryptoWrapper
             }
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'Key pair creation failed: ' . $Exception->getMessage()
+                'RSA :: Key pair creation failed: ' . $Exception->getMessage()
             );
         }
 

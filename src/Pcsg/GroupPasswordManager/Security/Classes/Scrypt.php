@@ -113,7 +113,7 @@ abstract class Scrypt
     }
 
     /**
-     * Create a password hash
+     * Derive a random hash (or key) from a string
      *
      * @param string $password        The clear text password
      * @param string $salt (optional) The salt to use, or null to generate a random one
@@ -146,7 +146,8 @@ abstract class Scrypt
 
         $hash = \scrypt($password, $salt, $N, $r, $p, self::$_keyLength);
 
-        return mb_substr($hash, 0, self::$_keyLength); // @todo Check: sicher?
+        // since scrypt outputs its result in hex -> cut string to the actually wanted byte-length
+        return mb_substr($hash, 0, self::$_keyLength);
 //        return $N . '$' . $r . '$' . $p . '$' . $salt . '$' . $hash;
     }
 

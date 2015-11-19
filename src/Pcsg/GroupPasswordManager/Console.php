@@ -51,7 +51,11 @@ class Console extends QUI\System\Console\Tool
     {
         $this->_userpw = $this->getArgument('pw');
 
-        QUI::getSession()->set(CryptoUser::ATTRIBUTE_PWHASH, $this->_userpw); // this is only for console testing purposes
+        // this is only for console testing purposes
+        QUI::getSession()->set(
+            CryptoUser::ATTRIBUTE_PWHASH,
+            Hash::create($this->_userpw, QUI::getUserBySession()->getId())
+        );
 
         switch ($this->getArgument('mode')) {
             case 'genkey':
@@ -80,10 +84,8 @@ class Console extends QUI\System\Console\Tool
 
     protected function _genKey()
     {
-        $CryptoUser = new CryptoUser(QUI::getUserBySession()->getId());
-
         $this->writeLn("Generiere Schlüsselpaar...");
-        $CryptoUser->generateKeyPair();
+        new CryptoUser(QUI::getUserBySession()->getId());
         $this->writeLn("Fertig.\n\n");
     }
 

@@ -3,7 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 
 /**
- * This class provides a hashing API for the pcsg/grouppasswordmanager module
+ * This class provides a hashing/KDF API for the pcsg/grouppasswordmanager module
  */
 interface HashWrapper
 {

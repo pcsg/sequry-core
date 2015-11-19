@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\Hash;
 
+use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\HashWrapper;
 use Pcsg\GroupPasswordManager\Security\Classes\Scrypt as ScryptClass;
 
@@ -16,9 +17,18 @@ class Scrypt implements HashWrapper
      * @param String $str - A String
      * @param String $salt (optional)
      * @return String - hashed string
+     * @throws QUI\Exception
      */
     public static function create($str, $salt = null)
     {
-        return ScryptClass::createHash($str, $salt);
+        try {
+            $hash = ScryptClass::createHash($str, $salt);
+        } catch (QUI\Exception $Exception) {
+            throw new QUI\Exception(
+                'Scrypt :: Hash operation failed: ' . $Exception->getMessage()
+            );
+        }
+        
+        return $hash;
     }
 }
