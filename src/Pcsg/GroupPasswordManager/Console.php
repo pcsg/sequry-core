@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\gpmAuthLogin\Auth;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Encrypt;
 use Pcsg\GroupPasswordManager\Security\Hash;
@@ -53,7 +54,7 @@ class Console extends QUI\System\Console\Tool
 
         // this is only for console testing purposes
         QUI::getSession()->set(
-            CryptoUser::ATTRIBUTE_PWHASH,
+            Auth::SESSION_ATTRIBUTE_PWHASH,
             Hash::create($this->_userpw, QUI::getUserBySession()->getId())
         );
 
