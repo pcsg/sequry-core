@@ -6,9 +6,9 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GroupPasswordManager\Security\Interfaces\AuthPlugin;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -21,8 +21,6 @@ use QUI;
  */
 class CryptoUser
 {
-    const ATTRIBUTE_PWHASH = 'pcsg_gpw_pwhash';
-
     /**
      * User ID
      *
@@ -31,32 +29,11 @@ class CryptoUser
     protected $_id = null;
 
     /**
-     * User public key
-     *
-     * @var String
-     */
-    protected $_publicKey = null;
-
-    /**
-     * User private key
-     *
-     * @var String
-     */
-    protected $_privateKey = null;
-
-    /**
-     * Public and Private keys for different auth methods
+     * Public keys for different auth methods
      *
      * @var array
      */
-    protected $_keys = array();
-
-    /**
-     * Encryption keys for different auth methods
-     *
-     * @var array
-     */
-    protected $_encryptionKeys = array();
+    protected $_publicKeys = array();
 
     /**
      * Hashed user password for private key (only if crypto user is logged in user)
@@ -73,7 +50,18 @@ class CryptoUser
      */
     protected $_isCurrentUser = false;
 
-    public function __construct($userId)
+    /**
+     * Current Authentication Plugin used for de/encryption
+     *
+     * @var null
+     */
+    protected $_AuthPlugin = null;
+
+    /**
+     * @param $userId
+     * @param AuthPlugin $AuthPlugin (optional) - Authentication Plugin used for de/encryption
+     */
+    public function __construct($userId, AuthPlugin $AuthPlugin = null)
     {
         // check if QUIQQER user exists
         QUI::getUsers()->get($userId);
@@ -83,37 +71,156 @@ class CryptoUser
             $this->_isCurrentUser = true;
         }
 
+        if (!is_null($AuthPlugin)) {
+            $this->_AuthPlugin = $AuthPlugin;
+        }
+
         $this->_id = $userId;
+    }
 
-        // get crypto user data
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'publicKey',
-                'privateKey'
-            ),
-            'from' => Manager::TBL_USERS,
-            'where' => array(
-                'userId' => $this->_id
-            ),
-            'limit' => 1
-        ));
+    /**
+     * Set Authentication Plugin for this CryptoUser
+     *
+     * @param AuthPlugin $AuthPlugin
+     */
+    public function setAuthPlugin(AuthPlugin $AuthPlugin)
+    {
+        $this->_AuthPlugin = $AuthPlugin;
+    }
 
-        // generate key pair if this user does not already have one
-        if (empty($result)) {
-            $this->generateKeyPair();
+    /**
+     * Get currently set Authentication Plugin
+     *
+     * @return AuthPlugin
+     * @throws QUI\Exception
+     */
+    protected function _getAuthPlugin()
+    {
+        if (empty($this->_AuthPlugin)) {
+            throw new QUI\Exception('No authentication plugin set.');
         }
 
-        if (isset($result[0]['publicKey'])
-            && !empty($result[0]['publicKey'])
-        ) {
-            $this->_publicKey = $result[0]['publicKey'];
+        return $this->_AuthPlugin;
+    }
+
+    /**
+     * Generate a new key pair for this user. The private key will be encrypted
+     * with a symmetric key depending on the Authentication Plugin set by setAuthPlugin()
+     *
+     * Needs to re-encrypt every password entry in database for a specific key pair
+     * if existing key pair is changed!
+     *
+     * @return Boolean - success
+     * @throws QUI\Exception
+     */
+    public function generateKeyPair()
+    {
+        // Check if this CryptoUser is the currently logged in User
+        if (!$this->_isCurrentUser) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Cannot generate key pair ->'
+                . ' The CryptoUser is not the currently logged in user.',
+                1004
+            );
+
+//            throw new QUI\Exception(
+//                QUI::getLocale()->get(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.cryptouser.generatekeypair.user.not.logged.in',
+//                    array('userId' => $this->_id)
+//                ),
+//                401
+//            );
         }
 
-        if (isset($result[0]['privateKey'])
-            && !empty($result[0]['privateKey'])
-        ) {
-            $this->_privateKey = $result[0]['privateKey'];
+        try {
+            // Generate key pair
+            $keyPair = AsymmetricCrypto::generateKeyPair();
+
+            // Encrypt new private key
+            $privateKeyEncrypted = $this->_symmetricEncrypt(
+                $keyPair['privateKey']
+            );
+        } catch (\Exception $Exception) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Could not generate key pair'
+                . ': ' . $Exception->getMessage(),
+                1004
+            );
+
+            // @todo auslagern
+//            throw new QUI\Exception(
+//                QUI::getLocale()->get(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.cryptouser.generatekeypair.error',
+//                    array('userId' => $this->_id)
+//                )
+//            );
         }
+
+//        $this->_publicKeys[$authType] = $keyPair['publicKey'];
+
+        // Clear private key from memory
+        \Sodium\memzero($keyPair['privateKey']);
+
+        $authName = $this->_getAuthPlugin()->getName();
+
+        try {
+            $insert = array(
+                'publicKey' => $keyPair['publicKey'],
+                'privateKey' => $privateKeyEncrypted,
+                'authType' => $this->_getAuthPlugin()->getName()
+            );
+
+            $values = array();
+
+            foreach ($insert as $key => $value) {
+                $values[] = ':' . $key;
+            }
+
+            $sql = "INSERT INTO " . Manager::TBL_USERS;
+            $sql .= " (`userId`, `" . implode("`, `",
+                    array_keys($insert)) . "`)";
+            $sql .= " VALUES('$this->_id', " . implode(",", $values) . ")";
+            $sql .= " ON DUPLICATE KEY UPDATE ";
+
+            $update = array();
+
+            foreach ($insert as $column => $value) {
+                $update[] =  "`" . $column . "`=`" . $column . "`";
+            }
+
+            $sql .= implode(",", $update);
+
+            $PDO = QUI::getDataBase()->getPDO();
+            $Stmt = $PDO->prepare($sql);
+
+            foreach ($insert as $key => $value) {
+                $Stmt->bindValue(':' . $key, $value);
+            }
+
+            $Stmt->execute();
+        } catch (\Exception $Exception) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Could not generate key pair'
+                . ' -> Could not save key pair in users table: '
+                . $Exception->getMessage(),
+                1004
+            );
+
+            // @todo auslagern
+//            throw new QUI\Exception(
+//                QUI::getLocale()->get(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.cryptouser.generatekeypair.error',
+//                    array('userId' => $this->_id)
+//                )
+//            );
+        }
+
+        $this->_publicKeys[$authName] = $keyPair['publicKey'];
+
+        return true;
     }
 
     /**
@@ -123,34 +230,17 @@ class CryptoUser
      * @return String $cipherText - Encrypted plaintext
      * @throws QUI\Exception
      */
-    public function encrypt($plainText)
+    public function publicKeyEncrypt($plainText)
     {
-        if (empty($this->_publicKey)) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') ::'
-                . 'Could not encrypt ciphertext -> No public key defined.',
-                1002
-            );
-
-            // @todo auslagern
-//            throw new QUI\Exception(
-//                QUI::getLocale()->get(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.cryptouser.encrypt.no.public.key',
-//                    array('userId' => $this->_id)
-//                )
-//            );
-        }
+        $publicKey = $this->getPublicKey();
 
         try {
-            $cipherText = AsymmetricCrypto::encrypt(
-                $plainText,
-                $this->_publicKey
-            );
+            $cipherText = AsymmetricCrypto::encrypt($plainText, $publicKey);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'CryptoUser (#' . $this->_id . ') ::'
-                . 'Could not encrypt ciphertext -> ' . $Exception->getMessage(),
+                . 'Could not encrypt ciphertext with public key -> '
+                . $Exception->getMessage(),
                 1002
             );
 
@@ -174,25 +264,8 @@ class CryptoUser
      * @return String - The decrypted plaintext
      * @throws QUI\Exception
      */
-    public function decrypt($cipherText)
+    public function privateKeyDecrypt($cipherText)
     {
-        if (empty($this->_privateKey)) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') ::'
-                . 'Could not decrypt ciphertext -> No private key defined.',
-                1003
-            );
-
-            // @todo auslagern an benutzerschnittstelle
-//            throw new QUI\Exception(
-//                QUI::getLocale()->get(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.cryptouser.encrypt.no.private.key',
-//                    array('userId' => $this->_id)
-//                )
-//            );
-        }
-
         if (!$this->_isCurrentUser) {
             throw new QUI\Exception(
                 'CryptoUser (#' . $this->_id . ') ::'
@@ -202,16 +275,15 @@ class CryptoUser
             );
         }
 
+        $privateKey = $this->_getPrivateKey();
+
         try {
-            $plainText = AsymmetricCrypto::decrypt(
-                $cipherText,
-                $this->_privateKey,
-                $this->_pwHash
-            );
+            $plainText = AsymmetricCrypto::decrypt($cipherText, $privateKey);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'CryptoUser (#' . $this->_id . ') ::'
-                . ' Could not decrypt ciphertext -> ' . $Exception->getMessage(),
+                . ' Could not decrypt ciphertext with private key -> '
+                . $Exception->getMessage(),
                 1003
             );
 
@@ -225,124 +297,218 @@ class CryptoUser
 //            );
         }
 
+        // delete private key from memory
+        \Sodium\memzero($privateKey);
+
         return $plainText;
     }
 
     /**
-     * Generate a new key pair for this user. The private key will be encrypted
-     * depending on the authType:
+     * Encrypts a plain text with the users symmetric private key
      *
-     * - default: KDF derived key from User login password
-     *
-     * Needs to re-encrypt every password access line in database if existing
-     * key pair is changed!
-     *
-     * @return Boolean - success
+     * @param String $plainText - The plaintext to be encrypted
+     * @return String - The ciphertext
      * @throws QUI\Exception
-     *
-     * @todo Implement other auth types (secure passphrase, fingerprint, yubikey etc.)
      */
-    public function generateKeyPair($authType = 'default')
+    protected function _symmetricEncrypt($plainText)
     {
-        // Check if this CryptoUser is the currently logged in User
         if (!$this->_isCurrentUser) {
             throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Cannot generate key pair ->'
-                . ' The CryptoUser is not the currently logged in user.',
-                1004
+                'CryptoUser (#' . $this->_id . ') ::'
+                . 'Could not symmetrically encrypt plaintext -> CryptoUser is'
+                . ' not the user that is currently logged in.',
+                1008
             );
-
-//            throw new QUI\Exception(
-//                QUI::getLocale()->get(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.cryptouser.generatekeypair.user.not.logged.in',
-//                    array('userId' => $this->_id)
-//                ),
-//                401
-//            );
         }
 
-        // Generate key pair
+        $symmetricKey = $this->_getEncryptionKey();
+
         try {
-            $keyPair = AsymmetricCrypto::generateKeyPair();
-        } catch (\Exception $Exception) {
+            $cipherText = SymmetricCrypto::encrypt($plainText, $symmetricKey);
+        } catch (QUI\Exception $Exception) {
             throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not generate key pair'
-                . ': ' . $Exception->getMessage(),
-                1004
+                'CryptoUser (#' . $this->_id . ') ::'
+                . 'Could not symmetrically encrypt plaintext -> '
+                . $Exception->getMessage(),
+                1008
             );
-
-            // @todo auslagern
-//            throw new QUI\Exception(
-//                QUI::getLocale()->get(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.cryptouser.generatekeypair.error',
-//                    array('userId' => $this->_id)
-//                )
-//            );
         }
 
-        // encrypt private key depending on authType
+        // Delete symmetric key from memory
+        \Sodium\memzero($symmetricKey);
+
+        return $cipherText;
+    }
+
+    /**
+     * Encrypts a plain text with the users symmetric private key
+     *
+     * @param String $cipherText - The ciphertext to be decrypted
+     * @return String - The ciphertext
+     * @throws QUI\Exception
+     */
+    protected function _symmetricDecrypt($cipherText)
+    {
+        if (!$this->_isCurrentUser) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') ::'
+                . 'Could not symmetrically encrypt plaintext -> CryptoUser is'
+                . ' not the user that is currently logged in.',
+                1008
+            );
+        }
+
+        $symmetricKey = $this->_getEncryptionKey();
+
         try {
-            $privateKeyEncrypted = SymmetricCrypto::encrypt(
-                $keyPair['privateKey'],
-                $this->_pwHash
+            $plainText = SymmetricCrypto::decrypt($cipherText, $symmetricKey);
+        } catch (QUI\Exception $Exception) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') ::'
+                . 'Could not symmetrically decrypt ciphertext -> '
+                . $Exception->getMessage(),
+                1008
+            );
+        }
+
+        // Delete symmetric key from memory
+        \Sodium\memzero($symmetricKey);
+
+        return $plainText;
+    }
+
+    /**
+     * Get public key dependant on auth type
+     *
+     * @return String
+     * @throws QUI\Exception
+     */
+    public function getPublicKey()
+    {
+        $authName = $this->_getAuthPlugin()->getName();
+
+        if (isset($this->_publicKeys[$authName])
+            && !empty($this->_publicKeys[$authName])) {
+            return $this->_publicKeys[$authName];
+        }
+
+        // get encrypted private key
+        try {
+            $result = QUI::getDataBase()->fetch(
+                array(
+                    'select' => array(
+                        'publicKey'
+                    ),
+                    'from' => Manager::TBL_USERS,
+                    'where' => array(
+                        'userId' => $this->_id,
+                        'authType' => $authName
+                    )
+                )
             );
         } catch (QUI\Exception $Exception) {
             throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not generate key pair'
-                . ': Private key could not be encrypted.',
-                1004
-            );
-        }
-
-
-        // @todo einkommentieren!
-//        $this->_reEncryptPasswordKeys();
-
-        $this->_publicKey  = $keyPair['publicKey'];
-        $this->_privateKey = $privateKeyEncrypted;
-
-        try {
-            $insert = array(
-                'publicKey' => $this->_publicKey,
-                'privateKey' => $this->_privateKey
-            );
-
-            $sql = "INSERT INTO " . Manager::TBL_USERS;
-            $sql .= " (`userId`, `" . implode("`, `",
-                    array_keys($insert)) . "`)";
-            $sql .= " VALUES('$this->_id', " . implode("', '", $insert) . "')";
-            $sql .= " ON DUPLICATE KEY UPATE ";
-
-            $update = "";
-
-            foreach ($insert as $column => $value) {
-                $update = "`" . $column . "`=`" . $column . "`";
-            }
-
-            $sql .= implode("`, `", $update);
-
-            QUI::getDataBase()->getPDO()->exec($sql);
-        } catch (\Exception $Exception) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not generate key pair'
-                . ' -> Could not save key pair in users table: '
+                'CryptoUser (#' . $this->_id . ') :: Could not fetch public'
+                . ' key for auth plugin "' . $authName . '" from database: '
                 . $Exception->getMessage(),
-                1004
+                1007
             );
-
-            // @todo auslagern
-//            throw new QUI\Exception(
-//                QUI::getLocale()->get(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.cryptouser.generatekeypair.error',
-//                    array('userId' => $this->_id)
-//                )
-//            );
         }
 
-        return true;
+        if (empty($result)
+            || !isset($result[0]['publicKey'])
+            || empty($result[0]['publicKey'])) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Public key for auth plugin'
+                . '"' . $authName . '" was not found or empty.',
+                1007
+            );
+        }
+
+        $this->_publicKeys[$authName] = $result[0]['publicKey'];
+
+        return $result[0]['publicKey'];
+    }
+
+    /**
+     * Get private key dependant on auth type
+     *
+     * @return String
+     * @throws QUI\Exception
+     */
+    protected function _getPrivateKey()
+    {
+        $authName = $this->_getAuthPlugin()->getName();
+
+        // get encrypted private key
+        try {
+            $result = QUI::getDataBase()->fetch(
+                array(
+                    'select' => array(
+                        'privateKey'
+                    ),
+                    'from' => Manager::TBL_USERS,
+                    'where' => array(
+                        'userId' => $this->_id,
+                        'authType' => $authName
+                    )
+                )
+            );
+        } catch (QUI\Exception $Exception) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Could not fetch private'
+                . ' key for auth plugin "' . $authName . '" from database: '
+                . $Exception->getMessage(),
+                1007
+            );
+        }
+        
+        if (empty($result)
+            || !isset($result[0]['privateKey'])
+            || empty($result[0]['privateKey'])) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Private key for auth plugin'
+                . '"' . $authName . '" was not found or empty.',
+                1007
+            );
+        }
+
+        // decrypt private key
+        $decryptedPrivateKey = $this->_symmetricDecrypt(
+            $result[0]['privateKey']
+        );
+
+        if (empty($decryptedPrivateKey)) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Decrypted private key'
+                . ' for auth plugin "' . $authName . '" was empty.',
+                1007
+            );
+        }
+
+        return $decryptedPrivateKey;
+    }
+
+    /**
+     * Returns a symmetric encryption key based on auth type
+     *
+     * @return String - Key generated by auth plugin
+     * @throws QUI\Exception
+     */
+    protected function _getEncryptionKey()
+    {
+        try {
+            $encryptionKey = $this->_getAuthPlugin()->getKey();
+        } catch (QUI\Exception $Exception) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Error retrieving'
+                . ' symmetric key from authentification plugin -> '
+                . $Exception->getMessage(),
+                1006
+            );
+        }
+
+        return $encryptionKey;
     }
 
     /**
@@ -385,204 +551,24 @@ class CryptoUser
     }
 
     /**
-     * Get public key dependant on auth type
-     *
-     * @param String $authType (optional) - auth type [default: default]
-     * @return String
-     * @throws QUI\Exception
-     */
-    public function getPublicKey($authType = 'default')
-    {
-        if (isset($this->_keys[$authType]['public'])
-            && !empty($this->_encryptionKeys[$authType]['public'])) {
-            return $this->_encryptionKeys[$authType]['public'];
-        }
-
-        switch ($authType) {
-            case 'default':
-                break;
-            default:
-                $authType = 'default';
-                break;
-        }
-
-        // get encrypted private key
-        try {
-            $result = QUI::getDataBase()->fetch(
-                array(
-                    'select' => array(
-                        'publicKey'
-                    ),
-                    'from' => Manager::TBL_USERS,
-                    'where' => array(
-                        'userId' => $this->_id,
-                        'authType' => $authType
-                    )
-                )
-            );
-        } catch (QUI\Exception $Exception) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not fetch public'
-                . ' key for auth type "' . $authType . '" from database: '
-                . $Exception->getMessage(),
-                1007
-            );
-        }
-
-        if (empty($result)
-            || !isset($result[0]['publicKey'])
-            || empty($result[0]['publicKey'])) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Public key for auth type'
-                . '"' . $authType . '" was not found or empty.',
-                1007
-            );
-        }
-
-        $this->_keys[$authType]['private'] = $result[0]['publicKey'];
-
-        return $result[0]['publicKey'];
-    }
-
-    /**
-     * Get private key dependant on auth type
-     *
-     * @param String $authType (optional) - auth type [default: default]
-     * @return String
-     * @throws QUI\Exception
-     */
-    protected function _getPrivateKey($authType = 'default')
-    {
-        if (isset($this->_keys[$authType]['private'])
-            && !empty($this->_keys[$authType]['private'])) {
-            return $this->_keys[$authType]['private'];
-        }
-
-        switch ($authType) {
-            case 'default':
-                break;
-            default:
-                $authType = 'default';
-                break;
-        }
-
-        // get encrypted private key
-        try {
-            $result = QUI::getDataBase()->fetch(
-                array(
-                    'select' => array(
-                        'privateKey'
-                    ),
-                    'from' => Manager::TBL_USERS,
-                    'where' => array(
-                        'userId' => $this->_id,
-                        'authType' => $authType
-                    )
-                )
-            );
-        } catch (QUI\Exception $Exception) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not fetch private'
-                . ' key for auth type "' . $authType . '" from database: '
-                . $Exception->getMessage(),
-                1007
-            );
-        }
-        
-        if (empty($result)
-            || !isset($result[0]['privateKey'])
-            || empty($result[0]['privateKey'])) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Private key for auth type'
-                . '"' . $authType . '" was not found or empty.',
-                1007
-            );
-        }
-
-        // decrypt private key
-        $encryptionKey = $this->_getEncryptionKey($authType);
-        
-        try {
-            $decryptedPrivateKey = SymmetricCrypto::decrypt(
-                $result[0]['privateKey'],
-                $encryptionKey
-            );
-        } catch (QUI\Exception $Exception) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not decrypt private'
-                . 'key for auth type "' . $authType . '".',
-                1007
-            );
-        }
-
-        if (empty($decryptedPrivateKey)) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Decrypted private key'
-                . ' for auth type "' . $authType . '" was empty.',
-                1007
-            );
-        }
-
-        $this->_keys[$authType]['private'] = $decryptedPrivateKey;
-
-        return $decryptedPrivateKey;
-    }
-
-    /**
-     * Returns a symmetric encryption key based on auth type
-     *
-     * @param String $authType (optional) - default: "default"
-     * @return String
-     * @throws QUI\Exception
-     */
-    protected function _getEncryptionKey($authType = 'default')
-    {
-        if (isset($this->_encryptionKeys[$authType])
-            && !empty($this->_encryptionKeys[$authType])) {
-            return $this->_encryptionKeys[$authType];
-        }
-
-        switch ($authType) {
-            case 'default':
-            default:
-                $key = QUI::getSession()->get($this::ATTRIBUTE_PWHASH);
-                break;
-        }
-
-        if (empty($key)) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Symmetric key for auth'
-                . ' type "' . $authType . '" could not be found or was empty.'
-                . ' Please re-generate it.',
-                1006
-            );
-        }
-
-        $this->_encryptionKeys[$authType] = $key;
-
-        return $key;
-    }
-
-    /**
-     * Get an encrypted Password object
+     * Get an decrypted CryptoData object
      *
      * @param Integer $passwordId - Password ID in database
-     * @param String $passphrase - Password for protected user private key
-     * @return Password
+     * @return CryptoData
      * @throws QUI\Exception
      */
-    public function getPassword($passwordId, $passphrase)
+    public function getCryptoData($passwordId)
     {
-        // get encrypted password key from database
+        // get encrypted cryptodata key from database
         try {
             $result = QUI::getDataBase()->fetch(array(
                 'select' => array(
-                    'passwordKey'
+                    'dataKey'
                 ),
                 'from' => Manager::TBL_USER_PASSWORDS,
                 'where' => array(
                     'userId' => $this->_id,
-                    'passwordId' => $passwordId
+                    'dataId' => $passwordId
                 ),
                 'limit' => 1
             ));
@@ -613,13 +599,15 @@ class CryptoUser
 //            );
         }
 
+
+        // @todo get auth type -> get auth type modules -> get data entries
         // get auth type for password
 
 
         // decrypt private key
         $key = AsymmetricCrypto::decrypt(
             $result[0]['passwordKey'],
-            $this->_privateKey,
+            $this->_privateKey
         );
 
         return new Password($passwordId, $key);

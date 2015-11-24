@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
+use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\SymmetricCryptoWrapper;
 
 /**
@@ -9,7 +10,12 @@ use Pcsg\GroupPasswordManager\Security\Interfaces\SymmetricCryptoWrapper;
  */
 class SymmetricCrypto
 {
-    const CRYPTO_MODULE = 'AES'; // @todo in config auslagern
+    const CRYPTO_MODULE = 'XSalsa20'; // @todo in config auslagern
+
+    /**
+     * Key size of symmetric key used for en/decryption [bits]
+     */
+    const KEY_SIZE_ENCRYPTION = 256;
 
     /**
      * HashWrapper Class Object for the configured hash module
@@ -43,9 +49,20 @@ class SymmetricCrypto
     }
 
     /**
+     * Generate a new, random symmetric key
+     *
+     * @return String - The random key
+     */
+    public static function generateKey()
+    {
+        return self::_getCryptoModule()->generateKey();
+    }
+
+    /**
      * Get Crypto Module for symmetric encryption/decryption
      *
      * @return SymmetricCryptoWrapper
+     * @throws QUI\Exception
      */
     protected static function _getCryptoModule()
     {
@@ -57,8 +74,10 @@ class SymmetricCrypto
         $moduleClass .= self::CRYPTO_MODULE;
 
         if (!class_exists($moduleClass)) {
-            // @todo throw exception
-            return false;
+            throw new QUI\Exception(
+                'SymmetricCrypto :: Could not load crypto module ("'
+                . $moduleClass . '").'
+            );
         }
 
         self::$_CryptoModule = new $moduleClass();

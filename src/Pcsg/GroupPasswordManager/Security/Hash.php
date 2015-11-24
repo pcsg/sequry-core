@@ -12,6 +12,13 @@ class Hash
     const HASH_MODULE = 'Scrypt'; // @todo in config auslagern
 
     /**
+     * Salt length [bits]
+     *
+     * @var Integer
+     */
+    const SALT_LENGTH = 64;
+
+    /**
      * HashWrapper Class Object for the configured hash module
      *
      * @var HashWrapper

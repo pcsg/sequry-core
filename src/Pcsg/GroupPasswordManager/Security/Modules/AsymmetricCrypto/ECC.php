@@ -28,7 +28,7 @@ class ECC implements AsymmetricCryptoWrapper
     {
         try {
             $PublicKey = new EncryptionPublicKey($publicKey);
-            $cipherText = Crypto::seal($plainText, $PublicKey);
+            $cipherText = Crypto::seal($plainText, $PublicKey, true);
         } catch (QUI\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Plaintext encryption with publiy key failed: '
@@ -51,7 +51,7 @@ class ECC implements AsymmetricCryptoWrapper
     {
         try {
             $PrivateKey = new EncryptionSecretKey($privateKey);
-            $plainText = Crypto::unseal($cipherText, $PrivateKey);
+            $plainText = Crypto::unseal($cipherText, $PrivateKey, true);
         } catch (QUI\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Ciphertext decryption with private key failed: '
@@ -74,8 +74,8 @@ class ECC implements AsymmetricCryptoWrapper
             $KeyPair = KeyFactory::generateEncryptionKeyPair();
 
             $keys = array(
-                'publicKey' => $KeyPair->getPublicKey(),
-                'privateKey' => $KeyPair->getSecretKey()
+                'publicKey' => $KeyPair->getPublicKey()->get(),
+                'privateKey' => $KeyPair->getSecretKey()->get()
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(

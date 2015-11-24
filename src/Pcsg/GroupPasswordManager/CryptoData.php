@@ -9,18 +9,37 @@ namespace Pcsg\GroupPasswordManager;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
- * Password Class
+ * CryptoData Class
  *
- * Represents secret information that is stored encrypted.
+ * Represents sensitive information that is stored encrypted.
  *
  * @author www.pcsg.de (Patrick Müller)
  */
-class Password extends QUI\QDOM
+class CryptoData extends QUI\QDOM
 {
+    /**
+     * Permission to create a new CryptoData object
+     */
+    const PERMISSION_CREATE = 'pcsg.gpm.cryptodata.create';
+
+    /**
+     * Permission to edit a CryptoData object
+     */
+    const PERMISSION_EDIT = 'pcsg.gpm.cryptodata.edit';
+
+    /**
+     * Permission to delete a CryptoData object
+     */
+    const PERMISSION_DELETE = 'pcsg.gpm.cryptodata.delete';
+
+    /**
+     * Permission to set access rights for a CryptoData object (users and groups)
+     */
+    const PERMISSION_SETACCESS = 'pcsg.gpm.cryptodata.setaccess';
+
     /**
      * Password ID in database
      *
@@ -36,7 +55,7 @@ class Password extends QUI\QDOM
     protected $_key = null;
 
     /**
-     * Password payload - this is the information that is encrypted
+     * CryptoData payload - this is the information that is encrypted
      *
      * @var Array|String
      */
@@ -57,28 +76,28 @@ class Password extends QUI\QDOM
     protected $_history = array();
 
     /**
-     * User ID of initial Password creator (owner)
+     * User ID of initial CryptoData creator (owner)
      *
      * @var Integer
      */
     protected $_ownerId = null;
 
     /**
-     * User IDs of every user that can view this password
+     * User IDs of every user that can access this CryptoData
      */
-    protected $_viewUsers = array();
+    protected $_users = array();
 
     /**
-     * User IDs of every user that can edit this password
+     * Auth type of this CryptoData
      *
-     * @var array
+     * @var String
      */
-    protected $_editUsers = array();
+    protected $_authType = null;
 
     /**
      * constructor
      *
-     * @param Integer $id - password id from database
+     * @param Integer $id - crpyotdata id in database
      * @param String $key - Symmetric encryption key
      * @throws QUI\Exception
      */
@@ -110,20 +129,10 @@ class Password extends QUI\QDOM
 
         $this->_id = $id;
         $encryptedData = $password['passwordData'];
-        $mac = $password['passwordMac'];
 
         // try to decrypt the data and check for successful decryption
         try {
             $plainText = SymmetricCrypto::decrypt($encryptedData, $key);
-            $macComputed = MAC::create($plainText, $key);
-
-            // Check integrity and authenticity
-            if (!Utils::compareStrings($mac, $macComputed)) {
-                throw new QUI\Exception(
-                    'The MAC hashes did not match.'
-                );
-            }
-
             $plainText = json_decode($plainText, true);
 
             // check for json error
@@ -134,28 +143,26 @@ class Password extends QUI\QDOM
             }
 
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError(
-                'Password #' . $id . ' could not be decrypted: '
+            throw new QUI\Exception(
+                'CryptoData (#' . $id . ') could not be decrypted: '
                 . $Exception->getMessage()
             );
 
-            throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.decryption.error',
-                    array('passwordId' => $id)
-                ),
-                1001
-            );
+            // @todo auslagern
+//            throw new QUI\Exception(
+//                QUI::getLocale()->get(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.password.decryption.error',
+//                    array('passwordId' => $id)
+//                ),
+//                1001
+//            );
         }
 
         $this->_ownerId = $plainText['ownerId'];
         $this->_payload = $plainText['payload'];
+        $this->_authType = $plainText['authType'];
         $this->_key = $key;
-
-        if (isset($plainText['editUsers'])) {
-            $this->_editUsers = $plainText['editUsers'];
-        }
 
         if (isset($plainText['history'])) {
             $this->_history = $plainText['history'];
@@ -179,9 +186,7 @@ class Password extends QUI\QDOM
     {
         $password = array(
             'payload' => $this->_payload,
-            'ownerId' => $this->_ownerId,
-            'editUsers' => $this->_editUsers,
-            'viewUsers' => $this->_viewUsers
+            'ownerId' => $this->_ownerId
         );
 
         if (!is_null($this->_newPayload)) {
@@ -318,6 +323,16 @@ class Password extends QUI\QDOM
     }
 
     /**
+     * Return the auth type of this CryptoData
+     *
+     * @return String
+     */
+    public function getAuthType()
+    {
+        return $this->_authType;
+    }
+
+    /**
      * Return user id of the password creator
      *
      * @return int
@@ -378,69 +393,82 @@ class Password extends QUI\QDOM
     }
 
     /**
-     * Adds a user that can decrypt this password
+     * Adds a user that can decrypt this CryptoData object
      *
      * @param \Pcsg\GroupPasswordManager\CryptoUser $CryptoUser
      * @return Boolean - success
      * @throws QUI\Exception
      */
-    public function addViewUser($CryptoUser)
+    public function addUser($CryptoUser)
     {
-        if (isset($this->_viewUsers[$CryptoUser->getId()])) {
-            return true;
+        // Check permission
+        $disposingUserId = QUI::getUserBySession()->getId();
+        $receivingUserId = $CryptoUser->getId();
+
+        $permission = true;
+
+        try {
+            QUI\Rights\Permission::checkPermission(
+                self::PERMISSION_SETACCESS
+            );
+        } catch (QUI\Exception $Exception) {
+            $permission = false;
         }
 
-        $userId = QUI::getUserBySession()->getId();
-        $viewUserId = $CryptoUser->getId();
-
-        if ($userId !== $this->_ownerId
-            && !isset($this->_editUsers[$userId])) {
+        if ($disposingUserId !== $this->_ownerId
+            && $permission === false) {
             throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.addviewuser.no.rights',
-                    array('passwordId' => $this->_id)
-                ),
-                1001 // @todo korrekten error code
+                'CryptoData (#' . $this->_id . ') :: User has no permission'
+                . ' to add users.',
+                1011
             );
+
+            // @todo auslagern
+//                throw new QUI\Exception(
+//                    QUI::getLocale()->get(
+//                        'pcsg/grouppasswordmanager',
+//                        'exception.password.addviewuser.no.rights',
+//                        array('passwordId' => $this->_id)
+//                    ),
+//                    1001 // @todo korrekten error code
+//                );
         }
 
         try {
             // encrypt password key with user public key
-            $encryptedPasswordKey = AsymmetricCrypto::encrypt(
-                $this->_key,
-                $CryptoUser->getPublicKey()
+            $encryptedPasswordKey = $CryptoUser->publicKeyEncrypt(
+                $this->_key
             );
 
             QUI::getDataBase()->insert(
                 Manager::TBL_USER_PASSWORDS,
                 array(
-                    'userId' => $viewUserId,
+                    'userId' => $receivingUserId,
                     'passwordId' => $this->_id,
                     'passwordKey' => $encryptedPasswordKey
                 )
             );
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError(
-                'Could not add view user to password #' . $this->_id . ': '
-                . $Exception->getMessage()
+            throw new QUI\Exception(
+                'CryptoData (#' . $this->_id . ') :: Could not add user to'
+                . ' password -> ' . $Exception->getMessage(),
+                1012
             );
 
-            throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.addviewuser.error',
-                    array(
-                        'passwordId' => $this->_id,
-                        'userId' => $viewUserId
-                    )
-                ),
-                1001 // @todo korrekten error code
-            );
+            // @todo auslagern
+//            throw new QUI\Exception(
+//                QUI::getLocale()->get(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.password.addviewuser.error',
+//                    array(
+//                        'passwordId' => $this->_id,
+//                        'userId' => $disposingUserId
+//                    )
+//                ),
+//                1001 // @todo korrekten error code
+//            );
         }
         
-        $this->_viewUsers[$viewUserId] = true;
-
         return $this->save();
     }
 

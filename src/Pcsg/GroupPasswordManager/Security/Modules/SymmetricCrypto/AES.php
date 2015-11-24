@@ -3,6 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\SymmetricCryptoWrapper;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use phpseclib\Crypt\AES as AESClass;
 
 /**
@@ -12,15 +13,6 @@ use phpseclib\Crypt\AES as AESClass;
  */
 class AES implements SymmetricCryptoWrapper
 {
-    /**
-     * Key size in bits
-     *
-     * 128-bits is sufficient
-     *
-     * @var Integer
-     */
-    const KEY_SIZE = 128;
-
     /**
      * Encryption Mode
      *
@@ -75,7 +67,7 @@ class AES implements SymmetricCryptoWrapper
         }
 
         self::$_AESClass = new AESClass(self::ENCRYPTION_MODE);
-        self::$_AESClass->setKeyLength(self::KEY_SIZE);
+        self::$_AESClass->setKeyLength(SymmetricCrypto::KEY_SIZE_ENCRYPTION);
 
         return self::$_AESClass;
     }

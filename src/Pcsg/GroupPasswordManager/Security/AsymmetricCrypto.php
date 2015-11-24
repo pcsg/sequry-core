@@ -91,8 +91,6 @@ class AsymmetricCrypto
             );
         }
 
-        \QUI\System\Log::writeRecursive( mb_strlen($keyPair['privateKey'], '8bit') );
-
         return $keyPair;
     }
 

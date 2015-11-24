@@ -10,19 +10,18 @@
             <primary>userId,authType</primary>
         </table>
 
-        <table name="pcsg_gpm_passwords" no-auto-update="1" no-site-reference="1">
+        <table name="pcsg_gpm_data" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
-            <field type="BLOB NOT NULL">passwordData</field>
-            <field type="BLOB NOT NULL">passwordMac</field>
+            <field type="BLOB NOT NULL">cryptoData</field>
         </table>
 
-        <table name="pcsg_gpm_user_passwords" no-auto-update="1" no-site-reference="1">
+        <table name="pcsg_gpm_user_data_access" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
-            <field type="BIGINT(20) UNSIGNED NOT NULL">passwordId</field>
-            <field type="BLOB NOT NULL">passwordKey</field>
-            <primary>userId,passwordId</primary>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
+            <field type="BLOB NOT NULL">dataKey</field>
+            <primary>userId,dataId</primary>
         </table>
 
         <table name="pcsg_gpm_groups" no-auto-update="1" no-site-reference="1">
@@ -33,11 +32,11 @@
             <field type="BLOB NOT NULL">privateKey</field>
         </table>
 
-        <table name="pcsg_gpm_group_passwords" no-auto-update="1" no-site-reference="1">
+        <table name="pcsg_gpm_group_data_access" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL">groupId</field>
-            <field type="BIGINT(20) UNSIGNED NOT NULL">passwordId</field>
-            <field type="BLOB NOT NULL">passwordKey</field>
-            <primary>groupId,passwordId</primary>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
+            <field type="BLOB NOT NULL">dataKey</field>
+            <primary>groupId,dataId</primary>
         </table>
 
         <table name="pcsg_gpm_user_groups" no-auto-update="1" no-site-reference="1">

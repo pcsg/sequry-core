@@ -16,6 +16,8 @@ namespace Pcsg\GroupPasswordManager\Security\Classes;
  * @license  http://www.opensource.org/licenses/BSD-2-Clause BSD 2-Clause License
  * @link     http://github.com/DomBlack/php-scrypt
  */
+use Pcsg\GroupPasswordManager\Security\Hash;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 
 /**
  * This class abstracts away from scrypt module, allowing for easy use.
@@ -32,12 +34,11 @@ namespace Pcsg\GroupPasswordManager\Security\Classes;
  */
 abstract class Scrypt
 {
-
     /**
      *
-     * @var int The key length
+     * @var int The key length [bytes]
      */
-    private static $_keyLength = 16;
+    private static $_keyLength = SymmetricCrypto::KEY_SIZE_ENCRYPTION / 8;
 
     /**
      * Get the byte-length of the given string
@@ -68,7 +69,7 @@ abstract class Scrypt
      *
      * @return string The salt
      */
-    public static function generateSalt($length = 8)
+    public static function generateSalt($length = Hash::SALT_LENGTH / 8)
     {
         $buffer = '';
         $buffer_valid = false;

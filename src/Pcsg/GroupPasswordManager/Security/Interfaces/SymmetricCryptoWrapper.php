@@ -24,4 +24,11 @@ interface SymmetricCryptoWrapper
      * @return String - The plaintext (decrypted ciphertext)
      */
     public static function decrypt($cipherText, $key);
+
+    /**
+     * Generate a new, random symmetric key
+     *
+     * @return String - The random key
+     */
+    public static function generateKey();
 }

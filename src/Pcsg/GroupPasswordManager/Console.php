@@ -85,7 +85,14 @@ class Console extends QUI\System\Console\Tool
     protected function _genKey()
     {
         $this->writeLn("Generiere Schlüsselpaar...");
-        new CryptoUser(QUI::getUserBySession()->getId());
+        
+        $CryptoUser = new CryptoUser(
+            QUI::getUserBySession()->getId(),
+            CryptoAuth::getAuthPlugin('login')
+        );
+
+        $CryptoUser->generateKeyPair();
+
         $this->writeLn("Fertig.\n\n");
     }
 
@@ -93,7 +100,7 @@ class Console extends QUI\System\Console\Tool
     {
         $zd = $this->getArgument('zd');
 
-        Manager::createPassword(
+        Manager::createCryptoData(
             "Mein Passwort",
             "Dies ist eine Passwort-Beschreibung",
             $zd
@@ -109,7 +116,7 @@ class Console extends QUI\System\Console\Tool
         $this->writeLn("Entschlüssele Passwort #$id...");
         $start = explode(" ",microtime());
 
-        $Password = $CryptoUser->getPassword($id, $this->_userpw);
+        $CryptoUser = $CryptoUser->getPassword($id, $this->_userpw);
 
         $end = explode(" ",microtime());
         $time = $end[0] - $start[0];
