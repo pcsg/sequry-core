@@ -6,11 +6,13 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use ParagonIE\Halite\Util;
 use Pcsg\gpmAuthLogin\Auth;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Encrypt;
 use Pcsg\GroupPasswordManager\Security\Hash;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -86,7 +88,7 @@ class Console extends QUI\System\Console\Tool
     protected function _genKey()
     {
         $this->writeLn("Generiere Schlüsselpaar...");
-        
+
         $CryptoUser = new CryptoUser(
             QUI::getUserBySession()->getId(),
             CryptoAuth::getAuthPlugin('login')
@@ -117,14 +119,14 @@ class Console extends QUI\System\Console\Tool
         $this->writeLn("Entschlüssele Passwort #$id...");
         $start = explode(" ",microtime());
 
-        $CryptoUser = $CryptoUser->getPassword($id, $this->_userpw);
+        $CryptoData = $CryptoUser->getCryptoData($id, array());
 
         $end = explode(" ",microtime());
         $time = $end[0] - $start[0];
         $this->write(" Erfolg. (Zeit zum Entschlüsseln: " . $time . "ms)");
 
         $this->writeLn("Entschlüsselte Daten:\n");
-        $this->writeLn($Password->getPayload());
+        $this->writeLn($CryptoData->getPayload());
     }
 
     protected function _editZd()

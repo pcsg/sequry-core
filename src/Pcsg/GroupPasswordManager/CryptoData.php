@@ -9,6 +9,7 @@ namespace Pcsg\GroupPasswordManager;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -83,16 +84,11 @@ class CryptoData extends QUI\QDOM
     protected $_ownerId = null;
 
     /**
-     * User IDs of every user that can access this CryptoData
-     */
-    protected $_users = array();
-
-    /**
-     * Auth type of this CryptoData
+     * Auth level of this CryptoData
      *
      * @var String
      */
-    protected $_authType = null;
+    protected $_authLevel = null;
 
     /**
      * constructor
@@ -107,7 +103,7 @@ class CryptoData extends QUI\QDOM
 
         // get password entry from database
         $result = $DB->fetch(array(
-            'from' => Manager::TBL_PASSWORDS,
+            'from' => Manager::TBL_CRYPTODATA,
             'where' => array(
                 'id' => $id
             ),
@@ -142,6 +138,15 @@ class CryptoData extends QUI\QDOM
                 );
             }
 
+            if ($plainText['authLevel'] !== $password['authLevel']) {
+                // @todo unerlaubte manipulation der datenbank -> ALERT system
+                throw new QUI\Exception(
+                    'AuthLevel does not match (should be: "'
+                    . $plainText['authLevel'] . '" | is: "'
+                    . $password['authLevel'] . '".'
+                );
+            }
+
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'CryptoData (#' . $id . ') could not be decrypted: '
@@ -161,7 +166,7 @@ class CryptoData extends QUI\QDOM
 
         $this->_ownerId = $plainText['ownerId'];
         $this->_payload = $plainText['payload'];
-        $this->_authType = $plainText['authType'];
+        $this->_authLevel = $plainText['authLevel'];
         $this->_key = $key;
 
         if (isset($plainText['history'])) {
@@ -186,7 +191,8 @@ class CryptoData extends QUI\QDOM
     {
         $password = array(
             'payload' => $this->_payload,
-            'ownerId' => $this->_ownerId
+            'ownerId' => $this->_ownerId,
+            'authLevel' => $this->_authLevel
         );
 
         if (!is_null($this->_newPayload)) {
@@ -210,18 +216,16 @@ class CryptoData extends QUI\QDOM
                 );
             }
 
-            $mac = MAC::create($password, $this->_key);
-
             QUI::getDataBase()->update(
-                Manager::TBL_PASSWORDS,
+                Manager::TBL_CRYPTODATA,
                 array(
                     'title' => $this->getAttribute('title'),
                     'description' => $this->getAttribute('description'),
-                    'passwordData' => SymmetricCrypto::encrypt(
+                    'cryptoData' => SymmetricCrypto::encrypt(
                         $password,
                         $this->_key
                     ),
-                    'passwordMac' => $mac
+                    'authLevel' => $this->_authLevel
                 ),
                 array(
                     'id' => $this->_id
@@ -327,9 +331,9 @@ class CryptoData extends QUI\QDOM
      *
      * @return String
      */
-    public function getAuthType()
+    public function getAuthLevel()
     {
-        return $this->_authType;
+        return $this->_authLevel;
     }
 
     /**
@@ -435,13 +439,26 @@ class CryptoData extends QUI\QDOM
         }
 
         try {
-            // encrypt password key with user public key
+            // get authentification plugins
+            $authPlugins = CryptoAuth::getAuthPluginsByAuthLevel(
+                $this->_authLevel
+            );
+
+            // split keys into parts according to numbers of authPlugins used
+            $keyParts = Utils::splitKey($this->_key, count($authPlugins));
+
+            // encrypt each part with the users public key for the corresponding auth plugin
+            foreach ($keyParts as $k => $keyPart) {
+                $CryptoUser->setAuthPlugin(key($authPlugins));
+                $CryptoUser->publicKeyEncrypt($keyPart);
+            }
+
             $encryptedPasswordKey = $CryptoUser->publicKeyEncrypt(
                 $this->_key
             );
 
             QUI::getDataBase()->insert(
-                Manager::TBL_USER_PASSWORDS,
+                Manager::TBL_USER_CRYPTODATA,
                 array(
                     'userId' => $receivingUserId,
                     'passwordId' => $this->_id,
@@ -473,152 +490,78 @@ class CryptoData extends QUI\QDOM
     }
 
     /**
-     * @todo Kann Edit User View User entfernen!?
-     *
-     * Removes a user that can view the password
+     * Removes a user that can decrypt this CryptoData object
      *
      * @param \Pcsg\GroupPasswordManager\CryptoUser $CryptoUser
      * @return Boolean - success
      * @throws QUI\Exception
      */
-    public function removeViewUser($CryptoUser)
+    public function removeUser($CryptoUser)
     {
-        $userId = QUI::getUserBySession()->getId();
+        // Check permission
+        $disposingUserId = QUI::getUserBySession()->getId();
+        $receivingUserId = $CryptoUser->getId();
 
-        if ($userId !== $this->_ownerId) {
-            throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.removeviewuser.no.rights',
-                    array('passwordId' => $this->_id)
-                ),
-                401
+        $permission = true;
+
+        try {
+            QUI\Rights\Permission::checkPermission(
+                self::PERMISSION_SETACCESS
             );
+        } catch (QUI\Exception $Exception) {
+            $permission = false;
         }
 
-        $cryptoUserId = $CryptoUser->getId();
-
-        if (!isset($this->_viewUsers[$cryptoUserId])) {
+        if ($disposingUserId !== $this->_ownerId
+            && $permission === false) {
             throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.removeviewuser.no.user',
-                    array(
-                        'passwordId' => $this->_id,
-                        'userId' => $cryptoUserId
-                    )
-                ),
-                420
+                'CryptoData (#' . $this->_id . ') :: User has no permission'
+                . ' to remove users.',
+                1011
             );
+
+            // @todo auslagern
+//                throw new QUI\Exception(
+//                    QUI::getLocale()->get(
+//                        'pcsg/grouppasswordmanager',
+//                        'exception.password.addviewuser.no.rights',
+//                        array('passwordId' => $this->_id)
+//                    ),
+//                    1001 // @todo korrekten error code
+//                );
         }
 
         try {
             QUI::getDataBase()->delete(
-                Manager::TBL_USER_PASSWORDS,
+                Manager::TBL_USER_CRYPTODATA,
                 array(
-                    'userId' => $cryptoUserId
+                    'userId' => $receivingUserId,
+                    'dataId' => $this->_id
                 )
             );
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError(
-                'Could not delete user #' . $cryptoUserId . ' from '
-                . Manager::TBL_USER_PASSWORDS . ': ' . $Exception->getMessage()
-            );
-
             throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.removeviewuser.error',
-                    array(
-                        'passwordId' => $this->_id,
-                        'userId' => $cryptoUserId
-                    )
-                ),
-                500
+                'CryptoData (#' . $this->_id . ') :: Could not delete User #'
+                . $receivingUserId . ' from ' . Manager::TBL_USER_CRYPTODATA
+                . ' -> ' . $Exception->getMessage(),
+                1011    // @todo korrekter error code
             );
-        }
 
-        unset($this->_viewUsers[$cryptoUserId]);
+            // @todo auslagern und korrekter error code
+//            throw new QUI\Exception(
+//                QUI::getLocale()->get(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.password.removeviewuser.error',
+//                    array(
+//                        'passwordId' => $this->_id,
+//                        'userId' => $cryptoUserId
+//                    )
+//                ),
+//                500
+//            );
+        }
 
         return $this->save();
-    }
-
-    /**
-     * Adds a user that can edit this password
-     *
-     * @param \Pcsg\GroupPasswordManager\CryptoUser $CryptoUser
-     * @return Boolean - success
-     * @throws QUI\Exception
-     */
-    public function addEditUser($CryptoUser)
-    {
-        $editUserId = $CryptoUser->getId();
-
-        if (isset($this->_editUsers[$editUserId])) {
-            return true;
-        }
-
-        $userId = QUI::getUserBySession()->getId();
-
-        if ($userId !== $this->_ownerId) {
-            throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.addedituser.no.rights',
-                    array('passwordId' => $this->_id)
-                ),
-                401
-            );
-        }
-
-        // if user has no view right -> add it first
-        if (!isset($this->_viewUsers[$editUserId])) {
-            $this->addViewUser($CryptoUser);
-        }
-
-        $this->_editUsers[$editUserId] = true;
-
-        return $this->save();
-    }
-
-    /**
-     * Removes a user that can edit the password
-     *
-     * @param \Pcsg\GroupPasswordManager\CryptoUser $CryptoUser
-     * @throws QUI\Exception
-     */
-    public function removeEditUser($CryptoUser)
-    {
-        $userId = QUI::getUserBySession()->getId();
-
-        if ($userId !== $this->_ownerId) {
-            throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.removeedituser.no.rights',
-                    array('passwordId' => $this->_id)
-                ),
-                401
-            );
-        }
-
-        $cryptoUserId = $CryptoUser->getId();
-
-        if (!isset($this->_editUsers[$cryptoUserId])) {
-            throw new QUI\Exception(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.removeedituser.no.user',
-                    array(
-                        'passwordId' => $this->_id,
-                        'userId' => $cryptoUserId
-                    )
-                ),
-                401
-            );
-        }
-
-        unset($this->_editUsers[$cryptoUserId]);
     }
 
     /**
@@ -645,7 +588,7 @@ class CryptoData extends QUI\QDOM
         try {
             // delete password
             QUI::getDataBase()->delete(
-                Manager::TBL_PASSWORDS,
+                Manager::TBL_CRYPTODATA,
                 array(
                     'id' => $this->_id
                 )
@@ -653,11 +596,13 @@ class CryptoData extends QUI\QDOM
 
             // delete user entries for password
             QUI::getDataBase()->delete(
-                Manager::TBL_USER_PASSWORDS,
+                Manager::TBL_USER_CRYPTODATA,
                 array(
                     'passwordId' => $this->_id
                 )
             );
+
+            // @todo delete group entries
 
         } catch (\Exception $Exception) {
 

@@ -9,6 +9,7 @@ namespace Pcsg\GroupPasswordManager;
 use Pcsg\GroupPasswordManager\Security\Interfaces\AuthPlugin;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -392,7 +393,7 @@ class CryptoUser
             return $this->_publicKeys[$authName];
         }
 
-        // get encrypted private key
+        // get public key
         try {
             $result = QUI::getDataBase()->fetch(
                 array(
@@ -512,6 +513,110 @@ class CryptoUser
     }
 
     /**
+     * Get an decrypted CryptoData object
+     *
+     * @param Integer $dataId - CryptoData ID in database
+     * @param Array $authInformation - Information for authentication plugins
+     * @return CryptoData
+     * @throws QUI\Exception
+     */
+    public function getCryptoData($dataId, $authInformation)
+    {
+        $dataId = (int)$dataId;
+
+        // get encrypted cryptodata key from database
+        try {
+            $result = QUI::getDataBase()->fetch(array(
+                'select' => array(
+                    'authLevel'
+                ),
+                'from' => Manager::TBL_CRYPTODATA,
+                'where' => array(
+                    'userId' => $this->_id,
+                    'dataId' => $dataId
+                ),
+                'limit' => 1
+            ));
+        } catch (\Exception $Exception) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Could not retrieve'
+                . ' database entry for cryptodata (#' . $dataId
+                . '): ' . $Exception->getMessage(),
+                1005
+            );
+        }
+
+        if (empty($result)) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Could not retrieve'
+                . ' database entry for crpyto data -> CryptoData with ID #'
+                . $dataId . ' does not exist.',
+                1005
+            );
+
+            // @todo auslagern
+//            throw new QUI\Exception(
+//                QUI::getLocale()->get(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.cryptouser.getpassword.no.right',
+//                    array('passwordId' => $passwordId)
+//                )
+//            );
+        }
+
+        $authLevel = $result[0]['authLevel'];
+        $authPlugins = CryptoAuth::getAuthPluginsByAuthLevel($authLevel);
+
+        // get key parts for every auth plugin
+        try {
+            $result = QUI::getDataBase()->fetch(array(
+                'select' => array(
+                    'dataKey',
+                    'authPlugin'
+                ),
+                'from' => Manager::TBL_USER_CRYPTODATA,
+                'where' => array(
+                    'userId' => $this->_id,
+                    'dataId' => $dataId,
+                    'authPlugin' => array(
+                        'type' => 'IN',
+                        'value' => array_keys($authPlugins)
+                    )
+                )
+            ));
+        } catch (\Exception $Exception) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Could not retrieve'
+                . ' database entry for cryptodata user keys (cryptodata id#'
+                . $dataId . '): ' . $Exception->getMessage(),
+                1005
+            );
+        }
+
+        if (empty($result) || count($result) !== count($authPlugins)) {
+            throw new QUI\Exception(
+                'CryptoUser (#' . $this->_id . ') :: Not enough encrypted'
+                . ' key parts found for cryptodata #' . $dataId . ' (expected: '
+                . count($authPlugins) . '; found: ' . count($result) . '). '
+                . 'User has no access right for this crypto data.',
+                1005
+            );
+        }
+
+        // assemble cryptodata key
+        $keyParts = array();
+
+        foreach ($result as $row) {
+            $this->setAuthPlugin($row['authPlugin']);
+            $keyParts[] = $this->privateKeyDecrypt($row['dataKey']);
+        }
+
+        $key = Utils::joinKeyParts($keyParts);
+
+        return new CryptoData($dataId, $key);
+    }
+
+    /**
      * @todo
      *
      * Get passwords the user has access to
@@ -548,69 +653,6 @@ class CryptoUser
     public function setKeyPair()
     {
 
-    }
-
-    /**
-     * Get an decrypted CryptoData object
-     *
-     * @param Integer $passwordId - Password ID in database
-     * @return CryptoData
-     * @throws QUI\Exception
-     */
-    public function getCryptoData($passwordId)
-    {
-        // get encrypted cryptodata key from database
-        try {
-            $result = QUI::getDataBase()->fetch(array(
-                'select' => array(
-                    'dataKey'
-                ),
-                'from' => Manager::TBL_USER_PASSWORDS,
-                'where' => array(
-                    'userId' => $this->_id,
-                    'dataId' => $passwordId
-                ),
-                'limit' => 1
-            ));
-        } catch (\Exception $Exception) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not retrieve'
-                . ' database entry for user password (#' . $passwordId
-                . '): ' . $Exception->getMessage(),
-                1005
-            );
-        }
-
-        if (empty($result)) {
-            throw new QUI\Exception(
-                'CryptoUser (#' . $this->_id . ') :: Could not retrieve'
-                . ' database entry for user password -> User has no access'
-                . ' rights (no data entry exists).',
-                1005
-            );
-
-            // @todo auslagern
-//            throw new QUI\Exception(
-//                QUI::getLocale()->get(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.cryptouser.getpassword.no.right',
-//                    array('passwordId' => $passwordId)
-//                )
-//            );
-        }
-
-
-        // @todo get auth type -> get auth type modules -> get data entries
-        // get auth type for password
-
-
-        // decrypt private key
-        $key = AsymmetricCrypto::decrypt(
-            $result[0]['passwordKey'],
-            $this->_privateKey
-        );
-
-        return new Password($passwordId, $key);
     }
 
     /**

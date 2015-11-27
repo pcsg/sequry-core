@@ -17,16 +17,22 @@ use QUI;
 class Manager
 {
     // Password tables
-    const TBL_PASSWORDS = 'pcsg_gpm_data';
+    const TBL_CRYPTODATA = 'pcsg_gpm_data';
 
     // User tables
     const TBL_USERS = 'pcsg_gpm_users';
-    const TBL_USER_PASSWORDS = 'pcsg_gpm_user_data_access';
+    const TBL_USER_CRYPTODATA = 'pcsg_gpm_user_data_access';
     const TBL_USER_GROUPS = 'pcsg_gpm_user_groups';
 
     // Group tables
     const TBL_GROUPS = 'pcsg_gpm_groups';
-    const TBL_GROUP_PASSWORDS = 'pcsg_gpm_group_data_access';
+    const TBL_GROUP_CRYPTODATA = 'pcsg_gpm_group_data_access';
+
+    // Existing authentification security levels (may be extended some time in the future)
+    protected static $_authLevels = array(
+        'default' => true,
+        'mfa' => true
+    );
 
     /**
      * Create a new encrypted CryptoData object
@@ -34,7 +40,7 @@ class Manager
      * @param String $title - Password title
      * @param String $description - Short description for the password
      * @param Array|String $payload - Payload (sensitive data)
-     * @param String $authType (optional) - Authentication type necessary to decrypt payload [default: login]
+     * @param String $authLevel - Authentication level used (determines authentification plugins for key encryption) [default: "default"]
      * @param QUI\Users\User $Owner (optional) - Owner of the password [default: Session User]
      * @return CryptoData
      * @throws QUI\Exception
@@ -43,7 +49,7 @@ class Manager
         $title,
         $description,
         $payload,
-        String $authType = 'login',
+        $authLevel = 'default',
         $Owner = null
     ) {
         if (is_null($Owner)) {
@@ -64,25 +70,16 @@ class Manager
             );
         }
 
-        // check for valid auth type
-        // @todo get registered auth type modules
-        switch ($authType) {
-            case 'login':
-                // ok
-                break;
-            
-            default:
-                throw new QUI\Exception(
-                    'Cannot create new CryptoData -> Invalid auth type given'
-                    . ' (' . $authType . ')'
-                );
+        if (!isset(self::$_authLevels[$authLevel])) {
+            // @todo error code
+            throw new QUI\Exception('Unknown auth level.');
         }
 
         // encrypt data
         $cryptoPayload = array(
             'payload' => $payload,
             'ownerId' => $Owner->getId(),
-            'authType' => $authType
+            'authLevel' => $authLevel
         );
 
         $cryptoPayload = json_encode($cryptoPayload);
@@ -94,7 +91,7 @@ class Manager
         $cipherText = SymmetricCrypto::encrypt($cryptoPayload, $cryptoKey);
 
         QUI::getDataBase()->insert(
-            self::TBL_PASSWORDS,
+            self::TBL_CRYPTODATA,
             array(
                 'title' => $title,
                 'description' => $description,
@@ -136,19 +133,4 @@ class Manager
 
         return $CrpyotUser;
     }
-
-//    /**
-//     * @param $passwordId
-//     * @param $passwordKey
-//     * @return String
-//     */
-//    public static function getPassword($passwordId, $passwordKey)
-//    {
-//        return new Password($passwordId, $passwordKey);
-//    }
-//
-//    public static function getCryptoUser($id)
-//    {
-//
-//    }
 }

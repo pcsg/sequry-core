@@ -35,6 +35,14 @@ interface AuthPlugin
     public function getInputControl();
 
     /**
+     * Set relevant information to generate unique symmetric key
+     *
+     * @param String $information
+     * @return void
+     */
+    public function setInformation($information);
+
+    /**
      * Registers the auth plugin with the CrpytoAuth Class
      *
      * @return void

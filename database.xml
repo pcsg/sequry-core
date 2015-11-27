@@ -6,8 +6,8 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
             <field type="BLOB NOT NULL">publicKey</field>
             <field type="BLOB NOT NULL">privateKey</field>
-            <field type="VARCHAR(50) NOT NULL">authType</field>
-            <primary>userId,authType</primary>
+            <field type="VARCHAR(50) NOT NULL">authPlugin</field>
+            <primary>userId,authPlugin</primary>
         </table>
 
         <table name="pcsg_gpm_data" no-auto-update="1" no-site-reference="1">
@@ -15,12 +15,14 @@
             <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
             <field type="BLOB NOT NULL">cryptoData</field>
+            <field type="VARCHAR(50) NOT NULL">authLevel</field>
         </table>
 
         <table name="pcsg_gpm_user_data_access" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
             <field type="BLOB NOT NULL">dataKey</field>
+            <field type="VARCHAR(50) NOT NULL">authPlugin</field>
             <primary>userId,dataId</primary>
         </table>
 

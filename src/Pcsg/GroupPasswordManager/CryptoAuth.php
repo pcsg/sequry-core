@@ -25,6 +25,36 @@ class CryptoAuth
     protected static $_plugins = array();
 
     /**
+     * Return every auth plugin associated with a specific auth level
+     *
+     * @param String $authLevel (optional) - Auth level determines the auth plugins used [default: "default"]
+     * @return Array
+     * @throws QUI\Exception
+     */
+    public static function getAuthPluginsByAuthLevel($authLevel = 'default')
+    {
+        $authPlugins = QUI::getPluginManager()
+            ->get('pcsg/grouppasswordmanager')
+            ->getConfig()
+            ->get('auth_level', $authLevel);
+
+        if (empty($authPlugins)) {
+            throw new QUI\Exception(
+                'CryptoAuth :: Cannot load auth plugins by auth level -> '
+                . 'auth level "' . $authLevel . '" has no auth plugins '
+                . 'configured. Please see config file of plugin.'
+            );
+        }
+
+        $authPlugins = explode(",", $authPlugins);
+        $pluginsLoaded = array();
+
+        foreach ($authPlugins as $plugin) {
+            $pluginsLoaded[$plugin] = self::getAuthPlugin($plugin);
+        }
+    }
+
+    /**
      * Get an authentication plugin
      *
      * @param String $name
