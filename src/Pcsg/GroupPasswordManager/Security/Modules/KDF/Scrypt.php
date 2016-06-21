@@ -1,0 +1,33 @@
+<?php
+
+namespace Pcsg\GroupPasswordManager\Security\Modules\KDF;
+
+use Pcsg\GroupPasswordManager\Security\Interfaces\iKDF;
+use QUI;
+use Pcsg\GroupPasswordManager\Security\Classes\Scrypt as ScryptClass;
+
+/**
+ * This class provides a hashing API for the pcsg/grouppasswordmanager module
+ */
+class Scrypt implements iKDF
+{
+    /**
+     * Creates a hash value from a given string
+     *
+     * @param String $str - A String
+     * @return String - hashed string
+     * @throws QUI\Exception
+     */
+    public static function createKey($str)
+    {
+        try {
+            $hash = ScryptClass::createHash($str);
+        } catch (QUI\Exception $Exception) {
+            throw new QUI\Exception(
+                'Scrypt :: Hash operation failed: ' . $Exception->getMessage()
+            );
+        }
+        
+        return $hash;
+    }
+}

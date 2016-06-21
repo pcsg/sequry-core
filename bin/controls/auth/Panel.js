@@ -21,13 +21,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'controls/grid/Grid',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
 
     'Ajax',
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
-], function (QUI, QUIPanel, QUIButton, QUILoader, Grid, AuthHandler,
+], function (QUI, QUIPanel, QUIButton, QUILoader, Grid, AuthHandler, AuthRegister,
              Ajax, QUILocale) {
     "use strict";
 
@@ -45,7 +46,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             '$onCreate',
             '$onResize',
             'refresh',
-            'createPassword'
+            'registerUser'
         ],
 
         options: {},
@@ -82,7 +83,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 text     : QUILocale.get(lg, 'auth.panel.btn.register'),
                 textimage: 'fa fa-key',
                 events   : {
-                    //onClick: this.createPassword
+                    onClick: this.registerUser
                 }
             });
 
@@ -130,7 +131,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 },
                 onClick   : function () {
                     var selectedCount = self.$Grid.getSelectedData().length,
-                        Register = self.getButtons('register');
+                        Register      = self.getButtons('register');
 
                     if (selectedCount == 1) {
                         Register.enable();
@@ -182,11 +183,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
          */
         $setGridData: function (GridData) {
             var Row;
+            var data = [];
 
-            this.$Grid.clear();
+            console.log(GridData);
 
-            for (var i = 0, len = GridData.length; i < len; i++) {
-                var Data = GridData[i];
+            for (var i = 0, len = GridData.data.length; i < len; i++) {
+                var Data = GridData.data[i];
 
                 Row = {
                     id         : Data.id,
@@ -200,8 +202,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     Row.registered = QUILocale.get(lg, 'auth.panel.registered.no');
                 }
 
-                this.$Grid.addRow(Row);
+                data.push(Row);
             }
+
+            this.$Grid.setData({
+                data : data,
+                page : GridData.page,
+                total: GridData.total
+            });
         },
 
         /**
@@ -210,24 +218,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         registerUser: function () {
             var self = this;
 
-            //this.Loader.show();
+            this.Loader.show();
 
             this.createSheet({
-                title : QUILocale.get(lg, 'gpm.passwords.panel.create.title'),
+                title : QUILocale.get(lg, 'gpm.auth.panel.register.title'),
                 events: {
                     onShow : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
-                        var Password = new PasswordCreate().inject(Sheet.getContent());
-
-                        //var Product = new CreateProduct({
-                        //    events: {
-                        //        onLoaded: function () {
-                        //            self.Loader.hide();
-                        //        }
-                        //    }
-                        //}).inject(Sheet.getContent());
-
+                        var Register = new AuthRegister({
+                            authPluginId: self.$Grid.getSelectedData()[0].id,
+                            events: {
+                                onFinish: function() {
+                                    self.Loader.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
 
                         Sheet.addButton(
                             new QUIButton({
@@ -235,7 +241,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
-                                        Password.submit();
+                                        Register.submit();
 
                                         //self.Loader.show();
                                         //

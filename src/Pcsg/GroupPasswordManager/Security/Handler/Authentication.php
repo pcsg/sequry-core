@@ -59,7 +59,14 @@ class Authentication
             $list[] = $row;
         }
 
-        return $list;
+        $Grid = new \QUI\Utils\Grid();
+
+        $result = $Grid->parseResult(
+            $list,
+            count($list)
+        );
+
+        return $result;
     }
 
     /**

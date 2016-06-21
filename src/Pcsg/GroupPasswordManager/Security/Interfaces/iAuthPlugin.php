@@ -2,6 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
+
 /**
  * This class provides a authentication plugin API for the pcsg/grouppasswordmanager module
  */
@@ -25,6 +27,20 @@ interface iAuthPlugin
      * @param mixed $information - authentication information given by the user
      */
     public function register($information = null);
+
+    /**
+     * Checks if the current user is successfully registered with this auth plugin
+     *
+     * @return bool
+     */
+    public function isRegistered();
+
+    /**
+     * Get the derived key from the authentication information
+     *
+     * @return Key
+     */
+    public function getDerivedKey();
 
     /**
      * Authenticate the current user

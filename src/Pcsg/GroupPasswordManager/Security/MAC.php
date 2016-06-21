@@ -27,13 +27,13 @@ class MAC
      */
     public static function create($str, $key)
     {
-        return self::_getMACModule()->create($str, $key);
+        return self::getMACModule()->create($str, $key);
     }
 
     /**
      * @return MACWrapper
      */
-    protected static function _getMACModule()
+    protected static function getMACModule()
     {
         if (!is_null(self::$_MACModule)) {
             return self::$_MACModule;

@@ -2,9 +2,12 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Authentication;
 
+use ParagonIE\Halite\Contract\SymmetricKeyCryptoInterface;
 use Pcsg\GroupPasswordManager\Constants\Tables;
-use QUI;
+use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use QUI;
 
 /**
  * This class is an internal represantion of an external authentication plugin
@@ -76,5 +79,43 @@ class Plugin extends QUI\QDOM
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Returns a QUI\Control object that collects authentification information
+     *
+     * @return \QUI\Control
+     */
+    public function getAuthenticationControl()
+    {
+        return $this->AuthClass->getAuthenticationControl();
+    }
+
+    /**
+     * Registers the current session user with this Plugin
+     *
+     * @param mixed $information - authentication information
+     * @throws QUI\Exception
+     */
+    public function registerUser($information)
+    {
+        // authenticate user to check if information given is correct
+        $this->AuthClass->register($information);
+        $this->AuthClass->authenticate($information);
+
+        // if authentication information is correct, create new keypair for user
+        $KeyPair = AsymmetricCrypto::generateKeyPair();
+
+        // derive key from authentication information
+        $Key = SymmetricCrypto::generateKey();
+
+        // encrypt private key
+        $publicKeyValue           = $KeyPair->getPublicKeyValue();
+        $encryptedPrivateKeyValue = SymmetricCrypto::encrypt(
+            $KeyPair->getPrivateKeyValue(),
+            $Key
+        );
+
+
     }
 }

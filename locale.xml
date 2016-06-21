@@ -84,6 +84,11 @@
             <de><![CDATA[Sie haben kein Zugriffsrecht auf das Passwort mit der ID [passwordId].]]></de>
         </locale>
 
+        <!-- Class: Security\Authentication\Plugin -->
+        <locale name="exception.authentication.plugin.register.error">
+            <de><![CDATA[Die Authentifizierungsinformationen sind ungültig.]]></de>
+        </locale>
+
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
@@ -166,6 +171,14 @@
         </locale>
         <locale name="auth.panel.registered.no">
             <de><![CDATA[no]]></de>
+        </locale>
+
+        <!-- Control: auth/Register -->
+        <locale name="auth.template.title">
+            <de><![CDATA[Registrierung für eine Authentifizierungsmethode]]></de>
+        </locale>
+        <locale name="auth.template.basicData">
+            <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
         </locale>
 
     </groups>

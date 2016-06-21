@@ -17,7 +17,7 @@ class HMAC implements MACWrapper
      *
      * @var HMACClass
      */
-    protected static $_HMACClass = null;
+    protected static $HMACClass = null;
 
     /**
      * Creates a MAC (Message Authentication Code)
@@ -28,7 +28,7 @@ class HMAC implements MACWrapper
      */
     public static function create($str, $key)
     {
-        $HMACClass = self::_getHMACClass();
+        $HMACClass = self::getHMACClass();
         $HMACClass->setKey($key);
         return $HMACClass->hash($str);
     }
@@ -38,14 +38,14 @@ class HMAC implements MACWrapper
      *
      * @return HMACClass
      */
-    protected static function _getHMACClass()
+    protected static function getHMACClass()
     {
-        if (!is_null(self::$_HMACClass)) {
-            return self::$_HMACClass;
+        if (!is_null(self::$HMACClass)) {
+            return self::$HMACClass;
         }
 
-        self::$_HMACClass = new HMACClass(self::HASH_ALGO);
+        self::$HMACClass = new HMACClass(self::HASH_ALGO);
 
-        return self::$_HMACClass;
+        return self::$HMACClass;
     }
 }

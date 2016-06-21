@@ -5,24 +5,23 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a asymmetric encryption/decryption API for the pcsg/grouppasswordmanager module
  */
-interface AsymmetricCryptoWrapper
+interface iAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
      *
-     * @param String $plainText - Data to be encrypted
-     * @param String $publicKey - Public encryption key
-     * @return String - The Ciphertext (encrypted plaintext)
+     * @param string $plainText - Data to be encrypted
+     * @param string $publicKey - Public encryption key
+     * @return string - The Ciphertext (encrypted plaintext)
      */
     public static function encrypt($plainText, $publicKey);
 
     /**
      * Decrypts a ciphertext
      *
-     * @param String $cipherText - Data to be decrypted
-     * @param String $privateKey - Private decryption key
-     * @param String $password (optional) - Password for private key
-     * @return String - The plaintext (decrypted ciphertext)
+     * @param string $cipherText - Data to be decrypted
+     * @param string $privateKey - Private decryption key
+     * @return string - The plaintext (decrypted ciphertext)
      */
     public static function decrypt($cipherText, $privateKey);
 
@@ -30,7 +29,7 @@ interface AsymmetricCryptoWrapper
     /**
      * Generates a new public/private key pair
      *
-     * @return Array - "privateKey" and "publicKey"
+     * @return array - "privateKey" and "publicKey"
      */
     public static function generateKeyPair();
 }

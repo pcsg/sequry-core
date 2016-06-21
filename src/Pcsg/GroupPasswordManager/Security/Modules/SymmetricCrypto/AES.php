@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\SymmetricCryptoWrapper;
+use Pcsg\GroupPasswordManager\Security\Interfaces\iSymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use phpseclib\Crypt\AES as AESClass;
 
@@ -11,7 +11,7 @@ use phpseclib\Crypt\AES as AESClass;
  *
  * AES-256
  */
-class AES implements SymmetricCryptoWrapper
+class AES implements iSymmetricCrypto
 {
     /**
      * Encryption Mode
@@ -39,6 +39,11 @@ class AES implements SymmetricCryptoWrapper
         $AESClass = self::getAESClass();
         $AESClass->setKey($key);
         return $AESClass->encrypt($plainText);
+    }
+
+    public static function generateKey()
+    {
+        // TODO: Implement generateKey() method.
     }
 
     /**

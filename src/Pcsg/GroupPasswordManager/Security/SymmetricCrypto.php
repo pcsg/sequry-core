@@ -2,8 +2,9 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
+use Pcsg\GroupPasswordManager\Security\Interfaces\iSymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use QUI;
-use Pcsg\GroupPasswordManager\Security\Interfaces\SymmetricCryptoWrapper;
 
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
@@ -20,54 +21,55 @@ class SymmetricCrypto
     /**
      * HashWrapper Class Object for the configured hash module
      *
-     * @var SymmetricCryptoWrapper
+     * @var iSymmetricCrypto
      */
-    protected static $_CryptoModule = null;
+    protected static $CryptoModule = null;
 
     /**
      * Encrypts a plaintext string
      *
      * @param String $plainText - Data to be encrypted
-     * @param String $key - Encryption key
+     * @param Key $Key - Symmetric key
      * @return String - The Ciphertext (encrypted plaintext)
      */
-    public static function encrypt($plainText, $key)
+    public static function encrypt($plainText, $Key)
     {
-        return self::_getCryptoModule()->encrypt($plainText, $key);
+        return self::getCryptoModule()->encrypt($plainText, $Key->getValue());
     }
 
     /**
      * Decrypts a ciphertext
      *
      * @param String $cipherText - Data to be decrypted
-     * @param String $key - Decryption key
+     * @param Key $Key - Symmetric key
      * @return String - The plaintext (decrypted ciphertext)
      */
-    public static function decrypt($cipherText, $key)
+    public static function decrypt($cipherText, $Key)
     {
-        return self::_getCryptoModule()->decrypt($cipherText, $key);
+        return self::getCryptoModule()->decrypt($cipherText, $Key->getValue());
     }
 
     /**
      * Generate a new, random symmetric key
      *
-     * @return String - The random key
+     * @return Key
      */
     public static function generateKey()
     {
-        return self::_getCryptoModule()->generateKey();
+        $keyValue = self::getCryptoModule()->generateKey();
+        return new Key($keyValue);
     }
 
     /**
      * Get Crypto Module for symmetric encryption/decryption
      *
-     * @return SymmetricCryptoWrapper
+     * @return iSymmetricCrypto
      * @throws QUI\Exception
      */
-    protected static function _getCryptoModule()
+    protected static function getCryptoModule()
     {
-        if (!is_null(self::$_CryptoModule)) {
-            return self::$_CryptoModule;
+        if (!is_null(self::$CryptoModule)) {
+            return self::$CryptoModule;
         }
 
         $moduleClass = '\Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto\\';
@@ -80,8 +82,8 @@ class SymmetricCrypto
             );
         }
 
-        self::$_CryptoModule = new $moduleClass();
+        self::$CryptoModule = new $moduleClass();
 
-        return self::$_CryptoModule;
+        return self::$CryptoModule;
     }
 }

@@ -40,33 +40,19 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Create a new password object
+         * Get control to authenticate with a specific authentication plugin
          *
-         * @param {Object} PasswordData - password data
+         * @param {number} authPluginId - ID of authentication plugin
          * @returns {Promise}
          */
-        createPassword: function (PasswordData) {
+        getAuthPluginControl: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_create', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getControl', resolve, {
                     'package'   : pkg,
                     onError     : reject,
-                    passwordData: JSON.encode(PasswordData)
+                    authPluginId: authPluginId
                 });
             });
-        },
-
-        /**
-         * Get all available security classes
-         *
-         * @returns {Promise}
-         */
-        getSecurityClasses: function (SearchParams) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClasses', resolve, {
-                    'package': pkg,
-                    onError  : reject
-                });
-            });
-        },
+        }
     });
 });

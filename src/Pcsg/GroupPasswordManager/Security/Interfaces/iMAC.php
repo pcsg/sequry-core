@@ -5,7 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a MAC API for the pcsg/grouppasswordmanager module
  */
-interface MACWrapper
+interface iMAC
 {
     /**
      * Creates a MAC (Message Authentication Code)

@@ -48,8 +48,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$Categories = null;
-
             this.addEvents({
                 onInject: this.$onInject
             });

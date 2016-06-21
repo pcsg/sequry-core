@@ -17,7 +17,6 @@ namespace Pcsg\GroupPasswordManager\Security\Classes;
  * @link     http://github.com/DomBlack/php-scrypt
  */
 use Pcsg\GroupPasswordManager\Security\Hash;
-use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 
 /**
  * This class abstracts away from scrypt module, allowing for easy use.
@@ -35,10 +34,14 @@ use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 abstract class Scrypt
 {
     /**
-     *
-     * @var int The key length [bytes]
+     * @const int Key/Hash length [bytes]
      */
-    private static $_keyLength = SymmetricCrypto::KEY_SIZE_ENCRYPTION / 8;
+    const KEY_LENGTH  = 32;
+
+    /**
+     * @const int Salt length [bytes]
+     */
+    const SALT_LENGTH = 32;
 
     /**
      * Get the byte-length of the given string
@@ -47,12 +50,13 @@ abstract class Scrypt
      *
      * @return int
      */
-    protected static function strlen( $str ) {
+    protected static function strlen($str)
+    {
         static $isShadowed = null;
 
         if ($isShadowed === null) {
             $isShadowed = extension_loaded('mbstring') &&
-                ini_get('mbstring.func_overload') & 2;
+                          ini_get('mbstring.func_overload') & 2;
         }
 
         if ($isShadowed) {
@@ -65,13 +69,13 @@ abstract class Scrypt
     /**
      * Generates a random salt
      *
-     * @param int $length The length of the salt
+     * @param int $length - The length of the salt
      *
      * @return string The salt
      */
-    public static function generateSalt($length = Hash::SALT_LENGTH / 8)
+    public static function generateSalt($length = self::SALT_LENGTH)
     {
-        $buffer = '';
+        $buffer       = '';
         $buffer_valid = false;
         if (function_exists('mcrypt_create_iv') && !defined('PHALANGER')) {
             $buffer = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
@@ -81,13 +85,13 @@ abstract class Scrypt
         }
         if (!$buffer_valid && function_exists('openssl_random_pseudo_bytes')) {
             $cryptoStrong = false;
-            $buffer = openssl_random_pseudo_bytes($length, $cryptoStrong);
+            $buffer       = openssl_random_pseudo_bytes($length, $cryptoStrong);
             if ($buffer && $cryptoStrong) {
                 $buffer_valid = true;
             }
         }
         if (!$buffer_valid && is_readable('/dev/urandom')) {
-            $f = fopen('/dev/urandom', 'r');
+            $f    = fopen('/dev/urandom', 'r');
             $read = static::strlen($buffer);
             while ($read < $length) {
                 $buffer .= fread($f, $length - $read);
@@ -116,11 +120,11 @@ abstract class Scrypt
     /**
      * Derive a random hash (or key) from a string
      *
-     * @param string $password        The clear text password
+     * @param string $password The clear text password
      * @param string $salt (optional) The salt to use, or null to generate a random one
-     * @param int    $N               The CPU difficultly (must be a power of 2, > 1)
-     * @param int    $r               The memory difficultly
-     * @param int    $p               The parallel difficultly
+     * @param int $N The CPU difficultly (must be a power of 2, > 1)
+     * @param int $r The memory difficultly
+     * @param int $p The parallel difficultly
      *
      * @return string The hashed password
      */
@@ -145,18 +149,18 @@ abstract class Scrypt
             $salt = str_replace(array('+', '$'), array('.', ''), base64_encode($salt));
         }
 
-        $hash = \scrypt($password, $salt, $N, $r, $p, self::$_keyLength);
+        $hash = \scrypt($password, $salt, $N, $r, $p, self::KEY_LENGTH);
 
         // since scrypt outputs its result in hex -> cut string to the actually wanted byte-length
-        return mb_substr($hash, 0, self::$_keyLength);
-//        return $N . '$' . $r . '$' . $p . '$' . $salt . '$' . $hash;
+//        return mb_substr($hash, 0, self::$keyLength);
+        return $N . '$' . $r . '$' . $p . '$' . $salt . '$' . $hash;
     }
 
     /**
      * Check a clear text password against a hash
      *
      * @param string $password The clear text password
-     * @param string $hash     The hashed password
+     * @param string $hash The hashed password
      *
      * @return boolean If the clear text matches
      */
@@ -179,7 +183,7 @@ abstract class Scrypt
             return false;
         }
 
-        $calculated = scrypt($password, $salt, $N, $r, $p, self::$_keyLength);
+        $calculated = scrypt($password, $salt, $N, $r, $p, self::$keyLength);
 
         // Use compareStrings to avoid timeing attacks
         return self::compareStrings($hash, $calculated);
@@ -206,14 +210,14 @@ abstract class Scrypt
      */
     public static function compareStrings($expected, $actual)
     {
-        $expected    = (string) $expected;
-        $actual      = (string) $actual;
+        $expected    = (string)$expected;
+        $actual      = (string)$actual;
         $lenExpected = static::strlen($expected);
         $lenActual   = static::strlen($actual);
         $len         = min($lenExpected, $lenActual);
 
         $result = 0;
-        for ($i = 0; $i < $len; $i ++) {
+        for ($i = 0; $i < $len; $i++) {
             $result |= ord($expected[$i]) ^ ord($actual[$i]);
         }
         $result |= $lenExpected ^ $lenActual;

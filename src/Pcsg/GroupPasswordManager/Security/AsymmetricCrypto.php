@@ -2,6 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
+use Pcsg\GroupPasswordManager\Security\Interfaces\iAsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\AsymmetricCryptoWrapper;
 
@@ -11,6 +13,9 @@ use Pcsg\GroupPasswordManager\Security\Interfaces\AsymmetricCryptoWrapper;
 class AsymmetricCrypto
 {
     const CRYPTO_MODULE = 'ECC'; // @todo in config auslagern
+
+
+    // @todo diese konstanten entfernen, da sich das baustein-modul darum kümmert
 
     /**
      * Key size of public/private key used for en/decryption [bits]
@@ -25,45 +30,45 @@ class AsymmetricCrypto
     /**
      * HashWrapper Class Object for the configured hash module
      *
-     * @var AsymmetricCryptoWrapper
+     * @var iAsymmetricCrypto
      */
-    protected static $_CryptoModule = null;
+    protected static $CryptoModule = null;
 
     /**
      * Encrypts a plaintext string
      *
-     * @param String $plainText - Data to be encrypted
-     * @param String $publicKey - Public encryption key
-     * @return String - The Ciphertext (encrypted plaintext)
+     * @param string $plainText - Data to be encrypted
+     * @param string $publicKey - Public encryption key
+     * @return string - The Ciphertext (encrypted plaintext)
      */
     public static function encrypt($plainText, $publicKey)
     {
-        return self::_getCryptoModule()->encrypt($plainText, $publicKey);
+        return self::getCryptoModule()->encrypt($plainText, $publicKey);
     }
 
     /**
      * Decrypts a ciphertext
      *
-     * @param String $cipherText - Data to be decrypted
-     * @param String $privateKey - Private decryption key
-     * @return String - The plaintext (decrypted ciphertext)
+     * @param string $cipherText - Data to be decrypted
+     * @param string $privateKey - Private decryption key
+     * @return string - The plaintext (decrypted ciphertext)
      */
     public static function decrypt($cipherText, $privateKey)
     {
-        return self::_getCryptoModule()->decrypt($cipherText, $privateKey);
+        return self::getCryptoModule()->decrypt($cipherText, $privateKey);
     }
 
     /**
      * Generates a new public/private key pair
      *
-     * @return Array - "privateKey" and "publicKey"
+     * @return KeyPair
      * @throws QUI\Exception
      */
     public static function generateKeyPair()
     {
         // Generate key pair
         try {
-            $keyPair = self::_getCryptoModule()->generateKeyPair();
+            $keyPair = self::getCryptoModule()->generateKeyPair();
 
             if (!isset($keyPair['publicKey'])
                 || empty($keyPair['publicKey'])) {
@@ -91,14 +96,14 @@ class AsymmetricCrypto
             );
         }
 
-        return $keyPair;
+        return new KeyPair($keyPair['publicKey'], $keyPair['privateKey']);
     }
 
     /**
      * Checks if a public/private key pair is correct
      *
-     * @param String $publicKey
-     * @param String $privateKey
+     * @param string $publicKey
+     * @param string $privateKey
      * @return Boolean - validity of the key pair
      */
     public static function testKeyPair($publicKey, $privateKey)
@@ -114,13 +119,13 @@ class AsymmetricCrypto
     /**
      * Get Crypto Module for symmetric encryption/decryption
      *
-     * @return AsymmetricCryptoWrapper
+     * @return iAsymmetricCrypto
      * @throws QUI\Exception
      */
-    protected static function _getCryptoModule()
+    protected static function getCryptoModule()
     {
-        if (!is_null(self::$_CryptoModule)) {
-            return self::$_CryptoModule;
+        if (!is_null(self::$CryptoModule)) {
+            return self::$CryptoModule;
         }
 
         $moduleClass = '\Pcsg\GroupPasswordManager\Security\Modules\AsymmetricCrypto\\';
@@ -133,8 +138,8 @@ class AsymmetricCrypto
             );
         }
 
-        self::$_CryptoModule = new $moduleClass();
+        self::$CryptoModule = new $moduleClass();
 
-        return self::$_CryptoModule;
+        return self::$CryptoModule;
     }
 }
