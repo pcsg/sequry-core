@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu>
+    <item parent="/apps/"
+          name="passwords"
+          require="package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel"
+          icon="fa fa-diamond"
+    >
+        <locale group="pcsg/grouppasswordmanager" var="menu.apps.gpm.title"/>
+    </item>
+
+    <item parent="/extras/"
+          name="gpmsettings"
+          icon="fa fa-diamond"
+    >
+        <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.title"/>
+    </item>
+    <item parent="/extras/gpmsettings/"
+          name="gpmsettingsauth"
+          require="package/pcsg/grouppasswordmanager/bin/controls/auth/Panel"
+          icon="fa fa-male"
+    >
+        <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.auth.title"/>
+    </item>
+
+</menu>

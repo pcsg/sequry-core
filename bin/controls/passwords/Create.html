@@ -1,0 +1,108 @@
+<form>
+    <h1>
+        {{title}}
+    </h1>
+
+    <table class="data-table data-table-flexbox product-data">
+        <thead>
+        <tr>
+            <th>
+                {{basicData}}
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{securityClass}}">
+                        {{securityClass}}
+                    </span>
+                    <span class="field-container-field pcsg-gpm-security-classes">
+
+                    </span>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{passwordTitle}}">
+                        {{passwordTitle}}
+                    </span>
+                    <span class="field-container-field">
+                        <input type="text" class="pcsg-gpm-password-title"/>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{passwordDescription}}">
+                        {{passwordDescription}}
+                    </span>
+                    <span class="field-container-field">
+                        <input type="text" class="pcsg-gpm-password-description"/>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="data-table data-table-flexbox product-payload">
+        <thead>
+        <tr>
+            <th>
+                {{payload}}
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{passwordPayload}}">
+                        {{passwordPayload}}
+                    </span>
+                    <span class="field-container-field">
+                        <input type="password" class="pcsg-gpm-password-payload"/>
+                        <span class="payload-warning">
+                            {{payloadWarning}}
+                        </span>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <table class="data-table data-table-flexbox product-owner">
+        <thead>
+        <tr>
+            <th>
+                {{owner}}
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{passwordOwner}}">
+                        {{passwordOwner}}
+                    </span>
+                    <span class="field-container-field pcsg-gpm-password-owner">
+
+                    </span>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</form>

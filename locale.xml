@@ -88,9 +88,85 @@
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
 
+        <locale name="menu.apps.gpm.title">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
+        <locale name="menu.extras.gpm.title">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
+        <locale name="menu.extras.gpm.auth.title">
+            <de><![CDATA[Authentifizierung]]></de>
+        </locale>
+
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="js">
+
+        <!-- Control: passwords/Panel -->
+        <locale name="controls.gpm.passwordlist.btn.add">
+            <de><![CDATA[Neues Passwort]]></de>
+        </locale>
+        <locale name="controls.gpm.passwordlist.panel.tbl.header.title">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="controls.gpm.passwordlist.panel.tbl.header.description">
+            <de><![CDATA[Kurzbeschreibung]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.create.title">
+            <de><![CDATA[Neues Passwort erstellen]]></de>
+        </locale>
+
+        <!-- Control: passwords/Create -->
+        <locale name="create.template.title">
+            <de><![CDATA[Neues Passwort erstellen]]></de>
+        </locale>
+        <locale name="create.template.basicData">
+            <de><![CDATA[Stammdaten]]></de>
+        </locale>
+        <locale name="create.template.securityClass">
+            <de><![CDATA[Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="create.template.passwordTitle">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="create.template.passwordDescription">
+            <de><![CDATA[Beschreibung]]></de>
+        </locale>
+        <locale name="create.template.payload">
+            <de><![CDATA[Inhalt]]></de>
+        </locale>
+        <locale name="create.template.passwordPayload">
+            <de><![CDATA[Passwort-Inhalt]]></de>
+        </locale>
+        <locale name="create.template.payloadWarning">
+            <de><![CDATA[Achtung! Dies sind die Daten, die verschlüsselt werden und auf die nach der Erstellung ausschließlich Berechtigte zugreifen können!]]></de>
+        </locale>
+        <locale name="create.template.owner">
+            <de><![CDATA[Eigentümer]]></de>
+        </locale>
+        <locale name="create.template.passwordOwner">
+            <de><![CDATA[Benutzer / Gruppe]]></de>
+        </locale>
+
+        <!-- Control: auth/Panel -->
+        <locale name="auth.panel.btn.register">
+            <de><![CDATA[Registrieren]]></de>
+        </locale>
+        <locale name="auth.panel.tbl.header.registered">
+            <de><![CDATA[registriert]]></de>
+        </locale>
+        <locale name="auth.panel.tbl.header.title">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="auth.panel.tbl.header.description">
+            <de><![CDATA[Beschreibung]]></de>
+        </locale>
+        <locale name="auth.panel.registered.yes">
+            <de><![CDATA[ja]]></de>
+        </locale>
+        <locale name="auth.panel.registered.no">
+            <de><![CDATA[no]]></de>
+        </locale>
 
     </groups>
 
