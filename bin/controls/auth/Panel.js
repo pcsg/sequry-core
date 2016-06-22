@@ -119,7 +119,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     header   : QUILocale.get(lg, 'auth.panel.tbl.header.registered'),
                     dataIndex: 'registered',
                     dataType : 'text',
-                    width    : 50
+                    width    : 75
                 }]
             });
 
@@ -131,9 +131,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 },
                 onClick   : function () {
                     var selectedCount = self.$Grid.getSelectedData().length,
+                        Row           = self.$Grid.getSelectedData()[0],
                         Register      = self.getButtons('register');
 
-                    if (selectedCount == 1) {
+                    if (selectedCount == 1 && !Row.registered) {
                         Register.enable();
                     } else {
                         Register.disable();
@@ -185,8 +186,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             var Row;
             var data = [];
 
-            console.log(GridData);
-
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 var Data = GridData.data[i];
 
@@ -237,30 +236,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
                         Sheet.addButton(
                             new QUIButton({
-                                text     : QUILocale.get('quiqqer/system', 'save'),
+                                text     : QUILocale.get(lg, 'auth.panel.register.btn.register'),
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
-                                        Register.submit();
+                                        self.Loader.show();
 
-                                        //self.Loader.show();
-                                        //
-                                        //Product.submit().then(function (Product) {
-                                        //    self.updateChild(Product.id);
-                                        //
-                                        //    Sheet.hide().then(function () {
-                                        //        Sheet.destroy();
-                                        //        self.refresh();
-                                        //    });
-                                        //}).catch(function (err) {
-                                        //    if (typeOf(err) == 'string') {
-                                        //        QUI.getMessageHandler().then(function (MH) {
-                                        //            MH.addError(err);
-                                        //        });
-                                        //    }
-                                        //
-                                        //    self.Loader.hide();
-                                        //});
+                                        Register.submit().then(function(success) {
+                                            self.Loader.hide();
+
+                                            if (!success) {
+                                                return;
+                                            }
+
+                                            Sheet.hide().then(function () {
+                                                Sheet.destroy();
+                                                self.refresh();
+                                            });
+                                        });
                                     }
                                 }
                             })

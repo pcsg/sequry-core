@@ -2,13 +2,13 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\MAC;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\MACWrapper;
+use Pcsg\GroupPasswordManager\Security\Interfaces\iMAC;
 use phpseclib\Crypt\Hash as HMACClass;
 
 /**
  * This class provides a hashing API for the pcsg/grouppasswordmanager module
  */
-class HMAC implements MACWrapper
+class HMAC implements iMAC
 {
     const HASH_ALGO = 'sha256';
 

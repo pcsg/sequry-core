@@ -7,21 +7,21 @@ use ParagonIE\Halite\Asymmetric\EncryptionPublicKey;
 use ParagonIE\Halite\Asymmetric\EncryptionSecretKey;
 use ParagonIE\Halite\KeyFactory;
 use QUI;
-use Pcsg\GroupPasswordManager\Security\Interfaces\AsymmetricCryptoWrapper;
+use Pcsg\GroupPasswordManager\Security\Interfaces\iAsymmetricCrypto;
 
 /**
  * This class provides an ecnryption API for the pcsg/grouppasswordmanager module
  *
  * ECC - Ellicptic Curce Cryptography (Curve25519)
  */
-class ECC implements AsymmetricCryptoWrapper
+class ECC implements iAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
      *
-     * @param String $plainText - Data to be encrypted
-     * @param String $publicKey - Public encryption key
-     * @return String - The Ciphertext (encrypted plaintext)
+     * @param string $plainText - Data to be encrypted
+     * @param string $publicKey - Public encryption key
+     * @return string - The Ciphertext (encrypted plaintext)
      * @throws QUI\Exception
      */
     public static function encrypt($plainText, $publicKey)
@@ -42,9 +42,9 @@ class ECC implements AsymmetricCryptoWrapper
     /**
      * Decrypts a ciphertext
      *
-     * @param String $cipherText - Data to be decrypted
-     * @param String $privateKey - Private decryption key
-     * @return String - The plaintext (decrypted ciphertext)
+     * @param string $cipherText - Data to be decrypted
+     * @param string $privateKey - Private decryption key
+     * @return string - The plaintext (decrypted ciphertext)
      * @throws QUI\Exception
      */
     public static function decrypt($cipherText, $privateKey)
@@ -65,7 +65,7 @@ class ECC implements AsymmetricCryptoWrapper
     /**
      * Generates a new, random public/private key pair
      *
-     * @return Array - "privateKey" and "publicKey"
+     * @return array - "privateKey" and "publicKey"
      * @throws QUI\Exception
      */
     public static function generateKeyPair()

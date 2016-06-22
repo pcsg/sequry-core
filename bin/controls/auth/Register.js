@@ -24,11 +24,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
 
     'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
 
+    'Ajax',
+
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css'
 
 ], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, AuthHandler,
-             template) {
+             Ajax, template) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager',
@@ -40,7 +42,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
 
         Binds: [
-            '$onInject'
+            '$onInject',
+            'submit'
         ],
 
         options: {
@@ -103,12 +106,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
         },
 
         /**
-         * Register the field
+         * Register current user with plugin
          *
          * @returns {Promise}
          */
         submit: function () {
-            console.log(this.$AuthPluginControl.getAuthData());
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
+                    'package'   : 'pcsg/grouppasswordmanager',
+                    onError     : reject,
+                    authPluginId: self.getAttribute('authPluginId'),
+                    authData    : self.$AuthPluginControl.getAuthData()
+                });
+            });
         }
     });
 });

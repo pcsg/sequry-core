@@ -13,6 +13,7 @@
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.css
  *
  * @event onLoaded
+ * @event onFinish
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
 
@@ -23,18 +24,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/EligibleActorSelect',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.html'
     //'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.css'
 
 ], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, PasswordHandler,
-             SecurityClassSelect, template) {
+             AuthHandler, AuthenticationControl, SecurityClassSelect, ActorSelect, template) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager',
-        Passwords = new PasswordHandler();
+    var lg             = 'pcsg/grouppasswordmanager',
+        Passwords      = new PasswordHandler(),
+        Authentication = new AuthHandler();
 
     return new Class({
 
@@ -87,7 +92,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
                 'span.pcsg-gpm-security-classes'
             );
 
-            this.$SecurityClassSelect = new SecurityClassSelect().inject(
+            var OwnerSelectElm = this.$Elm.getElement(
+                'span.pcsg-gpm-password-owner'
+            );
+
+            this.$SecurityClassSelect = new SecurityClassSelect({
+                events: {
+                    onLoaded: function(Select) {
+                        self.$OwnerSelect = new ActorSelect({
+                            securityClassId: Select.getValue(),
+                            events: {
+                                onLoaded: function() {
+                                    self.fireEvent('loaded');
+                                }
+                            }
+                        }).inject(OwnerSelectElm);
+                    }
+                }
+            }).inject(
                 SecurityClassElm
             );
 
@@ -107,15 +129,38 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
          * @returns {Promise}
          */
         submit: function () {
-            var PasswordData = {
+            var self = this;
+
+            this.$PasswordData  = {
                 securityClassId: this.$SecurityClassSelect.getValue(),
                 title          : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
                 description    : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
-                payload        : this.$Elm.getElement('input.pcsg-gpm-password-payload').value
+                payload        : this.$Elm.getElement('input.pcsg-gpm-password-payload').value,
+                owner          : this.$OwnerSelect.getActor()
             };
 
-            console.log(PasswordData);
-            this.$PasswordData = PasswordData;
+            var AuthControl = new AuthenticationControl({
+                securityClassId: this.$SecurityClassSelect.getValue(),
+                events: {
+                    onSubmit: function(AuthData) {
+                        Passwords.createPassword(
+                            self.$PasswordData,
+                            AuthData
+                        ).then(
+                            function() {
+                                self.$PasswordData = null;
+                                AuthControl.destroy();
+                                self.fireEvent('finish');
+                            },
+                            function() {
+                                // @todo
+                            }
+                        );
+                    }
+                }
+            });
+
+            AuthControl.open();
         }
     });
 });

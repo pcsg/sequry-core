@@ -15,13 +15,14 @@ class Scrypt implements iKDF
      * Creates a hash value from a given string
      *
      * @param String $str - A String
+     * @param String $salt (optional)
      * @return String - hashed string
      * @throws QUI\Exception
      */
-    public static function createKey($str)
+    public static function createKey($str, $salt = null)
     {
         try {
-            $hash = ScryptClass::createHash($str);
+            $hash = ScryptClass::createHash($str, $salt);
         } catch (QUI\Exception $Exception) {
             throw new QUI\Exception(
                 'Scrypt :: Hash operation failed: ' . $Exception->getMessage()

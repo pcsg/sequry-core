@@ -54,6 +54,12 @@
         <locale name="exception.password.setowner.no.rights">
             <de><![CDATA[Sie haben nicht die nötigen Rechte, um den Besitzer für das Passwort mit der ID [passwordId] zu setzen.]]></de>
         </locale>
+        <locale name="error.password.create.no.security.class">
+            <de><![CDATA[Sie müssen eine Sicherheitsklasse festlegen, bevor diese Operation ausgeführt werden kann.]]></de>
+        </locale>
+        <locale name="exception.passwords.create.missing.data">
+            <de><![CDATA[Es wurde keine Daten für das Password übergeben.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
@@ -83,10 +89,45 @@
         <locale name="exception.cryptouser.getpassword.no.right">
             <de><![CDATA[Sie haben kein Zugriffsrecht auf das Passwort mit der ID [passwordId].]]></de>
         </locale>
+        <locale name="exception.cryptouser.public.key.not.found">
+            <de><![CDATA[Es existiert kein öffentlicher Schlüssel für das Authentifizierungs-Plugin #[authPluginId] für den User #[userId].]]></de>
+        </locale>
+        <locale name="exception.cryptouser.keypair.not.found">
+            <de><![CDATA[Es existiert kein Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId] für den User #[userId].]]></de>
+        </locale>
+        <locale name="exception.cryptouser.keypair.not.authentic">
+            <de><![CDATA[Das Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId] für den User #[userId] ist nicht mehr gültig. Bitte kontaktieren Sie umgehend einen Administrator.]]></de>
+        </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
         <locale name="exception.authentication.plugin.register.error">
             <de><![CDATA[Die Authentifizierungsinformationen sind ungültig.]]></de>
+        </locale>
+        <locale name="exception.auth.plugin.register.database.error">
+            <de><![CDATA[Bei der Registrierung ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
+
+        <!-- Class: Security\Handler\Authentication -->
+        <locale name="exception.authentication.authenticate.error" html="true">
+            <de><![CDATA[Der Authentifizierungs-Vorgang war nicht erfolgreich:<br/><br/>[error]<br/><br/>Bitte versuchen Sie es erneut.]]></de>
+        </locale>
+
+        <!-- Ajax -->
+        <locale name="success.auth.registeruser">
+            <de><![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war erfolgreich. Sie können nun Passwörter erstellen und auf Passwörter zugreifen, die diese Authentifizierungs-Methode erfordern.]]></de>
+        </locale>
+        <locale name="error.auth.registeruser">
+            <de><![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+        </locale>
+
+        <!-- System -->
+        <locale name="exception.system.auth.key.file.not.found">
+            <de><![CDATA[Authentifizierungs-Schlüssel des Systems nicht gefunden.]]></de>
+        </locale>
+
+        <!-- Class: Security\Authentication\SecurityClass -->
+        <locale name="exception.securityclass.authenticate.missing.authdata">
+            <de><![CDATA[Die Authentifizierungsinformationen für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] wurden nicht übergeben.]]></de>
         </locale>
 
     </groups>
@@ -170,7 +211,10 @@
             <de><![CDATA[ja]]></de>
         </locale>
         <locale name="auth.panel.registered.no">
-            <de><![CDATA[no]]></de>
+            <de><![CDATA[nein]]></de>
+        </locale>
+        <locale name="auth.panel.register.btn.register">
+            <de><![CDATA[Registrieren]]></de>
         </locale>
 
         <!-- Control: auth/Register -->
@@ -179,6 +223,31 @@
         </locale>
         <locale name="auth.template.basicData">
             <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
+        </locale>
+
+        <!-- Control: auth/EligibleActorSelect -->
+        <locale name="controls.eligibleactorselect.switch.groups.btn">
+            <de><![CDATA[Hier klicken, um alle Gruppen anzuzeigen, die als Passwort-Eigentümer oder -Empfänger in Frage kommen]]></de>
+        </locale>
+        <locale name="controls.eligibleactorselect.switch.users.btn">
+            <de><![CDATA[Hier klicken, um alle Benutzer anzuzeigen, die als Passwort-Eigentümer oder -Empfänger in Frage kommen]]></de>
+        </locale>
+
+        <!-- Control: auth/Authenticate -->
+        <locale name="controls.authenticate.popup.title">
+            <de><![CDATA[Authentifizierung]]></de>
+        </locale>
+        <locale name="controls.authenticate.popup.info.title">
+            <de><![CDATA[Authentifizierung erforderlich!]]></de>
+        </locale>
+        <locale name="controls.authenticate.popup.info.description" html="true">
+            <de><![CDATA[Für diese Operation ist eine Authentifizierung für die Sicherheitsklasse <b>[securityClass]</b> erforderlich. Bitte authentifzieren Sie sich bei allen dafür nötigen Authentifizierungs-Plugins.]]></de>
+        </locale>
+        <locale name="controls.authenticate.popup.btn.text">
+            <de><![CDATA[Authentifizieren]]></de>
+        </locale>
+        <locale name="controls.authenticate.popup.btn">
+            <de><![CDATA[Hier klicken, um die Authentifizierung durchzuführen]]></de>
         </locale>
 
     </groups>

@@ -212,7 +212,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         createPassword: function () {
             var self = this;
 
-            //this.Loader.show();
+            this.Loader.show();
 
             this.createSheet({
                 title : QUILocale.get(lg, 'gpm.passwords.panel.create.title'),
@@ -220,7 +220,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     onShow : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
-                        var Password = new PasswordCreate().inject(Sheet.getContent());
+                        var Password = new PasswordCreate({
+                            events: {
+                                onLoaded: function() {
+                                    self.Loader.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
 
                         //var Product = new CreateProduct({
                         //    events: {

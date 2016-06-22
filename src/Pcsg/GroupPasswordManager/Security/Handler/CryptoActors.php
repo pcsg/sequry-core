@@ -32,15 +32,17 @@ class CryptoActors
     protected static $groups = array();
 
     /**
-     * @todo ggf. auch andere Nutzer als den Session-Nutzer holen
-     *
      * Return list of all security classes with name and description
      *
+     * @param QUI\Users\User $User (optional) - if omitted use session user
      * @return CryptoUser
      */
-    public static function getCryptoUser()
+    public static function getCryptoUser($User = null)
     {
-        $User   = QUI::getUserBySession();
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
         $userId = $User->getId();
 
         if (isset(self::$users[$userId])) {

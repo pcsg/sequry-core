@@ -1,6 +1,6 @@
 <?php
 
-namespace Pcsg\GroupPasswordManager\Security\Modules\Hash;
+namespace Pcsg\GroupPasswordManager\Security\Modules\CSPRNG;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\iCSPRNG;
 use QUI;

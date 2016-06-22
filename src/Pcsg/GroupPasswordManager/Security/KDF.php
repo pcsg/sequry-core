@@ -36,12 +36,12 @@ class KDF
      */
     public static function createKey($str, $salt = null)
     {
-        $keyValue = self::getKDFModule()->create($str, $salt);
+        $keyValue = self::getKDFModule()->createKey($str, $salt);
         return new Key($keyValue);
     }
 
     /**
-     * @return HashWrapper
+     * @return iKDF
      */
     protected static function getKDFModule()
     {

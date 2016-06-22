@@ -45,30 +45,18 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Create a new password object
          *
          * @param {Object} PasswordData - password data
+         * @param {Object} AuthData - Authentication data
          * @returns {Promise}
          */
-        createPassword: function (PasswordData) {
+        createPassword: function (PasswordData, AuthData) {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_create', resolve, {
                     'package'   : pkg,
                     onError     : reject,
-                    passwordData: JSON.encode(PasswordData)
+                    passwordData: JSON.encode(PasswordData),
+                    authData    : JSON.encode(AuthData)
                 });
             });
-        },
-
-        /**
-         * Get all available security classes
-         *
-         * @returns {Promise}
-         */
-        getSecurityClasses: function (SearchParams) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClasses', resolve, {
-                    'package': pkg,
-                    onError  : reject
-                });
-            });
-        },
+        }
     });
 });

@@ -28,6 +28,7 @@ class Utils
      */
     public static function compareStrings($expected, $actual)
     {
+        // >=PHP5.6 only
         if (function_exists('hash_equals')) {
             return hash_equals($expected, $actual);
         }
@@ -87,7 +88,7 @@ class Utils
     /**
      * Join parts of a key to retrieve the original key
      *
-     * @param Array $parts
+     * @param array $parts
      * @return String
      */
     public static function joinKeyParts($parts)
@@ -104,5 +105,25 @@ class Utils
         }
 
         return $key;
+    }
+
+    /**
+     * Get system authentication key
+     *
+     * @return string
+     * @throws \QUI\Exception
+     */
+    public static function getSystemAuthKey()
+    {
+        $keyFile = ETC_DIR . 'plugins/pcsg/gpm_auth.key';
+
+        if (!file_exists($keyFile)) {
+            throw new \QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.system.auth.key.file.not.found'
+            ), 404);
+        }
+
+        return file_get_contents($keyFile);
     }
 }

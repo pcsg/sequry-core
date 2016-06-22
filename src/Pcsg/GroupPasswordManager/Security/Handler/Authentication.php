@@ -9,6 +9,7 @@ namespace Pcsg\GroupPasswordManager\Security\Handler;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
+use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
 use QUI;
 
@@ -20,11 +21,18 @@ use QUI;
 class Authentication
 {
     /**
-     * Loaded plugins
+     * Loaded plugin objects
      *
      * @var array
      */
     protected static $plugins = array();
+
+    /**
+     * Loaded security class objects
+     *
+     * @var array
+     */
+    protected static $securityClasses = array();
 
     /**
      * Return list of all installed authentication plugins including:
@@ -35,7 +43,7 @@ class Authentication
      * - individual registration status for current session user
      *
      */
-    public static function getList()
+    public static function getAuthPluginList()
     {
         $list = array();
 
@@ -49,7 +57,7 @@ class Authentication
         ));
 
         foreach ($result as $row) {
-            $AuthPlugin = self::getAuthPluginById($row['id']);
+            $AuthPlugin = self::getAuthPlugin($row['id']);
 
             $row['registered'] = self::isRegistered(
                 CryptoActors::getCryptoUser(),
@@ -101,7 +109,7 @@ class Authentication
      * @return Plugin
      * @throws QUI\Exception
      */
-    public static function getAuthPluginById($id)
+    public static function getAuthPlugin($id)
     {
         if (isset(self::$plugins[$id])) {
             return self::$plugins[$id];
@@ -261,5 +269,65 @@ class Authentication
     public static function loadAuthPlugins()
     {
         QUI::getEvents()->fireEvent('pcsgGpmLoadAuthPlugins');
+    }
+
+    /**
+     * Return list of all security classes with name and description
+     *
+     * @return array
+     */
+    public static function getSecurityClassesList()
+    {
+        $list = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'from' => Tables::SECURITY_CLASSES,
+        ));
+
+        foreach ($result as $row) {
+            $list[] = $row;
+        }
+
+        return $list;
+    }
+
+    /**
+     * Get security class
+     *
+     * @param $id
+     * @return SecurityClass
+     * @throws QUI\Exception
+     */
+    public static function getSecurityClass($id)
+    {
+        if (isset(self::$securityClasses[$id])) {
+            return self::$securityClasses[$id];
+        }
+
+        self::$securityClasses[$id] = new SecurityClass($id);
+
+        return self::$securityClasses[$id];
+    }
+
+    /**
+     * Authenticate current session user with all plugins of a security class
+     *
+     * @param integer $securityClassId - security class id
+     * @param array $authData - authentication data by plugin
+     * @throws QUI\Exception
+     */
+    public static function authenticateWithSecurityClass($securityClassId, $authData)
+    {
+        try {
+            $SecurityClass = self::getSecurityClass($securityClassId);
+            $SecurityClass->authenticate($authData);
+        } catch (QUI\Exception $Exception) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.authentication.authenticate.error', array(
+                    'error' => $Exception->getMessage()
+                )
+            ));
+        }
     }
 }

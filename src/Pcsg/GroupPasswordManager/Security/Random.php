@@ -2,16 +2,15 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\HashWrapper;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iKDF;
-use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\Interfaces\iCSPRNG;
 
 /**
- * This class provides a key derivation API for the pcsg/grouppasswordmanager module
+ * This class provides a Cryptographically Secure Pseudo Random Number Generator (CSPRNG)
+ * API for the pcsg/grouppasswordmanager module
  */
 class Random
 {
-    const CSPRNG_MODULE = 'Scrypt'; // @todo in config auslagern
+    const CSPRNG_MODULE = 'Libsodium'; // @todo in config auslagern
 
     /**
      * Random data length length [bits]
@@ -23,7 +22,7 @@ class Random
     /**
      * Random Number Generator Class Object for the configured hash module
      *
-     * @var iKDF
+     * @var iCSPRNG
      */
     protected static $RNGModule = null;
 
@@ -35,11 +34,15 @@ class Random
      */
     public static function getRandomData($length = null)
     {
+        if (is_null($length)) {
+            $length = self::RANDOM_DATA_LENGTH;
+        }
 
+        return self::getRNGModule()->getRandomData($length);
     }
 
     /**
-     * @return HashWrapper
+     * @return iCSPRNG
      */
     protected static function getRNGModule()
     {

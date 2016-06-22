@@ -32,9 +32,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getAuthPlugins: function () {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getList', resolve, {
-                    'package'   : pkg,
-                    onError     : reject
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginList', resolve, {
+                    'package': pkg,
+                    onError  : reject
                 });
             });
         },
@@ -51,6 +51,72 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
+                });
+            });
+        },
+
+        /**
+         * Get control to authenticate with a specific authentication plugin
+         *
+         * @param {number} securityClassId - ID of security class
+         * @returns {Promise}
+         */
+        getAuthPluginControlsBySecurityClass: function (securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getControlsBySecurityClass', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    securityClassId: securityClassId
+                });
+            });
+        },
+
+        /**
+         * Get id, title and description of a security class
+         *
+         * @param {number} securityClassId - ID of security class
+         * @returns {Promise}
+         */
+        getSecurityClassInfo: function (securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    securityClassId: securityClassId
+                });
+            });
+        },
+
+        /**
+         * Get all available security classes
+         *
+         * @returns {Promise}
+         */
+        getSecurityClasses: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassesList', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        getEligibleUsersBySecurityClass: function (securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getEligibleUsers', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    securityClassId: securityClassId
+                });
+            });
+        },
+
+        getEligibleGroupsBySecurityClass: function (securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getEligibleGroups', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    securityClassId: securityClassId
                 });
             });
         }

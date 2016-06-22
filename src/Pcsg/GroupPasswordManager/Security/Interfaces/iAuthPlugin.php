@@ -24,16 +24,25 @@ interface iAuthPlugin
     /**
      * Registers the current user and creates a new keypair
      *
-     * @param mixed $information - authentication information given by the user
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
+     * @param mixed $information (optional) - authentication information given by the user
      */
-    public function register($information = null);
+    public static function register($User = null, $information = null);
 
     /**
      * Checks if the current user is successfully registered with this auth plugin
      *
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return bool
      */
-    public function isRegistered();
+    public static function isRegistered($User = null);
+
+    /**
+     * Get list of User IDs of users that are registered with this plugin
+     *
+     * @return array
+     */
+    public static function getRegisteredUserIds();
 
     /**
      * Get the derived key from the authentication information
@@ -46,7 +55,8 @@ interface iAuthPlugin
      * Authenticate the current user
      *
      * @param mixed $information - authentication information given by the user
-     * @return mixed
+     * @return true - if authenticated
+     * @throws \QUI\Exception
      */
     public function authenticate($information = null);
 

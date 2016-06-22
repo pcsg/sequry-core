@@ -11,7 +11,7 @@
  * @require Locale
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect.css
  *
- * @event onFinish [value, this] - fires when categories are loaded and control is built
+ * @event onLoaded [this] - fires when security classes are loaded
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect', [
 
@@ -19,18 +19,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect'
     'qui/controls/buttons/Select',
     'qui/controls/loader/Loader',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
 
     'Ajax',
     'Locale'
 
     //'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect.css'
 
-], function (QUI, QUISelect, QUILoader, PasswordHandler, Ajax, QUILocale) {
+], function (QUI, QUISelect, QUILoader, AuthHandler, Ajax, QUILocale) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager';
-    var Passwords = new PasswordHandler();
+    var lg             = 'pcsg/grouppasswordmanager';
+    var Authentication = new AuthHandler();
 
     return new Class({
 
@@ -57,7 +57,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect'
                 onResize : this.$onResize
             });
 
-            this.Loader = new QUILoader();
+            this.Loader       = new QUILoader();
+            this.$initialLoad = true;
         },
 
         /**
@@ -92,7 +93,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect'
 
             this.Loader.show();
 
-            Passwords.getSecurityClasses().then(function(result) {
+            Authentication.getSecurityClasses().then(function (result) {
                 var first = false;
 
                 self.clear();
@@ -116,6 +117,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect'
                 }
 
                 self.Loader.hide();
+
+                if (self.$initialLoad) {
+                    self.fireEvent('loaded', [ self ]);
+                    self.$initialLoad = false;
+                }
             });
         }
     });

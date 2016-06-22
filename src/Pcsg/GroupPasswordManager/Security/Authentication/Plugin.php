@@ -6,7 +6,10 @@ use ParagonIE\Halite\Contract\SymmetricKeyCryptoInterface;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -92,30 +95,104 @@ class Plugin extends QUI\QDOM
     }
 
     /**
-     * Registers the current session user with this Plugin
+     * Authenticates a user with a plugin
      *
-     * @param mixed $information - authentication information
+     * @param mixed $information (optional) - authentication information
+     * @return true - if authenticated
      * @throws QUI\Exception
      */
-    public function registerUser($information)
+    public function authenticate($information = null)
     {
-        // authenticate user to check if information given is correct
-        $this->AuthClass->register($information);
-        $this->AuthClass->authenticate($information);
+        return $this->AuthClass->authenticate($information);
+    }
+
+    /**
+     * Registers the current session user with this Plugin
+     *
+     * @param mixed $information (optional) - authentication information
+     * @return void
+     * @throws QUI\Exception
+     */
+    public function registerUser($information = null)
+    {
+        try {
+            // register with plugin
+            $this->AuthClass->register($information);
+
+            // authenticate with plugin
+            $this->AuthClass->authenticate($information);
+
+            // get derived key from authentication information
+            $AuthKey = $this->AuthClass->getDerivedKey();
+        } catch (QUI\Database\Exception $Exception) {
+            QUI\System\Log::addError(
+                'DB error while registering a user for an auth plugin: ' . $Exception->getMessage()
+            );
+
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.auth.plugin.register.database.error'
+            ));
+        }
 
         // if authentication information is correct, create new keypair for user
         $KeyPair = AsymmetricCrypto::generateKeyPair();
-
-        // derive key from authentication information
-        $Key = SymmetricCrypto::generateKey();
 
         // encrypt private key
         $publicKeyValue           = $KeyPair->getPublicKeyValue();
         $encryptedPrivateKeyValue = SymmetricCrypto::encrypt(
             $KeyPair->getPrivateKeyValue(),
-            $Key
+            $AuthKey
         );
 
+        // calculate MAC with system auth key
+        // @todo noch mehr informationen in den MAC einfließen lassen (plugin id, user id etc.)
+        $macValue = MAC::create(
+            $publicKeyValue . $encryptedPrivateKeyValue,
+            Utils::getSystemAuthKey()
+        );
 
+        try {
+            // put everything in the database
+            QUI::getDataBase()->insert(
+                Tables::KEYPAIRS,
+                array(
+                    'userId'       => QUI::getUserBySession()->getId(),
+                    'authPluginId' => $this->id,
+                    'publicKey'    => $publicKeyValue,
+                    'privateKey'   => $encryptedPrivateKeyValue,
+                    'MAC'          => $macValue
+                )
+            );
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::addError(
+                'DB error while registering a user for an auth plugin: ' . $Exception->getMessage()
+            );
+
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.auth.plugin.register.database.error'
+            ));
+        }
+    }
+
+    /**
+     * Get derived key from authentication information
+     *
+     * @return Key
+     */
+    public function getDerivedKey()
+    {
+        return $this->AuthClass->getDerivedKey();
+    }
+
+    /**
+     * Get list of User IDs of users that are registered with this plugin
+     *
+     * @return array
+     */
+    public function getRegisteredUserIds()
+    {
+        return $this->AuthClass->getRegisteredUserIds();
     }
 }
