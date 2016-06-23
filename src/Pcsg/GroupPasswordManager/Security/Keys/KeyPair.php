@@ -42,16 +42,6 @@ class KeyPair
     }
 
     /**
-     * Return value of public key
-     *
-     * @return string
-     */
-    public function getPublicKeyValue()
-    {
-        return $this->PublicKey->getValue();
-    }
-
-    /**
      * Get the private key
      *
      * @return Key
@@ -59,15 +49,5 @@ class KeyPair
     public function getPrivateKey()
     {
         return $this->PrivateKey;
-    }
-
-    /**
-     * Return value of private key
-     *
-     * @return string
-     */
-    public function getPrivateKeyValue()
-    {
-        return $this->PrivateKey->getValue();
     }
 }

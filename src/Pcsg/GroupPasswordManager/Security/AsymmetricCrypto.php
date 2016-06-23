@@ -38,24 +38,30 @@ class AsymmetricCrypto
      * Encrypts a plaintext string
      *
      * @param string $plainText - Data to be encrypted
-     * @param string $publicKey - Public encryption key
+     * @param KeyPair $KeyPair
      * @return string - The Ciphertext (encrypted plaintext)
      */
-    public static function encrypt($plainText, $publicKey)
+    public static function encrypt($plainText, $KeyPair)
     {
-        return self::getCryptoModule()->encrypt($plainText, $publicKey);
+        return self::getCryptoModule()->encrypt(
+            $plainText,
+            $KeyPair->getPublicKey()->getValue()
+        );
     }
 
     /**
      * Decrypts a ciphertext
      *
      * @param string $cipherText - Data to be decrypted
-     * @param string $privateKey - Private decryption key
+     * @param KeyPair $KeyPair
      * @return string - The plaintext (decrypted ciphertext)
      */
-    public static function decrypt($cipherText, $privateKey)
+    public static function decrypt($cipherText, $KeyPair)
     {
-        return self::getCryptoModule()->decrypt($cipherText, $privateKey);
+        return self::getCryptoModule()->decrypt(
+            $cipherText,
+            $KeyPair->getPrivateKey()->getValue()
+        );
     }
 
     /**
@@ -89,29 +95,30 @@ class AsymmetricCrypto
             );
         }
 
+        $KeyPair = new KeyPair($keyPair['publicKey'], $keyPair['privateKey']);
+
         // Test validity of key pair
-        if (!self::testKeyPair($keyPair['publicKey'], $keyPair['privateKey'])) {
+        if (!self::testKeyPair($KeyPair)) {
             throw new QUI\Exception(
                 'Could not generate key pair: Key pair test failed.'
             );
         }
 
-        return new KeyPair($keyPair['publicKey'], $keyPair['privateKey']);
+        return $KeyPair;
     }
 
     /**
      * Checks if a public/private key pair is correct
      *
-     * @param string $publicKey
-     * @param string $privateKey
+     * @param KeyPair $KeyPair
      * @return Boolean - validity of the key pair
      */
-    public static function testKeyPair($publicKey, $privateKey)
+    public static function testKeyPair($KeyPair)
     {
         $rnd = uniqid('', true);
 
-        $cipherText = self::encrypt($rnd, $publicKey);
-        $plainText = self::decrypt($cipherText, $privateKey);
+        $cipherText = self::encrypt($rnd, $KeyPair);
+        $plainText = self::decrypt($cipherText, $KeyPair);
 
         return Utils::compareStrings($rnd, $plainText);
     }

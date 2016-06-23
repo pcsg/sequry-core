@@ -120,6 +120,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     dataIndex: 'registered',
                     dataType : 'text',
                     width    : 75
+                }, {
+                    header   : QUILocale.get(lg, 'auth.panel.tbl.header.registered'),
+                    dataIndex: 'isregistered',
+                    hidden   : true
                 }]
             });
 
@@ -134,7 +138,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         Row           = self.$Grid.getSelectedData()[0],
                         Register      = self.getButtons('register');
 
-                    if (selectedCount == 1 && !Row.registered) {
+                    if (selectedCount == 1 && !Row.isregistered) {
                         Register.enable();
                     } else {
                         Register.disable();
@@ -196,9 +200,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 };
 
                 if (Data.registered) {
-                    Row.registered = QUILocale.get(lg, 'auth.panel.registered.yes');
+                    Row.registered   = QUILocale.get(lg, 'auth.panel.registered.yes');
+                    Row.isregistered = true;
                 } else {
-                    Row.registered = QUILocale.get(lg, 'auth.panel.registered.no');
+                    Row.registered   = QUILocale.get(lg, 'auth.panel.registered.no');
+                    Row.isregistered = false;
                 }
 
                 data.push(Row);
@@ -227,8 +233,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
                         var Register = new AuthRegister({
                             authPluginId: self.$Grid.getSelectedData()[0].id,
-                            events: {
-                                onFinish: function() {
+                            events      : {
+                                onFinish: function () {
                                     self.Loader.hide();
                                 }
                             }
@@ -242,7 +248,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                     onClick: function () {
                                         self.Loader.show();
 
-                                        Register.submit().then(function(success) {
+                                        Register.submit().then(function (success) {
                                             self.Loader.hide();
 
                                             if (!success) {

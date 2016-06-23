@@ -7,6 +7,7 @@
 namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
+use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -28,124 +29,48 @@ class CryptoUser extends QUI\Users\User
     /**
      * CryptoUser constructor.
      *
-     * @param integer $id - quiqqer user id
+     * @param integer $userId - quiqqer user id
      */
-    public function __construct($id)
+    public function __construct($userId)
     {
         $UserManager = new QUI\Users\Manager();
-        parent::__construct($id, $UserManager);
+        parent::__construct($userId, $UserManager);
     }
 
     /**
-     * Return public key of this user - can be used to encrypt secrets that are to be shared with this user
+     * Return Key pair for specific authentication plugin
      *
-     * @param Plugin $AuthModule
-     * @return Key
+     * @param Plugin $AuthPlugin
+     * @return AuthKeyPair
      * @throws QUI\Exception
      */
-    public function getPublicKey($AuthModule)
+    public function getAuthKeyPair($AuthPlugin)
     {
-        $result = QUI::getDataBase()->fetch(
-            array(
-                'select' => array(
-                    'id',
-                    'publicKey',
-                ),
-                'from'   => Tables::KEYPAIRS,
-                'where'  => array(
-                    'userId'       => $this->getId(),
-                    'authPluginId' => $AuthModule->getId()
-                )
-            )
-        );
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::KEYPAIRS,
+            'where'  => array(
+                'authPluginId' => $AuthPlugin->getId()
+            ),
+            'limit'  => 1
+        ));
 
         if (empty($result)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.cryptouser.public.key.not.found',
+                'exception.cryptouser.authkeypair.not.found',
                 array(
-                    'authPluginId' => $AuthModule->getId(),
-                    'userId'       => $this->getId()
+                    'userId'       => $this->getId(),
+                    'authPluginId' => $AuthPlugin->getId()
                 )
             ));
         }
 
         $data = current($result);
 
-        return new Key($data['publicKey']);
-    }
-
-    /**
-     * Return Key pair for specific authentication module
-     *
-     * @param Plugin $AuthModule
-     * @return KeyPair
-     * @throws QUI\Exception
-     */
-    public function getKeyPair($AuthModule)
-    {
-        $result = QUI::getDataBase()->fetch(
-            array(
-                'select' => array(
-                    'id',
-                    'publicKey',
-                    'privateKey',
-                    'MAC'
-                ),
-                'from'   => Tables::KEYPAIRS,
-                'where'  => array(
-                    'userId'       => $this->getId(),
-                    'authPluginId' => $AuthModule->getId()
-                )
-            )
-        );
-
-        if (empty($result)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptouser.keypair.not.found',
-                array(
-                    'authPluginId' => $AuthModule->getId(),
-                    'userId'       => $this->getId()
-                )
-            ));
-        }
-
-        $data = current($result);
-
-        $publicKey           = $data['publicKey'];
-        $privateKeyEncrypted = $data['privateKey'];
-
-        $keyPairMAC      = $data['MAC'];
-        $keyPairMACCheck = MAC::create(
-            $publicKey . $privateKeyEncrypted,
-            Utils::getSystemAuthKey()
-        );
-
-        // check integrity and authenticity of keypair
-        if (!Utils::compareStrings($keyPairMACCheck, $keyPairMAC)) {
-            QUI\System\Log::addCritical(
-                'Key Pair #' . $data['id'] . ' is possibly altered! MAC mismatch!'
-            );
-
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptouser.keypair.not.authentic',
-                array(
-                    'authPluginId' => $AuthModule->getId(),
-                    'userId'       => $this->getId()
-                )
-            ));
-        }
-
-        $authPluginKey = $AuthModule->getDerivedKey();
-
-        $privateKey = SymmetricCrypto::decrypt(
-            $privateKeyEncrypted,
-            $authPluginKey
-        );
-
-        return new KeyPair($publicKey, $privateKey);
+        return new AuthKeyPair($data['id']);
     }
 
     /**
@@ -188,9 +113,10 @@ class CryptoUser extends QUI\Users\User
         $params['select'] = array(
             'id',
             'title',
-            'description'
+            'description',
+            'securityClassId'
         );
-        $params['from']   = QUI::getDBTableName(Tables::PASSWORDS);
+        $params['from']   = Tables::PASSWORDS;
 
         // if frontend did not send "perPage" attribute -> assume no limit is wanted
         if (!isset($gridParams['perPage']) || empty($gridParams['perPage'])) {

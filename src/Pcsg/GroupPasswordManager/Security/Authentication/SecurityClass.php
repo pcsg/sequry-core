@@ -76,21 +76,20 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Checks if a user is authenticated for this security class
+     * Authenticates current session user with all authentication plugins associated with this security class
      *
      * @param array $authData - authentication data
-     * @param QUI\Users\User $User
      * @return bool
      * @throws QUI\Exception
      */
-    public function authenticate($authData, $User = null)
+    public function authenticate($authData)
     {
         if (empty($authData)) {
-            return false;
-        }
-
-        if (is_null($User)) {
-            $User = QUI::getUserBySession();
+            // @todo eigenen 401 error code
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.authenticate.authdata.not.given'
+            ));
         }
 
         $plugins = $this->getAuthPlugins();
@@ -98,6 +97,7 @@ class SecurityClass extends QUI\QDOM
         /** @var Plugin $AuthPlugin */
         foreach ($plugins as $AuthPlugin) {
             if (!isset($authData[$AuthPlugin->getId()])) {
+                // @todo eigenen 401 error code
                 throw new QUI\Exception(array(
                     'pcsg/grouppasswordmanager',
                     'exception.securityclass.authenticate.missing.authdata',
@@ -105,10 +105,29 @@ class SecurityClass extends QUI\QDOM
                         'authPluginId'    => $AuthPlugin->getId(),
                         'authPluginTitle' => $AuthPlugin->getAttribute('title')
                     )
-                ), 401);
+                ));
             }
 
             $AuthPlugin->authenticate($authData[$AuthPlugin->getId()]);
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if current session user is authenticated with all associated security plugin
+     *
+     * @return bool
+     */
+    public function isAuthenticated()
+    {
+        $plugins = $this->getAuthPlugins();
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($plugins as $AuthPlugin) {
+            if (!$AuthPlugin->isAuthenticated()) {
+                return false;
+            }
         }
 
         return true;

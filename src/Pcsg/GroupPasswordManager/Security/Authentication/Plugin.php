@@ -107,6 +107,18 @@ class Plugin extends QUI\QDOM
     }
 
     /**
+     * Checks if current session user is authenticated with this plugin
+     *
+     * @return bool
+     */
+    public function isAuthenticated()
+    {
+        return $this->AuthClass->isAuthenticated();
+    }
+
+    /**
+     * @todo auch für nicht session user
+     *
      * Registers the current session user with this Plugin
      *
      * @param mixed $information (optional) - authentication information
@@ -117,7 +129,7 @@ class Plugin extends QUI\QDOM
     {
         try {
             // register with plugin
-            $this->AuthClass->register($information);
+            $this->AuthClass->register(QUI::getUserBySession(), $information);
 
             // authenticate with plugin
             $this->AuthClass->authenticate($information);
@@ -139,9 +151,9 @@ class Plugin extends QUI\QDOM
         $KeyPair = AsymmetricCrypto::generateKeyPair();
 
         // encrypt private key
-        $publicKeyValue           = $KeyPair->getPublicKeyValue();
+        $publicKeyValue = $KeyPair->getPublicKey()->getValue();
         $encryptedPrivateKeyValue = SymmetricCrypto::encrypt(
-            $KeyPair->getPrivateKeyValue(),
+            $KeyPair->getPrivateKey()->getValue(),
             $AuthKey
         );
 
@@ -149,7 +161,7 @@ class Plugin extends QUI\QDOM
         // @todo noch mehr informationen in den MAC einfließen lassen (plugin id, user id etc.)
         $macValue = MAC::create(
             $publicKeyValue . $encryptedPrivateKeyValue,
-            Utils::getSystemAuthKey()
+            Utils::getSystemKeyPairAuthKey()
         );
 
         try {

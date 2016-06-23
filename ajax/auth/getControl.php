@@ -10,7 +10,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_getControl($authPluginId)
 {
-    $AuthPlugin = Authentication::getAuthPluginById((int)$authPluginId);
+    $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
     return $AuthPlugin->getAuthenticationControl();
 }
 

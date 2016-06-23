@@ -52,10 +52,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             this.parent(options);
 
             this.addEvents({
-                onInject: this.$onInject
+                onInject : this.$onInject,
+                onDestroy: this.$onDestroy
             });
 
-            this.$AuthData = {};
+            this.$AuthPopup = null;
         },
 
         /**
@@ -68,10 +69,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         },
 
         /**
-         * event : on inject
+         * event : oninject
          */
         $onInject: function () {
             // @todo
+        },
+
+        /**
+         * event: ondestroy
+         */
+        $onDestroy: function() {
+            if (this.$AuthPopup) {
+                this.$AuthPopup.close();
+            }
         },
 
         open: function () {
@@ -87,6 +97,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 '<div class="pcsg-gpm-auth-authenticate-plugins"></div>'
             });
 
+            this.$AuthPopup = AuthPopup;
+
+            var submitFunc = function () {
+                self.fireEvent('submit', [self.getAuthData()]);
+            };
+
             AuthPopup.open();
 
             AuthPopup.addButton(new QUIButton({
@@ -94,9 +110,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
                 title : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
                 events: {
-                    onClick: function () {
-                        self.fireEvent('submit', [ self.getAuthData() ]);
-                    }
+                    onClick: submitFunc
                 }
             }));
 
@@ -115,7 +129,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 Authentication.getAuthPluginControlsBySecurityClass(securityClassId)
             ]).then(function (result) {
                 var SecurityClassInfo = result[0];
-                var AuthPluginPaths = result[1];
+                var AuthPluginPaths   = result[1];
 
                 // set popup html and texts
                 InfoElm.set(
@@ -158,6 +172,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                                 'class': 'pcsg-gpm-auth-authenticate-plugins-plugin'
                             }).inject(PluginsElm);
 
+                            Control.addEvents({
+                                onSubmit: submitFunc
+                            });
+
                             Control.inject(PluginElm);
                         }
 
@@ -181,15 +199,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             }
 
             return AuthData;
-        },
-
-        /**
-         * Authenticate current user with plugin
-         *
-         * @returns {Promise}
-         */
-        submit: function () {
-
         }
     });
 });

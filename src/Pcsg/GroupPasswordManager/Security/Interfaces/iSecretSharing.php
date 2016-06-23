@@ -13,7 +13,7 @@ interface iSecretSharing
      * @param string $secret
      * @param integer $parts - number of parts the secret is split into
      * @param integer $required - number of minimum required parts to recover the secret
-     * @return void
+     * @return array - secret parts
      */
     public static function splitSecret($secret, $parts, $required);
 

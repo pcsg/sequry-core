@@ -10,7 +10,7 @@ use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAsymmetricCrypto;
 
 /**
- * This class provides an ecnryption API for the pcsg/grouppasswordmanager module
+ * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
  *
  * ECC - Ellicptic Curce Cryptography (Curve25519)
  */
@@ -22,20 +22,20 @@ class ECC implements iAsymmetricCrypto
      * @param string $plainText - Data to be encrypted
      * @param string $publicKey - Public encryption key
      * @return string - The Ciphertext (encrypted plaintext)
-     * @throws QUI\Exception
+     * @throws \Exception
      */
     public static function encrypt($plainText, $publicKey)
     {
         try {
             $PublicKey = new EncryptionPublicKey($publicKey);
             $cipherText = Crypto::seal($plainText, $PublicKey, true);
-        } catch (QUI\Exception $Exception) {
+        } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Plaintext encryption with publiy key failed: '
                 . $Exception->getMessage()
             );
         }
-        
+
         return $cipherText;
     }
 
@@ -45,14 +45,14 @@ class ECC implements iAsymmetricCrypto
      * @param string $cipherText - Data to be decrypted
      * @param string $privateKey - Private decryption key
      * @return string - The plaintext (decrypted ciphertext)
-     * @throws QUI\Exception
+     * @throws \Exception
      */
     public static function decrypt($cipherText, $privateKey)
     {
         try {
             $PrivateKey = new EncryptionSecretKey($privateKey);
             $plainText = Crypto::unseal($cipherText, $PrivateKey, true);
-        } catch (QUI\Exception $Exception) {
+        } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Ciphertext decryption with private key failed: '
                 . $Exception->getMessage()

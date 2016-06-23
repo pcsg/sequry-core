@@ -71,7 +71,7 @@ class XSalsa20 implements iSymmetricCrypto
     {
         try {
             $SecretKey = new EncryptionKey($key);
-            $plainText = Crypto::encrypt($cipherText, $SecretKey, true);
+            $plainText = Crypto::decrypt($cipherText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'XSalsa20 :: Ciphertext decryption failed: '

@@ -42,6 +42,40 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
+         * Get single password object (authentication required!)
+         *
+         * @param {number} passwordId
+         * @param {object} AuthData
+         * @returns {*}
+         */
+        getView: function (passwordId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getView', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId,
+                    authData  : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
+         * Get unencrypted information of a password
+         *
+         * @param {number} passwordId
+         * @returns {*}
+         */
+        getPasswordInfo: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getInfo', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId
+                });
+            });
+        },
+
+        /**
          * Create a new password object
          *
          * @param {Object} PasswordData - password data
@@ -57,6 +91,26 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                     authData    : JSON.encode(AuthData)
                 });
             });
+        },
+
+        /**
+         * Delete a password object
+         *
+         * @param {number} passwordId - password ID
+         * @param {Object} AuthData - Authentication data
+         * @returns {Promise}
+         */
+        deletePassword: function (passwordId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_delete', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId,
+                    authData  : JSON.encode(AuthData)
+                });
+            });
         }
+
+
     });
 });

@@ -309,25 +309,25 @@ class Authentication
         return self::$securityClasses[$id];
     }
 
-    /**
-     * Authenticate current session user with all plugins of a security class
-     *
-     * @param integer $securityClassId - security class id
-     * @param array $authData - authentication data by plugin
-     * @throws QUI\Exception
-     */
-    public static function authenticateWithSecurityClass($securityClassId, $authData)
-    {
-        try {
-            $SecurityClass = self::getSecurityClass($securityClassId);
-            $SecurityClass->authenticate($authData);
-        } catch (QUI\Exception $Exception) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.authentication.authenticate.error', array(
-                    'error' => $Exception->getMessage()
-                )
-            ));
-        }
-    }
+//    /**
+//     * Authenticate current session user with all plugins of a security class
+//     *
+//     * @param integer $securityClassId - security class id
+//     * @param array $authData - authentication data by plugin
+//     * @throws QUI\Exception
+//     */
+//    public static function authenticateWithSecurityClass($SecurityClass, $authData)
+//    {
+//        try {
+//            $SecurityClass = self::getSecurityClass($securityClassId);
+//            $SecurityClass->authenticate($authData);
+//        } catch (QUI\Exception $Exception) {
+//            throw new QUI\Exception(array(
+//                'pcsg/grouppasswordmanager',
+//                'exception.authentication.authenticate.error', array(
+//                    'error' => $Exception->getMessage()
+//                )
+//            ));
+//        }
+//    }
 }

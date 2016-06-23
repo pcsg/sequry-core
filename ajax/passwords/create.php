@@ -1,6 +1,7 @@
 <?php
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 
 /**
  * Create a new password object
@@ -29,15 +30,14 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData, 
     }
 
     // authenticate
-    Authentication::authenticateWithSecurityClass(
-        (int)$passwordData['securityClassId'],
+    Authentication::getSecurityClass(
+        (int)$passwordData['securityClassId']
+    )->authenticate(
         json_decode($authData, true) // @todo diese daten ggf. filtern
     );
 
-    // @todo create password
-    \QUI\System\Log::writeRecursive("create password");
-
-    return 1;
+    // create password
+    return Passwords::createPassword($passwordData);
 }
 
 \QUI::$Ajax->register(

@@ -32,15 +32,17 @@ class CryptoActors
     protected static $groups = array();
 
     /**
-     * Return list of all security classes with name and description
+     * Get crypto user
      *
-     * @param QUI\Users\User $User (optional) - if omitted use session user
+     * @param integer $id (optional) - QUIQQER User ID; if omitted use session user
      * @return CryptoUser
      */
-    public static function getCryptoUser($User = null)
+    public static function getCryptoUser($id = null)
     {
-        if (is_null($User)) {
+        if (is_null($id)) {
             $User = QUI::getUserBySession();
+        } else {
+            $User = QUI::getUsers()->get($id);
         }
 
         $userId = $User->getId();

@@ -60,6 +60,27 @@
         <locale name="exception.passwords.create.missing.data">
             <de><![CDATA[Es wurde keine Daten für das Password übergeben.]]></de>
         </locale>
+        <locale name="exception.password.create.general.error">
+            <de><![CDATA[Es ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.password.user.not.authenticated">
+            <de><![CDATA[Der Benutzer #[userId] ist nicht für die Sicherheitsklasse des Passworts #[id] authentifiziert.]]></de>
+        </locale>
+        <locale name="exception.password.access.data.not.found">
+            <de><![CDATA[Es wurden keine Daten für den Zugriff auf das Passwort #[id] für den Benutzer #[userId] gefunden.]]></de>
+        </locale>
+        <locale name="exception.password.not.authentic">
+            <de><![CDATA[Das Passwort #[passwordId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.password.acces.data.decryption.fail">
+            <de><![CDATA[Das Password #[passwordId] konnte nicht erfolgreich entschlüsselt werden. Der Zugriff wurde verweigert.]]></de>
+        </locale>
+        <locale name="exception.password.permission.denied">
+            <de><![CDATA[Sie haben nicht die benötigte Berechtigung, um diese Passwort-Operation auszuführen.]]></de>
+        </locale>
+        <locale name="exception.password.delete.error">
+            <de><![CDATA[Beim Löschen des Passworts #[passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
@@ -98,6 +119,9 @@
         <locale name="exception.cryptouser.keypair.not.authentic">
             <de><![CDATA[Das Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId] für den User #[userId] ist nicht mehr gültig. Bitte kontaktieren Sie umgehend einen Administrator.]]></de>
         </locale>
+        <locale name="exception.cryptouser.authkeypair.not.found">
+            <de><![CDATA[Der Benutzer #[userId] besitzt kein Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId].]]></de>
+        </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
         <locale name="exception.authentication.plugin.register.error">
@@ -129,6 +153,17 @@
         <locale name="exception.securityclass.authenticate.missing.authdata">
             <de><![CDATA[Die Authentifizierungsinformationen für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] wurden nicht übergeben.]]></de>
         </locale>
+        <locale name="exception.securityclass.authenticate.authdata.not.given">
+            <de><![CDATA[Die Authentifizierungsinformationen wurden nicht übergeben.]]></de>
+        </locale>
+
+        <!-- Class: Security\Keys\AuthKeyPair -->
+        <locale name="exception.system.auth.key.file.not.found">
+            <de><![CDATA[Das Schlüsselpaar #[id] wurde nicht gefunden.]]></de>
+        </locale>
+        <locale name="exception.authkeypair.not.authentic">
+            <de><![CDATA[Das Schlüsselpaar #[id] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
 
     </groups>
 
@@ -152,14 +187,38 @@
         <locale name="controls.gpm.passwordlist.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
         </locale>
-        <locale name="controls.gpm.passwordlist.panel.tbl.header.title">
+        <locale name="controls.gpm.passwords.panel.tbl.header.title">
             <de><![CDATA[Titel]]></de>
         </locale>
-        <locale name="controls.gpm.passwordlist.panel.tbl.header.description">
+        <locale name="controls.gpm.passwords.panel.tbl.header.description">
             <de><![CDATA[Kurzbeschreibung]]></de>
         </locale>
         <locale name="gpm.passwords.panel.create.title">
             <de><![CDATA[Neues Passwort erstellen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.btn.add">
+            <de><![CDATA[Neues Passwort]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.btn.view">
+            <de><![CDATA[Passwort ansehen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.btn.delete">
+            <de><![CDATA[Passwort löschen]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.delete.popup.title">
+            <de><![CDATA[Passwort löschen]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.delete.popup.info.title">
+            <de><![CDATA[Passwort löschen]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.delete.popup.info.description" html="true">
+            <de><![CDATA[Sind Sie sicher, dass sie das Passwort <b>[passwordTitle]</b> mit der ID <b>[passwordId]</b> unwiderruflich löschen wollen?]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.delete.popup.btn.text">
+            <de><![CDATA[Löschen]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.delete.popup.btn">
+            <de><![CDATA[Hier klicken, um das Passwort unwiderruflich zu löschen]]></de>
         </locale>
 
         <!-- Control: passwords/Create -->
@@ -248,6 +307,11 @@
         </locale>
         <locale name="controls.authenticate.popup.btn">
             <de><![CDATA[Hier klicken, um die Authentifizierung durchzuführen]]></de>
+        </locale>
+
+        <!-- Control: passwords/View -->
+        <locale name="controls.password.view.popup.title">
+            <de><![CDATA[Passwort ansehen]]></de>
         </locale>
 
     </groups>

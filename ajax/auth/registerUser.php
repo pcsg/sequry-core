@@ -12,7 +12,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId, $authData)
 {
     try {
-        $AuthPlugin = Authentication::getAuthPluginById($authPluginId);
+        $AuthPlugin = Authentication::getAuthPlugin($authPluginId);
         $AuthPlugin->registerUser($authData);
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
