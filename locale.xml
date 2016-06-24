@@ -81,6 +81,9 @@
         <locale name="exception.password.delete.error">
             <de><![CDATA[Beim Löschen des Passworts #[passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
         </locale>
+        <locale name="attention.password.edit.owner.group.to.user">
+            <de><![CDATA[Der Eigentümer eines Passworts kann nicht von einer Gruppe auf einen einzelnen Benutzer gewechselt werden.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
@@ -202,6 +205,9 @@
         <locale name="controls.gpm.passwords.btn.view">
             <de><![CDATA[Passwort ansehen]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.btn.edit">
+            <de><![CDATA[Passwort bearbeiten]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.btn.delete">
             <de><![CDATA[Passwort löschen]]></de>
         </locale>
@@ -251,6 +257,11 @@
         </locale>
         <locale name="create.template.passwordOwner">
             <de><![CDATA[Benutzer / Gruppe]]></de>
+        </locale>
+
+        <!-- Control: password/Edit -->
+        <locale name="edit.template.title">
+            <de><![CDATA[Passwort bearbeiten]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->
@@ -308,10 +319,27 @@
         <locale name="controls.authenticate.popup.btn">
             <de><![CDATA[Hier klicken, um die Authentifizierung durchzuführen]]></de>
         </locale>
+        <locale name="controls.authenticate.popup.btn.abort.text">
+            <de><![CDATA[Abbrechen]]></de>
+        </locale>
+        <locale name="controls.authenticate.popup.btn.abort">
+            <de><![CDATA[Hier klicken, um den Authentifizierungsvorgang abzubrechen]]></de>
+        </locale>
 
         <!-- Control: passwords/View -->
         <locale name="controls.password.view.popup.title">
             <de><![CDATA[Passwort ansehen]]></de>
+        </locale>
+
+        <!-- Control: password/Panel -->
+        <locale name="gpm.password.btn.save.text">
+            <de><![CDATA[Speichern]]></de>
+        </locale>
+        <locale name="gpm.password.panel.btn.edit">
+            <de><![CDATA[Passwort-Daten bearbeiten]]></de>
+        </locale>
+        <locale name="gpm.password.panel.btn.share">
+            <de><![CDATA[Passwort-Daten teilen]]></de>
         </locale>
 
     </groups>

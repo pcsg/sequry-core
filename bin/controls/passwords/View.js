@@ -144,27 +144,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/View', [
                                 // @todo
                             }
                         );
+                    },
+                    onClose: function() {
+                        ViewPopup.close();
                     }
                 }
             });
 
             AuthControl.open();
-        },
-
-        /**
-         * Get authentication data
-         *
-         * @return {{}}
-         */
-        getAuthData: function () {
-            var AuthData = {};
-
-            for (var i = 0, len = this.$authPluginIds; i < len; i++) {
-                // not optimal
-                AuthData[this.$authPluginIds[i]] = this.$authPluginControls[i].getAuthData();
-            }
-
-            return AuthData;
         }
     });
 });

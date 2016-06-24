@@ -52,7 +52,8 @@ class CryptoUser extends QUI\Users\User
             ),
             'from'   => Tables::KEYPAIRS,
             'where'  => array(
-                'authPluginId' => $AuthPlugin->getId()
+                'authPluginId' => $AuthPlugin->getId(),
+                'userId'       => $this->getId()
             ),
             'limit'  => 1
         ));

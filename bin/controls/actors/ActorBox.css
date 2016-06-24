@@ -1,0 +1,38 @@
+.pcsg-gpm-auth-actorbox {
+    float: left;
+    height: 100%;
+    width: 100%
+}
+
+.pcsg-gpm-auth-actorbox-box {
+    background-color: #cecece;
+    float: left;
+    height: 100px;
+    padding: 10px;
+    width: 100%
+}
+
+.pcsg-gpm-auth-actorbox-actor {
+    float: left;
+    padding: 5px;
+    width: 100%
+}
+
+.pcsg-gpm-auth-actorbox-actor:hover {
+    background-color: #fff5b5;
+    cursor: pointer;
+}
+
+.pcsg-gpm-auth-actorbox-actor-icon {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.pcsg-gpm-auth-actorbox-actor-remove {
+    font-size: 18px;
+    float: right;
+}
+
+.pcsg-gpm-auth-actorbox-actor-remove:hover {
+    opacity: 0.8;
+}

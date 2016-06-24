@@ -160,9 +160,13 @@ class Passwords
         // set initial content for password
         $passwordContent = array(
             'ownerId'    => $ownerId,
-            'ownerType'  => $owner['type'],
+            'ownerType'  => $owner['type'] === 'user' ?
+                Password::OWNER_TYPE_USER : Password::OWNER_TYPE_GROUP,
             'payload'    => $passwordData['payload'],
-            'sharedWith' => array(),
+            'sharedWith' => array(
+                'users'  => array(),
+                'groups' => array()
+            ),
             'history'    => array()
         );
 
@@ -303,8 +307,8 @@ class Passwords
             'select' => array(
                 'securityClassId'
             ),
-            'from' => Tables::PASSWORDS,
-            'where' => array(
+            'from'   => Tables::PASSWORDS,
+            'where'  => array(
                 'id' => $passwordId
             )
         ));
@@ -312,7 +316,8 @@ class Passwords
         if (empty($result)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.password.not.found', array(
+                'exception.password.not.found',
+                array(
                     'id' => $passwordId
                 )
             ), 404);

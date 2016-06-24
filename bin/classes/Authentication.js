@@ -101,6 +101,12 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
             });
         },
 
+        /**
+         * Get all users that are eligible as password owner or receiver
+         *
+         * @param securityClassId
+         * @returns {Promise}
+         */
         getEligibleUsersBySecurityClass: function (securityClassId) {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getEligibleUsers', resolve, {
@@ -111,6 +117,12 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
             });
         },
 
+        /**
+         * Get all groups of which all users are eligible as password owner or receiver
+         *
+         * @param securityClassId
+         * @returns {Promise}
+         */
         getEligibleGroupsBySecurityClass: function (securityClassId) {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getEligibleGroups', resolve, {

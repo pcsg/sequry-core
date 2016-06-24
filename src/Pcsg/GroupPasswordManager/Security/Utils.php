@@ -51,63 +51,6 @@ class Utils
     }
 
     /**
-     * Split a key into multiple parts that can be XOR'ed together to get
-     * the original key
-     *
-     * @param String $key
-     * @param Integer $parts - Number of parts the key shall be split into
-     * @return Array - Key parts
-     */
-    public static function splitKey($key, $parts)
-    {
-        // get byte length of key
-        $keyBytes = mb_strlen($key, '8bit');
-        $parts = (int)$parts;
-
-        if ($parts < 2) {
-            return $key;
-        }
-
-        $splitKeys = array();
-        $value = $key;
-
-        for ($i = 1; $i < $parts; $i++) {
-            // generate random bytes in key size
-            $rndBytes = \Sodium\randombytes_buf($keyBytes);
-            $newPart = $value ^ $rndBytes;
-
-            $splitKeys[] = $rndBytes;
-            $value = $newPart;
-        }
-
-        $splitKeys[] = $newPart;
-
-        return $splitKeys;
-    }
-
-    /**
-     * Join parts of a key to retrieve the original key
-     *
-     * @param array $parts
-     * @return String
-     */
-    public static function joinKeyParts($parts)
-    {
-        if (count($parts) < 2) {
-            return current($parts);
-        }
-
-        // start with appropiate length of 0-bytes (assumes all parts are of the same byte-length)
-        $key = \str_repeat("\x00", mb_strlen(current($parts), '8bit'));
-
-        foreach ($parts as $part) {
-            $key ^= $part;
-        }
-
-        return $key;
-    }
-
-    /**
      * Get system authentication key for key pairs
      *
      * @return string

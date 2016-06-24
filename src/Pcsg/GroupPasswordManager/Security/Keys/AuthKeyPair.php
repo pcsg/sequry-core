@@ -110,7 +110,7 @@ class AuthKeyPair extends KeyPair
     }
 
     /**
-     * Return decrpyted private key
+     * Return decrypted private key
      *
      * @return Key
      */

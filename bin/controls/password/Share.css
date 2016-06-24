@@ -1,0 +1,30 @@
+.gpm-password-share {
+    float: left;
+    height: 100%;
+    width: 100%
+}
+
+.gpm-password-share-select {
+    float: left;
+    height: 100px;
+    padding: 10px;
+    width: 100%
+}
+
+.gpm-password-share-actors {
+    float: left;
+    padding: 10px;
+    width: 100%;
+}
+
+.gpm-password-share-actors-users {
+    float: left;
+    padding: 5px;
+    width: 50%;
+}
+
+.gpm-password-share-actors-groups {
+    float: left;
+    padding: 5px;
+    width: 50%;
+}

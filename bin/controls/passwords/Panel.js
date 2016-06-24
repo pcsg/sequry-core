@@ -106,6 +106,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             });
 
             this.addButton({
+                name     : 'edit',
+                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.edit'),
+                textimage: 'fa fa-edit',
+                events   : {
+                    onClick: function () {
+                        self.$openPasswordPanel(
+                            self.$Grid.getSelectedData()[0].id
+                        );
+                    }
+                }
+            });
+
+            this.addButton({
                 name     : 'delete',
                 text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.delete'),
                 textimage: 'fa fa-trash',
@@ -162,9 +175,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 onClick   : function () {
                     var Delete = self.getButtons('delete');
                     var View   = self.getButtons('view');
+                    var Edit   = self.getButtons('edit');
 
                     View.enable();
                     Delete.enable();
+                    Edit.enable();
                 },
                 onRefresh : this.refresh
             });
@@ -216,9 +231,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             var Row;
             var Delete = this.getButtons('delete');
             var View   = this.getButtons('view');
+            var Edit   = this.getButtons('edit');
 
             View.disable();
             Delete.disable();
+            Edit.disable();
 
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 Row = GridData.data[i];
@@ -352,20 +369,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         },
 
         /**
-         * (Re-)opens a machine panel
+         * (Re-)opens a single password panel
          *
-         * @param {integer} machineId
+         * @param {integer} passwordId
          */
-        $openPasswordPanel: function (machineId) {
+        $openPasswordPanel: function (passwordId) {
             var self = this;
 
             require([
-                'package/pcsg/grouppasswordmanager/bin/passwords/MachinePanel',
+                'package/pcsg/grouppasswordmanager/bin/controls/password/Panel',
                 'utils/Panels'
-            ], function (MachinePanel, Panels) {
-                var MPanel = new MachinePanel({
-                    machineId: machineId,
-                    '#id'    : machineId
+            ], function (PasswordPanel, Panels) {
+                var PPanel = new PasswordPanel({
+                    passwordId: passwordId,
+                    '#id'     : passwordId
                 });
 
                 //MPanel.addEvents({
@@ -381,7 +398,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 //    }
                 //});
 
-                Panels.openPanelInTasks(MPanel);
+                Panels.openPanelInTasks(PPanel);
             });
         }
 

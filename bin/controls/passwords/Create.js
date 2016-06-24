@@ -6,9 +6,12 @@
  *
  * @require qui/QUI
  * @require qui/controls/Control
- * @require Locale
  * @require Mustache
+ * @require Locale
+ * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
+ * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
  * @require package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect
+ * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.css
  *
@@ -19,27 +22,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
 
     'qui/QUI',
     'qui/controls/Control',
-    'qui/utils/Form',
     'Locale',
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/EligibleActorSelect',
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.html'
     //'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.css'
 
-], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, PasswordHandler,
-             AuthHandler, AuthenticationControl, SecurityClassSelect, ActorSelect, template) {
+], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
+             AuthenticationControl, SecurityClassSelect, ActorSelect, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Passwords      = new PasswordHandler(),
-        Authentication = new AuthHandler();
+    var lg        = 'pcsg/grouppasswordmanager',
+        Passwords = new PasswordHandler();
 
     return new Class({
 
@@ -98,11 +98,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
 
             this.$SecurityClassSelect = new SecurityClassSelect({
                 events: {
-                    onLoaded: function(Select) {
+                    onLoaded: function (Select) {
                         self.$OwnerSelect = new ActorSelect({
                             securityClassId: Select.getValue(),
-                            events: {
-                                onLoaded: function() {
+                            events         : {
+                                onLoaded: function () {
                                     self.fireEvent('loaded');
                                 }
                             }
@@ -131,7 +131,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
         submit: function () {
             var self = this;
 
-            this.$PasswordData  = {
+            this.$PasswordData = {
                 securityClassId: this.$SecurityClassSelect.getValue(),
                 title          : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
                 description    : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
@@ -141,18 +141,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
 
             var AuthControl = new AuthenticationControl({
                 securityClassId: this.$SecurityClassSelect.getValue(),
-                events: {
-                    onSubmit: function(AuthData) {
+                events         : {
+                    onSubmit: function (AuthData) {
                         Passwords.createPassword(
                             self.$PasswordData,
                             AuthData
                         ).then(
-                            function() {
+                            function () {
                                 self.$PasswordData = null;
                                 AuthControl.destroy();
                                 self.fireEvent('finish');
                             },
-                            function() {
+                            function () {
                                 // @todo
                             }
                         );

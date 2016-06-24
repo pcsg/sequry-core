@@ -13,6 +13,8 @@
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.css
  *
  * @event onFinish
+ * @event onAbort - on AuthPopup user close
+ * @event onClose - on AuthPopup close
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
@@ -92,7 +94,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     lg, 'controls.authenticate.popup.title'
                 ),
                 maxWidth   : 500,
-                closeButton: true,
+                closeButton: false,
+                events : {
+                    onClose: function() {
+                        self.fireEvent('close');
+                    }
+                },
                 content    : '<div class="pcsg-gpm-auth-authenticate-info"></div>' +
                 '<div class="pcsg-gpm-auth-authenticate-plugins"></div>'
             });
@@ -111,6 +118,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 title : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
                 events: {
                     onClick: submitFunc
+                }
+            }));
+
+            AuthPopup.addButton(new QUIButton({
+                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort.text'),
+                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                events: {
+                    onClick: function() {
+                        self.fireEvent('abort');
+                        AuthPopup.close();
+                    }
                 }
             }));
 
