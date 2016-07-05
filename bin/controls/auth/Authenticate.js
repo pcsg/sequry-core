@@ -86,6 +86,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             }
         },
 
+        /**
+         * Open authentication popup
+         */
         open: function () {
             var self = this;
 
@@ -176,7 +179,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     paths.push(authPluginPath);
                 }
 
-                // load auth plugins
+                // load auth pluginsIm 
                 require(
                     paths,
                     function () {

@@ -1,7 +1,7 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/View
+ * @module package/pcsg/grouppasswordmanager/bin/controls/password/View
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,12 +9,12 @@
  * @require Locale
  * @require Mustache
  * @require package/pcsg/grouppasswordmanager/bin/controls/passwords/SecurityClassSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwords/View.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/View.css
+ * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/View.html
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css
  *
  * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwords/View', [
+define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -27,7 +27,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/View', [
 
     'Ajax',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/View.css'
+    'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
 
 ], function (QUI, QUIControl, QUIPopup, QUIButton, QUILocale, AuthenticationControl,
              PasswordHandler, Ajax) {
@@ -39,7 +39,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/View', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwords/View',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/View',
 
         Binds: [
             '$onInject',
@@ -108,11 +108,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/View', [
             var Content    = ViewPopup.getContent();
             var TitleElm   = Content.getElement('.pcsg-gpm-password-view-title');
             var PayLoadElm = Content.getElement('.pcsg-gpm-password-view-payload');
-
-            //PayLoadElm.set(
-            //    'html',
-            //    'Authentifizierung erforderlich'
-            //);
 
             var AuthControl = new AuthenticationControl({
                 securityClassId: this.getAttribute('securityClassId'),

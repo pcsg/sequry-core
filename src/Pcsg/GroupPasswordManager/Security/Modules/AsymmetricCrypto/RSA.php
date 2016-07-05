@@ -3,15 +3,15 @@
 namespace Pcsg\GroupPasswordManager\Security\Modules\AsymmetricCrypto;
 
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Interfaces\iAsymmetricCrypto;
 use QUI;
-use Pcsg\GroupPasswordManager\Security\Interfaces\AsymmetricCryptoWrapper;
 
 /**
  * This class provides an ecnryption API for the pcsg/grouppasswordmanager module
  *
  * AES-256
  */
-class RSA implements AsymmetricCryptoWrapper
+class RSA implements iAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
@@ -65,7 +65,7 @@ class RSA implements AsymmetricCryptoWrapper
                 . $Exception->getMessage()
             );
         }
-        
+
         return $plainText;
     }
 
@@ -79,10 +79,10 @@ class RSA implements AsymmetricCryptoWrapper
     {
         try {
             $Res = openssl_pkey_new(array(
-                'digest_alg' => 'sha512',
+                'digest_alg'      => 'sha512',
                 'privateKey_bits' => AsymmetricCrypto::KEY_SIZE_ENCRYPTION,
                 'privateKey_type' => OPENSSL_KEYTYPE_RSA,
-                'encrypt_key' => false
+                'encrypt_key'     => false
             ));
 
             if ($Res === false) {
@@ -102,7 +102,8 @@ class RSA implements AsymmetricCryptoWrapper
             );
 
             if ($privateKeyExport === false
-                || empty($privateKey)) {
+                || empty($privateKey)
+            ) {
                 throw new QUI\Exception(openssl_error_string());
             }
         } catch (\Exception $Exception) {
@@ -112,7 +113,7 @@ class RSA implements AsymmetricCryptoWrapper
         }
 
         $keys = array(
-            'publicKey' => $publicKey['key'],
+            'publicKey'  => $publicKey['key'],
             'privateKey' => $privateKey
         );
 

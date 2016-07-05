@@ -15,4 +15,13 @@ interface iMAC
      * @return String - The MAC hash
      */
     public static function create($str, $key);
+
+    /**
+     * Compare to MAC values (timing-safe)
+     *
+     * @param string $actual
+     * @param string $expected
+     * @return bool
+     */
+    public static function compare($actual, $expected);
 }

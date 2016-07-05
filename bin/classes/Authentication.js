@@ -56,18 +56,23 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Get control to authenticate with a specific authentication plugin
+         * Get control to authenticate with authentication plugins of a specific
+         * security class
          *
          * @param {number} securityClassId - ID of security class
          * @returns {Promise}
          */
         getAuthPluginControlsBySecurityClass: function (securityClassId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getControlsBySecurityClass', resolve, {
-                    'package'      : pkg,
-                    onError        : reject,
-                    securityClassId: securityClassId
-                });
+                Ajax.get(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_getControlsBySecurityClass',
+                    resolve,
+                    {
+                        'package'      : pkg,
+                        onError        : reject,
+                        securityClassId: securityClassId
+                    }
+                );
             });
         },
 

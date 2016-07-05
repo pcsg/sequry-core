@@ -27,7 +27,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
     // edit password
     $Password = Passwords::get($passwordId);
 
-    $Password->edit(
+    $Password->setData(
         Orthos::clearArray(json_decode($passwordData, true))
     );
 

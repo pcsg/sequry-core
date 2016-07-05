@@ -31,6 +31,18 @@ class MAC
     }
 
     /**
+     * Compare to MAC values (timing-safe)
+     *
+     * @param string $actual
+     * @param string $expected
+     * @return bool
+     */
+    public static function compare($actual, $expected)
+    {
+        return self::getMACModule()->compare($actual, $expected);
+    }
+
+    /**
      * @return iMAC
      */
     protected static function getMACModule()

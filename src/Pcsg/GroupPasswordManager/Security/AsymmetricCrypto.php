@@ -120,7 +120,7 @@ class AsymmetricCrypto
         $cipherText = self::encrypt($rnd, $KeyPair);
         $plainText = self::decrypt($cipherText, $KeyPair);
 
-        return Utils::compareStrings($rnd, $plainText);
+        return MAC::compare($rnd, $plainText);
     }
 
     /**

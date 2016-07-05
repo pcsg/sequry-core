@@ -34,6 +34,37 @@ class HMAC implements iMAC
     }
 
     /**
+     * Compare to MAC values (timing-safe)
+     *
+     * @param string $actual
+     * @param string $expected
+     * @return bool
+     */
+    public static function compare($actual, $expected)
+    {
+        // >=PHP5.6 only
+        if (function_exists('hash_equals')) {
+            return hash_equals($expected, $actual);
+        }
+
+        $expected    = (string) $expected;
+        $actual      = (string) $actual;
+        $lenExpected = mb_strlen($expected);
+        $lenActual   = mb_strlen($actual);
+        $len         = min($lenExpected, $lenActual);
+
+        $result = 0;
+
+        for ($i = 0; $i < $len; $i ++) {
+            $result |= ord($expected[$i]) ^ ord($actual[$i]);
+        }
+
+        $result |= $lenExpected ^ $lenActual;
+
+        return $result === 0;
+    }
+
+    /**
      * Returns an instance of the phpseclib/Hash Class
      *
      * @return HMACClass

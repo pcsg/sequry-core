@@ -45,7 +45,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
         Binds: [
             '$onInject',
-            '$save'
+            '$save',
+            '$insertData'
         ],
 
         options: {
@@ -96,8 +97,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
          *
          * @param {Object} ActorData
          */
-        $addActor: function(ActorData)
-        {
+        $addActor: function (ActorData) {
             switch (ActorData.type) {
                 case 'user':
                     ActorData.type = 1;
@@ -111,8 +111,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
             }
         },
 
-        $insertData: function() {
-            // @todo
+        $insertData: function () {
+            for (var type in this.$ShareData) {
+                if (!this.$ShareData.hasOwnProperty(type)) {
+                    continue;
+                }
+
+                var actors = this.$ShareData[type];
+
+                for (var i = 0, len = actors.length; i < len; i++) {
+                    switch (type) {
+                        case 'users':
+                            this.$addActor({
+                                type: 'user',
+                                id  : this.$ShareData[type],
+                                name: 'unbekannt'
+                            });
+                            break;
+
+                        case 'groups':
+                            this.$addActor({
+                                type: 'group',
+                                id  : this.$ShareData[type],
+                                name: 'unbekannt'
+                            });
+                            break;
+                    }
+                }
+            }
         },
 
         /**
@@ -139,9 +165,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
             );
 
             this.$AddActorBtn = new QUIButton({
-                icon: 'fa fa-plus',
+                icon  : 'fa fa-plus',
                 events: {
-                    onClick: function() {
+                    onClick: function () {
 
                         var ActorData = self.$ActorSelect.getActor();
 
@@ -180,6 +206,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
          * @returns {Promise}
          */
         save: function () {
+            var self = this;
+
             var actors = this.$ActorBoxUsers.getActors().concat(
                 this.$ActorBoxGroups.getActors()
             );
@@ -189,10 +217,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 actors,
                 this.getAttribute('AuthData')
             ).then(
-                function() {
-                    console.log("success");
+                function (ShareData) {
+                    self.$ShareData = ShareData;
+                    self.$insertData();
                 },
-                function() {
+                function () {
                     console.log("error");
                 }
             );

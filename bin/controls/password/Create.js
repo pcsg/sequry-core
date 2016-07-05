@@ -1,7 +1,7 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Create
+ * @module package/pcsg/grouppasswordmanager/bin/controls/password/Create
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -12,13 +12,13 @@
  * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
  * @require package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect
  * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.css
+ * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css
  *
  * @event onLoaded
  * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
+define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -31,8 +31,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
     'package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect',
 
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.html'
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Create.css'
+    'text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html'
+    //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
              AuthenticationControl, SecurityClassSelect, ActorSelect, template) {
@@ -44,7 +44,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Create', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwords/Create',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
 
         Binds: [
             '$onInject'

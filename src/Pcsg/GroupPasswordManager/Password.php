@@ -12,7 +12,6 @@ use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -172,7 +171,7 @@ class Password
             Utils::getSystemPasswordAuthKey()
         );
 
-        if (!Utils::compareStrings($passwordDataMAC, $passwordDataMACCheck)) {
+        if (!MAC::compare($passwordDataMAC, $passwordDataMACCheck)) {
             QUI\System\Log::addCritical(
                 'Password data #' . $id . ' is possibly altered! MAC mismatch!'
             );
@@ -375,7 +374,7 @@ class Password
      *
      * @param $passwordData
      */
-    public function edit($passwordData)
+    public function setData($passwordData)
     {
         $sanitizedData = array();
 
@@ -631,8 +630,6 @@ class Password
         // process sharing
         $currentShareUserIds = $this->sharedWith['users'];
         $newShareUserIds     = array();
-
-        \QUI\System\Log::writeRecursive($currentShareUserIds);
 
         $currentShareGroupIds = $this->sharedWith['groups'];
         $newShareGroupIds     = array();
@@ -894,7 +891,7 @@ class Password
                 Utils::getSystemKeyPairAuthKey()
             );
 
-            if (!Utils::compareStrings($accessDataMAC, $accessDataMACCheck)) {
+            if (!MAC::compare($accessDataMAC, $accessDataMACCheck)) {
                 QUI\System\Log::addCritical(
                     'Password access data (uid #' . $row['userId'] . ', dataId #' . $row['dataId']
                     . ', keyPairId #' . $row['keyPairId'] . ' is possibly altered! MAC mismatch!'
@@ -934,7 +931,6 @@ class Password
     protected function hasPermission($permission)
     {
         switch ($permission) {
-            // @todo view von sharedWith abhängig machen
             case self::PERMISSION_VIEW:
                 if ($this->isOwner()) {
                     return true;

@@ -2,15 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Authentication;
 
-use ParagonIE\Halite\Contract\SymmetricKeyCryptoInterface;
 use Pcsg\GroupPasswordManager\Constants\Tables;
-use Pcsg\GroupPasswordManager\CryptoUser;
-use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
-use Pcsg\GroupPasswordManager\Security\MAC;
-use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**

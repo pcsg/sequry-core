@@ -22,8 +22,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'controls/grid/Grid',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Create',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwords/View',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/View',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
 
     'Ajax',

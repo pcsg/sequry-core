@@ -79,7 +79,7 @@ class AuthKeyPair extends KeyPair
         );
 
         // check integrity and authenticity of keypair
-        if (!Utils::compareStrings($keyPairMACCheck, $keyPairMAC)) {
+        if (!MAC::compare($keyPairMACCheck, $keyPairMAC)) {
             QUI\System\Log::addCritical(
                 'Key Pair #' . $data['id'] . ' is possibly altered! MAC mismatch!'
             );
