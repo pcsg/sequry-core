@@ -18,10 +18,8 @@
     "require": {
         "quiqqer/quiqqer" : "*@dev",
         "phpseclib/phpseclib": "2.0.0",
-        "paragonie/halite": "1.2.0",
-        "tq/shamir": "dev-master"
+        "paragonie/halite": "1.2.0"
     },
-
     "autoload": {
         "psr-0" : {
             "Pcsg" : "src/"
