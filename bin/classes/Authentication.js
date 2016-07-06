@@ -136,6 +136,74 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     securityClassId: securityClassId
                 });
             });
+        },
+
+        /**
+         * Create new security class
+         *
+         * @param {Object} Data
+         * @returns {Promise}
+         */
+        createSecurityClass: function (Data) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    data     : JSON.encode(Data)
+                });
+            });
+        },
+
+        /**
+         * Edit security class
+         *
+         * @param {number} id - security class id
+         * @param {Object} Data
+         * @returns {Promise}
+         */
+        editSecurityClass: function (id, Data) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_editSecurityClass', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    id       : id,
+                    data     : JSON.encode(Data)
+                });
+            });
+        },
+
+        /**
+         * Delete a security class
+         *
+         * @param {number} id
+         * @returns {Promise}
+         */
+        deleteSecurityClass: function (id) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    id       : id
+                });
+            });
+        },
+
+        /**
+         * Delete a security class
+         *
+         * @param {number} id
+         * @param {string} type - "user" / "group"
+         * @returns {Promise}
+         */
+        getActor: function (id, type) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getActor', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    id       : id,
+                    type     : type
+                });
+            });
         }
     });
 });

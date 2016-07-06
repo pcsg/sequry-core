@@ -25,7 +25,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelec
     'qui/controls/loader/Loader',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/classes/Authentication'
 
     //'css!package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect.css'
 
@@ -97,7 +97,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelec
                 type  : 'users',
                 events: {
                     onClick: function (Btn) {
-                        if (Btn.getAttribute('type') === 'groups') {
+                        if (Btn.getAttribute('type') === 'users') {
                             self.$switchActorToGroups();
                             return;
                         }
@@ -150,7 +150,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelec
                 icon : 'fa fa-users',
                 alt  : QUILocale.get(lg, 'controls.eligibleactorselect.switch.groups.btn'),
                 title: QUILocale.get(lg, 'controls.eligibleactorselect.switch.groups.btn'),
-                type : 'groups'
+                type : 'users'
             });
 
             return this.refresh();
@@ -169,7 +169,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelec
                 icon : 'fa fa-user',
                 alt  : QUILocale.get(lg, 'controls.eligibleactorselect.switch.users.btn'),
                 title: QUILocale.get(lg, 'controls.eligibleactorselect.switch.users.btn'),
-                type : 'users'
+                type : 'groups'
             });
 
             return this.refresh();

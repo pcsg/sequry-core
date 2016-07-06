@@ -10,7 +10,7 @@
  * @require Locale
  * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
  * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect
+ * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
  * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Share.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css
@@ -95,18 +95,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
         /**
          * Adds an actor to an acoording actor box
          *
-         * @param {Object} ActorData
+         * @param {number} id - user or group id
+         * @param {string} type - "user" or "group"
          */
-        $addActor: function (ActorData) {
-            switch (ActorData.type) {
+        $addActor: function (id, type) {
+            switch (type) {
                 case 'user':
-                    ActorData.type = 1;
-                    this.$ActorBoxUsers.addActor(ActorData);
+                    this.$ActorBoxUsers.addActor(id, type);
                     break;
 
                 case 'group':
-                    ActorData.type = 2;
-                    this.$ActorBoxGroups.addActor(ActorData);
+                    this.$ActorBoxGroups.addActor(id, type);
                     break;
             }
         },
@@ -122,19 +121,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 for (var i = 0, len = actors.length; i < len; i++) {
                     switch (type) {
                         case 'users':
-                            this.$addActor({
-                                type: 'user',
-                                id  : this.$ShareData[type],
-                                name: 'unbekannt'
-                            });
+                            this.$addActor(this.$ShareData[type], 'user');
                             break;
 
                         case 'groups':
-                            this.$addActor({
-                                type: 'group',
-                                id  : this.$ShareData[type],
-                                name: 'unbekannt'
-                            });
+                            this.$addActor(this.$ShareData[type], 'group');
                             break;
                     }
                 }
@@ -168,12 +159,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 icon  : 'fa fa-plus',
                 events: {
                     onClick: function () {
-
                         var ActorData = self.$ActorSelect.getActor();
-
-                        ActorData.name = self.$ActorSelect.getActorLabel();
-
-                        self.$addActor(ActorData);
+                        self.$addActor(ActorData.id, ActorData.type);
                     }
                 }
             }).inject(ActorSelectElm);

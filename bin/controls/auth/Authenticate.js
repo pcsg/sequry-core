@@ -8,7 +8,7 @@
  * @require qui/controls/Control
  * @require Locale
  * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect
+ * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.css
  *

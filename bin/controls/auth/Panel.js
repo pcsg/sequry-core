@@ -99,7 +99,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             }).inject(this.$GridContainer);
 
             this.$Grid = new Grid(GridContainer, {
-                pagination : true,
                 columnModel: [{
                     header   : QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
@@ -121,10 +120,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     dataType : 'text',
                     width    : 75
                 }, {
-                    header   : QUILocale.get(lg, 'auth.panel.tbl.header.registered'),
                     dataIndex: 'isregistered',
                     hidden   : true
-                }]
+                }],
+
+                pagination : false,
+                filterInput: true,
+
+                perPage: 1000,
+                page   : 1,
+
+                alternaterows    : true,
+                resizeColumns    : true,
+                selectable       : true,
+                multipleSelection: false,
+                resizeHeaderOnly : true
             });
 
             this.$Grid.addEvents({
@@ -174,8 +184,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.Loader.show();
 
-            return Authentication.getAuthPlugins().then(function (gridData) {
-                self.$setGridData(gridData);
+            return Authentication.getAuthPlugins().then(function (authPlugins) {
+                self.$setGridData(authPlugins);
                 self.getButtons('register').disable();
                 self.Loader.hide();
             });
@@ -184,14 +194,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         /**
          * Set data to table
          *
-         * @param {{}} GridData
+         * @param {Object} AuthPlugins
          */
-        $setGridData: function (GridData) {
+        $setGridData: function (authPlugins) {
             var Row;
             var data = [];
 
-            for (var i = 0, len = GridData.data.length; i < len; i++) {
-                var Data = GridData.data[i];
+            for (var i = 0, len = authPlugins.length; i < len; i++) {
+                var Data = authPlugins[i];
 
                 Row = {
                     id         : Data.id,
@@ -212,8 +222,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.$Grid.setData({
                 data : data,
-                page : GridData.page,
-                total: GridData.total
+                page : 1,
+                total: 1
             });
         },
 

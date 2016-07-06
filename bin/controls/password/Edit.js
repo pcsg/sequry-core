@@ -10,7 +10,7 @@
  * @require Locale
  * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
  * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect
+ * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
  * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css
@@ -27,7 +27,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect',
+    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect',
 
 

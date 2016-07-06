@@ -1,0 +1,44 @@
+.data-table {
+    float: left;
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+
+.data-table .field-container-item {
+    width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pcsg-gpm-password-authplugins-label {
+    background-color: #EDEDED;
+    border-radius: 5px;
+    float: left;
+    padding: 10px;
+    width: 100% !important;
+}
+
+.pcsg-gpm-password-authplugins-label:hover {
+    background-color: #eee7c2;
+    cursor: pointer;
+}
+
+.pcsg-gpm-password-authplugins-title {
+    float: left;
+    font-weight: 900;
+}
+
+.pcsg-gpm-password-authplugins-description {
+    clear: both;
+    float: left;
+}
+
+.pcsg-gpm-password-authplugins-label input {
+    float: left;
+}
+
+.pcsg-gpm-password-authplugin {
+    float: left;
+}

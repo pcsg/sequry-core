@@ -81,8 +81,14 @@
         <locale name="exception.password.delete.error">
             <de><![CDATA[Beim Löschen des Passworts #[passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
         </locale>
-        <locale name="attention.password.edit.owner.group.to.user">
+        <locale name="exception.password.change.owner.group.to.user">
             <de><![CDATA[Der Eigentümer eines Passworts kann nicht von einer Gruppe auf einen einzelnen Benutzer gewechselt werden.]]></de>
+        </locale>
+        <locale name="exception.password.remove.access.cannot.remove.owner">
+            <de><![CDATA[Der Passwort-Zugriff kann nicht gelöscht werden: Der Benutzer ist Eigentümer des Passworts oder gehört zur Gruppe, die Eigentümer des Passworts ist.]]></de>
+        </locale>
+        <locale name="exception.password.create.access.cannot.create.owner.access">
+            <de><![CDATA[Der Passwort-Zugriff kann nicht für einen Benutzer erstellt werden, der Eigentümer des Passworts ist oder zur Gruppe gehört, die Eigentümer des Passworts ist.]]></de>
         </locale>
 
         <!-- Class: CryptoUser -->
@@ -161,7 +167,7 @@
         </locale>
 
         <!-- Class: Security\Keys\AuthKeyPair -->
-        <locale name="exception.system.auth.key.file.not.found">
+        <locale name="exception.authkeypair.not.found">
             <de><![CDATA[Das Schlüsselpaar #[id] wurde nicht gefunden.]]></de>
         </locale>
         <locale name="exception.authkeypair.not.authentic">
@@ -180,6 +186,9 @@
         </locale>
         <locale name="menu.extras.gpm.auth.title">
             <de><![CDATA[Authentifizierung]]></de>
+        </locale>
+        <locale name="menu.extras.gpm.securityclasses.title">
+            <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
 
     </groups>
@@ -340,6 +349,66 @@
         </locale>
         <locale name="gpm.password.panel.btn.share">
             <de><![CDATA[Passwort-Daten teilen]]></de>
+        </locale>
+
+        <!-- Control: securityclasses/Panel -->
+        <locale name="securityclasses.panel.btn.add">
+            <de><![CDATA[Sicherheitsklasse anlegen]]></de>
+        </locale>
+        <locale name="securityclasses.panel.btn.delete">
+            <de><![CDATA[Sicherheitsklasse löschen]]></de>
+        </locale>
+        <locale name="securityclasses.panel.tbl.header.description">
+            <de><![CDATA[Beschreibung]]></de>
+        </locale>
+        <locale name="securityclasses.panel.tbl.header.title">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="securityclasses.panel.tbl.header.factors">
+            <de><![CDATA[Authentifizierungs-Faktoren]]></de>
+        </locale>
+        <locale name="gpm.securityclasses.panel.create.title">
+            <de><![CDATA[Neue Sicherheitsklasse anlegen]]></de>
+        </locale>
+        <locale name="gpm.securityclasses.panel.edit.title">
+            <de><![CDATA[Sicherheitsklasse bearbeiten]]></de>
+        </locale>
+        <locale name="gpm.securityclasses.panel.delete.popup.info.description" html="true">
+            <de><![CDATA[Sind Sie sicher, dass Sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) unwiderruflich löschen wollen?<br/>Bitte beachten Sie, dass eine Löschung nur möglich ist, wenn aktuell keine Passwörter angelegt sind, der diese Sicherheitsklasse zugeordnet ist.]]></de>
+        </locale>
+        <locale name="gpm.securityclasses.panel.delete.popup.info.title">
+            <de><![CDATA[Sicherheitsklasse löschen]]></de>
+        </locale>
+        <locale name="gpm.securityclasses.panel.delete.popup.btn.text">
+            <de><![CDATA[Löschen]]></de>
+        </locale>
+        <locale name="gpm.securityclasses.panel.delete.popup.btn">
+            <de><![CDATA[Hier klicken, um die gewählte Sicherheitsklasse unwiderruflich zu löschen]]></de>
+        </locale>
+
+        <!-- Control: securityclasses/Create -->
+        <locale name="securityclasses.create.template.createtitle">
+            <de><![CDATA[Neue Sicherheitsklasse anlegen]]></de>
+        </locale>
+        <locale name="securityclasses.create.template.title">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="securityclasses.create.template.description">
+            <de><![CDATA[Beschreibung]]></de>
+        </locale>
+        <locale name="securityclasses.create.template.authPlugins">
+            <de><![CDATA[Auth.-Faktoren]]></de>
+        </locale>
+
+        <!-- Control: securityclasses/Edit -->
+        <locale name="securityclasses.edit.template.edittitle">
+            <de><![CDATA[Sicherheitsklasse bearbeiten]]></de>
+        </locale>
+        <locale name="securityclasses.edit.template.title">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="securityclasses.edit.template.description">
+            <de><![CDATA[Beschreibung]]></de>
         </locale>
 
     </groups>

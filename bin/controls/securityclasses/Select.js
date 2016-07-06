@@ -1,7 +1,7 @@
 /**
  * Select for password security classes
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect
+ * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,11 +9,11 @@
  * @require qui/controls/loader/Loader
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect.css
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select.css
  *
  * @event onLoaded [this] - fires when security classes are loaded
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect', [
+define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select', [
 
     'qui/QUI',
     'qui/controls/buttons/Select',
@@ -24,7 +24,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect'
     'Ajax',
     'Locale'
 
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect.css'
+    //'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select.css'
 
 ], function (QUI, QUISelect, QUILoader, AuthHandler, Ajax, QUILocale) {
     "use strict";
@@ -35,7 +35,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect'
     return new Class({
 
         Extends: QUISelect,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
 
         Binds: [
             '$onInject',
@@ -93,20 +93,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SecurityClassSelect'
 
             this.Loader.show();
 
-            Authentication.getSecurityClasses().then(function (result) {
+            Authentication.getSecurityClasses().then(function (SecurityClasses) {
                 var first = false;
 
                 self.clear();
 
-                for (var i = 0, len = result.length; i < len; i++) {
+                for (var id in SecurityClasses) {
+                    if (!SecurityClasses.hasOwnProperty(id)) {
+                        continue;
+                    }
+
+                    var Info = SecurityClasses[id];
+
                     self.appendChild(
-                        result[i].title,
-                        result[i].id,
+                        Info.title,
+                        id,
                         'fa fa-lock'
                     );
 
                     if (!first) {
-                        first = result[i].id;
+                        first = id;
                     }
                 }
 

@@ -238,4 +238,91 @@ class SecurityClass extends QUI\QDOM
 
         return $eligibleGroupIds;
     }
+
+    /**
+     * Edits title and/or description of a security class
+     *
+     * @param array $data
+     */
+    public function edit($data)
+    {
+        foreach ($data as $k => $v) {
+            switch ($k) {
+                case 'title':
+                case 'description':
+                    if (is_string($v)) {
+                        $this->setAttribute($k, $v);
+                    }
+                    break;
+            }
+        }
+
+        $this->save();
+    }
+
+    /**
+     * Saves current settings
+     *
+     * @return true - on success
+     * @throws QUI\Database\Exception
+     */
+    protected function save()
+    {
+        QUI::getDataBase()->update(
+            Tables::SECURITY_CLASSES,
+            array(
+                'title'       => $this->getAttribute('title'),
+                'description' => $this->getAttribute('description')
+            ),
+            array(
+                'id' => $this->getId()
+            )
+        );
+    }
+
+    /**
+     * Permanently deletes this security class
+     *
+     * @return true - if successful
+     *
+     * @throws QUI\Exception
+     */
+    public function delete()
+    {
+        // check if any passwords exist with this security class
+        $count = QUI::getDataBase()->fetch(
+            array(
+                'count' => 1,
+                'from'  => Tables::PASSWORDS,
+                'where' => array(
+                    'securityClassId' => $this->getId()
+                )
+            )
+        );
+
+        if (current(current($count)) > 0) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.delete.still.in.use'
+            ));
+        }
+
+        // delete securityclass to auth entries
+        QUI::getDataBase()->delete(
+            Tables::SECURITY_TO_AUTH,
+            array(
+                'securityClassId' => $this->getId()
+            )
+        );
+
+        // delete security class entry
+        QUI::getDataBase()->delete(
+            Tables::SECURITY_CLASSES,
+            array(
+                'id' => $this->getId()
+            )
+        );
+
+        return true;
+    }
 }

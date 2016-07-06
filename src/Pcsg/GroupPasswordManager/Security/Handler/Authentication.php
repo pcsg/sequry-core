@@ -12,6 +12,7 @@ use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
 use QUI;
+use Symfony\Component\Console\Helper\Table;
 
 /**
  * Authentication Class for crypto data and crypto users
@@ -67,14 +68,7 @@ class Authentication
             $list[] = $row;
         }
 
-        $Grid = new \QUI\Utils\Grid();
-
-        $result = $Grid->parseResult(
-            $list,
-            count($list)
-        );
-
-        return $result;
+        return $list;
     }
 
     /**
@@ -272,20 +266,99 @@ class Authentication
     }
 
     /**
-     * Return list of all security classes with name and description
+     * Create new security class
+     *
+     * @param array $params
+     * @return integer - security class id
+     * @throws QUI\Exception
+     */
+    public static function createSecurityClass($params)
+    {
+        if (!isset($params['title'])
+            || empty($params['title'])
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.missing.title'
+            ));
+        }
+
+        if (!isset($params['authPluginIds'])
+            || empty($params['authPluginIds'])
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.missing.authplugins'
+            ));
+        }
+
+        $authPlugins = array();
+
+        foreach ($params['authPluginIds'] as $authPluginId) {
+            try {
+                $authPlugins[] = self::getAuthPlugin($authPluginId);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::addError(
+                    'createSecurityClass :: error on getAuthPlugin -> ' . $Exception->getMessage()
+                );
+            }
+        }
+
+        QUI::getDataBase()->insert(
+            Tables::SECURITY_CLASSES,
+            array(
+                'title'       => $params['title'],
+                'description' => $params['description']
+            )
+        );
+
+        $securityClassId = QUI::getDataBase()->getPDO()->lastInsertId();
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($authPlugins as $AuthPlugin) {
+            QUI::getDataBase()->insert(
+                Tables::SECURITY_TO_AUTH,
+                array(
+                    'securityClassId' => $securityClassId,
+                    'authPluginId'    => $AuthPlugin->getId()
+                )
+            );
+        }
+
+        return $securityClassId;
+    }
+
+    /**
+     * Return list of all security classes with name and description and associated authentication plugins
      *
      * @return array
      */
     public static function getSecurityClassesList()
     {
-        $list = array();
-
+        $list   = array();
         $result = QUI::getDataBase()->fetch(array(
             'from' => Tables::SECURITY_CLASSES,
         ));
 
         foreach ($result as $row) {
-            $list[] = $row;
+            $id = (int)$row['id'];
+
+            $list[$id] = array(
+                'title'       => $row['title'],
+                'description' => $row['description'],
+                'authPlugins' => array()
+            );
+
+            $authPlugins = self::getAuthPluginsBySecurityClass($id);
+
+            /** @var Plugin $AuthPlugin */
+            foreach ($authPlugins as $AuthPlugin) {
+                $list[$id]['authPlugins'][] = array(
+                    'id'          => $AuthPlugin->getId(),
+                    'title'       => $AuthPlugin->getAttribute('title'),
+                    'description' => $AuthPlugin->getAttribute('description')
+                );
+            }
         }
 
         return $list;

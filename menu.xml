@@ -21,5 +21,12 @@
     >
         <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.auth.title"/>
     </item>
+    <item parent="/extras/gpmsettings/"
+          name="gpmsettingssecurityclasses"
+          require="package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel"
+          icon="fa fa-lock"
+    >
+        <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.securityclasses.title"/>
+    </item>
 
 </menu>
