@@ -418,6 +418,11 @@ class Password
                             continue;
                         }
 
+                        // skip if user already has password access
+                        if ($this->hasPasswordAccess($User)) {
+                            continue;
+                        }
+
                         // create password access for user
                         $CryptoUser = CryptoActors::getCryptoUser($actorId);
                         $this->createPasswordAccess($CryptoUser);
@@ -458,7 +463,12 @@ class Password
                                 continue;
                             }
 
-                            $this->createPasswordAccess($CryptoUser, $Group->getId());
+                            // skip if user already has password access via this group
+                            if ($this->hasPasswordAccess($CryptoUser, $Group)) {
+                                continue;
+                            }
+
+                            $this->createPasswordAccess($CryptoUser, $Group);
 //                            $newShareUserIds[] = $CryptoUser->getId();
                         }
 
@@ -506,7 +516,7 @@ class Password
                     continue;
                 }
 
-                $this->removePasswordAccess($User);
+                $this->removePasswordAccess($User, $Group);
             }
         }
 
@@ -726,20 +736,20 @@ class Password
      * Creates and inserts password access entry for a user
      *
      * @param CryptoUser $User
-     * @param integer $groupId (optional) - if user has access via a group
+     * @param QUI\Groups\Group $Group (optional) - create access via group
      *
      * @return true - on success
      *
      * @throws QUI\Exception
      */
-    protected function createPasswordAccess($User, $groupId = null)
+    protected function createPasswordAccess($User, $Group = null)
     {
         $DB = QUI::getDataBase();
 
         // check if already shared
         $result = $DB->fetch(array(
             'count' => 1,
-            'from' => Tables::USER_TO_PASSWORDS,
+            'from'  => Tables::USER_TO_PASSWORDS,
             'where' => array(
                 'userId' => $User->getId(),
                 'dataId' => $this->id
@@ -760,7 +770,7 @@ class Password
         );
 
         // encrypt key parts with user public keys
-        $i  = 0;
+        $i = 0;
 
         /** @var Plugin $Plugin */
         foreach ($authPlugins as $Plugin) {
@@ -777,7 +787,7 @@ class Password
                     'dataId'    => $this->id,
                     'dataKey'   => $encryptedPayloadKeyPart,
                     'keyPairId' => $UserAuthKeyPair->getId(),
-                    'groupId'   => $groupId,
+                    'groupId'   => is_null($Group) ?: $Group->getId(),
                 );
 
                 $dataAccessEntry['MAC'] = MAC::create(
@@ -805,20 +815,44 @@ class Password
     }
 
     /**
+     * Checks if a user has access to this password
+     *
+     * @param QUI\Users\User $User
+     * @param QUI\Groups\Group $Group (optional) - check if access is given via specific group
+     * @return bool
+     */
+    protected function hasPasswordAccess($User, $Group = null)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'count' => 1,
+            'from'  => Tables::USER_TO_PASSWORDS,
+            'where' => array(
+                'userId'  => $User->getId(),
+                'dataId'  => $this->id,
+                'groupId' => is_null($Group) ?: $Group->getId()
+            )
+        ));
+
+        return current(current($result)) > 0;
+    }
+
+    /**
      * Remove password access for a user
      *
      * @param QUI\Users\User $User
+     * @param QUI\Groups\Group $Group (optional) - remove access via group
      * @return true - on success
      *
      * @throws QUI\Exception
      */
-    protected function removePasswordAccess($User)
+    protected function removePasswordAccess($User, $Group = null)
     {
         QUI::getDataBase()->delete(
             Tables::USER_TO_PASSWORDS,
             array(
-                'userId' => $User->getId(),
-                'dataId' => $this->id
+                'userId'  => $User->getId(),
+                'dataId'  => $this->id,
+                'groupId' => is_null($Group) ?: $Group->getId()
             )
         );
 

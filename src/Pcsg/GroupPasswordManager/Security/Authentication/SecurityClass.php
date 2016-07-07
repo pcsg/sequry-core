@@ -240,6 +240,116 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
+     * Search eligible users and/or groups for this security class
+     *
+     * @param string $search - search term (username / group name)
+     * @param string $type - "users" / "groups"
+     * @param integer $limit
+     * @return array
+     */
+    public function searchEligibleActors($search, $type, $limit)
+    {
+        switch ($type) {
+            case 'users':
+                $actors = $this->searchEligibleUsers($search);
+                break;
+
+            case 'groups':
+                $actors = $this->searchEligibleGroups($search);
+                break;
+
+            default:
+                $actors = $this->searchEligibleUsers($search);
+                $actors = array_merge(
+                    $actors,
+                    $this->searchEligibleGroups($search)
+                );
+        }
+
+        return array_slice($actors, 0, $limit);
+    }
+
+    /**
+     * Searches eligible users for this security class via search term
+     *
+     * @param string $search
+     * @return array
+     */
+    protected function searchEligibleUsers($search)
+    {
+        $actors  = array();
+        $userIds = $this->getEligibleUserIds();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id',
+                'username'
+            ),
+            'from'   => 'users',
+            'where'  => array(
+                'id'       => array(
+                    'type'  => 'IN',
+                    'value' => $userIds
+                ),
+                'username' => array(
+                    'type'  => '%LIKE%',
+                    'value' => $search
+                )
+            )
+        ));
+
+        foreach ($result as $row) {
+            $actors[] = array(
+                'id'   => $row['id'],
+                'name' => $row['username'],
+                'type' => 'user'
+            );
+        }
+
+        return $actors;
+    }
+
+    /**
+     * Searches eligible groups for this security class via search term
+     *
+     * @param string $search
+     * @return array
+     */
+    protected function searchEligibleGroups($search)
+    {
+        $actors   = array();
+        $groupIds = $this->getEligibleGroupIds();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id',
+                'name'
+            ),
+            'from'   => 'groups',
+            'where'  => array(
+                'id'   => array(
+                    'type'  => 'IN',
+                    'value' => $groupIds
+                ),
+                'name' => array(
+                    'type'  => '%LIKE%',
+                    'value' => $search
+                )
+            )
+        ));
+
+        foreach ($result as $row) {
+            $actors[] = array(
+                'id'   => $row['id'],
+                'name' => $row['name'],
+                'type' => 'group'
+            );
+        }
+
+        return $actors;
+    }
+
+    /**
      * Edits title and/or description of a security class
      *
      * @param array $data

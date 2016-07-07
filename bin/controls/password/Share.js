@@ -26,7 +26,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
     'Locale',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect',
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/ActorBox',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css'
@@ -101,11 +101,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
         $addActor: function (id, type) {
             switch (type) {
                 case 'user':
-                    this.$ActorBoxUsers.addActor(id, type);
+                    this.$ActorSelect.addItem('u' + id, type);
                     break;
 
                 case 'group':
-                    this.$ActorBoxGroups.addActor(id, type);
+                    this.$ActorSelect.addItem('g' + id, type);
                     break;
             }
         },
@@ -142,30 +142,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 '.gpm-password-share-select'
             );
 
-            // build actor boxes
-            this.$ActorBoxUsers = new ActorBox().inject(
-                this.$Elm.getElement(
-                    '.gpm-password-share-actors-users'
-                )
-            );
+            Passwords.getSecurityClassId(
+                this.getAttribute('passwordId')
+            ).then(function (securityClassId) {
 
-            this.$ActorBoxGroups = new ActorBox().inject(
-                this.$Elm.getElement(
-                    '.gpm-password-share-actors-groups'
-                )
-            );
+            });
 
-            this.$AddActorBtn = new QUIButton({
-                icon  : 'fa fa-plus',
-                events: {
-                    onClick: function () {
-                        var ActorData = self.$ActorSelect.getActor();
-                        self.$addActor(ActorData.id, ActorData.type);
-                    }
-                }
-            }).inject(ActorSelectElm);
-
-            // get password data
             var pwId = this.getAttribute('passwordId');
 
             Promise.all([
@@ -176,14 +158,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
                 self.$ShareData   = result[1];
                 self.$ActorSelect = new ActorSelect({
-                    securityClassId: securityClassId,
-                    events         : {
-                        onLoaded: function () {
-                            self.$insertData();
-                            self.fireEvent('loaded');
-                        }
-                    }
+                    securityClassId: securityClassId
                 }).inject(ActorSelectElm);
+
+                self.$insertData();
+                self.fireEvent('loaded');
             });
         },
 
@@ -195,13 +174,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
         save: function () {
             var self = this;
 
-            var actors = this.$ActorBoxUsers.getActors().concat(
-                this.$ActorBoxGroups.getActors()
-            );
+            var shareData = [];
+            var actors    = this.$ActorSelect.getValue();
+
+            if (actors !== '') {
+                actors = actors.split(',');
+
+                for (var i = 0, len = actors.length; i < len; i++) {
+                    var id = actors[i];
+
+                    if (id.charAt(0) === 'u') {
+                        shareData.push({
+                            id  : id.substr(1),
+                            type: 'user'
+                        });
+
+                        continue;
+                    }
+
+                    shareData.push({
+                        id  : id.substr(1),
+                        type: 'group'
+                    });
+                }
+            }
 
             Passwords.setShareData(
                 this.getAttribute('passwordId'),
-                actors,
+                shareData,
                 this.getAttribute('AuthData')
             ).then(
                 function (ShareData) {
