@@ -75,17 +75,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            var self      = this,
-                lg_prefix = 'create.template.';
-
             this.$Elm = this.parent();
 
             this.$Elm.set({
                 'class': 'gpm-password-share',
-                html   : '<div class="gpm-password-share-select"></div>' +
-                '<div class="gpm-password-share-actors">' +
-                '<div class="gpm-password-share-actors-users"></div>' +
-                '<div class="gpm-password-share-actors-groups"></div>' +
+                html   : '<div class="gpm-password-share-info">' +
+                QUILocale.get(lg, 'controls.password.share.info') +
+                '</div>' +
+                '<div class="gpm-password-share-actors-users">' +
+                '<h3>' + QUILocale.get(lg, 'controls.password.share.users.header') +'</h3>' +
+                '</div>' +
+                '<div class="gpm-password-share-actors-groups">' +
+                '<h3>' + QUILocale.get(lg, 'controls.password.share.groups.header') +'</h3>' +
                 '</div>'
             });
 
@@ -101,16 +102,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
         $addActor: function (id, type) {
             switch (type) {
                 case 'user':
-                    this.$ActorSelect.addItem('u' + id, type);
+                    this.$ActorSelectUsers.addItem('u' + id, type);
                     break;
 
                 case 'group':
-                    this.$ActorSelect.addItem('g' + id, type);
+                    this.$ActorSelectGroups.addItem('g' + id, type);
                     break;
             }
         },
 
+        /**
+         * Insert actors
+         */
         $insertData: function () {
+            this.$ActorSelectUsers.clear();
+            this.$ActorSelectGroups.clear();
+
             for (var type in this.$ShareData) {
                 if (!this.$ShareData.hasOwnProperty(type)) {
                     continue;
@@ -138,8 +145,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
         $onInject: function () {
             var self = this;
 
-            var ActorSelectElm = this.$Elm.getElement(
-                '.gpm-password-share-select'
+            var ActorUsersElm = this.$Elm.getElement(
+                '.gpm-password-share-actors-users'
+            );
+
+            var ActorGroupsElm = this.$Elm.getElement(
+                '.gpm-password-share-actors-groups'
             );
 
             Passwords.getSecurityClassId(
@@ -156,10 +167,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
             ]).then(function (result) {
                 var securityClassId = result[0];
 
-                self.$ShareData   = result[1];
-                self.$ActorSelect = new ActorSelect({
+                self.$ShareData        = result[1];
+                self.$ActorSelectUsers = new ActorSelect({
+                    actorType      : 'users',
                     securityClassId: securityClassId
-                }).inject(ActorSelectElm);
+                }).inject(ActorUsersElm);
+
+                self.$ActorSelectGroups = new ActorSelect({
+                    actorType      : 'groups',
+                    securityClassId: securityClassId
+                }).inject(ActorGroupsElm);
 
                 self.$insertData();
                 self.fireEvent('loaded');
@@ -175,25 +192,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
             var self = this;
 
             var shareData = [];
-            var actors    = this.$ActorSelect.getValue();
 
-            if (actors !== '') {
-                actors = actors.split(',');
+            // users
+            var actorsUsers = this.$ActorSelectUsers.getValue();
 
-                for (var i = 0, len = actors.length; i < len; i++) {
-                    var id = actors[i];
+            if (actorsUsers !== '') {
+                actorsUsers = actorsUsers.split(',');
 
-                    if (id.charAt(0) === 'u') {
-                        shareData.push({
-                            id  : id.substr(1),
-                            type: 'user'
-                        });
-
-                        continue;
-                    }
-
+                for (var i = 0, len = actorsUsers.length; i < len; i++) {
                     shareData.push({
-                        id  : id.substr(1),
+                        id  : actorsUsers[i].substr(1),
+                        type: 'user'
+                    });
+                }
+            }
+
+            // groups
+            var actorsGroups = this.$ActorSelectGroups.getValue();
+
+            if (actorsGroups !== '') {
+                actorsGroups = actorsGroups.split(',');
+
+                for (var i = 0, len = actorsGroups.length; i < len; i++) {
+                    shareData.push({
+                        id  : actorsGroups[i].substr(1),
                         type: 'group'
                     });
                 }

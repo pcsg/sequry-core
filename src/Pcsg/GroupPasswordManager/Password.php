@@ -363,8 +363,6 @@ class Password
             }
         }
 
-        \QUI\System\Log::writeRecursive($this->getSecretAttributes());
-
         $this->save();
     }
 
@@ -418,11 +416,6 @@ class Password
                             continue;
                         }
 
-                        // skip if user already has password access
-                        if ($this->hasPasswordAccess($User)) {
-                            continue;
-                        }
-
                         // create password access for user
                         $CryptoUser = CryptoActors::getCryptoUser($actorId);
                         $this->createPasswordAccess($CryptoUser);
@@ -463,13 +456,7 @@ class Password
                                 continue;
                             }
 
-                            // skip if user already has password access via this group
-                            if ($this->hasPasswordAccess($CryptoUser, $Group)) {
-                                continue;
-                            }
-
                             $this->createPasswordAccess($CryptoUser, $Group);
-//                            $newShareUserIds[] = $CryptoUser->getId();
                         }
 
                         $newShareGroupIds[] = $Group->getId();
@@ -744,21 +731,12 @@ class Password
      */
     protected function createPasswordAccess($User, $Group = null)
     {
-        $DB = QUI::getDataBase();
-
-        // check if already shared
-        $result = $DB->fetch(array(
-            'count' => 1,
-            'from'  => Tables::USER_TO_PASSWORDS,
-            'where' => array(
-                'userId' => $User->getId(),
-                'dataId' => $this->id
-            )
-        ));
-
-        if (current(current($result)) > 0) {
+        // skip if user already has password access
+        if ($this->hasPasswordAccess($User, $Group)) {
             return true;
         }
+
+        $DB = QUI::getDataBase();
 
         // split key
         $authPlugins = $this->SecurityClass->getAuthPlugins();
@@ -787,7 +765,7 @@ class Password
                     'dataId'    => $this->id,
                     'dataKey'   => $encryptedPayloadKeyPart,
                     'keyPairId' => $UserAuthKeyPair->getId(),
-                    'groupId'   => is_null($Group) ?: $Group->getId(),
+                    'groupId'   => is_null($Group) ? null : $Group->getId(),
                 );
 
                 $dataAccessEntry['MAC'] = MAC::create(
@@ -829,7 +807,7 @@ class Password
             'where' => array(
                 'userId'  => $User->getId(),
                 'dataId'  => $this->id,
-                'groupId' => is_null($Group) ?: $Group->getId()
+                'groupId' => is_null($Group) ? null : $Group->getId()
             )
         ));
 
@@ -852,7 +830,7 @@ class Password
             array(
                 'userId'  => $User->getId(),
                 'dataId'  => $this->id,
-                'groupId' => is_null($Group) ?: $Group->getId()
+                'groupId' => is_null($Group) ? null : $Group->getId()
             )
         );
 

@@ -411,6 +411,17 @@
             <de><![CDATA[Beschreibung]]></de>
         </locale>
 
+        <!-- Control: password/Share -->
+        <locale name="controls.password.share.info">
+            <de><![CDATA[Hier kann festgelegt werden, welche Benutzer und Gruppen die Berechtigung haben, dieses Passwort anzusehen.]]></de>
+        </locale>
+        <locale name="controls.password.share.users.header">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.password.share.groups.header">
+            <de><![CDATA[Gruppen]]></de>
+        </locale>
+
     </groups>
 
 </locales>
