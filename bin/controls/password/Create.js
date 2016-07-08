@@ -28,7 +28,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect',
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html',
@@ -58,6 +58,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             });
 
             this.$PasswordData = null;
+            this.$owner        = false;
         },
 
         /**
@@ -67,7 +68,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
          */
         create: function () {
             var self      = this,
-                lg_prefix = 'create.template.';
+                lg_prefix = 'password.create.template.';
 
             this.$Elm = this.parent();
 
@@ -98,15 +99,25 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
             this.$SecurityClassSelect = new SecurityClassSelect({
                 events: {
-                    onLoaded: function (Select) {
+                    onLoaded: function () {
+                        self.fireEvent('loaded');
+                    },
+                    onChange: function (value) {
+                        OwnerSelectElm.set('html', '');
+
                         self.$OwnerSelect = new ActorSelect({
-                            securityClassId: Select.getValue(),
+                            max            : 1,
+                            securityClassId: value,
                             events         : {
-                                onLoaded: function () {
-                                    self.fireEvent('loaded');
+                                onChange: function() {
+                                    self.$owner = self.$OwnerSelect.getValue();
                                 }
                             }
                         }).inject(OwnerSelectElm);
+
+                        if (self.$owner !== false) {
+                            self.$OwnerSelect.addItem(self.$owner);
+                        }
                     }
                 }
             }).inject(
@@ -125,8 +136,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
         /**
          * Create the field
-         *
-         * @returns {Promise}
          */
         submit: function () {
             var self = this;
@@ -136,8 +145,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 title          : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
                 description    : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
                 payload        : this.$Elm.getElement('input.pcsg-gpm-password-payload').value,
-                owner          : this.$OwnerSelect.getActor()
             };
+
+            var actors = this.$OwnerSelect.getActors();
+
+            if (!actors.length) {
+                QUI.getMessageHandler(function (MH) {
+                    MH.addAttention(
+                        QUILocale.get(lg, 'password.create.submit.no.owner.assigned')
+                    )
+                });
+
+                return;
+            }
+
+            this.$PasswordData.owner = actors[0];
 
             var AuthControl = new AuthenticationControl({
                 securityClassId: this.$SecurityClassSelect.getValue(),

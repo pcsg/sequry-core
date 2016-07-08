@@ -13,13 +13,14 @@
         </table>
 
         <table name="pcsg_gpm_user_data_access" no-auto-update="1" no-site-reference="1">
+            <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">keyPairId</field>
             <field type="BIGINT(20) UNSIGNED NULL">groupId</field>
             <field type="BLOB NOT NULL">dataKey</field>
             <field type="BLOB NOT NULL">MAC</field>
-            <primary>userId,dataId,keyPairId</primary>
+            <primary>id</primary>
         </table>
 
         <table name="pcsg_gpm_password_data" no-auto-update="1" no-site-reference="1">

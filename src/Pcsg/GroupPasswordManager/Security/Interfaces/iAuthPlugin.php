@@ -68,11 +68,13 @@ interface iAuthPlugin
     public function isAuthenticated();
 
     /**
-     * Returns a QUI\Control object that collects authentification information
+     * Change authentication information
      *
-     * @return \QUI\Control
+     * @param mixed $old - current authentication information
+     * @param mixed $new - new authentication information
+     * @return bool - success
      */
-    public function getAuthenticationControl();
+    public function changeAuthenticationInformation($old, $new);
 
     /**
      * Registers the auth plugin with the main password manager module
@@ -80,4 +82,25 @@ interface iAuthPlugin
      * @return void
      */
     public static function registerPlugin();
+
+    /**
+     * Returns a QUI\Control object that collects registration information
+     *
+     * @return \QUI\Control
+     */
+    public function getRegistrationControl();
+
+    /**
+     * Returns a QUI\Control object that collects authentification information
+     *
+     * @return \QUI\Control
+     */
+    public function getAuthenticationControl();
+
+    /**
+     * Returns a QUI\Control object that allows changing of authentication information
+     *
+     * @return \QUI\Control
+     */
+    public function getChangeAuthenticationControl();
 }

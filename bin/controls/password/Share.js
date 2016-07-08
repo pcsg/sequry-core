@@ -191,35 +191,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
         save: function () {
             var self = this;
 
-            var shareData = [];
-
-            // users
-            var actorsUsers = this.$ActorSelectUsers.getValue();
-
-            if (actorsUsers !== '') {
-                actorsUsers = actorsUsers.split(',');
-
-                for (var i = 0, len = actorsUsers.length; i < len; i++) {
-                    shareData.push({
-                        id  : actorsUsers[i].substr(1),
-                        type: 'user'
-                    });
-                }
-            }
-
-            // groups
-            var actorsGroups = this.$ActorSelectGroups.getValue();
-
-            if (actorsGroups !== '') {
-                actorsGroups = actorsGroups.split(',');
-
-                for (var i = 0, len = actorsGroups.length; i < len; i++) {
-                    shareData.push({
-                        id  : actorsGroups[i].substr(1),
-                        type: 'group'
-                    });
-                }
-            }
+            var shareData = this.$ActorSelectUsers.getActors().append(
+                this.$ActorSelectGroups.getActors()
+            );
 
             Passwords.setShareData(
                 this.getAttribute('passwordId'),

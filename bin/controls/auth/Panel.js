@@ -22,6 +22,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
     'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
 
     'Ajax',
     'Locale',
@@ -29,7 +30,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUILoader, Grid, AuthHandler, AuthRegister,
-             Ajax, QUILocale) {
+             AuthChange, Ajax, QUILocale) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager';
@@ -46,7 +47,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             '$onCreate',
             '$onResize',
             'refresh',
-            'registerUser'
+            'registerUser',
+            'changeAuthInfo'
         ],
 
         options: {},
@@ -84,6 +86,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 textimage: 'fa fa-key',
                 events   : {
                     onClick: this.registerUser
+                }
+            });
+
+            this.addButton({
+                name     : 'change',
+                text     : QUILocale.get(lg, 'auth.panel.btn.change'),
+                textimage: 'fa fa-edit',
+                events   : {
+                    onClick: this.changeAuthInfo
                 }
             });
 
@@ -146,12 +157,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 onClick   : function () {
                     var selectedCount = self.$Grid.getSelectedData().length,
                         Row           = self.$Grid.getSelectedData()[0],
-                        Register      = self.getButtons('register');
+                        Register      = self.getButtons('register'),
+                        Change        = self.getButtons('change');
 
-                    if (selectedCount == 1 && !Row.isregistered) {
-                        Register.enable();
+                    if (selectedCount == 1) {
+                        if (!Row.isregistered) {
+                            Register.enable();
+                            Change.disable();
+                        } else {
+                            Register.disable();
+                            Change.enable();
+                        }
                     } else {
                         Register.disable();
+                        Change.disable();
                     }
                 },
                 onRefresh : this.refresh
@@ -187,6 +206,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             return Authentication.getAuthPlugins().then(function (authPlugins) {
                 self.$setGridData(authPlugins);
                 self.getButtons('register').disable();
+                self.getButtons('change').disable();
                 self.Loader.hide();
             });
         },
@@ -228,7 +248,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         },
 
         /**
-         * Opens the create password dialog
+         * Opens register dialog
          */
         registerUser: function () {
             var self = this;
@@ -281,6 +301,61 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 }
             }).show();
         },
+
+        /**
+         * Opens the change auth information dialog
+         */
+        changeAuthInfo: function () {
+            var self = this;
+
+            this.Loader.show();
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.auth.panel.change.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        var Change = new AuthChange({
+                            authPluginId: self.$Grid.getSelectedData()[0].id,
+                            events      : {
+                                onFinish: function () {
+                                    self.Loader.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
+
+                        Sheet.addButton(
+                            new QUIButton({
+                                text     : QUILocale.get(lg, 'auth.panel.change.btn.register'),
+                                textimage: 'fa fa-save',
+                                events   : {
+                                    onClick: function () {
+                                        self.Loader.show();
+
+                                        Change.submit().then(function (success) {
+                                            self.Loader.hide();
+
+                                            if (!success) {
+                                                return;
+                                            }
+
+                                            Sheet.hide().then(function () {
+                                                Sheet.destroy();
+                                                self.refresh();
+                                            });
+                                        });
+                                    }
+                                }
+                            })
+                        );
+                    },
+                    onClose: function (Sheet) {
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        }
     });
 
 });

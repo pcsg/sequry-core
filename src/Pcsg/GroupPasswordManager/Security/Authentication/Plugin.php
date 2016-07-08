@@ -4,6 +4,8 @@ namespace Pcsg\GroupPasswordManager\Security\Authentication;
 
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -46,10 +48,13 @@ class Plugin extends QUI\QDOM
         ));
 
         if (empty($result)) {
-            throw new QUI\Exception(
-                'Authentication plugin #' . $id . ' not found.',
-                404
-            );
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.auth.plugin.not.found',
+                array(
+                    'id' => $id
+                )
+            ), 404);
         }
 
         $data      = current($result);
@@ -86,11 +91,31 @@ class Plugin extends QUI\QDOM
     /**
      * Returns a QUI\Control object that collects authentification information
      *
-     * @return \QUI\Control
+     * @return string - control URI for require.js
      */
     public function getAuthenticationControl()
     {
         return $this->AuthClass->getAuthenticationControl();
+    }
+
+    /**
+     * Returns a QUI\Control object that collects registration information
+     *
+     * @return string - control URI for require.js
+     */
+    public function getRegistrationControl()
+    {
+        return $this->AuthClass->getRegistrationControl();
+    }
+
+    /**
+     * Returns a QUI\Control object that allows changing of authentication information
+     *
+     * @return \QUI\Control
+     */
+    public function getChangeAuthenticationControl()
+    {
+        return $this->AuthClass->getChangeAuthenticationControl();
     }
 
     /**
@@ -113,6 +138,64 @@ class Plugin extends QUI\QDOM
     public function isAuthenticated()
     {
         return $this->AuthClass->isAuthenticated();
+    }
+
+    /**
+     * Change authentication information
+     *
+     * @param mixed $old - current authentication information
+     * @param mixed $new - new authentication information
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function changeAuthenticationInformation($old, $new)
+    {
+        $this->AuthClass->authenticate($old);
+
+        $AuthKeyPair     = CryptoActors::getCryptoUser()->getAuthKeyPair($this);
+        $publicKeyValue  = $AuthKeyPair->getPublicKey()->getValue();
+        $privateKeyValue = $AuthKeyPair->getPrivateKey()->getValue();
+
+        $this->AuthClass->changeAuthenticationInformation($old, $new);
+
+        // encrypt auth private key with derived key from new authentication information
+        $encryptedPrivateKeyValue = SymmetricCrypto::encrypt(
+            $privateKeyValue,
+            $this->AuthClass->getDerivedKey()
+        );
+
+        // calculate new MAC
+        // @todo noch mehr informationen in den MAC einfließen lassen (plugin id, user id etc.)
+        $macValue = MAC::create(
+            $publicKeyValue . $encryptedPrivateKeyValue,
+            Utils::getSystemKeyPairAuthKey()
+        );
+
+        try {
+            // put everything in the database
+            QUI::getDataBase()->update(
+                Tables::KEYPAIRS,
+                array(
+                    'publicKey'  => $publicKeyValue,
+                    'privateKey' => $encryptedPrivateKeyValue,
+                    'MAC'        => $macValue
+                ),
+                array(
+                    'userId'       => QUI::getUserBySession()->getId(),
+                    'authPluginId' => $this->id
+                )
+            );
+        } catch (QUI\Exception $Exception) {
+            QUI\System\Log::addError(
+                'DB error while changing auth info for a user for an auth plugin: ' . $Exception->getMessage()
+            );
+
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.auth.plugin.changeauth.database.error'
+            ));
+        }
     }
 
     /**
@@ -150,7 +233,7 @@ class Plugin extends QUI\QDOM
         $KeyPair = AsymmetricCrypto::generateKeyPair();
 
         // encrypt private key
-        $publicKeyValue = $KeyPair->getPublicKey()->getValue();
+        $publicKeyValue           = $KeyPair->getPublicKey()->getValue();
         $encryptedPrivateKeyValue = SymmetricCrypto::encrypt(
             $KeyPair->getPrivateKey()->getValue(),
             $AuthKey

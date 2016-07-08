@@ -1,7 +1,7 @@
 /**
- * Control for creating a new password
+ * Control for changing authentication information
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Register
+ * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Change
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,12 +9,12 @@
  * @require Locale
  * @require Mustache
  * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css
+ * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css
  *
  * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
+define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -26,8 +26,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
 
     'Ajax',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css'
+    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html',
+    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css'
 
 ], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, AuthHandler,
              Ajax, template) {
@@ -39,23 +39,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
 
         Binds: [
             '$onInject',
-            'submit'
+            'submit',
+            '$controlSubmit'
         ],
 
         options: {
-            'authPluginId': false // id of auth plugin the registration is for
+            Parent        : false,  // Parent control
+            'authPluginId': false   // id of auth plugin the registration is for
         },
 
         initialize: function (options) {
+            var self = this;
+
             this.parent(options);
 
             this.addEvents({
                 onInject: this.$onInject
             });
+
+            this.$Parent = this.getAttribute('Parent');
+
+            if (this.$Parent) {
+                this.$Parent.addEvents({
+                    onSubmit: self.submit
+                });
+            }
         },
 
         /**
@@ -78,16 +90,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
             });
 
             var AuthPluginControlElm = this.$Elm.getElement(
-                '.pcsg-gpm-auth-register-control'
+                '.pcsg-gpm-auth-change-control'
             );
 
-            Authentication.getRegistrationControl(
+            Authentication.getChangeAuthenticationControl(
                 this.getAttribute('authPluginId')
             ).then(function (authPluginControlPath) {
                 require([
                     authPluginControlPath
                 ], function (Control) {
-                    self.$AuthPluginControl = new Control().inject(
+                    self.$AuthPluginControl = new Control({
+                        events : {
+                            onSubmit: self.$controlSubmit
+                        }
+                    }).inject(
                         AuthPluginControlElm
                     );
 
@@ -106,21 +122,25 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
         },
 
         /**
-         * Register current user with plugin
+         * on control submit
+         *
+         * @returns {Promise}
+         */
+        $controlSubmit: function() {
+            return Authentication.changeAuthInformation(
+                this.getAttribute('authPluginId'),
+                this.$AuthPluginControl.getOldAuthData(),
+                this.$AuthPluginControl.getNewAuthData()
+            );
+        },
+
+        /**
+         * Change current user with plugin
          *
          * @returns {Promise}
          */
         submit: function () {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
-                    'package'       : 'pcsg/grouppasswordmanager',
-                    onError         : reject,
-                    authPluginId    : self.getAttribute('authPluginId'),
-                    registrationData: JSON.encode(self.$AuthPluginControl.getRegistrationData())
-                });
-            });
+            this.$AuthPluginControl.submit();
         }
     });
 });

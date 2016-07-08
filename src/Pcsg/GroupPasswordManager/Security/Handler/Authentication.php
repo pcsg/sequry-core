@@ -114,26 +114,6 @@ class Authentication
         return self::$plugins[$id];
     }
 
-//    /**
-//     * Return every auth plugin authentication control associated with a specific auth level
-//     *
-//     * @param integer $securityClassId - ID of security class
-//     * @return array
-//     * @throws QUI\Exception
-//     */
-//    public static function getAuthenticationControls($securityClassId)
-//    {
-//        $controls    = array();
-//        $authPlugins = self::getAuthPluginsBySecurityClass($securityClassId);
-//
-//        /** @var iAuthPlugin $AuthPlugin */
-//        foreach ($authPlugins as $authPluginId => $AuthPlugin) {
-//            $controls[$authPluginId] = $AuthPlugin->getAuthenticationControl();
-//        }
-//
-//        return $controls;
-//    }
-
     /**
      * Return every auth plugin associated with a specific auth level
      *
@@ -381,26 +361,4 @@ class Authentication
 
         return self::$securityClasses[$id];
     }
-
-//    /**
-//     * Authenticate current session user with all plugins of a security class
-//     *
-//     * @param integer $securityClassId - security class id
-//     * @param array $authData - authentication data by plugin
-//     * @throws QUI\Exception
-//     */
-//    public static function authenticateWithSecurityClass($SecurityClass, $authData)
-//    {
-//        try {
-//            $SecurityClass = self::getSecurityClass($securityClassId);
-//            $SecurityClass->authenticate($authData);
-//        } catch (QUI\Exception $Exception) {
-//            throw new QUI\Exception(array(
-//                'pcsg/grouppasswordmanager',
-//                'exception.authentication.authenticate.error', array(
-//                    'error' => $Exception->getMessage()
-//                )
-//            ));
-//        }
-//    }
 }

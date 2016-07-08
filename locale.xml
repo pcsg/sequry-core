@@ -144,6 +144,9 @@
         <locale name="exception.authentication.authenticate.error" html="true">
             <de><![CDATA[Der Authentifizierungs-Vorgang war nicht erfolgreich:<br/><br/>[error]<br/><br/>Bitte versuchen Sie es erneut.]]></de>
         </locale>
+        <locale name="exception.auth.plugin.not.found">
+            <de><![CDATA[Das Authentifizierungs-Plugin mit der ID [id] wurde nicht gefunden.]]></de>
+        </locale>
 
         <!-- Ajax -->
         <locale name="success.auth.registeruser">
@@ -151,6 +154,12 @@
         </locale>
         <locale name="error.auth.registeruser">
             <de><![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="error.auth.changeauth">
+            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="success.auth.changeauth">
+            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war erfolgreich.]]></de>
         </locale>
 
         <!-- System -->
@@ -236,36 +245,39 @@
             <de><![CDATA[Hier klicken, um das Passwort unwiderruflich zu löschen]]></de>
         </locale>
 
-        <!-- Control: passwords/Create -->
-        <locale name="create.template.title">
+        <!-- Control: password/Create -->
+        <locale name="password.create.template.title">
             <de><![CDATA[Neues Passwort erstellen]]></de>
         </locale>
-        <locale name="create.template.basicData">
+        <locale name="password.create.template.basicData">
             <de><![CDATA[Stammdaten]]></de>
         </locale>
-        <locale name="create.template.securityClass">
+        <locale name="password.create.template.securityClass">
             <de><![CDATA[Sicherheitsklasse]]></de>
         </locale>
-        <locale name="create.template.passwordTitle">
+        <locale name="password.create.template.passwordTitle">
             <de><![CDATA[Titel]]></de>
         </locale>
-        <locale name="create.template.passwordDescription">
+        <locale name="password.create.template.passwordDescription">
             <de><![CDATA[Beschreibung]]></de>
         </locale>
-        <locale name="create.template.payload">
+        <locale name="password.create.template.payload">
             <de><![CDATA[Inhalt]]></de>
         </locale>
-        <locale name="create.template.passwordPayload">
+        <locale name="password.create.template.passwordPayload">
             <de><![CDATA[Passwort-Inhalt]]></de>
         </locale>
-        <locale name="create.template.payloadWarning">
+        <locale name="password.create.template.payloadWarning">
             <de><![CDATA[Achtung! Dies sind die Daten, die verschlüsselt werden und auf die nach der Erstellung ausschließlich Berechtigte zugreifen können!]]></de>
         </locale>
-        <locale name="create.template.owner">
+        <locale name="password.create.template.owner">
             <de><![CDATA[Eigentümer]]></de>
         </locale>
-        <locale name="create.template.passwordOwner">
+        <locale name="password.create.template.passwordOwner">
             <de><![CDATA[Benutzer / Gruppe]]></de>
+        </locale>
+        <locale name="password.create.submit.no.owner.assigned">
+            <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
         </locale>
 
         <!-- Control: password/Edit -->
@@ -294,6 +306,12 @@
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Registrieren]]></de>
+        </locale>
+        <locale name="gpm.auth.panel.change.title">
+            <de><![CDATA[Authentifizierungsinformationen ändern]]></de>
+        </locale>
+        <locale name="auth.panel.register.btn.register">
+            <de><![CDATA[Neue Informationen senden]]></de>
         </locale>
 
         <!-- Control: auth/Register -->
@@ -420,6 +438,17 @@
         </locale>
         <locale name="controls.password.share.groups.header">
             <de><![CDATA[Gruppen]]></de>
+        </locale>
+
+        <!-- Control: actors/Select -->
+        <locale name="actors.select.placeholder.users">
+            <de><![CDATA[Nach geeigneten Benutzern suchen]]></de>
+        </locale>
+        <locale name="actors.select.placeholder.groups">
+            <de><![CDATA[Nach geeigneten Gruppen suchen]]></de>
+        </locale>
+        <locale name="actors.select.placeholder.both">
+            <de><![CDATA[Nach geeigneten Benutzern und Gruppen suchen]]></de>
         </locale>
 
     </groups>

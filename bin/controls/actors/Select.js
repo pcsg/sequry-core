@@ -39,20 +39,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             switch (this.getAttribute('actorType')) {
                 case 'users':
                     this.setAttribute('icon', 'fa fa-user');
+                    this.setAttribute(
+                        'placeholder',
+                        QUILocale.get(lg, 'actors.select.placeholder.users')
+                    );
+                    break;
+
+                case 'groups':
+                    this.setAttribute('icon', 'fa fa-users');
+                    this.setAttribute(
+                        'placeholder',
+                        QUILocale.get(lg, 'actors.select.placeholder.groups')
+                    );
                     break;
 
                 default:
                     this.setAttribute('icon', 'fa fa-users');
+                    this.setAttribute(
+                        'placeholder',
+                        QUILocale.get(lg, 'actors.select.placeholder.both')
+                    );
             }
 
             this.setAttribute('Search', this.actorSearch);
             this.setAttribute('child', 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem');
             this.setAttribute('searchbutton', false);
-
-            this.setAttribute(
-                'placeholder',
-                QUILocale.get(lg, 'control.actor.select.placeholder')
-            );
         },
 
         /**
@@ -73,6 +84,46 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
                     limit          : 10
                 });
             });
+        },
+
+        /**
+         * Return actors
+         *
+         * @returns {Array}
+         */
+        getActors: function() {
+            var actors = [];
+
+            // users
+            var actorIds = this.getValue();
+
+            if (actorIds === '') {
+                return actors;
+            }
+
+            actorIds = actorIds.split(',');
+
+            for (var i = 0, len = actorIds.length; i < len; i++) {
+                var id = actorIds[0];
+
+                // is user
+                if (id.charAt(0) === 'u') {
+                    actors.push({
+                        id  : id.substr(1),
+                        type: 'user'
+                    });
+
+                    continue;
+                }
+
+                // is group
+                actors.push({
+                    id  : id.substr(1),
+                    type: 'group'
+                });
+            }
+
+            return actors;
         }
     });
 });

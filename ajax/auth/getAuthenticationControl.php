@@ -8,14 +8,14 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @param integer $authPluginId - id of auth plugin
  * @return string - path to javascript control
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getControl($authPluginId)
+function package_pcsg_grouppasswordmanager_ajax_auth_getAuthenticationControl($authPluginId)
 {
     $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
     return $AuthPlugin->getAuthenticationControl();
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getControl',
+    'package_pcsg_grouppasswordmanager_ajax_auth_getAuthenticationControl',
     array('authPluginId'),
     'Permission::checkAdminUser'
 );

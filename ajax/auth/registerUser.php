@@ -6,14 +6,14 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * Register current session user and create a keypair for an authentication plugin
  *
  * @param integer $authPluginId - ID of authentication plugin
- * @param array $authData - authentication data
+ * @param array $registrationData - authentication data
  * @return bool
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId, $authData)
+function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId, $registrationData)
 {
     try {
         $AuthPlugin = Authentication::getAuthPlugin($authPluginId);
-        $AuthPlugin->registerUser($authData);
+        $AuthPlugin->registerUser(json_decode($registrationData, true));
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
@@ -39,6 +39,6 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_auth_registerUser',
-    array('authPluginId', 'authData'),
+    array('authPluginId', 'registrationData'),
     'Permission::checkAdminUser'
 );

@@ -45,9 +45,41 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @param {number} authPluginId - ID of authentication plugin
          * @returns {Promise}
          */
-        getAuthPluginControl: function (authPluginId) {
+        getAuthenticationControl: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getControl', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthenticationControl', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId
+                });
+            });
+        },
+
+        /**
+         * Get control to change authentication information for a specific plugin
+         *
+         * @param {number} authPluginId - ID of authentication plugin
+         * @returns {Promise}
+         */
+        getChangeAuthenticationControl: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getChangeAuthenticationControl', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId
+                });
+            });
+        },
+
+        /**
+         * Get control to authenticate with a specific authentication plugin
+         *
+         * @param {number} authPluginId - ID of authentication plugin
+         * @returns {Promise}
+         */
+        getRegistrationControl: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getRegistrationControl', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -73,6 +105,26 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         securityClassId: securityClassId
                     }
                 );
+            });
+        },
+
+        /**
+         * Get control to change authentication information for a specific plugin
+         *
+         * @param {number} authPluginId - ID of authentication plugin
+         * @param {string} oldInfo - old (current) authentication information
+         * @param {string} newInfo - new authentication information
+         * @returns {Promise}
+         */
+        changeAuthInformation: function (authPluginId, oldInfo, newInfo) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId,
+                    oldAuthInfo : oldInfo,
+                    newAuthInfo : newInfo
+                });
             });
         },
 
