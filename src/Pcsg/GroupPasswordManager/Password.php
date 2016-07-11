@@ -322,22 +322,24 @@ class Password
                     break;
 
                 case 'payload':
-                    if (is_string($v)
-                        && !empty($v)
-                    ) {
+                    if (!empty($v)) {
                         $oldPayload = $this->getSecretAttribute('payload');
 
                         if ($oldPayload == $v) {
                             continue;
                         }
 
-                        $this->payload = $v;
+                        $this->setSecretAttribute('payload', $v);
 
                         // write history entry if payload changes
-                        $this->history[] = array(
+                        $history = $this->getSecretAttribute('history');
+
+                        $history[] = array(
                             'timestamp' => time(),
                             'value'     => $oldPayload
                         );
+
+                        $this->setSecretAttribute('history', $history);
                     }
                     break;
 
@@ -350,14 +352,9 @@ class Password
                         && !empty($v['type'])
                     ) {
                         $newOwnerId   = (int)$v['id'];
-                        $newOwnerType = (int)$v['type'];
+                        $newOwnerType = $v['type'];
 
-                        if ($this->changeOwner($newOwnerId, $newOwnerType)) {
-                            $this->setSecretAttributes(array(
-                                'ownerId'   => $newOwnerId,
-                                'ownerType' => $newOwnerType
-                            ));
-                        }
+                        $this->changeOwner($newOwnerId, $newOwnerType);
                     }
                     break;
             }
@@ -411,11 +408,6 @@ class Password
                             continue;
                         }
 
-                        if (!$this->SecurityClass->isUserEligible($User)) {
-                            // @todo meldung, dass user nicht geeignet als empfänger
-                            continue;
-                        }
-
                         // create password access for user
                         $CryptoUser = CryptoActors::getCryptoUser($actorId);
                         $this->createPasswordAccess($CryptoUser);
@@ -438,11 +430,6 @@ class Password
                         if ($this->getSecretAttribute('ownerType') === $this::OWNER_TYPE_GROUP
                             && $actorId === $this->getSecretAttribute('ownerId')
                         ) {
-                            continue;
-                        }
-
-                        if (!$this->SecurityClass->isGroupEligible($Group)) {
-                            // @todo meldung, dass group nicht geeignet als empfänger
                             continue;
                         }
 
@@ -628,15 +615,10 @@ class Password
         $currentOwnerId   = $this->getSecretAttribute('ownerId');
         $currentOwnerType = $this->getSecretAttribute('ownerType');
 
-        if ($id == $currentOwnerId
-            && $type == $currentOwnerType
-        ) {
-            return true;
-        }
-
         // set access data for new owner(s)
         switch ($type) {
             case self::OWNER_TYPE_USER:
+            case 'user':
                 if ($currentOwnerType === self::OWNER_TYPE_GROUP) {
                     throw new QUI\Exception(array(
                         'pcsg/grouppasswordmanager',
@@ -644,10 +626,16 @@ class Password
                     ));
                 }
 
+                if ((int)$currentOwnerId === (int)$id) {
+                    return true;
+                }
+
                 $User = CryptoActors::getCryptoUser($id);
 
                 try {
                     $this->createPasswordAccess($User);
+                    $newOwnerId   = $User->getId();
+                    $newOwnerType = self::OWNER_TYPE_USER;
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addError(
                         'Could not create access data for user #' . $User->getId() . ': '
@@ -659,6 +647,13 @@ class Password
                 break;
 
             case self::OWNER_TYPE_GROUP:
+            case 'group':
+                if ((int)$currentOwnerId === (int)$id
+                    && $currentOwnerType === self::OWNER_TYPE_GROUP
+                ) {
+                    return true;
+                }
+
                 $Group = QUI::getGroups()->get($id);
                 $users = $Group->getUsers();
 
@@ -676,7 +671,16 @@ class Password
                         // @todo abbrechen
                     }
                 }
+
+                $newOwnerId   = $Group->getId();
+                $newOwnerType = self::OWNER_TYPE_GROUP;
                 break;
+
+            default:
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.change.owner.wrong.type'
+                ));
         }
 
         // delete access data for old owner(s)
@@ -716,6 +720,11 @@ class Password
                 }
         }
 
+        $this->setSecretAttributes(array(
+            'ownerId'   => $newOwnerId,
+            'ownerType' => $newOwnerType
+        ));
+
         return true;
     }
 
@@ -734,6 +743,34 @@ class Password
         // skip if user already has password access
         if ($this->hasPasswordAccess($User, $Group)) {
             return true;
+        }
+
+        if (!is_null($Group)) {
+            if (!$this->SecurityClass->isGroupEligible($Group)) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.create.access.group.not.eligible',
+                    array(
+                        'groupId'            => $Group->getId(),
+                        'groupName'          => $Group->getAttribute('name'),
+                        'securityClassId'    => $this->SecurityClass->getId(),
+                        'securityClassTitle' => $this->SecurityClass->getAttribute('title')
+                    )
+                ));
+            }
+        }
+
+        if (!$this->SecurityClass->isUserEligible($User)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.create.access.user.not.eligible',
+                array(
+                    'userId'             => $User->getId(),
+                    'userName'           => $User->getUsername(),
+                    'securityClassId'    => $this->SecurityClass->getId(),
+                    'securityClassTitle' => $this->SecurityClass->getAttribute('title')
+                )
+            ));
         }
 
         $DB = QUI::getDataBase();

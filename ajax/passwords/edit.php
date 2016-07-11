@@ -13,8 +13,6 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $passwordData, $authData)
 {
-    ini_set('display_errors', 1);
-
     $passwordId = (int)$passwordId;
 
     // authenticate

@@ -221,8 +221,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Panel', [
             ], function (PasswordEdit) {
                 self.$PasswordEdit = new PasswordEdit({
                     passwordId : self.getAttribute('passwordId'),
-                    AuthData   : self.$AuthData,
-                    ParentPanel: self
+                    AuthData   : self.$AuthData
                 });
 
                 self.$PasswordEdit.addEvents({

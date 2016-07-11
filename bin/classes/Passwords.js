@@ -185,8 +185,20 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                     authData  : JSON.encode(AuthData)
                 });
             });
+        },
+
+        /**
+         * Get available password type
+         *
+         * @returns {Promise}
+         */
+        getTypes: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getTypes', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                });
+            });
         }
-
-
     });
 });

@@ -28,14 +28,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect',
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
+    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html'
     //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
-             AuthenticationControl, SecurityClassSelect, ActorSelect, template) {
+             AuthenticationControl, SecurityClassSelect, ActorSelect, PasswordContent, template) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager',
@@ -52,9 +53,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
         ],
 
         options: {
-            passwordId : false, // passwordId
-            AuthData   : false, // authentication data
-            ParentPanel: false  // parent panel that builds this control
+            passwordId : false,  // passwordId
+            AuthData   : false   // authentication data
         },
 
         initialize: function (options) {
@@ -65,10 +65,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             });
 
             this.$PasswordData = null;
-
-            //this.getAttribute('ParentPanel').addEvents({
-            //    onSave: this.$save
-            //});
+            this.$owner        = false;
+            this.$PassContent  = null;
         },
 
         /**
@@ -77,8 +75,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            var self      = this,
-                lg_prefix = 'create.template.';
+            var lg_prefix = 'create.template.';
 
             this.$Elm = this.parent();
 
@@ -125,13 +122,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
                     self.$SecurityClassSelect = new SecurityClassSelect({
                         events: {
-                            onLoaded: function (Select) {
+                            onLoaded: function () {
+                                self.$insertData();
+                                self.fireEvent('loaded');
+                            },
+                            onChange: function (value) {
+                                OwnerSelectElm.set('html', '');
+
                                 self.$OwnerSelect = new ActorSelect({
-                                    securityClassId: Select.getValue(),
+                                    max            : 1,
+                                    securityClassId: value,
                                     events         : {
-                                        onLoaded: function () {
-                                            self.$insertData();
-                                            self.fireEvent('loaded');
+                                        onChange: function() {
+                                            self.$owner = self.$OwnerSelect.getValue();
                                         }
                                     }
                                 }).inject(OwnerSelectElm);
@@ -161,35 +164,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$SecurityClassSelect.setValue(this.$PasswordData.securityClassId);
 
             // set owner
-            var ownerType = 'user';
+            this.$OwnerSelect.clear();
 
-            if (self.$PasswordData.ownerType == 2) {
-                ownerType = 'group';
+            if (this.$PasswordData.ownerId && this.$PasswordData.ownerType) {
+                switch (this.$PasswordData.ownerType) {
+                    case 1:
+                        this.$OwnerSelect.addItem('u' + this.$PasswordData.ownerId);
+                        break;
+
+                    case 2:
+                        this.$OwnerSelect.addItem('g' + this.$PasswordData.ownerId);
+                        break;
+                }
             }
-
-            this.$OwnerSelect.setActorValue(self.$PasswordData.ownerId, ownerType);
 
             // set form values
             this.$Elm.getElement('.pcsg-gpm-password-title').value       = self.$PasswordData.title;
             this.$Elm.getElement('.pcsg-gpm-password-description').value = self.$PasswordData.description;
-            this.$Elm.getElement('.pcsg-gpm-password-payload').value     = self.$PasswordData.payload;
-        },
 
-        /**
-         * Return data from form
-         *
-         * @returns {Object}
-         */
-        $getData: function () {
-            var PasswordData = {
-                securityClassId: this.$SecurityClassSelect.getValue(),
-                title          : this.$Elm.getElement('.pcsg-gpm-password-title').value,
-                description    : this.$Elm.getElement('.pcsg-gpm-password-description').value,
-                payload        : this.$Elm.getElement('.pcsg-gpm-password-payload').value,
-                owner          : this.$OwnerSelect.getActor()
-            };
-
-            return PasswordData;
+            this.$PassContent = new PasswordContent({
+                type: this.$PasswordData.payload.type,
+                events: {
+                    onLoaded: function() {
+                        self.$PassContent.setData(self.$PasswordData.payload);
+                    }
+                }
+            }).inject(
+                this.$Elm.getElement('.pcsg-gpm-password-payload')
+            );
         },
 
         /**
@@ -199,19 +201,36 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
          */
         save: function () {
             var self  = this;
-            var Panel = this.getAttribute('ParentPanel');
 
-            Panel.Loader.show();
+            var PasswordData = {
+                securityClassId: this.$SecurityClassSelect.getValue(),
+                title          : this.$Elm.getElement('.pcsg-gpm-password-title').value,
+                description    : this.$Elm.getElement('.pcsg-gpm-password-description').value,
+                payload        : this.$PassContent.getData()
+            };
+
+            var actors = this.$OwnerSelect.getActors();
+
+            if (!actors.length) {
+                QUI.getMessageHandler(function (MH) {
+                    MH.addAttention(
+                        QUILocale.get(lg, 'password.create.submit.no.owner.assigned')
+                    )
+                });
+
+                return;
+            }
+
+            PasswordData.owner = actors[0];
 
             Passwords.editPassword(
                 this.getAttribute('passwordId'),
-                this.$getData(),
+                PasswordData,
                 this.getAttribute('AuthData')
             ).then(
                 function (PasswordData) {
                     self.$PasswordData = PasswordData;
                     self.$insertData();
-                    Panel.Loader.hide();
                 },
                 function () {
                     Panel.Loader.hide();

@@ -90,6 +90,12 @@
         <locale name="exception.password.create.access.cannot.create.owner.access">
             <de><![CDATA[Der Passwort-Zugriff kann nicht für einen Benutzer erstellt werden, der Eigentümer des Passworts ist oder zur Gruppe gehört, die Eigentümer des Passworts ist.]]></de>
         </locale>
+        <locale name="exception.password.create.access.user.not.eligible">
+            <de><![CDATA[Der Passwort-Zugriff für Benutzer [userName] (#[userId]) kann nicht erstellt werden, da er nicht für alle Authentifizierungs-Module der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
+        </locale>
+        <locale name="exception.password.create.access.group.not.eligible">
+            <de><![CDATA[Der Passwort-Zugriff für Benutzer der Gruppe [groupName] (#[groupId]) kann nicht erstellt werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
@@ -289,6 +295,9 @@
         <locale name="auth.panel.btn.register">
             <de><![CDATA[Registrieren]]></de>
         </locale>
+        <locale name="auth.panel.btn.change">
+            <de><![CDATA[Registrierungsinformationen ändern]]></de>
+        </locale>
         <locale name="auth.panel.tbl.header.registered">
             <de><![CDATA[registriert]]></de>
         </locale>
@@ -306,6 +315,9 @@
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Registrieren]]></de>
+        </locale>
+        <locale name="auth.panel.change.btn.register">
+            <de><![CDATA[Bestätigen]]></de>
         </locale>
         <locale name="gpm.auth.panel.change.title">
             <de><![CDATA[Authentifizierungsinformationen ändern]]></de>
@@ -449,6 +461,28 @@
         </locale>
         <locale name="actors.select.placeholder.both">
             <de><![CDATA[Nach geeigneten Benutzern und Gruppen suchen]]></de>
+        </locale>
+
+        <!-- Control: passwordtypes/Select -->
+        <locale name="passwordtypes.select.type.FTP">
+            <de><![CDATA[FTP-Server]]></de>
+        </locale>
+
+        <!-- Control: passwordtypes/FTP -->
+        <locale name="password.types.ftp.template.ftpData">
+            <de><![CDATA[FTP-Daten]]></de>
+        </locale>
+        <locale name="password.types.ftp.template.host">
+            <de><![CDATA[Host]]></de>
+        </locale>
+        <locale name="password.types.ftp.template.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="password.types.ftp.template.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="password.types.ftp.template.note">
+            <de><![CDATA[Notiz]]></de>
         </locale>
 
     </groups>

@@ -29,13 +29,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
+    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
-             AuthenticationControl, SecurityClassSelect, ActorSelect, template) {
+             AuthenticationControl, SecurityClassSelect, ActorSelect, PasswordTypes, template) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager',
@@ -124,6 +125,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 SecurityClassElm
             );
 
+            // password types
+            this.$PasswordTypes = new PasswordTypes({
+                editable: true
+            }).inject(
+                this.$Elm.getElement(
+                    'div.pcsg-gpm-password-payload'
+                )
+            );
+
             return this.$Elm;
         },
 
@@ -144,7 +154,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 securityClassId: this.$SecurityClassSelect.getValue(),
                 title          : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
                 description    : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
-                payload        : this.$Elm.getElement('input.pcsg-gpm-password-payload').value,
+                payload        : this.$PasswordTypes.getData()
             };
 
             var actors = this.$OwnerSelect.getActors();

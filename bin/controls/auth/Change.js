@@ -43,8 +43,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
 
         Binds: [
             '$onInject',
-            'submit',
-            '$controlSubmit'
+            'submit'
         ],
 
         options: {
@@ -101,7 +100,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                 ], function (Control) {
                     self.$AuthPluginControl = new Control({
                         events : {
-                            onSubmit: self.$controlSubmit
+                            onSubmit: self.submit
                         }
                     }).inject(
                         AuthPluginControlElm
@@ -122,25 +121,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
         },
 
         /**
-         * on control submit
-         *
-         * @returns {Promise}
-         */
-        $controlSubmit: function() {
-            return Authentication.changeAuthInformation(
-                this.getAttribute('authPluginId'),
-                this.$AuthPluginControl.getOldAuthData(),
-                this.$AuthPluginControl.getNewAuthData()
-            );
-        },
-
-        /**
          * Change current user with plugin
          *
          * @returns {Promise}
          */
         submit: function () {
-            this.$AuthPluginControl.submit();
+            if (!this.$AuthPluginControl.check()) {
+                return;
+            }
+
+            return Authentication.changeAuthInformation(
+                this.getAttribute('authPluginId'),
+                this.$AuthPluginControl.getOldAuthData(),
+                this.$AuthPluginControl.getNewAuthData()
+            );
         }
     });
 });

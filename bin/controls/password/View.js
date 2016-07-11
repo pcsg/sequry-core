@@ -24,13 +24,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
 
     'Ajax',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
 
 ], function (QUI, QUIControl, QUIPopup, QUIButton, QUILocale, AuthenticationControl,
-             PasswordHandler, Ajax) {
+             PasswordHandler, PasswordContent, Ajax) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager',
@@ -107,7 +108,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
             var Content    = ViewPopup.getContent();
             var TitleElm   = Content.getElement('.pcsg-gpm-password-view-title');
-            var PayLoadElm = Content.getElement('.pcsg-gpm-password-view-payload');
+            var PayloadElm = Content.getElement('.pcsg-gpm-password-view-payload');
 
             var AuthControl = new AuthenticationControl({
                 securityClassId: this.getAttribute('securityClassId'),
@@ -130,17 +131,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                                     '</span>'
                                 );
 
-                                PayLoadElm.set(
-                                    'html',
-                                    PasswordData.payload
-                                );
+                                var PassContent = new PasswordContent({
+                                    type: PasswordData.payload.type,
+                                    events: {
+                                        onLoaded: function() {
+                                            PassContent.setData(PasswordData.payload);
+                                        }
+                                    }
+                                }).inject(PayloadElm);
                             },
                             function () {
                                 // @todo
                             }
                         );
                     },
-                    onClose: function() {
+                    onClose : function () {
                         ViewPopup.close();
                     }
                 }

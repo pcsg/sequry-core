@@ -22,24 +22,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/utils/Form',
+
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect',
-
-
     'text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP.css'
+    //'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
-             AuthenticationControl, SecurityClassSelect, ActorSelect, template) {
+], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, template) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager',
-        Passwords = new PasswordHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -47,17 +41,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP',
 
         Binds: [
-            '$onInject'
+            'setData',
+            'getData'
         ],
 
         initialize: function (options) {
             this.parent(options);
 
-            this.addEvents({
-                onInject: this.$onInject
-            });
-
             this.$PasswordData = null;
+            this.$Form         = null;
         },
 
         /**
@@ -66,101 +58,42 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            var self      = this,
-                lg_prefix = 'create.template.';
+            var lg_prefix = 'password.types.ftp.template.';
 
             this.$Elm = this.parent();
 
             this.$Elm.set({
-                'class': 'pcsg-gpm-password-create',
+                'class': 'pcsg-gpm-password-types-ftp',
                 html   : Mustache.render(template, {
-                    title              : QUILocale.get(lg, lg_prefix + 'title'),
-                    basicData          : QUILocale.get(lg, lg_prefix + 'basicData'),
-                    securityClass      : QUILocale.get(lg, lg_prefix + 'securityClass'),
-                    passwordTitle      : QUILocale.get(lg, lg_prefix + 'passwordTitle'),
-                    passwordDescription: QUILocale.get(lg, lg_prefix + 'passwordDescription'),
-                    payload            : QUILocale.get(lg, lg_prefix + 'payload'),
-                    passwordPayload    : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
-                    payloadWarning     : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
-                    owner              : QUILocale.get(lg, lg_prefix + 'owner'),
-                    passwordOwner      : QUILocale.get(lg, lg_prefix + 'passwordOwner')
+                    ftpData : QUILocale.get(lg, lg_prefix + 'ftpData'),
+                    host    : QUILocale.get(lg, lg_prefix + 'host'),
+                    user    : QUILocale.get(lg, lg_prefix + 'user'),
+                    password: QUILocale.get(lg, lg_prefix + 'password'),
+                    note    : QUILocale.get(lg, lg_prefix + 'note')
                 })
             });
 
-            // insert security class select
-            var SecurityClassElm = this.$Elm.getElement(
-                'span.pcsg-gpm-security-classes'
-            );
-
-            var OwnerSelectElm = this.$Elm.getElement(
-                'span.pcsg-gpm-password-owner'
-            );
-
-            this.$SecurityClassSelect = new SecurityClassSelect({
-                events: {
-                    onLoaded: function (Select) {
-                        self.$OwnerSelect = new ActorSelect({
-                            securityClassId: Select.getValue(),
-                            events         : {
-                                onLoaded: function () {
-                                    self.fireEvent('loaded');
-                                }
-                            }
-                        }).inject(OwnerSelectElm);
-                    }
-                }
-            }).inject(
-                SecurityClassElm
-            );
+            this.$Form = this.$Elm.getElement('form');
 
             return this.$Elm;
         },
 
         /**
-         * event : on inject
+         * Set form content
+         *
+         * @param {Object} Content
          */
-        $onInject: function () {
-            // @todo
+        setData: function (Content) {
+            QUIFormUtils.setDataToForm(Content, this.$Form);
         },
 
         /**
-         * Create the field
+         * Get form content
          *
-         * @returns {Promise}
+         * @return {Object}
          */
-        submit: function () {
-            var self = this;
-
-            this.$PasswordData = {
-                securityClassId: this.$SecurityClassSelect.getValue(),
-                title          : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
-                description    : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
-                payload        : this.$Elm.getElement('input.pcsg-gpm-password-payload').value,
-                owner          : this.$OwnerSelect.getActor()
-            };
-
-            var AuthControl = new AuthenticationControl({
-                securityClassId: this.$SecurityClassSelect.getValue(),
-                events         : {
-                    onSubmit: function (AuthData) {
-                        Passwords.createPassword(
-                            self.$PasswordData,
-                            AuthData
-                        ).then(
-                            function () {
-                                self.$PasswordData = null;
-                                AuthControl.destroy();
-                                self.fireEvent('finish');
-                            },
-                            function () {
-                                // @todo
-                            }
-                        );
-                    }
-                }
-            });
-
-            AuthControl.open();
+        getData: function () {
+            return QUIFormUtils.getFormData(this.$Form);
         }
     });
 });

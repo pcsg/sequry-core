@@ -214,7 +214,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         /**
          * Set data to table
          *
-         * @param {Object} AuthPlugins
+         * @param {array} authPlugins
          */
         $setGridData: function (authPlugins) {
             var Row;
