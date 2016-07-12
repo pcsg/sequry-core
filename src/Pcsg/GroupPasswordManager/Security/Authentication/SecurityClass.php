@@ -280,6 +280,10 @@ class SecurityClass extends QUI\QDOM
         $actors  = array();
         $userIds = $this->getEligibleUserIds();
 
+        if (empty($userIds)) {
+            return $actors;
+        }
+
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'id',
@@ -319,6 +323,10 @@ class SecurityClass extends QUI\QDOM
     {
         $actors   = array();
         $groupIds = $this->getEligibleGroupIds();
+
+        if (empty($groupIds)) {
+            return $actors;
+        }
 
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
