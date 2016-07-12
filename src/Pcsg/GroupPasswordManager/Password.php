@@ -99,6 +99,13 @@ class Password
     protected $description = null;
 
     /**
+     * Password type
+     *
+     * @var string
+     */
+    protected $dataType = null;
+
+    /**
      * Security Class of this password
      *
      * @var SecurityClass
@@ -174,6 +181,7 @@ class Password
                     $passwordData['securityClassId'],
                     $passwordData['title'],
                     $passwordData['description'],
+                    $passwordData['dataType'],
                     $passwordData['cryptoData']
                 )
             ),
@@ -198,6 +206,7 @@ class Password
         $this->id            = $passwordData['id'];
         $this->title         = $passwordData['title'];
         $this->description   = $passwordData['description'];
+        $this->dataType      = $passwordData['dataType'];
         $this->SecurityClass = Authentication::getSecurityClass($passwordData['securityClassId']);
 
         if (!$this->SecurityClass->isAuthenticated()) {
@@ -238,6 +247,8 @@ class Password
                 )
             ));
         }
+
+        \QUI\System\Log::writeRecursive($contentDecrypted);
 
         $this->setSecretAttributes(array(
             'ownerId'    => $contentDecrypted['ownerId'],
@@ -340,6 +351,13 @@ class Password
                         );
 
                         $this->setSecretAttribute('history', $history);
+                    }
+                    break;
+
+                case 'dataType':
+                    if (!empty($v)
+                        && is_string($v)) {
+                        $this->dataType = $v;
                     }
                     break;
 
@@ -513,6 +531,9 @@ class Password
     protected function save()
     {
         $cryptoData          = $this->getSecretAttributes();
+
+        \QUI\System\Log::writeRecursive($cryptoData);
+
         $cryptoDataEncrypted = SymmetricCrypto::encrypt(
             json_encode($cryptoData),
             $this->getPasswordKey()
@@ -522,6 +543,7 @@ class Password
             'securityClassId' => $this->SecurityClass->getId(),
             'title'           => $this->title,
             'description'     => $this->description,
+            'dataType'        => $this->dataType,
             'cryptoData'      => $cryptoDataEncrypted
         );
 

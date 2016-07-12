@@ -8,6 +8,7 @@
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
 {
+    ini_set('display_errors', 1);
 //    QUI\Rights\Permission::checkPermission(
 //        'hklused.machines.category.list.view'
 //    );
@@ -20,7 +21,13 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
         json_decode($searchParams, true)
     );
 
-    return $CryptoUser->getPasswords($searchParams);
+    $Grid = new \QUI\Utils\Grid($searchParams);
+    $passwords = $CryptoUser->getPasswords($searchParams);
+
+    return $Grid->parseResult(
+        $passwords,
+        $CryptoUser->getPasswords($searchParams, true)
+    );
 }
 
 \QUI::$Ajax->register(

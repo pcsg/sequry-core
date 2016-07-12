@@ -110,7 +110,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                             max            : 1,
                             securityClassId: value,
                             events         : {
-                                onChange: function() {
+                                onChange: function () {
                                     self.$owner = self.$OwnerSelect.getValue();
                                 }
                             }
@@ -154,6 +154,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 securityClassId: this.$SecurityClassSelect.getValue(),
                 title          : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
                 description    : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
+                dataType       : this.$PasswordTypes.getPasswordType(),
                 payload        : this.$PasswordTypes.getData()
             };
 

@@ -235,6 +235,9 @@
         <locale name="controls.gpm.passwords.btn.delete">
             <de><![CDATA[Passwort löschen]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.btn.searchremove">
+            <de><![CDATA[Suchfilter entfernen]]></de>
+        </locale>
         <locale name="gpm.passwords.panel.delete.popup.title">
             <de><![CDATA[Passwort löschen]]></de>
         </locale>
@@ -415,6 +418,12 @@
         <locale name="gpm.securityclasses.panel.delete.popup.btn">
             <de><![CDATA[Hier klicken, um die gewählte Sicherheitsklasse unwiderruflich zu löschen]]></de>
         </locale>
+        <locale name="gpm.passwords.panel.search.title">
+            <de><![CDATA[Passwort-Suche]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.btn.search">
+            <de><![CDATA[Suche starten]]></de>
+        </locale>
 
         <!-- Control: securityclasses/Create -->
         <locale name="securityclasses.create.template.createtitle">
@@ -467,9 +476,12 @@
         <locale name="passwordtypes.select.type.FTP">
             <de><![CDATA[FTP-Server]]></de>
         </locale>
+        <locale name="passwordtypes.select.type.Login">
+            <de><![CDATA[Login-Daten]]></de>
+        </locale>
 
         <!-- Control: passwordtypes/FTP -->
-        <locale name="password.types.ftp.template.ftpData">
+        <locale name="password.types.ftp.template.title">
             <de><![CDATA[FTP-Daten]]></de>
         </locale>
         <locale name="password.types.ftp.template.host">
@@ -484,7 +496,44 @@
         <locale name="password.types.ftp.template.note">
             <de><![CDATA[Notiz]]></de>
         </locale>
+        <locale name="password.types.login.template.title">
+            <de><![CDATA[Login-Daten]]></de>
+        </locale>
+        <locale name="password.types.login.template.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="password.types.login.template.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="password.types.login.template.note">
+            <de><![CDATA[Notiz]]></de>
+        </locale>
 
+        <!-- Control: passwords/Search -->
+        <locale name="password.search.template.title">
+            <de><![CDATA[Passwort-Suche]]></de>
+        </locale>
+        <locale name="password.search.template.searchData">
+            <de><![CDATA[Such-Angaben]]></de>
+        </locale>
+        <locale name="password.search.template.searchterm">
+            <de><![CDATA[Suchbegriff]]></de>
+        </locale>
+        <locale name="password.search.template.searchfields">
+            <de><![CDATA[Durchsuchte Felder]]></de>
+        </locale>
+        <locale name="password.search.template.passwordTypes">
+            <de><![CDATA[Passwort-Typen]]></de>
+        </locale>
+        <locale name="password.search.template.passwordTypesOptionAll">
+            <de><![CDATA[Alle Typen]]></de>
+        </locale>
+        <locale name="password.search.template.searchfieldsTitle">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="password.search.template.searchfieldsDescription">
+            <de><![CDATA[Kurzbeschreibung]]></de>
+        </locale>
     </groups>
 
 </locales>

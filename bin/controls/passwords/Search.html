@@ -1,0 +1,69 @@
+<h1>
+    {{title}}
+</h1>
+
+<form>
+    <table class="data-table data-table-flexbox product-data">
+        <thead>
+        <tr>
+            <th>
+                {{searchData}}
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item" title="{{searchterm}}">
+                        {{searchterm}}
+                    </span>
+                    <span class="field-container-field">
+                        <input type="text" name="searchterm"
+                               class="pcsg-gpm-password-search-searchterm"/>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="field-container">
+                    <span class="field-container-item" title="{{searchfields}}">
+                        {{searchfields}}
+                    </span>
+                    <span class="field-container-field">
+                        <label>
+                            <span title="{{searchfieldsTitle}}">
+                                {{searchfieldsTitle}}
+                            </span>
+                            <input type="checkbox" name="title" checked/>
+                        </label>
+                        <label>
+                            <span title="{{searchfieldsDescription}}">
+                                {{searchfieldsDescription}}
+                            </span>
+                            <input type="checkbox" name="description"/>
+                        </label>
+                    </span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="field-container">
+                    <span class="field-container-item"
+                          title="{{passwordTypes}}">
+                        {{passwordTypes}}
+                    </span>
+                    <span class="field-container-field">
+                        <select name="passwordtypes" size="5" multiple>
+                            <option value="all" selected>{{passwordTypesOptionAll}}</option>
+                        </select>
+                    </span>
+                </label>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>

@@ -53,8 +53,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
         ],
 
         options: {
-            passwordId : false,  // passwordId
-            AuthData   : false   // authentication data
+            passwordId: false,  // passwordId
+            AuthData  : false   // authentication data
         },
 
         initialize: function (options) {
@@ -133,7 +133,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                                     max            : 1,
                                     securityClassId: value,
                                     events         : {
-                                        onChange: function() {
+                                        onChange: function () {
                                             self.$owner = self.$OwnerSelect.getValue();
                                         }
                                     }
@@ -182,16 +182,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$Elm.getElement('.pcsg-gpm-password-title').value       = self.$PasswordData.title;
             this.$Elm.getElement('.pcsg-gpm-password-description').value = self.$PasswordData.description;
 
+            var PayloadElm = this.$Elm.getElement('.pcsg-gpm-password-payload');
+
+            PayloadElm.set('html', '');
+
             this.$PassContent = new PasswordContent({
-                type: this.$PasswordData.payload.type,
-                events: {
-                    onLoaded: function() {
+                type    : this.$PasswordData.dataType,
+                editable: true,
+                events  : {
+                    onLoaded: function () {
                         self.$PassContent.setData(self.$PasswordData.payload);
                     }
                 }
-            }).inject(
-                this.$Elm.getElement('.pcsg-gpm-password-payload')
-            );
+            }).inject(PayloadElm);
         },
 
         /**
@@ -200,13 +203,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
          * @returns {Promise}
          */
         save: function () {
-            var self  = this;
+            var self = this;
 
             var PasswordData = {
                 securityClassId: this.$SecurityClassSelect.getValue(),
                 title          : this.$Elm.getElement('.pcsg-gpm-password-title').value,
                 description    : this.$Elm.getElement('.pcsg-gpm-password-description').value,
-                payload        : this.$PassContent.getData()
+                payload        : this.$PassContent.getData(),
+                dataType       : this.$PassContent.getPasswordType()
             };
 
             var actors = this.$OwnerSelect.getActors();

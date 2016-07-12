@@ -24,6 +24,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
+    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
 
     'Ajax',
@@ -32,7 +33,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUILoader, QUIPopup, Grid, PasswordHandler,
-             PasswordCreate, PasswordView, AuthenticationControl, Ajax, QUILocale) {
+             PasswordCreate, PasswordView, PasswordSearch, AuthenticationControl, Ajax, QUILocale) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager';
@@ -50,7 +51,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             '$onResize',
             'refresh',
             'createPassword',
-            'viewPassword'
+            'viewPassword',
+            'showSearch',
+            '$listRefresh',
+            '$addRemoveSearchBtn'
         ],
 
         options: {},
@@ -68,6 +72,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.Loader         = new QUILoader();
             this.$GridContainer = null;
             this.$Grid          = null;
+            this.$SearchParams  = {};
+            this.$removeBtn     = false;
         },
 
         /**
@@ -82,6 +88,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             });
 
             // buttons
+            this.addButton({
+                name  : 'search',
+                icon  : 'fa fa-search',
+                events: {
+                    onClick: this.showSearch
+                }
+            });
+
             this.addButton({
                 name     : 'add',
                 text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.add'),
@@ -160,6 +174,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataType : 'text',
                     width    : 500
                 }, {
+                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.datatype'),
+                    dataIndex: 'dataType',
+                    dataType : 'text',
+                    width    : 200
+                }, {
                     dataIndex: 'securityClassId',
                     dataType : 'integer',
                     hidden   : true
@@ -168,9 +187,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.$Grid.addEvents({
                 onDblClick: function () {
-                    //self.$openPortalPanel(
-                    //    self.$Grid.getSelectedData()[0].id
-                    //);
+                    self.viewPassword(
+                        self.$Grid.getSelectedData()[0].id,
+                        self.$Grid.getSelectedData()[0].securityClassId
+                    );
                 },
                 onClick   : function () {
                     var Delete = self.getButtons('delete');
@@ -181,7 +201,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     Delete.enable();
                     Edit.enable();
                 },
-                onRefresh : this.refresh
+                onRefresh : this.$listRefresh
             });
         },
 
@@ -202,29 +222,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         },
 
         /**
-         * refresh the password list
+         * refresh grid
          *
-         * @param {{}} GridParams
-         * @return {Promise}
+         * @param {Object} Grid
          */
-        refresh: function (GridParams) {
-            if (!this.$Grid) {
-                return;
-            }
-
+        $listRefresh: function (Grid) {
             var self = this;
 
             this.Loader.show();
 
-            GridParams = GridParams || {};
+            var GridParams = {
+                sortOn : Grid.getAttribute('sortOn'),
+                sortBy : Grid.getAttribute('sortBy'),
+                perPage: Grid.getAttribute('perPage'),
+                page   : Grid.getAttribute('page')
+            };
 
-            GridParams.perPage = this.$Grid.options.perPage;
-            GridParams.page    = this.$Grid.options.page;
-
-            return Passwords.getPasswords(GridParams).then(function (gridData) {
+            return Passwords.getPasswords(
+                Object.merge(GridParams, this.$SearchParams)
+            ).then(function (gridData) {
                 self.$setGridData(gridData);
                 self.Loader.hide();
             });
+        },
+
+        /**
+         * refresh the password list
+         */
+        refresh: function () {
+            this.$Grid.refresh();
         },
 
         $setGridData: function (GridData) {
@@ -366,6 +392,84 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 passwordId     : passwordId,
                 securityClassId: securityClassId
             }).open();
+        },
+
+        /**
+         * Opens the create password dialog
+         */
+        showSearch: function () {
+            var self = this;
+
+            this.Loader.show();
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.passwords.panel.search.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        var Search = new PasswordSearch({
+                            events: {
+                                onLoaded: function () {
+                                    self.Loader.hide();
+                                },
+                                onSubmit: function (SearchData) {
+                                    self.$SearchParams = SearchData;
+                                    self.$Grid.refresh();
+                                    self.$addRemoveSearchBtn();
+                                    Search.destroy();
+                                    Sheet.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
+
+                        Sheet.addButton(
+                            new QUIButton({
+                                text     : QUILocale.get('pcsg/grouppasswordmanager', 'gpm.passwords.panel.btn.search'),
+                                textimage: 'fa fa-search',
+                                events   : {
+                                    onClick: function () {
+                                        Search.submit();
+                                    }
+                                }
+                            })
+                        );
+                    },
+                    onClose: function (Sheet) {
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        },
+
+        /**
+         * Add button that removes search
+         */
+        $addRemoveSearchBtn: function () {
+            var self = this;
+
+            if (this.$removeBtn) {
+                return;
+            }
+
+            this.$removeBtn = true;
+
+            this.addButton({
+                name     : 'searchremove',
+                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.searchremove'),
+                textimage: 'fa fa-times',
+                styles   : {
+                    float: 'right'
+                },
+                events   : {
+                    onClick: function (Btn) {
+                        self.$SearchParams = {};
+                        self.$Grid.refresh();
+                        Btn.destroy();
+                        self.$removeBtn = false;
+                    }
+                }
+            });
         },
 
         /**

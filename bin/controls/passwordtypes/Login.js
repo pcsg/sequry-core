@@ -1,7 +1,7 @@
 /**
- * FTP Input type for passwords
+ * Login Input type for passwords
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP
+ * @module package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Login
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -12,13 +12,13 @@
  * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
  * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
  * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP.css
+ * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Login.html
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Login.css
  *
  * @event onLoaded
  * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
+define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Login', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -29,8 +29,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
     'Locale',
     'Mustache',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP.html'
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP.css'
+    'text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Login.html'
+    //'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Login.css'
 
 ], function (QUI, QUIControl, QUIFormUtils, QUIButton, QUILocale, Mustache, template) {
     "use strict";
@@ -40,7 +40,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Login',
 
         Binds: [
             'setData',
@@ -60,15 +60,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            var lg_prefix = 'password.types.ftp.template.';
+            var lg_prefix = 'password.types.login.template.';
 
             this.$Elm = this.parent();
 
             this.$Elm.set({
-                'class': 'pcsg-gpm-password-types-ftp',
+                'class': 'pcsg-gpm-password-types-login',
                 html   : Mustache.render(template, {
                     title   : QUILocale.get(lg, lg_prefix + 'title'),
-                    host    : QUILocale.get(lg, lg_prefix + 'host'),
                     user    : QUILocale.get(lg, lg_prefix + 'user'),
                     password: QUILocale.get(lg, lg_prefix + 'password'),
                     note    : QUILocale.get(lg, lg_prefix + 'note')

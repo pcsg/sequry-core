@@ -147,6 +147,16 @@ class Passwords
             ));
         }
 
+        // type check
+        if (!isset($passwordData['dataType'])
+            || empty($passwordData['dataType'])
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwords.create.missing.type'
+            ));
+        }
+
         // payload check
         if (!isset($passwordData['payload'])
             || empty($passwordData['payload'])
@@ -182,6 +192,7 @@ class Passwords
             'securityClassId' => $SecurityClass->getId(),
             'title'           => $passwordData['title'],
             'description'     => $passwordData['description'],
+            'dataType'        => $passwordData['dataType'],
             'cryptoData'      => $passwordContentEncrypted
         );
 

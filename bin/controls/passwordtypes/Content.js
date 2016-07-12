@@ -130,11 +130,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
                 return;
             }
 
-            var Data = this.$ContentControl.getData();
+            return this.$ContentControl.getData();
+        },
 
-            Data.type = this.$passwordType;
-
-            return Data;
+        /**
+         * Return currently selected password type
+         *
+         * @returns {string}
+         */
+        getPasswordType: function() {
+            return this.$passwordType;
         }
     });
 });
