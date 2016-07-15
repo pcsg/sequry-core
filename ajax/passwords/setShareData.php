@@ -40,7 +40,28 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
         $shareData[$k] = $entry;
     }
 
-    $Password->setShareData($shareData);
+    try {
+        $Password->setShareData($shareData);
+
+        QUI::getMessagesHandler()->addSuccess(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'success.password.share', array(
+                    'passwordId' => $passwordId
+                )
+            )
+        );
+    } catch (\Exception $Exception) {
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'error.password.share', array(
+                    'passwordId' => $passwordId,
+                    'reason'     => $Exception->getMessage()
+                )
+            )
+        );
+    }
 
     // get password data
     return $Password->getShareData();

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * This file contains \Pcsg\GroupPasswordManager\CryptoUser
+ * This file contains \Pcsg\GroupPasswordManager\Actors\CryptoUser
  */
 
-namespace Pcsg\GroupPasswordManager;
+namespace Pcsg\GroupPasswordManager\Actors;
 
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
@@ -46,7 +46,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::KEYPAIRS,
+            'from'   => Tables::KEYPAIRS_USER,
             'where'  => array(
                 'authPluginId' => $AuthPlugin->getId(),
                 'userId'       => $this->getId()

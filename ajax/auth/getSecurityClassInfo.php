@@ -15,8 +15,20 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo($secur
     $info = array(
         'id'          => $SecurityClass->getId(),
         'title'       => $SecurityClass->getAttribute('title'),
-        'description' => $SecurityClass->getAttribute('description')
+        'description' => $SecurityClass->getAttribute('description'),
+        'groups'      => $SecurityClass->getGroupIds(),
+        'authPlugins' => array()
     );
+
+    $authPlugins = $SecurityClass->getAuthPlugins();
+
+    /** @var \Pcsg\GroupPasswordManager\Security\Authentication\Plugin $AuthPlugin */
+    foreach ($authPlugins as $AuthPlugin) {
+        $info['authPlugins'][] = array(
+            'title'       => $AuthPlugin->getAttribute('title'),
+            'description' => $AuthPlugin->getAttribute('description')
+        );
+    }
 
     return $info;
 }

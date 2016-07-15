@@ -2,8 +2,15 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Authentication;
 
+use Monolog\Handler\Curl\Util;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\MAC;
+use Pcsg\GroupPasswordManager\Security\SecretSharing;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 
 /**
@@ -177,7 +184,7 @@ class SecurityClass extends QUI\QDOM
      */
     public function isGroupEligible($Group)
     {
-        return in_array($Group->getId(), $this->getEligibleGroupIds());
+        return in_array($Group->getId(), $this->getGroupIds());
     }
 
     /**
@@ -207,33 +214,41 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Get list of ids of groups that contains users that are eligible to use password with with security class
+     * Get groups that are assigned to this security class
      *
      * @return array
      */
-    public function getEligibleGroupIds()
+    public function getGroups()
     {
-        $groups           = QUI::getGroups()->getAllGroups(true);
-        $eligibleUserIds  = $this->getEligibleUserIds();
+        $groups   = array();
+        $groupIds = $this->getGroupIds();
+
+        foreach ($groupIds as $groupId) {
+            $groups = CryptoActors::getCryptoUser();
+        }
+    }
+
+    /**
+     * Get ids of groups that are assigned to this security class
+     *
+     * @return array
+     */
+    public function getGroupIds()
+    {
         $eligibleGroupIds = array();
 
-        /** @var QUI\Groups\Group $Group */
-        foreach ($groups as $Group) {
-            $result = $Group->getUsers(array(
-                'select' => 'id'
-            ));
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'groupId'
+            ),
+            'from'   => Tables::KEYPAIRS_GROUP,
+            'where'  => array(
+                'securityClassId' => $this->id
+            )
+        ));
 
-            $groupUserIds = array();
-
-            foreach ($result as $row) {
-                $groupUserIds[] = $row['id'];
-            }
-
-            if (!empty(array_diff($groupUserIds, $eligibleUserIds))) {
-                continue;
-            }
-
-            $eligibleGroupIds[] = $Group->getId();
+        foreach ($result as $row) {
+            $eligibleGroupIds[] = $row['groupId'];
         }
 
         return $eligibleGroupIds;
@@ -322,7 +337,7 @@ class SecurityClass extends QUI\QDOM
     protected function searchEligibleGroups($search)
     {
         $actors   = array();
-        $groupIds = $this->getEligibleGroupIds();
+        $groupIds = $this->getGroupIds();
 
         if (empty($groupIds)) {
             return $actors;
@@ -358,6 +373,62 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
+     * Searches groups that can be added to the security class
+     *
+     * @param string $search
+     * @param integer $limit
+     *
+     * @return array
+     */
+    public function searchGroupsToAdd($search, $limit)
+    {
+        $groups           = array();
+        $allGroups        = QUI::getGroups()->getAllGroups(true);
+        $eligibleGroupIds = array();
+
+        /** @var QUI\Groups\Group $Group */
+        foreach ($allGroups as $Group) {
+            if (!$this->checkGroupUsersForEligibility($Group)) {
+                continue;
+            }
+
+            $eligibleGroupIds[] = $Group->getId();
+        }
+
+        if (empty($eligibleGroupIds)) {
+            return $groups;
+        }
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id',
+                'name'
+            ),
+            'from'   => 'groups',
+            'where'  => array(
+                'id'   => array(
+                    'type'  => 'IN',
+                    'value' => $eligibleGroupIds
+                ),
+                'name' => array(
+                    'type'  => '%LIKE%',
+                    'value' => $search
+                )
+            )
+        ));
+
+        foreach ($result as $row) {
+            $groups[] = array(
+                'id'   => $row['id'],
+                'name' => $row['name'],
+                'type' => 'group'
+            );
+        }
+
+        return $groups;
+    }
+
+    /**
      * Edits title and/or description of a security class
      *
      * @param array $data
@@ -370,6 +441,16 @@ class SecurityClass extends QUI\QDOM
                 case 'description':
                     if (is_string($v)) {
                         $this->setAttribute($k, $v);
+                    }
+                    break;
+
+                case 'groups':
+                    foreach ($v as $groupData) {
+                        $Group = QUI::getGroups()->get($groupData['id']);
+
+                        if (!$this->isGroupEligible($Group)) {
+                            $this->addCryptoGroup($Group);
+                        }
                     }
                     break;
             }
@@ -440,6 +521,150 @@ class SecurityClass extends QUI\QDOM
                 'id' => $this->getId()
             )
         );
+
+        return true;
+    }
+
+    /**
+     * Generate a random keypair for a QUIQQER Group and add it to this security class
+     *
+     * @param QUI\Groups\Group $Group
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function addCryptoGroup($Group)
+    {
+        // check if group is associated with any other security class
+        $result = QUI::getDataBase()->fetch(array(
+            'count' => 1,
+            'from'  => Tables::KEYPAIRS_GROUP,
+            'where' => array(
+                'groupId' => $Group->getId()
+            )
+        ));
+
+        if (current(current($result)) > 0) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.addcryptogroup.otherwise.associated',
+                array(
+                    'groupId'         => $Group->getId(),
+                    'securityClassId' => $this->getId()
+                )
+            ));
+        }
+
+        $users = $Group->getUsers();
+
+        if (empty($users)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.addcryptogroup.no.users',
+                array(
+                    'groupId'         => $Group->getId(),
+                    'securityClassId' => $this->getId()
+                )
+            ));
+        }
+
+        if (!$this->checkGroupUsersForEligibility($Group)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.addcryptogroup.users.not.eligible',
+                array(
+                    'groupId'         => $Group->getId(),
+                    'securityClassId' => $this->getId()
+                )
+            ));
+        }
+
+        // generate key pair and encrypt
+        $authPlugins = $this->getAuthPlugins();
+
+        $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
+        $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
+        $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();
+
+        $PrivateKeyEncryptionKey = SymmetricCrypto::generateKey();
+
+        $privateGroupKeyEncrypted = SymmetricCrypto::encrypt(
+            $privateGroupKey,
+            $PrivateKeyEncryptionKey
+        );
+
+        // insert group key data into database
+        $DB = QUI::getDataBase();
+
+        $data = array(
+            'groupId'         => $Group->getId(),
+            'securityClassId' => $this->getId(),
+            'publicKey'       => $publicGroupKey,
+            'privateKey'      => $privateGroupKeyEncrypted
+        );
+
+        // calculate group key MAC
+        $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+
+        $DB->insert(Tables::KEYPAIRS_GROUP, $data);
+
+        // split group private key encryption key into parts and share with group users
+        $privateKeyEncryptionKeyParts = SecretSharing::splitSecret(
+            $PrivateKeyEncryptionKey->getValue(),
+            count($authPlugins)
+        );
+
+        foreach ($users as $userData) {
+            $User = CryptoActors::getCryptoUser($userData['id']);
+            $i    = 0;
+
+            /** @var Plugin $AuthPlugin */
+            foreach ($authPlugins as $AuthPlugin) {
+                $AuthKeyPair                          = $User->getAuthKeyPair($AuthPlugin);
+                $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
+                    $privateKeyEncryptionKeyParts[$i++],
+                    $AuthKeyPair
+                );
+
+                $data = array(
+                    'userId'        => $User->getId(),
+                    'userKeyPairId' => $AuthKeyPair->getId(),
+                    'groupId'       => $Group->getId(),
+                    'groupKey'      => $privateKeyEncryptionKeyPartEncrypted
+                );
+
+                // calculate MAC
+                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+
+                $DB->insert(Tables::USER_TO_GROUPS, $data);
+            }
+        }
+    }
+
+    /**
+     * Checks if all users of a group are eligible to use this security class
+     *
+     * @param QUI\Groups\Group $Group
+     *
+     * @return bool
+     */
+    protected function checkGroupUsersForEligibility($Group)
+    {
+        $result = $Group->getUsers(array(
+            'select' => 'id'
+        ));
+
+        if (empty($result)) {
+            return false;
+        }
+
+        foreach ($result as $row) {
+            $User = QUI::getUsers()->get($row['id']);
+
+            if (!$this->isUserEligible($User)) {
+                return false;
+            }
+        }
 
         return true;
     }

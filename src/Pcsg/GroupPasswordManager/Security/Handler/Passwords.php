@@ -7,7 +7,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Pcsg\GroupPasswordManager\Constants\Tables;
-use Pcsg\GroupPasswordManager\CryptoUser;
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
@@ -303,6 +303,30 @@ class Passwords
         self::$passwords[$id] = new Password($id);
 
         return self::$passwords[$id];
+    }
+
+    /**
+     * Checks if a user has access to a password
+     *
+     * @param QUI\Users\User $User
+     * @param integer $passwordId - password ID
+     *
+     * @return bool - true if user has access; false if user does not have access
+     */
+    public static function hasPasswordAccess($User, $passwordId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'count' => 1,
+            'from' => Tables::USER_TO_PASSWORDS,
+            'where' => array(
+                'dataId' => (int)$passwordId,
+                'userId' => $User->getId()
+            )
+        ));
+
+        $count = current(current($result));
+
+        return $count > 0;
     }
 
     /**

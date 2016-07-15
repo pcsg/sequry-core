@@ -67,10 +67,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
             this.$Elm.set({
                 'class': 'pcsg-gpm-password-create',
                 html   : Mustache.render(template, {
-                    createtitle: QUILocale.get(lg, lg_prefix + 'createtitle'),
-                    title      : QUILocale.get(lg, lg_prefix + 'title'),
-                    description: QUILocale.get(lg, lg_prefix + 'description'),
-                    authPlugins: QUILocale.get(lg, lg_prefix + 'authPlugins')
+                    createtitle       : QUILocale.get(lg, lg_prefix + 'createtitle'),
+                    title             : QUILocale.get(lg, lg_prefix + 'title'),
+                    description       : QUILocale.get(lg, lg_prefix + 'description'),
+                    authPlugins       : QUILocale.get(lg, lg_prefix + 'authPlugins'),
+                    authPluginsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsWarning'),
+                    groups            : QUILocale.get(lg, lg_prefix + 'groups'),
+                    groupsInfo        : QUILocale.get(lg, lg_prefix + 'groupsInfo')
                 })
             });
 

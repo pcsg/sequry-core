@@ -138,6 +138,14 @@
             <de><![CDATA[Der Benutzer #[userId] besitzt kein Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId].]]></de>
         </locale>
 
+        <!-- Class: Actors\CryptoGroup -->
+        <locale name="exception.cryptogroup.keypair.not.found">
+            <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] wurde nicht gefunden. Die Gruppe kann nicht für den Passwort-Manager verwendet werden.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.keypair.not.authentic">
+            <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+
         <!-- Class: Security\Authentication\Plugin -->
         <locale name="exception.authentication.plugin.register.error">
             <de><![CDATA[Die Authentifizierungsinformationen sind ungültig.]]></de>
@@ -167,6 +175,27 @@
         <locale name="success.auth.changeauth">
             <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war erfolgreich.]]></de>
         </locale>
+        <locale name="error.auth.changeauth">
+            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="error.password.edit">
+            <de><![CDATA[Die Änderung der Passwort-Daten (#[passwordId]) war nicht erfolgreich:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="success.password.edit">
+            <de><![CDATA[Die Passwort-Daten (#[passwordId]) wurden erfolgreich geändert.]]></de>
+        </locale>
+        <locale name="error.password.share">
+            <de><![CDATA[Das Teilen der Passwort-Daten (#[passwordId]) war nicht erfolgreich:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="success.password.share">
+            <de><![CDATA[Die Passwort-Daten (#[passwordId]) wurden erfolgreich mit den festgelegten Benutzern und Gruppen geteilt.]]></de>
+        </locale>
+        <locale name="error.password.delete">
+            <de><![CDATA[Das Löschen des Passworts (#[passwordId]) war nicht erfolgreich:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="success.password.delete">
+            <de><![CDATA[Das Passwort (#[passwordId]) wurde erfolgreich gelöscht.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -179,6 +208,15 @@
         </locale>
         <locale name="exception.securityclass.authenticate.authdata.not.given">
             <de><![CDATA[Die Authentifizierungsinformationen wurden nicht übergeben.]]></de>
+        </locale>
+        <locale name="exception.securityclass.addcryptogroup.otherwise.associated">
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da sie bereits dieser oder einer anderen Sicherheitsklasse zugeordnet ist.]]></de>
+        </locale>
+        <locale name="exception.securityclass.addcryptogroup.no.users">
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
+        </locale>
+        <locale name="exception.securityclass.addcryptogroup.users.not.eligible">
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse registriert sind.]]></de>
         </locale>
 
         <!-- Class: Security\Keys\AuthKeyPair -->
@@ -211,6 +249,9 @@
     <groups name="pcsg/grouppasswordmanager" datatype="js">
 
         <!-- Control: passwords/Panel -->
+        <locale name="passwords.panel.title">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
         <locale name="controls.gpm.passwordlist.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
         </locale>
@@ -220,6 +261,9 @@
         <locale name="controls.gpm.passwords.panel.tbl.header.description">
             <de><![CDATA[Kurzbeschreibung]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.datatype">
+            <de><![CDATA[Typ]]></de>
+        </locale>
         <locale name="gpm.passwords.panel.create.title">
             <de><![CDATA[Neues Passwort erstellen]]></de>
         </locale>
@@ -228,6 +272,9 @@
         </locale>
         <locale name="controls.gpm.passwords.btn.view">
             <de><![CDATA[Passwort ansehen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.btn.share">
+            <de><![CDATA[Passwort teilen]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.edit">
             <de><![CDATA[Passwort bearbeiten]]></de>
@@ -253,6 +300,19 @@
         <locale name="gpm.passwords.panel.delete.popup.btn">
             <de><![CDATA[Hier klicken, um das Passwort unwiderruflich zu löschen]]></de>
         </locale>
+        <locale name="gpm.passwords.panel.view.title">
+            <de><![CDATA[Passwort ansehen]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.share.title">
+            <de><![CDATA[Passwort teilen]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.edit.title">
+            <de><![CDATA[Passwort bearbeiten]]></de>
+        </locale>
+        <locale name="gpm.passwords.panel.search.title">
+            <de><![CDATA[Passwort-Suche]]></de>
+        </locale>
+
 
         <!-- Control: password/Create -->
         <locale name="password.create.template.title">
@@ -334,6 +394,14 @@
             <de><![CDATA[Registrierung für eine Authentifizierungsmethode]]></de>
         </locale>
         <locale name="auth.template.basicData">
+            <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
+        </locale>
+
+        <!-- Control: auth/Change -->
+        <locale name="auth.change.template.title">
+            <de><![CDATA[Änderung der Authentifizierungsinformationen für ein Authentifizierungs-Methode]]></de>
+        </locale>
+        <locale name="auth.change.template.basicData">
             <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
         </locale>
 
@@ -438,6 +506,15 @@
         <locale name="securityclasses.create.template.authPlugins">
             <de><![CDATA[Auth.-Faktoren]]></de>
         </locale>
+        <locale name="securityclasses.create.template.authPluginsWarning" html="true">
+            <de><![CDATA[<b>Hinweis:</b> Die festgelegten Authentifizierungs-Faktoren können nach der Erstellung der Sicherheitsklasse nicht mehr geändert werden.]]></de>
+        </locale>
+        <locale name="securityclasses.create.template.groups">
+            <de><![CDATA[Gruppen]]></de>
+        </locale>
+        <locale name="securityclasses.create.template.groupsInfo">
+            <de><![CDATA[Die Gruppen für eine Sicherheitsklasse können festgelegt werden, nachdem die Sicherheitsklasse erstellt wurde.]]></de>
+        </locale>
 
         <!-- Control: securityclasses/Edit -->
         <locale name="securityclasses.edit.template.edittitle">
@@ -449,10 +526,19 @@
         <locale name="securityclasses.edit.template.description">
             <de><![CDATA[Beschreibung]]></de>
         </locale>
+        <locale name="securityclasses.edit.template.authPlugins">
+            <de><![CDATA[Auth.-Faktoren]]></de>
+        </locale>
+        <locale name="securityclasses.edit.template.groups">
+            <de><![CDATA[Gruppen]]></de>
+        </locale>
 
         <!-- Control: password/Share -->
-        <locale name="controls.password.share.info">
-            <de><![CDATA[Hier kann festgelegt werden, welche Benutzer und Gruppen die Berechtigung haben, dieses Passwort anzusehen.]]></de>
+        <locale name="controls.password.share.title">
+            <de><![CDATA[Passwort teilen]]></de>
+        </locale>
+        <locale name="controls.password.share.info" html="true">
+            <de><![CDATA[Hier kann festgelegt werden, welche Benutzer und Gruppen die Berechtigung haben, dass Passwort <b>[passwordTitle] (#[passwordId])</b> anzusehen.]]></de>
         </locale>
         <locale name="controls.password.share.users.header">
             <de><![CDATA[Benutzer]]></de>
@@ -533,6 +619,11 @@
         </locale>
         <locale name="password.search.template.searchfieldsDescription">
             <de><![CDATA[Kurzbeschreibung]]></de>
+        </locale>
+
+        <!-- Control: password/View -->
+        <locale name="password.view.restricted.info">
+            <de><![CDATA[Sie müssen sich zuerst authentifizieren, bevor Passwort-Daten angezeigt werden können.]]></de>
         </locale>
     </groups>
 

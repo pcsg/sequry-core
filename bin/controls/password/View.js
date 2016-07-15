@@ -12,26 +12,23 @@
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/View.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css
  *
- * @event onFinish
+ * @event onLoaded
+ * @event onClose
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'qui/QUI',
     'qui/controls/Control',
-    'qui/controls/windows/Popup',
-    'qui/controls/buttons/Button',
     'Locale',
 
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
 
-    'Ajax',
-
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
 
-], function (QUI, QUIControl, QUIPopup, QUIButton, QUILocale, AuthenticationControl,
-             PasswordHandler, PasswordContent, Ajax) {
+], function (QUI, QUIControl, QUILocale, AuthenticationControl, PasswordHandler,
+             PasswordContent) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager',
@@ -43,24 +40,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/View',
 
         Binds: [
-            '$onInject',
-            'submit'
+            '$onInject'
         ],
 
         options: {
-            'passwordId'     : false,   // id of the password
-            'securityClassId': false    // id the security class of the password
+            'passwordId': false,   // id of the password
         },
 
         initialize: function (options) {
             this.parent(options);
 
             this.addEvents({
-                onInject : this.$onInject,
-                onDestroy: this.$onDestroy
+                onInject: this.$onInject
             });
-
-            this.$ViewPopup = null;
         },
 
         /**
@@ -69,89 +61,81 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            return this.parent();
+            this.$Elm = this.parent();
+
+            this.$Elm.set({
+                'class': 'pcsg-gpm-password-create',
+                html   : '<p class="pcsg-gpm-password-view-payload">' +
+                QUILocale.get(lg, 'password.view.restricted.info') +
+                '</p>'
+            });
+
+            return this.$Elm;
         },
 
         /**
          * event : oninject
+         *
+         * Ask user for authentication information and load password data
          */
         $onInject: function () {
-            // @todo
-        },
-
-        /**
-         * event: ondestroy
-         */
-        $onDestroy: function () {
-            if (this.$ViewPopup) {
-                this.$ViewPopup.close();
-            }
-        },
-
-        open: function () {
             var self = this;
 
-            var ViewPopup = new QUIPopup({
-                title      : QUILocale.get(
-                    lg, 'controls.password.view.popup.title'
-                ),
-                maxHeight  : 300,
-                maxWidth   : 500,
-                closeButton: true,
-                content    : '<div class="pcsg-gpm-password-view-title"></div>' +
-                '<div class="pcsg-gpm-password-view-payload"></div>'
-            });
+            Passwords.getSecurityClassId(
+                this.getAttribute('passwordId')
+            ).then(function (securityClassId) {
+                var AuthControl = new AuthenticationControl({
+                    securityClassId: securityClassId,
+                    events         : {
+                        onSubmit: function (AuthData) {
+                            Passwords.getView(
+                                self.getAttribute('passwordId'),
+                                AuthData
+                            ).then(
+                                function (PasswordData) {
+                                    AuthControl.destroy();
 
-            this.$ViewPopup = ViewPopup;
+                                    self.$Elm.set(
+                                        'html',
+                                        '<h1 class="pcsg-gpm-password-view-info-title">' +
+                                        PasswordData.title +
+                                        '</h1>' +
+                                        '<div class="pcsg-gpm-password-view-info">' +
+                                        '<p class="pcsg-gpm-password-view-info-datatype">' +
+                                        PasswordData.dataType +
+                                        '</p>' +
+                                        '<p class="pcsg-gpm-password-view-info-description">' +
+                                        PasswordData.description +
+                                        '</p>' +
+                                        '</div>' +
+                                        '<div class="pcsg-gpm-password-view-payload"></div>'
+                                    );
 
-            ViewPopup.open();
-
-            var Content    = ViewPopup.getContent();
-            var TitleElm   = Content.getElement('.pcsg-gpm-password-view-title');
-            var PayloadElm = Content.getElement('.pcsg-gpm-password-view-payload');
-
-            var AuthControl = new AuthenticationControl({
-                securityClassId: this.getAttribute('securityClassId'),
-                events         : {
-                    onSubmit: function (AuthData) {
-                        Passwords.getView(
-                            self.getAttribute('passwordId'),
-                            AuthData
-                        ).then(
-                            function (PasswordData) {
-                                AuthControl.destroy();
-
-                                TitleElm.set(
-                                    'html',
-                                    '<h1 class="pcsg-gpm-password-view-info-title">' +
-                                    PasswordData.title +
-                                    '</h1>' +
-                                    '<span class="pcsg-gpm-password-view-info-description">' +
-                                    PasswordData.description +
-                                    '</span>'
-                                );
-
-                                var PassContent = new PasswordContent({
-                                    type: PasswordData.payload.type,
-                                    events: {
-                                        onLoaded: function() {
-                                            PassContent.setData(PasswordData.payload);
+                                    var PassContent = new PasswordContent({
+                                        type  : PasswordData.dataType,
+                                        events: {
+                                            onLoaded: function () {
+                                                PassContent.setData(PasswordData.payload);
+                                                self.fireEvent('loaded');
+                                            }
                                         }
-                                    }
-                                }).inject(PayloadElm);
-                            },
-                            function () {
-                                // @todo
-                            }
-                        );
-                    },
-                    onClose : function () {
-                        ViewPopup.close();
+                                    }).inject(
+                                        self.$Elm.getElement('.pcsg-gpm-password-view-payload')
+                                    );
+                                },
+                                function () {
+                                    // @todo
+                                }
+                            );
+                        },
+                        onClose : function () {
+                            self.fireEvent('close');
+                        }
                     }
-                }
-            });
+                });
 
-            AuthControl.open();
+                AuthControl.open();
+            });
         }
     });
 });

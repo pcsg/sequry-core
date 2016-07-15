@@ -22,7 +22,28 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
     );
 
     // delete password
-    Passwords::get($passwordId)->delete();
+    try {
+        Passwords::get($passwordId)->delete();
+
+        QUI::getMessagesHandler()->addSuccess(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'success.password.delete', array(
+                    'passwordId' => $passwordId
+                )
+            )
+        );
+    } catch (\Exception $Exception) {
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'error.password.delete', array(
+                    'passwordId' => $passwordId,
+                    'reason'     => $Exception->getMessage()
+                )
+            )
+        );
+    }
 
     return true;
 }

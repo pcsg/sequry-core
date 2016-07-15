@@ -14,8 +14,6 @@ use QUI\Utils\Security\Orthos;
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_actorSearch($search, $type, $securityClassId, $limit)
 {
-    ini_set('display_errors', 1);
-
     $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 
     $search = Orthos::clear($search);

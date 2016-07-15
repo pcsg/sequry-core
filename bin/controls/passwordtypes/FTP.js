@@ -89,6 +89,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/FTP', [
                     onClick: function (Btn) {
                         if (Btn.getAttribute('status') === 'hide') {
                             PasswordElm.setProperty('type', 'text');
+                            PasswordElm.focus();
+                            PasswordElm.select();
                             Btn.setAttributes({
                                 status: 'show',
                                 icon: 'fa fa-eye-slash'

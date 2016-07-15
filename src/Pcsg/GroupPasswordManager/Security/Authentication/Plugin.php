@@ -175,7 +175,7 @@ class Plugin extends QUI\QDOM
         try {
             // put everything in the database
             QUI::getDataBase()->update(
-                Tables::KEYPAIRS,
+                Tables::KEYPAIRS_USER,
                 array(
                     'publicKey'  => $publicKeyValue,
                     'privateKey' => $encryptedPrivateKeyValue,
@@ -249,7 +249,7 @@ class Plugin extends QUI\QDOM
         try {
             // put everything in the database
             QUI::getDataBase()->insert(
-                Tables::KEYPAIRS,
+                Tables::KEYPAIRS_USER,
                 array(
                     'userId'       => QUI::getUserBySession()->getId(),
                     'authPluginId' => $this->id,

@@ -25,14 +25,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
     'qui/controls/buttons/Button',
     'Locale',
 
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/ActorBox',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css'
 
-], function (QUI, QUIControl, QUIButton, QUILocale, PasswordHandler,
-             ActorSelect, ActorBox) {
+], function (QUI, QUIControl, QUIButton, QUILocale, AuthenticationControl, PasswordHandler, ActorSelect) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager',
@@ -46,27 +45,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
         Binds: [
             '$onInject',
             '$save',
-            '$insertData'
+            '$insertData',
+            '$onDestroy'
         ],
 
         options: {
-            passwordId : false, // passwordId
-            AuthData   : false, // authentication data
-            ParentPanel: false  // parent panel that builds this control
+            passwordId: false // passwordId
         },
 
         initialize: function (options) {
             this.parent(options);
 
             this.addEvents({
-                onInject: this.$onInject
+                onInject : this.$onInject,
+                onDestroy: this.$onDestroy
             });
 
             this.$ShareData = null;
-
-            //this.getAttribute('ParentPanel').addEvents({
-            //    onSave: this.$save
-            //});
+            this.$AuthData  = null;
         },
 
         /**
@@ -79,16 +75,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
             this.$Elm.set({
                 'class': 'gpm-password-share',
-                html   : '<div class="gpm-password-share-info">' +
-                QUILocale.get(lg, 'controls.password.share.info') +
-                '</div>' +
+                html   : '<h1>' +
+                QUILocale.get(lg, 'controls.password.share.title') +
+                '</h1>' +
+                '<div class="gpm-password-share-info"></div>' +
                 '<div class="gpm-password-share-actors-users">' +
-                '<h3>' + QUILocale.get(lg, 'controls.password.share.users.header') +'</h3>' +
+                '<h3>' + QUILocale.get(lg, 'controls.password.share.users.header') + '</h3>' +
                 '</div>' +
                 '<div class="gpm-password-share-actors-groups">' +
-                '<h3>' + QUILocale.get(lg, 'controls.password.share.groups.header') +'</h3>' +
+                '<h3>' + QUILocale.get(lg, 'controls.password.share.groups.header') + '</h3>' +
                 '</div>'
-            });
+            })
+            ;
 
             return this.$Elm;
         },
@@ -153,34 +151,70 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 '.gpm-password-share-actors-groups'
             );
 
-            Passwords.getSecurityClassId(
-                this.getAttribute('passwordId')
-            ).then(function (securityClassId) {
-
-            });
-
             var pwId = this.getAttribute('passwordId');
 
-            Promise.all([
-                Passwords.getSecurityClassId(pwId),
-                Passwords.getShareData(pwId, this.getAttribute('AuthData'))
-            ]).then(function (result) {
-                var securityClassId = result[0];
+            Passwords.getSecurityClassId(pwId).then(function (securityClassId) {
+                var AuthControl = new AuthenticationControl({
+                    securityClassId: securityClassId,
+                    events         : {
+                        onSubmit: function (AuthData) {
+                            Passwords.getShareData(
+                                pwId,
+                                AuthData
+                            ).then(
+                                function (ShareData) {
+                                    AuthControl.destroy();
 
-                self.$ShareData        = result[1];
-                self.$ActorSelectUsers = new ActorSelect({
-                    actorType      : 'users',
-                    securityClassId: securityClassId
-                }).inject(ActorUsersElm);
+                                    self.$Elm.getElement(
+                                        '.gpm-password-share-info'
+                                    ).set(
+                                        'html',
+                                        QUILocale.get(
+                                            lg,
+                                            'controls.password.share.info', {
+                                                passwordTitle: ShareData.title,
+                                                passwordId: pwId
+                                            }
+                                        )
+                                    );
 
-                self.$ActorSelectGroups = new ActorSelect({
-                    actorType      : 'groups',
-                    securityClassId: securityClassId
-                }).inject(ActorGroupsElm);
+                                    self.$ShareData = ShareData;
+                                    self.$AuthData  = AuthData;
 
-                self.$insertData();
-                self.fireEvent('loaded');
+                                    self.$ActorSelectUsers = new ActorSelect({
+                                        actorType      : 'users',
+                                        securityClassId: securityClassId
+                                    }).inject(ActorUsersElm);
+
+                                    self.$ActorSelectGroups = new ActorSelect({
+                                        actorType      : 'groups',
+                                        securityClassId: securityClassId
+                                    }).inject(ActorGroupsElm);
+
+                                    self.$insertData();
+                                    self.fireEvent('loaded');
+                                },
+                                function () {
+                                    // @todo
+                                }
+                            );
+                        },
+                        onClose : function () {
+                            self.fireEvent('close');
+                        }
+                    }
+                });
+
+                AuthControl.open();
             });
+        },
+
+        /**
+         * event: on destroy
+         */
+        $onDestroy: function () {
+            this.$ShareData = null;
+            this.$AuthData  = null;
         },
 
         /**
@@ -188,7 +222,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
          *
          * @returns {Promise}
          */
-        save: function () {
+        submit: function () {
             var self = this;
 
             var shareData = this.$ActorSelectUsers.getActors().append(
@@ -198,7 +232,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
             Passwords.setShareData(
                 this.getAttribute('passwordId'),
                 shareData,
-                this.getAttribute('AuthData')
+                this.$AuthData
             ).then(
                 function (ShareData) {
                     self.$ShareData = ShareData;

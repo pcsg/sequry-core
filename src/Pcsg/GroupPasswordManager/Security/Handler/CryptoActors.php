@@ -6,7 +6,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
-use Pcsg\GroupPasswordManager\CryptoUser;
+use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 
@@ -54,5 +55,22 @@ class CryptoActors
         self::$users[$userId] = new CryptoUser($userId);
 
         return self::$users[$userId];
+    }
+
+    /**
+     * Get crypto user
+     *
+     * @param integer $id - QUIQQER Group ID
+     * @return CryptoGroup
+     */
+    public static function getCryptoGroup($id)
+    {
+        if (isset(self::$groups[$id])) {
+            return self::$groups[$id];
+        }
+
+        self::$groups[$id] = new CryptoGroup($id);
+
+        return self::$groups[$id];
     }
 }

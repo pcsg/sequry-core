@@ -30,7 +30,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
 
         options: {
             actorType      : 'all', // "users", "groups", "all"
-            securityClassId: false  // id of security class this actors are searched for
+            securityClassId: false,  // id of security class this actors are searched for
+            Search         : false
         },
 
         initialize: function (options) {
@@ -61,7 +62,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
                     );
             }
 
-            this.setAttribute('Search', this.actorSearch);
+            if (this.getAttribute('Search') === false) {
+                this.setAttribute('Search', this.actorSearch);
+            }
+
             this.setAttribute('child', 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem');
             this.setAttribute('searchbutton', false);
         },
@@ -91,7 +95,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
          *
          * @returns {Array}
          */
-        getActors: function() {
+        getActors: function () {
             var actors = [];
 
             // users

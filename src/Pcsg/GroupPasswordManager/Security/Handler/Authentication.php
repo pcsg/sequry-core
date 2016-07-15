@@ -7,7 +7,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Pcsg\GroupPasswordManager\Constants\Tables;
-use Pcsg\GroupPasswordManager\CryptoUser;
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
@@ -82,7 +82,7 @@ class Authentication
     {
         $result = QUI::getDataBase()->fetch(array(
             'count' => 1,
-            'from'  => Tables::KEYPAIRS,
+            'from'  => Tables::KEYPAIRS_USER,
             'where' => array(
                 'userId'       => $User->getId(),
                 'authPluginId' => $Plugin->getId()

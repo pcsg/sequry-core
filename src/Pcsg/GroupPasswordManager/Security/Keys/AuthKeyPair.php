@@ -3,7 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Keys;
 
 use Pcsg\GroupPasswordManager\Constants\Tables;
-use Pcsg\GroupPasswordManager\CryptoUser;
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
@@ -51,7 +51,7 @@ class AuthKeyPair extends KeyPair
         $id = (int)$id;
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::KEYPAIRS,
+            'from'  => Tables::KEYPAIRS_USER,
             'where' => array(
                 'id' => $id
             ),

@@ -49,24 +49,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
         Binds: [
             '$onInject',
-            '$save'
+            '$onDestroy',
+            '$save',
+            '$onPasswordDataLoaded'
         ],
 
         options: {
-            passwordId: false,  // passwordId
-            AuthData  : false   // authentication data
+            passwordId: false  // password ID
         },
 
         initialize: function (options) {
             this.parent(options);
 
             this.addEvents({
-                onInject: this.$onInject
+                onInject : this.$onInject,
+                onDestroy: this.$onDestroy
             });
 
-            this.$PasswordData = null;
-            this.$owner        = false;
-            this.$PassContent  = null;
+            this.$PasswordData    = null;
+            this.$owner           = false;
+            this.$PassContent     = null;
+            this.$AuthData        = null;
+            this.$securityClassId = false;
         },
 
         /**
@@ -103,50 +107,79 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
          */
         $onInject: function () {
             var self = this;
+            var pwId = this.getAttribute('passwordId');
 
-            Passwords.get(
-                self.getAttribute('passwordId'),
-                self.getAttribute('AuthData')
-            ).then(
-                function (PasswordData) {
-                    self.$PasswordData = PasswordData;
+            Passwords.getSecurityClassId(pwId).then(function (securityClassId) {
+                var AuthControl = new AuthenticationControl({
+                    securityClassId: securityClassId,
+                    events         : {
+                        onSubmit: function (AuthData) {
+                            self.$AuthData = AuthData;
 
-                    // insert security class select
-                    var SecurityClassElm = self.$Elm.getElement(
-                        'span.pcsg-gpm-security-classes'
-                    );
+                            Passwords.get(
+                                pwId,
+                                AuthData
+                            ).then(
+                                function (PasswordData) {
+                                    AuthControl.destroy();
 
-                    var OwnerSelectElm = self.$Elm.getElement(
-                        'span.pcsg-gpm-password-owner'
-                    );
+                                    self.$PasswordData    = PasswordData;
+                                    self.$AuthData        = AuthData;
+                                    self.$securityClassId = securityClassId;
 
-                    self.$SecurityClassSelect = new SecurityClassSelect({
-                        events: {
-                            onLoaded: function () {
-                                self.$insertData();
-                                self.fireEvent('loaded');
-                            },
-                            onChange: function (value) {
-                                OwnerSelectElm.set('html', '');
-
-                                self.$OwnerSelect = new ActorSelect({
-                                    max            : 1,
-                                    securityClassId: value,
-                                    events         : {
-                                        onChange: function () {
-                                            self.$owner = self.$OwnerSelect.getValue();
-                                        }
-                                    }
-                                }).inject(OwnerSelectElm);
-                            }
+                                    self.$onPasswordDataLoaded();
+                                },
+                                function () {
+                                    // @todo
+                                }
+                            );
+                        },
+                        onClose : function () {
+                            self.fireEvent('close');
                         }
-                    }).inject(
-                        SecurityClassElm
-                    );
-                },
-                function () {
-                    self.destroy();
+                    }
+                });
+
+                AuthControl.open();
+            });
+        },
+
+        $onPasswordDataLoaded: function () {
+            var self = this;
+
+            var SecurityClassElm = this.$Elm.getElement(
+                'span.pcsg-gpm-security-classes'
+            );
+
+            var OwnerSelectElm = this.$Elm.getElement(
+                'span.pcsg-gpm-password-owner'
+            );
+
+            this.$SecurityClassSelect = new SecurityClassSelect({
+                initialValue: this.$securityClassId,
+                events      : {
+                    onLoaded: function () {
+                        self.$insertData();
+                        self.fireEvent('loaded');
+                    },
+                    onChange: function (value) {
+                        OwnerSelectElm.set('html', '');
+
+                        self.$OwnerSelect = new ActorSelect({
+                            max            : 1,
+                            securityClassId: value,
+                            events         : {
+                                onChange: function () {
+                                    self.$owner = self.$OwnerSelect.getValue();
+                                }
+                            }
+                        }).inject(OwnerSelectElm);
+
+                        self.$securityClassId = value;
+                    }
                 }
+            }).inject(
+                SecurityClassElm
             );
         },
 
@@ -198,11 +231,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
         },
 
         /**
+         * event: on destroy
+         */
+        $onDestroy: function () {
+            this.$PasswordData = null;
+            this.$AuthData     = null;
+        },
+
+        /**
          * Edit the password
          *
          * @returns {Promise}
          */
-        save: function () {
+        submit: function () {
             var self = this;
 
             var PasswordData = {
@@ -230,14 +271,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             Passwords.editPassword(
                 this.getAttribute('passwordId'),
                 PasswordData,
-                this.getAttribute('AuthData')
+                this.$AuthData
             ).then(
                 function (PasswordData) {
                     self.$PasswordData = PasswordData;
                     self.$insertData();
                 },
                 function () {
-                    Panel.Loader.hide();
+                    // @todo error handling
                 }
             );
         }

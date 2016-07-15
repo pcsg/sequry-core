@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
@@ -248,8 +249,6 @@ class Password
             ));
         }
 
-        \QUI\System\Log::writeRecursive($contentDecrypted);
-
         $this->setSecretAttributes(array(
             'ownerId'    => $contentDecrypted['ownerId'],
             'ownerType'  => $contentDecrypted['ownerType'],
@@ -274,7 +273,8 @@ class Password
             'id'          => $this->id,
             'title'       => $this->title,
             'description' => $this->description,
-            'payload'     => $this->getSecretAttribute('payload')
+            'payload'     => $this->getSecretAttribute('payload'),
+            'dataType'    => $this->dataType
         );
 
         return $viewData;
@@ -297,7 +297,8 @@ class Password
             'description' => $this->description,
             'payload'     => $this->getSecretAttribute('payload'),
             'ownerId'     => $this->getSecretAttribute('ownerId'),
-            'ownerType'   => $this->getSecretAttribute('ownerType')
+            'ownerType'   => $this->getSecretAttribute('ownerType'),
+            'dataType'    => $this->dataType
         );
 
         return $data;
@@ -356,7 +357,8 @@ class Password
 
                 case 'dataType':
                     if (!empty($v)
-                        && is_string($v)) {
+                        && is_string($v)
+                    ) {
                         $this->dataType = $v;
                     }
                     break;
@@ -392,7 +394,15 @@ class Password
             $this->permissionDenied();
         }
 
-        return $this->getSecretAttribute('sharedWith');
+        $data = array(
+            'id'          => $this->id,
+            'title'       => $this->title,
+            'description' => $this->description,
+            'dataType'    => $this->dataType,
+            'sharedWith'  => $this->getSecretAttribute('sharedWith')
+        );
+
+        return $data;
     }
 
     /**
@@ -504,9 +514,9 @@ class Password
                 $User = QUI::getUsers()->get($row['id']);
 
                 // cannot unshare with owner
-                if ($this->isOwner($User)) {
-                    continue;
-                }
+//                if ($this->isOwner($User)) {
+//                    continue;
+//                }
 
                 $this->removePasswordAccess($User, $Group);
             }
@@ -530,7 +540,7 @@ class Password
      */
     protected function save()
     {
-        $cryptoData          = $this->getSecretAttributes();
+        $cryptoData = $this->getSecretAttributes();
 
         \QUI\System\Log::writeRecursive($cryptoData);
 
@@ -705,6 +715,11 @@ class Password
                 ));
         }
 
+        $this->setSecretAttributes(array(
+            'ownerId'   => $newOwnerId,
+            'ownerType' => $newOwnerType
+        ));
+
         // delete access data for old owner(s)
         switch ($currentOwnerType) {
             case self::OWNER_TYPE_USER:
@@ -742,11 +757,6 @@ class Password
                 }
         }
 
-        $this->setSecretAttributes(array(
-            'ownerId'   => $newOwnerId,
-            'ownerType' => $newOwnerType
-        ));
-
         return true;
     }
 
@@ -760,7 +770,7 @@ class Password
      *
      * @throws QUI\Exception
      */
-    protected function createPasswordAccess($User, $Group = null)
+    public function createPasswordAccess($User, $Group = null)
     {
         // skip if user already has password access
         if ($this->hasPasswordAccess($User, $Group)) {
@@ -843,7 +853,7 @@ class Password
 
                 throw new QUI\Exception(array(
                     'pcsg/grouppasswordmanager',
-                    'exception.password.get.access.data.general.error'
+                    'exception.password.create.access.data.general.error'
                 ));
             }
         }
@@ -882,8 +892,13 @@ class Password
      *
      * @throws QUI\Exception
      */
-    protected function removePasswordAccess($User, $Group = null)
+    public function removePasswordAccess($User, $Group = null)
     {
+        // @todo experimental - check if possible
+        if ($this->isOwner($User)) {
+            return false;
+        }
+
         QUI::getDataBase()->delete(
             Tables::USER_TO_PASSWORDS,
             array(

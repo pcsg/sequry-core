@@ -2,5 +2,6 @@
 <events>
 
     <event on="onPackageSetup" fire="\Pcsg\GroupPasswordManager\Events::onPackageSetup" />
+    <event on="onUserSaveBegin" fire="\Pcsg\GroupPasswordManager\Events::onUserSaveBegin" />
 
 </events>

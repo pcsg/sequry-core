@@ -16,6 +16,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
     'qui/QUI',
     'qui/controls/desktop/Panel',
+    'qui/controls/buttons/Seperator',
     'qui/controls/buttons/Button',
     'qui/controls/loader/Loader',
     'qui/controls/windows/Popup',
@@ -24,6 +25,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
 
@@ -32,8 +35,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
-], function (QUI, QUIPanel, QUIButton, QUILoader, QUIPopup, Grid, PasswordHandler,
-             PasswordCreate, PasswordView, PasswordSearch, AuthenticationControl, Ajax, QUILocale) {
+], function (QUI, QUIPanel, QUISeparator, QUIButton, QUILoader, QUIPopup, Grid, PasswordHandler,
+             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
+             AuthenticationControl, Ajax, QUILocale) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager';
@@ -57,7 +61,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             '$addRemoveSearchBtn'
         ],
 
-        options: {},
+        options: {
+            title: QUILocale.get(lg, 'passwords.panel.title')
+        },
 
         initialize: function (options) {
             this.parent(options);
@@ -96,6 +102,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
+            this.addButton(new QUISeparator());
+
             this.addButton({
                 name     : 'add',
                 text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.add'),
@@ -105,6 +113,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
+            this.addButton(new QUISeparator());
+
             this.addButton({
                 name     : 'view',
                 text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.view'),
@@ -112,8 +122,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 events   : {
                     onClick: function () {
                         self.viewPassword(
-                            self.$Grid.getSelectedData()[0].id,
-                            self.$Grid.getSelectedData()[0].securityClassId
+                            self.$Grid.getSelectedData()[0].id
+                        );
+                    }
+                }
+            });
+
+            this.addButton(new QUISeparator());
+
+            this.addButton({
+                name     : 'share',
+                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.share'),
+                textimage: 'fa fa-share-alt',
+                events   : {
+                    onClick: function () {
+                        self.sharePassword(
+                            self.$Grid.getSelectedData()[0].id
                         );
                     }
                 }
@@ -125,7 +149,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 textimage: 'fa fa-edit',
                 events   : {
                     onClick: function () {
-                        self.$openPasswordPanel(
+                        self.editPassword(
                             self.$Grid.getSelectedData()[0].id
                         );
                     }
@@ -177,7 +201,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.datatype'),
                     dataIndex: 'dataType',
                     dataType : 'text',
-                    width    : 200
+                    width    : 150
                 }, {
                     dataIndex: 'securityClassId',
                     dataType : 'integer',
@@ -193,13 +217,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     );
                 },
                 onClick   : function () {
-                    var Delete = self.getButtons('delete');
-                    var View   = self.getButtons('view');
-                    var Edit   = self.getButtons('edit');
-
-                    View.enable();
-                    Delete.enable();
-                    Edit.enable();
+                    self.getButtons('delete').enable();
+                    self.getButtons('view').enable();
+                    self.getButtons('edit').enable();
+                    self.getButtons('share').enable();
                 },
                 onRefresh : this.$listRefresh
             });
@@ -255,13 +276,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
         $setGridData: function (GridData) {
             var Row;
-            var Delete = this.getButtons('delete');
-            var View   = this.getButtons('view');
-            var Edit   = this.getButtons('edit');
 
-            View.disable();
-            Delete.disable();
-            Edit.disable();
+            this.getButtons('delete').disable();
+            this.getButtons('view').disable();
+            this.getButtons('edit').disable();
+            this.getButtons('share').disable();
 
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 Row = GridData.data[i];
@@ -385,13 +404,136 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
          * Opens password view
          *
          * @param {number} passwordId
-         * @param {number} securityClassId
          */
-        viewPassword: function (passwordId, securityClassId) {
-            new PasswordView({
-                passwordId     : passwordId,
-                securityClassId: securityClassId
-            }).open();
+        viewPassword: function (passwordId) {
+            var self = this;
+
+            this.Loader.show();
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.passwords.panel.view.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        var View = new PasswordView({
+                            passwordId: passwordId,
+                            events    : {
+                                onLoaded: function () {
+                                    self.Loader.hide();
+                                },
+                                onClose: function() {
+                                    View.destroy();
+                                    Sheet.destroy();
+                                    self.Loader.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
+                    },
+                    onClose: function (Sheet) {
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        },
+
+        /**
+         * Opens password view
+         *
+         * @param {number} passwordId
+         */
+        sharePassword: function (passwordId) {
+            var self = this;
+
+            this.Loader.show();
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.passwords.panel.share.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        var Share = new PasswordShare({
+                            passwordId: passwordId,
+                            events    : {
+                                onLoaded: function () {
+                                    self.Loader.hide();
+                                },
+                                onClose: function() {
+                                    Share.destroy();
+                                    Sheet.destroy();
+                                    self.Loader.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
+
+                        Sheet.addButton(
+                            new QUIButton({
+                                text     : QUILocale.get('quiqqer/system', 'save'),
+                                textimage: 'fa fa-save',
+                                events   : {
+                                    onClick: function () {
+                                        Share.submit();
+                                    }
+                                }
+                            })
+                        );
+                    },
+                    onClose: function (Sheet) {
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        },
+
+        /**
+         * Opens password view
+         *
+         * @param {number} passwordId
+         */
+        editPassword: function (passwordId) {
+            var self = this;
+
+            this.Loader.show();
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.passwords.panel.edit.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        var Edit = new PasswordEdit({
+                            passwordId: passwordId,
+                            events    : {
+                                onLoaded: function () {
+                                    self.Loader.hide();
+                                },
+                                onClose: function() {
+                                    Edit.destroy();
+                                    self.refresh();
+                                    self.Loader.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
+
+                        Sheet.addButton(
+                            new QUIButton({
+                                text     : QUILocale.get('quiqqer/system', 'save'),
+                                textimage: 'fa fa-save',
+                                events   : {
+                                    onClick: function () {
+                                        Edit.submit();
+                                    }
+                                }
+                            })
+                        );
+                    },
+                    onClose: function (Sheet) {
+                        self.refresh();
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
         },
 
         /**

@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 function package_pcsg_grouppasswordmanager_ajax_auth_getEligibleGroups($securityClassId)
 {
     $SecurityClass     = Authentication::getSecurityClass((int)$securityClassId);
-    $eligibleGroupIds  = $SecurityClass->getEligibleGroupIds();
+    $eligibleGroupIds  = $SecurityClass->getGroupIds();
     $eligibleGroupData = array();
 
     foreach ($eligibleGroupIds as $groupId) {

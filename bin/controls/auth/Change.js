@@ -76,7 +76,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
          */
         create: function () {
             var self      = this,
-                lg_prefix = 'auth.template.';
+                lg_prefix = 'auth.change.template.';
 
             this.$Elm = this.parent();
 
