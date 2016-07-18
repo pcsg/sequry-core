@@ -6,6 +6,8 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use ParagonIE\Halite\Symmetric\Crypto;
+use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
@@ -438,7 +440,7 @@ class Password
 
                         // create password access for user
                         $CryptoUser = CryptoActors::getCryptoUser($actorId);
-                        $this->createPasswordAccess($CryptoUser);
+                        $this->createAccessForUser($CryptoUser);
                         $newShareUserIds[] = $CryptoUser->getId();
                     } catch (\Exception $Exception) {
                         QUI\System\Log::addError(
@@ -452,7 +454,7 @@ class Password
 
                 case self::OWNER_TYPE_GROUP:
                     try {
-                        $Group = QUI::getGroups()->get($actorId);
+                        $Group = CryptoActors::getCryptoGroup($actorId);
 
                         // cannot share with owner group
                         if ($this->getSecretAttribute('ownerType') === $this::OWNER_TYPE_GROUP
@@ -686,14 +688,14 @@ class Password
                     return true;
                 }
 
-                $Group = QUI::getGroups()->get($id);
+                $Group = CryptoActors::getCryptoGroup($id);
                 $users = $Group->getUsers();
 
                 foreach ($users as $row) {
                     $User = CryptoActors::getCryptoUser($row['id']);
 
                     try {
-                        $this->createPasswordAccess($User, $Group->getId());
+                        $this->createPasswordAccess($User, $Group);
                     } catch (\Exception $Exception) {
                         QUI\System\Log::addError(
                             'Could not create access data for user #' . $User->getId() . ': '
@@ -764,7 +766,7 @@ class Password
      * Creates and inserts password access entry for a user
      *
      * @param CryptoUser $User
-     * @param QUI\Groups\Group $Group (optional) - create access via group
+     * @param CryptoGroup $Group (optional) - create access via group
      *
      * @return true - on success
      *
@@ -859,6 +861,26 @@ class Password
         }
 
         return true;
+    }
+
+    /**
+     * Create password access for user
+     *
+     * @param CryptoUser $User
+     */
+    public function createAccessForUser($User)
+    {
+
+    }
+
+    /**
+     * Create password access for group
+     *
+     * @param CryptoGroup $Group
+     */
+    public function createAccessForGroup($Group)
+    {
+
     }
 
     /**

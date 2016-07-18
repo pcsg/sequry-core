@@ -3,6 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Authentication;
 
 use Monolog\Handler\Curl\Util;
+use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
@@ -216,7 +217,7 @@ class SecurityClass extends QUI\QDOM
     /**
      * Get groups that are assigned to this security class
      *
-     * @return array
+     * @return array - groups as objects
      */
     public function getGroups()
     {
@@ -224,8 +225,10 @@ class SecurityClass extends QUI\QDOM
         $groupIds = $this->getGroupIds();
 
         foreach ($groupIds as $groupId) {
-            $groups = CryptoActors::getCryptoUser();
+            $groups[] = CryptoActors::getCryptoGroup($groupId);
         }
+
+        return $groups;
     }
 
     /**
@@ -639,6 +642,18 @@ class SecurityClass extends QUI\QDOM
                 $DB->insert(Tables::USER_TO_GROUPS, $data);
             }
         }
+    }
+
+    /**
+     * @todo Genaue Bedingungen festlegen, unter denen das Entfernen einer Gruppe möglich ist
+     *
+     * Remove a group from this security class
+     *
+     * @param CryptoGroup $Group
+     */
+    public function removeCryptoGroup($Group)
+    {
+        return true;
     }
 
     /**

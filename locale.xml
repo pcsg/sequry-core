@@ -456,6 +456,9 @@
         <locale name="securityclasses.panel.btn.add">
             <de><![CDATA[Sicherheitsklasse anlegen]]></de>
         </locale>
+        <locale name="securityclasses.panel.btn.edit">
+            <de><![CDATA[Sicherheitsklasse bearbeiten]]></de>
+        </locale>
         <locale name="securityclasses.panel.btn.delete">
             <de><![CDATA[Sicherheitsklasse löschen]]></de>
         </locale>

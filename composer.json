@@ -1,28 +1,34 @@
 {
-    "name" : "pcsg/grouppasswordmanager",
-    "type" : "quiqqer-module",
-    "description" : "Modul zur Verwaltung und dem Teilen von Passwörtern für Benutzer/Gruppen.",
-    "version" : "dev-dev",
-
-    "authors" : [{
-        "name": "Patrick Müller",
-        "email": "p.mueller@pcsg.de",
-        "homepage": "http://www.pcsg.de",
-        "role": "Developer"
-    }],
-
-    "support" : {
-        "email" : "support@pcsg.de"
-    },
-
-    "require": {
-        "quiqqer/quiqqer" : "*@dev",
-        "phpseclib/phpseclib": "2.0.0",
-        "paragonie/halite": "1.5.0"
-    },
-    "autoload": {
-        "psr-0" : {
-            "Pcsg" : "src/"
-        }
+  "name": "pcsg/grouppasswordmanager",
+  "type": "quiqqer-module",
+  "description": "Modul zur Verwaltung und dem Teilen von Passwörtern für Benutzer/Gruppen.",
+  "version": "dev-dev",
+  "authors": [
+    {
+      "name": "Patrick Müller",
+      "email": "p.mueller@pcsg.de",
+      "homepage": "http://www.pcsg.de",
+      "role": "Developer"
     }
+  ],
+  "support": {
+    "email": "support@pcsg.de"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/teqneers/shamir"
+    }
+  ],
+  "require": {
+    "quiqqer/quiqqer": "*@dev",
+    "phpseclib/phpseclib": "2.0.0",
+    "paragonie/halite": "1.5.0",
+    "tq/shamir": "dev-master"
+  },
+  "autoload": {
+    "psr-0": {
+      "Pcsg": "src/"
+    }
+  }
 }

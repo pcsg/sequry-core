@@ -52,6 +52,7 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
+            <field type="TINYINT(2)">factors</field>
             <primary>id</primary>
         </table>
 
