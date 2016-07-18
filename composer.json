@@ -21,7 +21,8 @@
   },
   "autoload": {
     "psr-0": {
-      "Pcsg": "src/"
+      "Pcsg": "src/",
+      "TQ": "lib/teqneers/shamir/src/"
     }
   }
 }
