@@ -7,6 +7,8 @@
 namespace Pcsg\GroupPasswordManager\Actors;
 
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
+use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
@@ -67,7 +69,81 @@ class CryptoUser extends QUI\Users\User
 
         $data = current($result);
 
-        return new AuthKeyPair($data['id']);
+        return Authentication::getAuthKeyPair($data['id']);
+    }
+
+    /**
+     * Get all authentication plugins of a security class the user is registered for
+     *
+     * @param SecurityClass $SecurityClass
+     * @return array
+     */
+    public function getAuthPluginsBySecurityClass($SecurityClass)
+    {
+        $authPlugins     = $SecurityClass->getAuthPlugins();
+        $accessPluginIds = $this->getAuthPluginIds();
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($authPlugins as $k => $AuthPlugin) {
+            if (!in_array($AuthPlugin->getId(), $accessPluginIds)) {
+                unset($authPlugins[$k]);
+            }
+        }
+
+        return $authPlugins;
+    }
+
+
+    /**
+     * Get IDs of all authentication plugins the user is registered for
+     *
+     * @return array
+     */
+    protected function getAuthPluginIds()
+    {
+        $ids = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'authPluginId'
+            ),
+            'from'   => Tables::KEYPAIRS_USER,
+            'where'  => array(
+                'userId' => $this->id
+            )
+        ));
+
+        foreach ($result as $row) {
+            $ids[] = $row['authPluginId'];
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get IDs of CryptoGroups the user has access to
+     *
+     * @return array
+     */
+    public function getCryptoGroupIds()
+    {
+        $groupIds = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'groupId'
+            ),
+            'from'   => Tables::USER_TO_GROUPS,
+            'where'  => array(
+                'userId' => $this->id
+            )
+        ));
+
+        foreach ($result as $row) {
+            $groupIds[] = $row['groupId'];
+        }
+
+        return $groupIds;
     }
 
     /**
@@ -84,7 +160,7 @@ class CryptoUser extends QUI\Users\User
         $binds     = array();
         $where     = array();
 
-        // fetch all password ids the user has access to
+        // fetch all password ids the user has (direct)access to
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'dataId'
@@ -95,13 +171,35 @@ class CryptoUser extends QUI\Users\User
             )
         ));
 
-        $passwordIds = array();
+        $passwordIdsAssoc = array();
 
         foreach ($result as $row) {
-            $passwordIds[$row['dataId']] = true;
+            $passwordIdsAssoc[$row['dataId']] = true;
         }
 
-        $passwordIds = array_keys($passwordIds);
+        // fetch all password ids the user has access to via groups
+        $groupIds = $this->getCryptoGroupIds();
+
+        if (!empty($groupIds)) {
+            $result = QUI::getDataBase()->fetch(array(
+                'select' => array(
+                    'dataId'
+                ),
+                'from'   => Tables::GROUP_TO_PASSWORDS,
+                'where'  => array(
+                    'groupId' => array(
+                        'type'  => 'IN',
+                        'value' => $groupIds
+                    )
+                )
+            ));
+        }
+
+        foreach ($result as $row) {
+            $passwordIdsAssoc[$row['dataId']] = true;
+        }
+
+        $passwordIds = array_keys($passwordIdsAssoc);
         $Grid        = new \QUI\Utils\Grid($searchParams);
         $gridParams  = $Grid->parseDBParams($searchParams);
 

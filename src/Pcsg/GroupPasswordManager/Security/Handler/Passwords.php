@@ -75,68 +75,6 @@ class Passwords
             ));
         }
 
-        $owner = $passwordData['owner'];
-
-        if (!isset($owner['id'])
-            || empty($owner['id'])
-            || !isset($owner['type'])
-            || empty($owner['type'])
-        ) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.passwords.create.owner.incorrect.data'
-            ));
-        }
-
-        $ownerUsers = array();
-        $ownerId    = (int)$owner['id'];
-        $groupId    = false;
-
-        switch ($owner['type']) {
-            case 'user':
-                try {
-                    $User = CryptoActors::getCryptoUser($ownerId);
-
-                    if (!$SecurityClass->isUserEligible($User)) {
-                        throw new QUI\Exception();
-                    }
-
-                    $ownerUsers[] = $User;
-
-                } catch (QUI\Exception $Exception) {
-                    throw new QUI\Exception(array(
-                        'pcsg/grouppasswordmanager',
-                        'exception.passwords.create.owner.user.incorrect.data'
-                    ));
-                }
-                break;
-
-            case 'group':
-                $groupId = $ownerId;
-                $Group   = QUI::getGroups()->get($groupId);
-
-                if (!$SecurityClass->isGroupEligible($Group)) {
-                    throw new QUI\Exception();
-                }
-
-                $result = $Group->getUsers(array(
-                    'select' => array(
-                        'id'
-                    )
-                ));
-
-                foreach ($result as $row) {
-                    $ownerUsers[] = CryptoActors::getCryptoUser($row['id']);
-                }
-                break;
-
-            default:
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.passwords.create.owner.group.incorrect.data'
-                ));
-        }
-
         // title check
         if (!isset($passwordData['title'])
             || empty($passwordData['title'])
@@ -167,11 +105,62 @@ class Passwords
             ));
         }
 
+        $owner = $passwordData['owner'];
+
+        if (!isset($owner['id'])
+            || empty($owner['id'])
+            || !isset($owner['type'])
+            || empty($owner['type'])
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwords.create.owner.incorrect.data'
+            ));
+        }
+
+        $ownerUsers = array();
+        $ownerId    = (int)$owner['id'];
+        $groupId    = false;
+
+        switch ($owner['type']) {
+            case 'user':
+                try {
+                    $OwnerActor = CryptoActors::getCryptoUser($ownerId);
+
+                    if (!$SecurityClass->isUserEligible($OwnerActor)) {
+                        throw new QUI\Exception();
+                    }
+
+                    $ownerType = Password::OWNER_TYPE_USER;
+                } catch (QUI\Exception $Exception) {
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.passwords.create.owner.user.incorrect.data'
+                    ));
+                }
+                break;
+
+            case 'group':
+                $OwnerActor = CryptoActors::getCryptoGroup($ownerId);
+
+                if (!$SecurityClass->isGroupEligible($OwnerActor)) {
+                    throw new QUI\Exception();
+                }
+
+                $ownerType = Password::OWNER_TYPE_GROUP;
+                break;
+
+            default:
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.passwords.create.owner.group.incorrect.data'
+                ));
+        }
+
         // set initial content for password
         $passwordContent = array(
             'ownerId'    => $ownerId,
-            'ownerType'  => $owner['type'] === 'user' ?
-                Password::OWNER_TYPE_USER : Password::OWNER_TYPE_GROUP,
+            'ownerType'  => $ownerType,
             'payload'    => $passwordData['payload'],
             'sharedWith' => array(
                 'users'  => array(),
@@ -181,11 +170,12 @@ class Passwords
         );
 
         // generate password key
-        $PayloadKey = SymmetricCrypto::generateKey();
+        $PasswordKey = SymmetricCrypto::generateKey();
 
         // encrypt password data and calculate MAC
         $passwordContentEncrypted = SymmetricCrypto::encrypt(
-            json_encode($passwordContent), $PayloadKey
+            json_encode($passwordContent),
+            $PasswordKey
         );
 
         $passwordEntry = array(
@@ -222,35 +212,84 @@ class Passwords
 
         $passwordId = QUI::getPDO()->lastInsertId();
 
-        // split key
-        $authPlugins = $SecurityClass->getAuthPlugins();
+        /*** Create Password Access ***/
+        // write access data to database
+        switch ($ownerType) {
+            case Password::OWNER_TYPE_USER:
+                // split key
+                $authPlugins     = $SecurityClass->getAuthPlugins();
+                $requiredFactors = $SecurityClass->getRequiredFactors();
 
-        $payloadKeyParts = SecretSharing::splitSecret(
-            $PayloadKey->getValue(),
-            count($authPlugins)
-        );
+                $passwordKeyParts = SecretSharing::splitSecret(
+                    $PasswordKey->getValue(),
+                    count($authPlugins),
+                    $requiredFactors
+                );
 
-        // encrypt key parts with owner public keys
-        /** @var CryptoUser $User */
-        foreach ($ownerUsers as $User) {
-            $i = 0;
+                $authPluginsUser = $OwnerActor->getAuthPluginsBySecurityClass($SecurityClass);
+                $i               = 0;
 
-            /** @var Plugin $Plugin */
-            foreach ($authPlugins as $Plugin) {
+                /** @var Plugin $Plugin */
+                foreach ($authPluginsUser as $Plugin) {
+                    try {
+                        $UserAuthKeyPair = $OwnerActor->getAuthKeyPair($Plugin);
+                        $passwordKeyPart = $passwordKeyParts[$i++];
+
+                        $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
+                            $passwordKeyPart, $UserAuthKeyPair
+                        );
+
+                        $dataAccessEntry = array(
+                            'userId'    => $OwnerActor->getId(),
+                            'dataId'    => $passwordId,
+                            'dataKey'   => $encryptedPasswordKeyPart,
+                            'keyPairId' => $UserAuthKeyPair->getId()
+                        );
+
+                        $dataAccessEntry['MAC'] = MAC::create(
+                            implode('', $dataAccessEntry),
+                            Utils::getSystemKeyPairAuthKey()
+                        );
+
+                        $DB->insert(
+                            Tables::USER_TO_PASSWORDS,
+                            $dataAccessEntry
+                        );
+                    } catch (\Exception $Exception) {
+                        // on error delete password entry
+                        $DB->delete(
+                            Tables::PASSWORDS,
+                            array(
+                                'id' => $passwordId
+                            )
+                        );
+
+                        QUI\System\Log::addError(
+                            'Error writing password key parts to database: ' . $Exception->getMessage()
+                        );
+
+                        throw new QUI\Exception(array(
+                            'pcsg/grouppasswordmanager',
+                            'exception.password.create.general.error'
+                        ));
+                    }
+                }
+                break;
+
+            case Password::OWNER_TYPE_GROUP:
                 try {
-                    $UserAuthKeyPair = $User->getAuthKeyPair($Plugin);
-                    $payloadKeyPart  = $payloadKeyParts[$i++];
+                    $GroupKeyPair = $OwnerActor->getKeyPair();
 
-                    $encryptedPayloadKeyPart = AsymmetricCrypto::encrypt(
-                        $payloadKeyPart, $UserAuthKeyPair
+                    // encrypt password payload key with group public key
+                    $passwordKeyEncrypted = AsymmetricCrypto::encrypt(
+                        $PasswordKey->getValue(),
+                        $GroupKeyPair
                     );
 
                     $dataAccessEntry = array(
-                        'userId'    => $User->getId(),
-                        'dataId'    => $passwordId,
-                        'dataKey'   => $encryptedPayloadKeyPart,
-                        'keyPairId' => $UserAuthKeyPair->getId(),
-                        'groupId'   => $groupId ?: null,
+                        'groupId' => $OwnerActor->getId(),
+                        'dataId'  => $passwordId,
+                        'dataKey' => $passwordKeyEncrypted
                     );
 
                     $dataAccessEntry['MAC'] = MAC::create(
@@ -259,7 +298,7 @@ class Passwords
                     );
 
                     $DB->insert(
-                        Tables::USER_TO_PASSWORDS,
+                        Tables::GROUP_TO_PASSWORDS,
                         $dataAccessEntry
                     );
                 } catch (\Exception $Exception) {
@@ -280,7 +319,7 @@ class Passwords
                         'exception.password.create.general.error'
                     ));
                 }
-            }
+                break;
         }
 
         return $passwordId;
@@ -317,7 +356,7 @@ class Passwords
     {
         $result = QUI::getDataBase()->fetch(array(
             'count' => 1,
-            'from' => Tables::USER_TO_PASSWORDS,
+            'from'  => Tables::USER_TO_PASSWORDS,
             'where' => array(
                 'dataId' => (int)$passwordId,
                 'userId' => $User->getId()

@@ -80,7 +80,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         /**
          * event: ondestroy
          */
-        $onDestroy: function() {
+        $onDestroy: function () {
             if (this.$AuthPopup) {
                 this.$AuthPopup.close();
             }
@@ -98,8 +98,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 ),
                 maxWidth   : 500,
                 closeButton: false,
-                events : {
-                    onClose: function() {
+                events     : {
+                    onClose: function () {
                         self.fireEvent('close');
                     }
                 },
@@ -129,7 +129,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
                 title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
                 events: {
-                    onClick: function() {
+                    onClick: function () {
                         self.fireEvent('abort');
                         AuthPopup.close();
                     }
@@ -161,7 +161,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     '</h1>' +
                     '<span class="pcsg-gpm-auth-authenticate-info-description">' +
                     QUILocale.get(lg, 'controls.authenticate.popup.info.description', {
-                        securityClass: SecurityClassInfo.title
+                        securityClass  : SecurityClassInfo.title,
+                        requiredFactors: SecurityClassInfo.requiredFactors
                     }) +
                     '</span>'
                 );

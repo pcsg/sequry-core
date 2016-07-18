@@ -9,7 +9,7 @@ use Pcsg\GroupPasswordManager\Security\Interfaces\iSecretSharing;
  */
 class SecretSharing
 {
-    const SECRET_MODULE = 'SimpleSplit'; // @todo in config auslagern
+    const SECRET_MODULE = 'Shamir'; // @todo in config auslagern
 
     /**
      * KDF Class Object for the configured hash module
@@ -25,11 +25,12 @@ class SecretSharing
      *
      * @param string $secret
      * @param integer $parts - number of parts the secret is split into
+     * @param integer $required - number of parts that are required to recover the secret
      * @return array
      */
-    public static function splitSecret($secret, $parts)
+    public static function splitSecret($secret, $parts, $required)
     {
-        return self::getSecretModule()->splitSecret($secret, $parts, null);
+        return self::getSecretModule()->splitSecret($secret, $parts, $required);
     }
 
     /**

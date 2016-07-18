@@ -11,6 +11,7 @@ use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
+use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use QUI;
 use Symfony\Component\Console\Helper\Table;
 
@@ -34,6 +35,30 @@ class Authentication
      * @var array
      */
     protected static $securityClasses = array();
+
+    /**
+     * Loaded authentication keypairs
+     *
+     * @var array
+     */
+    protected static $authKeyPairs = array();
+
+    /**
+     * Return AuthKeyPair
+     *
+     * @param integer $id
+     * @return AuthKeyPair
+     */
+    public static function getAuthKeyPair($id)
+    {
+        if (isset(self::$authKeyPairs[$id])) {
+            return self::$authKeyPairs[$id];
+        }
+
+        self::$authKeyPairs[$id] = new AuthKeyPair($id);
+
+        return self::$authKeyPairs[$id];
+    }
 
     /**
      * Return list of all installed authentication plugins including:
@@ -272,6 +297,15 @@ class Authentication
             ));
         }
 
+        if (!isset($params['requiredFactors'])
+            || empty($params['requiredFactors'])
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.missing.requiredFactors'
+            ));
+        }
+
         $authPlugins = array();
 
         foreach ($params['authPluginIds'] as $authPluginId) {
@@ -287,8 +321,9 @@ class Authentication
         QUI::getDataBase()->insert(
             Tables::SECURITY_CLASSES,
             array(
-                'title'       => $params['title'],
-                'description' => $params['description']
+                'title'           => $params['title'],
+                'description'     => $params['description'],
+                'requiredFactors' => (int)$params['requiredFactors']
             )
         );
 

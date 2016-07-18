@@ -204,6 +204,27 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
+     * Remove access to group for crypto user
+     *
+     * @param CryptoUser $CryptoUser
+     * @return void
+     */
+    public function removeCryptoUser($CryptoUser)
+    {
+        if (!$this->hasCryptoUserAccess($CryptoUser)) {
+            return;
+        }
+
+        QUI::getDataBase()->delete(
+            Tables::USER_TO_GROUPS,
+            array(
+                'userId'  => $CryptoUser->getId(),
+                'groupId' => $this->getId()
+            )
+        );
+    }
+
+    /**
      * Return IDs of all user that have access to this CryptoGroup
      *
      * @return array
@@ -216,8 +237,8 @@ class CryptoGroup extends QUI\Groups\Group
             'select' => array(
                 'userId'
             ),
-            'from' => Tables::USER_TO_GROUPS,
-            'where' => array(
+            'from'   => Tables::USER_TO_GROUPS,
+            'where'  => array(
                 'groupId' => $this->getId()
             )
         ));

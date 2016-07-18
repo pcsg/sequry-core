@@ -22,6 +22,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/controls/buttons/Select',
     'Locale',
     'Mustache',
 
@@ -30,7 +31,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
     'text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, AuthenticationHandler, template) {
+], function (QUI, QUIControl, QUISelect, QUILocale, Mustache, AuthenticationHandler, template) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager',
@@ -42,7 +43,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create',
 
         Binds: [
-            '$onInject'
+            '$onInject',
+            '$refreshFactorSelect'
         ],
 
         initialize: function (options) {
@@ -51,6 +53,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
             this.addEvents({
                 onInject: this.$onInject
             });
+
+            this.$RequiredFactorsSelect = null;
         },
 
         /**
@@ -73,7 +77,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
                     authPlugins       : QUILocale.get(lg, lg_prefix + 'authPlugins'),
                     authPluginsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsWarning'),
                     groups            : QUILocale.get(lg, lg_prefix + 'groups'),
-                    groupsInfo        : QUILocale.get(lg, lg_prefix + 'groupsInfo')
+                    groupsInfo        : QUILocale.get(lg, lg_prefix + 'groupsInfo'),
+                    requiredFactors   : QUILocale.get(lg, lg_prefix + 'requiredFactors')
                 })
             });
 
@@ -96,14 +101,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
                     }).inject(AuthPluginElm);
 
                     new Element('input', {
-                        type : 'checkbox',
-                        name : 'authplugin',
-                        value: Plugin.id
+                        type  : 'checkbox',
+                        name  : 'authplugin',
+                        value : Plugin.id,
+                        events: {
+                            change: self.$refreshFactorSelect
+                        }
                     }).inject(Label, 'top');
                 }
 
                 self.fireEvent('loaded');
             });
+
+            this.$RequiredFactorsSelect = new QUISelect().inject(
+                this.$Elm.getElement('.pcsg-gpm-password-requiredfactors')
+            );
+
+            this.$RequiredFactorsSelect.disable();
 
             return this.$Elm;
         },
@@ -113,6 +127,43 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
          */
         $onInject: function () {
             // @todo
+        },
+
+        /**
+         * Refreshes selectable number of required authentication factors
+         */
+        $refreshFactorSelect: function () {
+            var authPluginElms = this.$Elm.getElements(
+                '.pcsg-gpm-password-authplugins input'
+            );
+
+            var i, len;
+            var factors = 0;
+
+            for (i = 0, len = authPluginElms.length; i < len; i++) {
+                if (authPluginElms[i].checked) {
+                    factors++;
+                }
+            }
+
+            this.$RequiredFactorsSelect.clear();
+
+            if (factors === 0) {
+                this.$RequiredFactorsSelect.disable();
+                return;
+            }
+
+            this.$RequiredFactorsSelect.enable();
+
+            for (i = 1, len = factors; i <= len; i++) {
+                this.$RequiredFactorsSelect.appendChild(
+                    i,
+                    i,
+                    'fa fa-user-secret'
+                )
+            }
+
+            this.$RequiredFactorsSelect.setValue(factors);
         },
 
         /**
@@ -136,9 +187,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
             }
 
             this.$SecurityClassData = {
-                title        : this.$Elm.getElement('.pcsg-gpm-securityclasses-title').value,
-                description  : this.$Elm.getElement('.pcsg-gpm-securityclasses-description').value,
-                authPluginIds: authPluginIds
+                title          : this.$Elm.getElement('.pcsg-gpm-securityclasses-title').value,
+                description    : this.$Elm.getElement('.pcsg-gpm-securityclasses-description').value,
+                authPluginIds  : authPluginIds,
+                requiredFactors: this.$RequiredFactorsSelect.getValue()
             };
 
             Authentication.createSecurityClass(

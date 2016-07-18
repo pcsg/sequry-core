@@ -17,7 +17,6 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">keyPairId</field>
-            <field type="BIGINT(20) UNSIGNED NULL">groupId</field>
             <field type="BLOB NOT NULL">dataKey</field>
             <field type="BLOB NOT NULL">MAC</field>
             <primary>id</primary>
@@ -52,7 +51,7 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
-            <field type="TINYINT(2)">factors</field>
+            <field type="TINYINT(2)">requiredFactors</field>
             <primary>id</primary>
         </table>
 

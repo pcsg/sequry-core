@@ -13,11 +13,12 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo($secur
     $SecurityClass = Authentication::getSecurityClass($securityClassId);
 
     $info = array(
-        'id'          => $SecurityClass->getId(),
-        'title'       => $SecurityClass->getAttribute('title'),
-        'description' => $SecurityClass->getAttribute('description'),
-        'groups'      => $SecurityClass->getGroupIds(),
-        'authPlugins' => array()
+        'id'              => $SecurityClass->getId(),
+        'title'           => $SecurityClass->getAttribute('title'),
+        'description'     => $SecurityClass->getAttribute('description'),
+        'groups'          => $SecurityClass->getGroupIds(),
+        'requiredFactors' => $SecurityClass->getRequiredFactors(),
+        'authPlugins'     => array()
     );
 
     $authPlugins = $SecurityClass->getAuthPlugins();

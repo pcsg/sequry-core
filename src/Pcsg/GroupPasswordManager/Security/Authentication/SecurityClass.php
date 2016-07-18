@@ -27,6 +27,13 @@ class SecurityClass extends QUI\QDOM
     protected $id = null;
 
     /**
+     * Number of authentication factors that are required to access data of this security class
+     *
+     * @var null
+     */
+    protected $requiredFactors = null;
+
+    /**
      * Authentication plugins this security class uses
      *
      * @var array
@@ -57,8 +64,10 @@ class SecurityClass extends QUI\QDOM
             );
         }
 
-        $data     = current($result);
-        $this->id = $data['id'];
+        $data = current($result);
+
+        $this->id              = $data['id'];
+        $this->requiredFactors = $data['requiredFactors'];
 
         $this->setAttributes(array(
             'title'       => $data['title'],
@@ -195,23 +204,38 @@ class SecurityClass extends QUI\QDOM
      */
     public function getEligibleUserIds()
     {
-        $userIds = array();
-        $plugins = $this->getAuthPlugins();
+        $userIds         = array();
+        $eligibleUserIds = array();
+        $plugins         = $this->getAuthPlugins();
 
         if (empty($plugins)) {
-            return $userIds;
+            return $eligibleUserIds;
         }
 
-        /** @var Plugin $FirstPlugin */
-        $FirstPlugin = array_shift($plugins);
-        $userIds     = $FirstPlugin->getRegisteredUserIds();
-
+        // get all registered user ids of associated authentication plugins
         /** @var Plugin $AuthPlugin */
         foreach ($plugins as $AuthPlugin) {
-            $userIds = array_intersect($userIds, $AuthPlugin->getRegisteredUserIds());
+            $registeredUserIds = $AuthPlugin->getRegisteredUserIds();
+
+            foreach ($registeredUserIds as $userId) {
+                if (!isset($userIds[$userId])) {
+                    $userIds[$userId] = 0;
+                }
+
+                $userIds[$userId]++;
+            }
         }
 
-        return $userIds;
+        // filter users that are registered with less than the necessary number of authentication plugins
+        foreach ($userIds as $userId => $registeredAuthFactors) {
+            if ($registeredAuthFactors < $this->requiredFactors) {
+                continue;
+            }
+
+            $eligibleUserIds[] = $userId;
+        }
+
+        return $eligibleUserIds;
     }
 
     /**
@@ -614,12 +638,14 @@ class SecurityClass extends QUI\QDOM
         // split group private key encryption key into parts and share with group users
         $privateKeyEncryptionKeyParts = SecretSharing::splitSecret(
             $PrivateKeyEncryptionKey->getValue(),
-            count($authPlugins)
+            count($authPlugins),
+            $this->requiredFactors
         );
 
         foreach ($users as $userData) {
-            $User = CryptoActors::getCryptoUser($userData['id']);
-            $i    = 0;
+            $User        = CryptoActors::getCryptoUser($userData['id']);
+            $authPlugins = $User->getAuthPluginsBySecurityClass($this);
+            $i           = 0;
 
             /** @var Plugin $AuthPlugin */
             foreach ($authPlugins as $AuthPlugin) {
@@ -654,6 +680,16 @@ class SecurityClass extends QUI\QDOM
     public function removeCryptoGroup($Group)
     {
         return true;
+    }
+
+    /**
+     * Return number of required authentication modules to access passwords of this security calss
+     *
+     * @return integer
+     */
+    public function getRequiredFactors()
+    {
+        return $this->requiredFactors;
     }
 
     /**

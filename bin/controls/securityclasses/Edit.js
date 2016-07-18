@@ -75,17 +75,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
             this.$Elm.set({
                 'class': 'pcsg-gpm-password-create',
                 html   : Mustache.render(template, {
-                    edittitle  : QUILocale.get(lg, lg_prefix + 'edittitle'),
-                    title      : QUILocale.get(lg, lg_prefix + 'title'),
-                    description: QUILocale.get(lg, lg_prefix + 'description'),
-                    authPlugins: QUILocale.get(lg, lg_prefix + 'authPlugins'),
-                    groups     : QUILocale.get(lg, lg_prefix + 'groups')
+                    edittitle      : QUILocale.get(lg, lg_prefix + 'edittitle'),
+                    title          : QUILocale.get(lg, lg_prefix + 'title'),
+                    description    : QUILocale.get(lg, lg_prefix + 'description'),
+                    authPlugins    : QUILocale.get(lg, lg_prefix + 'authPlugins'),
+                    groups         : QUILocale.get(lg, lg_prefix + 'groups'),
+                    requiredFactors: QUILocale.get(lg, lg_prefix + 'requiredFactors')
                 })
             });
 
             this.$GroupSelect = new ActorSelect({
                 actorType: 'groups',
-                Search   : this.$searchGroupsToAdd()
+                Search   : this.$searchGroupsToAdd
             }).inject(
                 this.$Elm.getElement('.pcsg-gpm-securityclasses-groups')
             );
@@ -121,6 +122,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                 for (i = 0, len = Info.groups.length; i < len; i++) {
                     self.$GroupSelect.addItem('g' + Info.groups[i]);
                 }
+
+                self.$Elm.getElement('.pcsg-gpm-password-requiredfactors').set(
+                    'html',
+                    Info.requiredFactors
+                );
 
                 self.fireEvent('loaded');
             });

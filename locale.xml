@@ -421,7 +421,7 @@
             <de><![CDATA[Authentifizierung erforderlich!]]></de>
         </locale>
         <locale name="controls.authenticate.popup.info.description" html="true">
-            <de><![CDATA[Für diese Operation ist eine Authentifizierung für die Sicherheitsklasse <b>[securityClass]</b> erforderlich. Bitte authentifzieren Sie sich bei allen dafür nötigen Authentifizierungs-Plugins.]]></de>
+            <de><![CDATA[Für diese Operation ist eine Authentifizierung für die Sicherheitsklasse <b>[securityClass]</b> erforderlich. Bitte authentifzieren Sie sich bei <b>mindestens [requiredFactors]</b> dafür nötigen Authentifizierungs-Plugins.]]></de>
         </locale>
         <locale name="controls.authenticate.popup.btn.text">
             <de><![CDATA[Authentifizieren]]></de>
@@ -509,6 +509,9 @@
         <locale name="securityclasses.create.template.authPlugins">
             <de><![CDATA[Auth.-Faktoren]]></de>
         </locale>
+        <locale name="securityclasses.create.template.requiredFactors">
+            <de><![CDATA[Mindestens benötigte Faktoren]]></de>
+        </locale>
         <locale name="securityclasses.create.template.authPluginsWarning" html="true">
             <de><![CDATA[<b>Hinweis:</b> Die festgelegten Authentifizierungs-Faktoren können nach der Erstellung der Sicherheitsklasse nicht mehr geändert werden.]]></de>
         </locale>
@@ -534,6 +537,9 @@
         </locale>
         <locale name="securityclasses.edit.template.groups">
             <de><![CDATA[Gruppen]]></de>
+        </locale>
+        <locale name="securityclasses.edit.template.requiredFactors">
+            <de><![CDATA[Mindestens benötigte Faktoren]]></de>
         </locale>
 
         <!-- Control: password/Share -->

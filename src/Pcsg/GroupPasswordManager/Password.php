@@ -6,7 +6,6 @@
 
 namespace Pcsg\GroupPasswordManager;
 
-use ParagonIE\Halite\Symmetric\Crypto;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
@@ -17,11 +16,13 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
+use Symfony\Component\Console\Helper\Table;
 
 /**
  * Class Password
@@ -125,7 +126,7 @@ class Password
     /**
      * User that is currently handling this password
      *
-     * @var null
+     * @var CryptoUser
      */
     protected $User = null;
 
@@ -463,18 +464,7 @@ class Password
                             continue;
                         }
 
-                        $users = $Group->getUsers();
-
-                        foreach ($users as $row) {
-                            $CryptoUser = CryptoActors::getCryptoUser($row['id']);
-
-                            // cannot share with owner
-                            if ($this->isOwner($CryptoUser)) {
-                                continue;
-                            }
-
-                            $this->createPasswordAccess($CryptoUser, $Group);
-                        }
+                        $this->createAccessForGroup($Group);
 
                         $newShareGroupIds[] = $Group->getId();
                     } catch (\Exception $Exception) {
@@ -774,24 +764,22 @@ class Password
      */
     public function createPasswordAccess($User, $Group = null)
     {
-        // skip if user already has password access
-        if ($this->hasPasswordAccess($User, $Group)) {
-            return true;
-        }
 
-        if (!is_null($Group)) {
-            if (!$this->SecurityClass->isGroupEligible($Group)) {
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.create.access.group.not.eligible',
-                    array(
-                        'groupId'            => $Group->getId(),
-                        'groupName'          => $Group->getAttribute('name'),
-                        'securityClassId'    => $this->SecurityClass->getId(),
-                        'securityClassTitle' => $this->SecurityClass->getAttribute('title')
-                    )
-                ));
-            }
+    }
+
+    /**
+     * Create password access for user
+     *
+     * @param CryptoUser $User
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function createAccessForUser($User)
+    {
+        // skip if user already has password access
+        if ($this->hasPasswordAccess($User)) {
+            return;
         }
 
         if (!$this->SecurityClass->isUserEligible($User)) {
@@ -807,100 +795,128 @@ class Password
             ));
         }
 
-        $DB = QUI::getDataBase();
-
         // split key
-        $authPlugins = $this->SecurityClass->getAuthPlugins();
-        $PasswordKey = $this->getPasswordKey();
+        $authPlugins     = $this->SecurityClass->getAuthPlugins();
+        $userAuthPlugins = $User->getAuthPluginsBySecurityClass($this->SecurityClass);
 
         $payloadKeyParts = SecretSharing::splitSecret(
-            $PasswordKey->getValue(),
-            count($authPlugins)
+            $this->getPasswordKey()->getValue(),
+            count($authPlugins),
+            $this->SecurityClass->getRequiredFactors()
         );
 
         // encrypt key parts with user public keys
-        $i = 0;
+        $i  = 0;
+        $DB = QUI::getDataBase();
 
-        /** @var Plugin $Plugin */
-        foreach ($authPlugins as $Plugin) {
-            try {
-                $UserAuthKeyPair = $User->getAuthKeyPair($Plugin);
-                $payloadKeyPart  = $payloadKeyParts[$i++];
+        /** @var Plugin $AuthPlugin */
+        foreach ($userAuthPlugins as $AuthPlugin) {
+            $UserAuthKeyPair = $User->getAuthKeyPair($AuthPlugin);
+            $payloadKeyPart  = $payloadKeyParts[$i++];
 
-                $encryptedPayloadKeyPart = AsymmetricCrypto::encrypt(
-                    $payloadKeyPart, $UserAuthKeyPair
-                );
+            $encryptedPayloadKeyPart = AsymmetricCrypto::encrypt(
+                $payloadKeyPart, $UserAuthKeyPair
+            );
 
-                $dataAccessEntry = array(
-                    'userId'    => $User->getId(),
-                    'dataId'    => $this->id,
-                    'dataKey'   => $encryptedPayloadKeyPart,
-                    'keyPairId' => $UserAuthKeyPair->getId(),
-                    'groupId'   => is_null($Group) ? null : $Group->getId(),
-                );
+            $dataAccessEntry = array(
+                'userId'    => $User->getId(),
+                'dataId'    => $this->id,
+                'dataKey'   => $encryptedPayloadKeyPart,
+                'keyPairId' => $UserAuthKeyPair->getId()
+            );
 
-                $dataAccessEntry['MAC'] = MAC::create(
-                    implode('', $dataAccessEntry),
-                    Utils::getSystemKeyPairAuthKey()
-                );
+            $dataAccessEntry['MAC'] = MAC::create(
+                implode('', $dataAccessEntry),
+                Utils::getSystemKeyPairAuthKey()
+            );
 
-                $DB->insert(
-                    Tables::USER_TO_PASSWORDS,
-                    $dataAccessEntry
-                );
-            } catch (\Exception $Exception) {
-                QUI\System\Log::addError(
-                    'Error writing password key parts to database: ' . $Exception->getMessage()
-                );
-
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.create.access.data.general.error'
-                ));
-            }
+            $DB->insert(
+                Tables::USER_TO_PASSWORDS,
+                $dataAccessEntry
+            );
         }
-
-        return true;
-    }
-
-    /**
-     * Create password access for user
-     *
-     * @param CryptoUser $User
-     */
-    public function createAccessForUser($User)
-    {
-
     }
 
     /**
      * Create password access for group
      *
      * @param CryptoGroup $Group
+     * @return void
+     *
+     * @throws QUI\Exception
      */
     public function createAccessForGroup($Group)
     {
+        // skip if group already has password access
+        if ($this->hasPasswordAccess($Group)) {
+            return;
+        }
 
+        if (!$this->SecurityClass->isGroupEligible($Group)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.create.access.group.not.eligible',
+                array(
+                    'groupId'            => $Group->getId(),
+                    'groupName'          => $Group->getAttribute('name'),
+                    'securityClassId'    => $this->SecurityClass->getId(),
+                    'securityClassTitle' => $this->SecurityClass->getAttribute('title')
+                )
+            ));
+        }
+
+        $GroupKeyPair = $Group->getKeyPair();
+
+        // encrypt password payload key with group public key
+        $passwordKeyEncrypted = AsymmetricCrypto::encrypt(
+            $this->getPasswordKey()->getValue(),
+            $GroupKeyPair
+        );
+
+        $dataAccessEntry = array(
+            'groupId' => $Group->getId(),
+            'dataId'  => $this->id,
+            'dataKey' => $passwordKeyEncrypted
+        );
+
+        $dataAccessEntry['MAC'] = MAC::create(
+            implode('', $dataAccessEntry),
+            Utils::getSystemKeyPairAuthKey()
+        );
+
+        QUI::getDataBase()->insert(
+            Tables::GROUP_TO_PASSWORDS,
+            $dataAccessEntry
+        );
     }
 
     /**
      * Checks if a user has access to this password
      *
-     * @param QUI\Users\User $User
-     * @param QUI\Groups\Group $Group (optional) - check if access is given via specific group
+     * @param CryptoUser|CryptoGroup $CryptoActor
      * @return bool
      */
-    protected function hasPasswordAccess($User, $Group = null)
+    protected function hasPasswordAccess($CryptoActor)
     {
-        $result = QUI::getDataBase()->fetch(array(
-            'count' => 1,
-            'from'  => Tables::USER_TO_PASSWORDS,
-            'where' => array(
-                'userId'  => $User->getId(),
-                'dataId'  => $this->id,
-                'groupId' => is_null($Group) ? null : $Group->getId()
-            )
-        ));
+        if ($CryptoActor instanceof CryptoUser) {
+            $result = QUI::getDataBase()->fetch(array(
+                'count' => 1,
+                'from'  => Tables::USER_TO_PASSWORDS,
+                'where' => array(
+                    'userId' => $CryptoActor->getId(),
+                    'dataId' => $this->id,
+                )
+            ));
+        } else {
+            $result = QUI::getDataBase()->fetch(array(
+                'count' => 1,
+                'from'  => Tables::GROUP_TO_PASSWORDS,
+                'where' => array(
+                    'groupId' => $CryptoActor->getId(),
+                    'dataId'  => $this->id,
+                )
+            ));
+        }
 
         return current(current($result)) > 0;
     }
@@ -934,6 +950,30 @@ class Password
     }
 
     /**
+     * Get IDs of groups that have access to this password
+     */
+    protected function getAccessGroupsIds()
+    {
+        $groupIds = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'groupId'
+            ),
+            'from'   => Tables::GROUP_TO_PASSWORDS,
+            'where'  => array(
+                'dataId' => $this->id
+            )
+        ));
+
+        foreach ($result as $row) {
+            $groupIds[] = $row['groupId'];
+        }
+
+        return $groupIds;
+    }
+
+    /**
      * Get password de/encryption key
      *
      * @return Key
@@ -945,7 +985,7 @@ class Password
             return $this->PasswordKey;
         }
 
-        // get password access data
+        // try to get access data via user
         $result = QUI::getDataBase()->fetch(array(
             'from'  => Tables::USER_TO_PASSWORDS,
             'where' => array(
@@ -954,15 +994,97 @@ class Password
             )
         ));
 
+        // if not found, try to get access data via group
         if (empty($result)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.access.data.not.found',
-                array(
-                    'id'     => $this->id,
-                    'userId' => $this->User->getId()
+            $accessGroupIds = $this->getAccessGroupsIds();
+
+            $result = QUI::getDataBase()->fetch(array(
+                'from'  => Tables::USER_TO_GROUPS,
+                'where' => array(
+                    'groupId' => array(
+                        'type'  => 'IN',
+                        'value' => $accessGroupIds
+                    ),
+                    'userId'  => $this->User->getId()
                 )
-            ), 404);
+            ));
+
+            if (empty($result)) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.access.data.not.found',
+                    array(
+                        'id'     => $this->id,
+                        'userId' => $this->User->getId()
+                    )
+                ), 404);
+            }
+
+            // get group key
+            $groupData = array();
+
+            foreach ($result as $row) {
+                $groupId = $row['groupId'];
+
+                if (!isset($groupData[$groupId])) {
+                    $groupData[$groupId] = array();
+                }
+
+                $groupData[$groupId][] = $row;
+            }
+
+            // select first group
+            $groupKeyData  = array_shift($groupData);
+            $groupId       = $groupKeyData[0]['groupId'];
+            $groupKeyParts = array();
+
+            // @todo integritätsprüfung
+            foreach ($groupKeyData as $groupKeyInfo) {
+                $AuthKeyPair     = Authentication::getAuthKeyPair($groupKeyInfo['userKeyPairId']);
+                $groupKeyParts[] = AsymmetricCrypto::decrypt(
+                    $groupKeyInfo['groupKey'],
+                    $AuthKeyPair
+                );
+            }
+
+            $GroupKeyDecryptionKey = new Key(SecretSharing::recoverSecret($groupKeyParts));
+
+            // decrypt group key
+            $CryptoGroup  = CryptoActors::getCryptoGroup($groupId);
+            $GroupKeyPair = $CryptoGroup->getKeyPair();
+
+            $GroupKeyDecrypted = new Key(
+                SymmetricCrypto::decrypt(
+                    $GroupKeyPair->getPrivateKey()->getValue(),
+                    $GroupKeyDecryptionKey
+                )
+            );
+
+            $GroupKeyPairDecrypted = new KeyPair(
+                $GroupKeyPair->getPublicKey()->getValue(),
+                $GroupKeyDecrypted->getValue()
+            );
+
+            // decrypt password key with group private key
+            // @todo integrität prüfen
+            $result = QUI::getDataBase()->fetch(array(
+                'from'  => Tables::GROUP_TO_PASSWORDS,
+                'where' => array(
+                    'dataId'  => $this->id,
+                    'groupId' => $groupId
+                )
+            ));
+
+            $data = current($result);
+
+            $passwordKeyDecryptedValue = AsymmetricCrypto::decrypt(
+                $data['dataKey'],
+                $GroupKeyPairDecrypted
+            );
+
+            $this->PasswordKey = new Key($passwordKeyDecryptedValue);
+
+            return $this->PasswordKey;
         }
 
         $passwordKeyParts = array();
@@ -977,8 +1099,7 @@ class Password
                         $row['userId'],
                         $row['dataId'],
                         $row['dataKey'],
-                        $row['keyPairId'],
-                        $row['groupId']
+                        $row['keyPairId']
                     )
                 ),
                 Utils::getSystemKeyPairAuthKey()
@@ -1000,7 +1121,7 @@ class Password
                 ));
             }
 
-            $AuthKeyPair        = new AuthKeyPair($row['keyPairId']);
+            $AuthKeyPair        = Authentication::getAuthKeyPair($row['keyPairId']);
             $passwordKeyParts[] = AsymmetricCrypto::decrypt(
                 $row['dataKey'],
                 $AuthKeyPair
@@ -1028,7 +1149,7 @@ class Password
 
         switch ($permission) {
             case self::PERMISSION_VIEW:
-                if ($this->isOwner()) {
+                if ($this->isOwner($this->User)) {
                     return true;
                 }
 
@@ -1049,12 +1170,12 @@ class Password
                 return false;
                 break;
             case self::PERMISSION_EDIT:
-                return $this->isOwner();
+                return $this->isOwner($this->User);
                 break;
 
             case self::PERMISSION_DELETE:
                 if ($ownerType === self::OWNER_TYPE_USER) {
-                    return $this->isOwner();
+                    return $this->isOwner($this->User);
                 }
 
                 try {
@@ -1065,11 +1186,11 @@ class Password
                     return false;
                 }
 
-                return $this->isOwner();
+                return $this->isOwner($this->User);
 
             case self::PERMISSION_SHARE:
                 if ($ownerType === self::OWNER_TYPE_USER) {
-                    return $this->isOwner();
+                    return $this->isOwner($this->User);
                 }
 
                 try {
@@ -1080,7 +1201,7 @@ class Password
                     return false;
                 }
 
-                return $this->isOwner();
+                return $this->isOwner($this->User);
                 break;
 
             default:
@@ -1089,33 +1210,38 @@ class Password
     }
 
     /**
-     * Checks if a user is password owner
+     * Checks if a user or group is owner of this password
      *
-     * @param QUI\Users\User $User (optional) - if omitted, current session user is used
+     * @param CryptoUser|CryptoGroup $CryptoActor
      *
      * @return bool
      */
-    protected function isOwner($User = null)
+    protected function isOwner($CryptoActor)
     {
-        $userId = (int)$this->User->getId();
+        $actorId   = (int)$CryptoActor->getId();
+        $ownerId   = (int)$this->getSecretAttribute('ownerId');
+        $ownerType = $this->getSecretAttribute('ownerType');
 
-        if (!is_null($User)) {
-            $userId = (int)$User->getId();
+        if ($CryptoActor instanceof CryptoUser) {
+            switch ($ownerType) {
+                case self::OWNER_TYPE_USER:
+                    return $actorId === $ownerId;
+                    break;
+
+                case self::OWNER_TYPE_GROUP:
+                    return $CryptoActor->isInGroup($ownerId);
+                    break;
+            }
         }
 
-        $ownerId = (int)$this->getSecretAttribute('ownerId');
-
-        switch ($this->getSecretAttribute('ownerType')) {
+        switch ($ownerType) {
             case self::OWNER_TYPE_USER:
-                return $userId === $ownerId;
+                return false;
                 break;
 
             case self::OWNER_TYPE_GROUP:
-                return $this->User->isInGroup($ownerId);
+                return $actorId === $ownerId;
                 break;
-
-            default:
-                return false;
         }
     }
 
