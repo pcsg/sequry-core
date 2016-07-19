@@ -96,6 +96,9 @@
         <locale name="exception.password.create.access.group.not.eligible">
             <de><![CDATA[Der Passwort-Zugriff für Benutzer der Gruppe [groupName] (#[groupId]) kann nicht erstellt werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
         </locale>
+        <locale name="exception.password.group.password.key.not.authentic">
+            <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] für das Password #[passwordId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
@@ -144,6 +147,21 @@
         </locale>
         <locale name="exception.cryptogroup.keypair.not.authentic">
             <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.cannot.remove.last.user">
+            <de><![CDATA[Der Benutzer #[userId] kann nicht aus der Gruppe #[groupId] entfernt werden, da er der letzte Benutzer ist, der Zugriff auf diese Gruppe hat. Um den Benutzer aus der Gruppe zu entfernen, muss die Gruppe aus Sicherheitsklasse #[securityClassId] entfernt werden.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.keypair.decrypt.user.has.no.access">
+            <de><![CDATA[Das Schlüsselpaar der Gruppe #[groupId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer keine Zugriffsrecht für diese Gruppe hat.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.keypair.decryption.key.not.authentic">
+            <de><![CDATA[Ein Teil des Entschlüsselungsschlüssels des Benutzers #[userId] für das Schlüsselpaar der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.add.user.not.eligible">
+            <de><![CDATA[Der Benutzer #[userId] kann der Gruppe #[groupId] nicht hinzugefügt werden, da er nicht für die benötigte Mindestanzahl an Authentifizierungs-Faktoren der Sicherheitsklasse #[securityClassId] registriert ist.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.add.user.general.error">
+            <de><![CDATA[Beim Hinzufügen des Benutzers #[userId] zur Gruppe #[groupId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
@@ -225,6 +243,14 @@
         </locale>
         <locale name="exception.authkeypair.not.authentic">
             <de><![CDATA[Das Schlüsselpaar #[id] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+
+        <!-- Events -->
+        <locale name="attention.events.onusersavebegin.remove.user.error">
+            <de><![CDATA[Der Benutzer #[userId] konnte aus der Gruppe #[groupId] nicht entfernt werden:<br/><br/>[error].]]></de>
+        </locale>
+        <locale name="attention.events.onusersavebegin.add.user.error">
+            <de><![CDATA[Der Benutzer #[userId] konnte der Gruppe #[groupId] nicht zugeordnet werden:<br/><br/>[error].]]></de>
         </locale>
 
     </groups>

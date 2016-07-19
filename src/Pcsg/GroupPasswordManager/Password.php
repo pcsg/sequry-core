@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Monolog\Handler\Curl\Util;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
@@ -1021,52 +1022,11 @@ class Password
             }
 
             // get group key
-            $groupData = array();
-
-            foreach ($result as $row) {
-                $groupId = $row['groupId'];
-
-                if (!isset($groupData[$groupId])) {
-                    $groupData[$groupId] = array();
-                }
-
-                $groupData[$groupId][] = $row;
-            }
-
-            // select first group
-            $groupKeyData  = array_shift($groupData);
-            $groupId       = $groupKeyData[0]['groupId'];
-            $groupKeyParts = array();
-
-            // @todo integritätsprüfung
-            foreach ($groupKeyData as $groupKeyInfo) {
-                $AuthKeyPair     = Authentication::getAuthKeyPair($groupKeyInfo['userKeyPairId']);
-                $groupKeyParts[] = AsymmetricCrypto::decrypt(
-                    $groupKeyInfo['groupKey'],
-                    $AuthKeyPair
-                );
-            }
-
-            $GroupKeyDecryptionKey = new Key(SecretSharing::recoverSecret($groupKeyParts));
-
-            // decrypt group key
-            $CryptoGroup  = CryptoActors::getCryptoGroup($groupId);
-            $GroupKeyPair = $CryptoGroup->getKeyPair();
-
-            $GroupKeyDecrypted = new Key(
-                SymmetricCrypto::decrypt(
-                    $GroupKeyPair->getPrivateKey()->getValue(),
-                    $GroupKeyDecryptionKey
-                )
-            );
-
-            $GroupKeyPairDecrypted = new KeyPair(
-                $GroupKeyPair->getPublicKey()->getValue(),
-                $GroupKeyDecrypted->getValue()
-            );
+            $groupId               = $result[0]['groupId'];
+            $CryptoGroup           = CryptoActors::getCryptoGroup($groupId);
+            $GroupKeyPairDecrypted = $CryptoGroup->getKeyPairDecrypted($this->User);
 
             // decrypt password key with group private key
-            // @todo integrität prüfen
             $result = QUI::getDataBase()->fetch(array(
                 'from'  => Tables::GROUP_TO_PASSWORDS,
                 'where' => array(
@@ -1076,6 +1036,34 @@ class Password
             ));
 
             $data = current($result);
+
+            $MACData = array(
+                $data['groupId'],
+                $data['dataId'],
+                $data['dataKey']
+            );
+
+            $MACExpected = $data['MAC'];
+            $MACActual   = MAC::create(
+                implode('', $MACData),
+                Utils::getSystemKeyPairAuthKey()
+            );
+
+            if (!MAC::compare($MACActual, $MACExpected)) {
+                QUI\System\Log::addCritical(
+                    'Group password key #' . $data['id'] . ' possibly altered. MAC mismatch!'
+                );
+
+                // @todo eigenen 401 error code
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.group.password.key.not.authentic',
+                    array(
+                        'passwordId' => $this->id,
+                        'groupId'    => $CryptoGroup->getId()
+                    )
+                ));
+            }
 
             $passwordKeyDecryptedValue = AsymmetricCrypto::decrypt(
                 $data['dataKey'],

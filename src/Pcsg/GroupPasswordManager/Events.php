@@ -37,7 +37,6 @@ class Events
      */
     public static function onUserSaveBegin($User)
     {
-        $EditUser   = QUI::getUserBySession();
         $CryptoUser = CryptoActors::getCryptoUser($User->getId());
 
         // get groups of user before edit
@@ -78,70 +77,62 @@ class Events
             )
         ));
 
-        $removeAccess = array();
+        foreach ($result as $row) {
+            $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
+
+            try {
+                $CryptoGroup->removeCryptoUser($CryptoUser);
+            } catch (\Exception $Exception) {
+                QUI::getMessagesHandler()->addAttention(
+                    QUI::getLocale()->get(
+                        'pcsg/grouppasswordmanager',
+                        'attention.events.onusersavebegin.remove.user.error', array(
+                            'userId'  => $User->getId(),
+                            'groupId' => $CryptoGroup->getId(),
+                            'error'   => $Exception->getMessage()
+                        )
+                    )
+                );
+
+                $groupsNow[] = $CryptoGroup->getId();
+            }
+        }
+
+        // get all crypto groups of the QUIQQER groups that are to be added
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'groupId'
+            ),
+            'from'   => Tables::KEYPAIRS_GROUP,
+            'where'  => array(
+                'groupId' => array(
+                    'type'  => 'IN',
+                    'value' => $groupsAdded
+                )
+            )
+        ));
 
         foreach ($result as $row) {
-            $removeAccess[] = $row['groupId'];
+            $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
+
+            try {
+                $CryptoGroup->addCryptoUser($CryptoUser);
+            } catch (\Exception $Exception) {
+                QUI::getMessagesHandler()->addAttention(
+                    QUI::getLocale()->get(
+                        'pcsg/grouppasswordmanager',
+                        'attention.events.onusersavebegin.add.user.error', array(
+                            'userId'  => $User->getId(),
+                            'groupId' => $CryptoGroup->getId(),
+                            'error'   => $Exception->getMessage()
+                        )
+                    )
+                );
+
+                $groupKey = array_search($CryptoGroup->getId(), $groupsNow);
+                unset($groupsNow[$groupKey]);
+            }
         }
-
-
-        // @todo prüfen, ob benutzer der letzte der gruppe ist
-        // @todo prüfen, ob gruppe passwörter zugeordnet hat
-
-        foreach ($removeAccess as $groupId) {
-            $CryptoGroup = CryptoActors::getCryptoGroup($groupId);
-
-            $CryptoGroup->removeCryptoUser($CryptoUser);
-        }
-
-
-//            if ($info['access'] === false) {
-//                QUI::getMessagesHandler()->addAttention(
-//                    QUI::getLocale()->get(
-//                        'pcsg/grouppasswordmanager',
-//                        'attention.events.user.save.cannot.remove.group', array(
-//                            'userId'  => $User->getId(),
-//                            'groupId' => $groupId
-//                        )
-//                    )
-//                );
-//
-//                $groupsNow[] = $groupId;
-//
-//                continue;
-//            }
-//
-//            // remove user access from all passwords
-//            foreach ($info['passwordIds'] as $passwordId) {
-//                try {
-//                    $Password = Passwords::get($passwordId);
-//                    $Password->removePasswordAccess($User, $groupId);
-//                } catch (\Exception $Exception) {
-//                    QUI\System\Log::addError(
-//                        'PasswordManager Event: onUserSaveBegin -> cannot remove password access: ' . $Exception->getMessage()
-//                    );
-//
-//                    QUI::getMessagesHandler()->addAttention(
-//                        QUI::getLocale()->get(
-//                            'pcsg/grouppasswordmanager',
-//                            'error.events.user.save.remove.group', array(
-//                                'passwordId' => $passwordId,
-//                                'userId'     => $User->getId(),
-//                                'groupId'    => $groupId
-//                            )
-//                        )
-//                    );
-//                }
-//            }
-        }
-
-        if (empty($groupsAdded)) {
-            $User->setGroups($groupsNow);
-            return;
-        }
-
-        // get all passwords the added groups have access to
-        \QUI\System\Log::writeRecursive($groupsAdded);
 
         $User->setGroups($groupsNow);
     }
