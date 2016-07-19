@@ -63,74 +63,78 @@ class Events
         // check groups that are to be removed
         $groupsRemoved = array_diff($groupsBefore, $groupsNow);
 
-        // get all crypto groups of the QUIQQER groups that are to be removed
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'groupId'
-            ),
-            'from'   => Tables::KEYPAIRS_GROUP,
-            'where'  => array(
-                'groupId' => array(
-                    'type'  => 'IN',
-                    'value' => $groupsRemoved
-                )
-            )
-        ));
-
-        foreach ($result as $row) {
-            $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
-
-            try {
-                $CryptoGroup->removeCryptoUser($CryptoUser);
-            } catch (\Exception $Exception) {
-                QUI::getMessagesHandler()->addAttention(
-                    QUI::getLocale()->get(
-                        'pcsg/grouppasswordmanager',
-                        'attention.events.onusersavebegin.remove.user.error', array(
-                            'userId'  => $User->getId(),
-                            'groupId' => $CryptoGroup->getId(),
-                            'error'   => $Exception->getMessage()
-                        )
+        if (!empty($groupsRemoved)) {
+            // get all crypto groups of the QUIQQER groups that are to be removed
+            $result = QUI::getDataBase()->fetch(array(
+                'select' => array(
+                    'groupId'
+                ),
+                'from'   => Tables::KEYPAIRS_GROUP,
+                'where'  => array(
+                    'groupId' => array(
+                        'type'  => 'IN',
+                        'value' => $groupsRemoved
                     )
-                );
+                )
+            ));
 
-                $groupsNow[] = $CryptoGroup->getId();
+            foreach ($result as $row) {
+                $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
+
+                try {
+                    $CryptoGroup->removeCryptoUser($CryptoUser);
+                } catch (\Exception $Exception) {
+                    QUI::getMessagesHandler()->addAttention(
+                        QUI::getLocale()->get(
+                            'pcsg/grouppasswordmanager',
+                            'attention.events.onusersavebegin.remove.user.error', array(
+                                'userId'  => $User->getId(),
+                                'groupId' => $CryptoGroup->getId(),
+                                'error'   => $Exception->getMessage()
+                            )
+                        )
+                    );
+
+                    $groupsNow[] = $CryptoGroup->getId();
+                }
             }
         }
 
-        // get all crypto groups of the QUIQQER groups that are to be added
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'groupId'
-            ),
-            'from'   => Tables::KEYPAIRS_GROUP,
-            'where'  => array(
-                'groupId' => array(
-                    'type'  => 'IN',
-                    'value' => $groupsAdded
-                )
-            )
-        ));
-
-        foreach ($result as $row) {
-            $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
-
-            try {
-                $CryptoGroup->addCryptoUser($CryptoUser);
-            } catch (\Exception $Exception) {
-                QUI::getMessagesHandler()->addAttention(
-                    QUI::getLocale()->get(
-                        'pcsg/grouppasswordmanager',
-                        'attention.events.onusersavebegin.add.user.error', array(
-                            'userId'  => $User->getId(),
-                            'groupId' => $CryptoGroup->getId(),
-                            'error'   => $Exception->getMessage()
-                        )
+        if (!empty($groupsAdded)) {
+            // get all crypto groups of the QUIQQER groups that are to be added
+            $result = QUI::getDataBase()->fetch(array(
+                'select' => array(
+                    'groupId'
+                ),
+                'from'   => Tables::KEYPAIRS_GROUP,
+                'where'  => array(
+                    'groupId' => array(
+                        'type'  => 'IN',
+                        'value' => $groupsAdded
                     )
-                );
+                )
+            ));
 
-                $groupKey = array_search($CryptoGroup->getId(), $groupsNow);
-                unset($groupsNow[$groupKey]);
+            foreach ($result as $row) {
+                $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
+
+                try {
+                    $CryptoGroup->addCryptoUser($CryptoUser);
+                } catch (\Exception $Exception) {
+                    QUI::getMessagesHandler()->addAttention(
+                        QUI::getLocale()->get(
+                            'pcsg/grouppasswordmanager',
+                            'attention.events.onusersavebegin.add.user.error', array(
+                                'userId'  => $User->getId(),
+                                'groupId' => $CryptoGroup->getId(),
+                                'error'   => $Exception->getMessage()
+                            )
+                        )
+                    );
+
+                    $groupKey = array_search($CryptoGroup->getId(), $groupsNow);
+                    unset($groupsNow[$groupKey]);
+                }
             }
         }
 

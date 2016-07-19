@@ -274,10 +274,23 @@ class Plugin extends QUI\QDOM
      * Get derived key from authentication information
      *
      * @return Key
+     *
+     * @throws QUI\Exception
      */
     public function getDerivedKey()
     {
-        return $this->AuthClass->getDerivedKey();
+        try {
+            return $this->AuthClass->getDerivedKey();
+        } catch (\Exception $Exception) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.auth.plugin.derived.key.error',
+                array(
+                    'pluginId' => $this->id,
+                    'error'    => $Exception->getMessage()
+                )
+            ));
+        }
     }
 
     /**

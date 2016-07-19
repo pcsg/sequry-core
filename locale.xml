@@ -163,6 +163,23 @@
         <locale name="exception.cryptogroup.add.user.general.error">
             <de><![CDATA[Beim Hinzufügen des Benutzers #[userId] zur Gruppe #[groupId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.cryptogroup.keypair.decryption.authentication.error">
+            <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error].]]></de>
+        </locale>
+
+        <!-- Class: Security\Handler\CryptoActors -->
+        <locale name="exception.cryptoactors.addcryptogroup.otherwise.associated">
+            <de><![CDATA[Es kann kein Schlüsselpaar für die Gruppe #[groupId] erstellt werden, da für die Grupe bereits ein Schlüsselpaar erstellt wurde und diese Gruppe ein .]]></de>
+        </locale>
+        <locale name="exception.cryptoactors.addcryptogroup.no.users">
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
+        </locale>
+        <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse registriert sind.]]></de>
+        </locale>
+        <locale name="exception.cryptoactors.addcryptogroup.group.already.exists">
+            <de><![CDATA[Die Gruppe #]]></de>
+        </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
         <locale name="exception.authentication.plugin.register.error">
@@ -170,6 +187,9 @@
         </locale>
         <locale name="exception.auth.plugin.register.database.error">
             <de><![CDATA[Bei der Registrierung ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.auth.plugin.derived.key.error">
+            <de><![CDATA[Die Ableitung des Schlüssel aus Authentifizierungsinformationen für das Authentifizierungs-Plugin #[pluginId] schlug fehl:<br/><br/>[error].]]></de>
         </locale>
 
         <!-- Class: Security\Handler\Authentication -->
@@ -226,15 +246,6 @@
         </locale>
         <locale name="exception.securityclass.authenticate.authdata.not.given">
             <de><![CDATA[Die Authentifizierungsinformationen wurden nicht übergeben.]]></de>
-        </locale>
-        <locale name="exception.securityclass.addcryptogroup.otherwise.associated">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da sie bereits dieser oder einer anderen Sicherheitsklasse zugeordnet ist.]]></de>
-        </locale>
-        <locale name="exception.securityclass.addcryptogroup.no.users">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
-        </locale>
-        <locale name="exception.securityclass.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse registriert sind.]]></de>
         </locale>
 
         <!-- Class: Security\Keys\AuthKeyPair -->

@@ -192,10 +192,23 @@ class CryptoGroup extends QUI\Groups\Group
                 ));
             }
 
-            $decryptionKeyParts[] = AsymmetricCrypto::decrypt(
-                $row['groupKey'],
-                $AuthKeyPair
-            );
+            try {
+                $decryptionKeyParts[] = AsymmetricCrypto::decrypt(
+                    $row['groupKey'],
+                    $AuthKeyPair
+                );
+            } catch (\Exception $Exception) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptogroup.keypair.decryption.authentication.error',
+                    array(
+                        'userId'        => $DecryptUser->getId(),
+                        'authKeyPairId' => $AuthKeyPair->getId(),
+                        'groupId'       => $this->getId(),
+                        'error'         => $Exception->getMessage()
+                    )
+                ));
+            }
         }
 
         $GroupKeyDecryptionKey = new Key(SecretSharing::recoverSecret($decryptionKeyParts));
@@ -329,6 +342,8 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         $userCount = (int)$this->countUser();
+
+        \QUI\System\Log::writeRecursive($userCount);
 
         // if the user that is to be removed is the last user of this group,
         // the user cannot be deleted
