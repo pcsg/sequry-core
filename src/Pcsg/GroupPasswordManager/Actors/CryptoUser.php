@@ -6,10 +6,15 @@
 
 namespace Pcsg\GroupPasswordManager\Actors;
 
+use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\MAC;
+use Pcsg\GroupPasswordManager\Security\SecretSharing;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use QUI\Utils\Security\Orthos;
@@ -73,39 +78,50 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
-     * Get all authentication plugins of a security class the user is registered for
+     * Get all authentication key pairs of a security class the user is registered for
      *
      * @param SecurityClass $SecurityClass
      * @return array
      */
-    public function getAuthPluginsBySecurityClass($SecurityClass)
+    public function getAuthKeyPairsBySecurityClass($SecurityClass)
     {
-        $authPlugins     = $SecurityClass->getAuthPlugins();
-        $accessPluginIds = $this->getAuthPluginIds();
+        $keyPairs                   = array();
+        $securityClassAuthPluginIds = $SecurityClass->getAuthPluginIds();
 
-        /** @var Plugin $AuthPlugin */
-        foreach ($authPlugins as $k => $AuthPlugin) {
-            if (!in_array($AuthPlugin->getId(), $accessPluginIds)) {
-                unset($authPlugins[$k]);
-            }
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::KEYPAIRS_USER,
+            'where'  => array(
+                'userId'       => $this->id,
+                'authPluginId' => array(
+                    'type'  => 'IN',
+                    'value' => $securityClassAuthPluginIds
+                )
+            )
+        ));
+
+        foreach ($result as $row) {
+            $keyPairs[] = Authentication::getAuthKeyPair($row['id']);
         }
 
-        return $authPlugins;
+        return $keyPairs;
     }
 
 
     /**
-     * Get IDs of all authentication plugins the user is registered for
+     * Get IDs of all authentication key pairs the user is registered for
      *
      * @return array
      */
-    protected function getAuthPluginIds()
+    protected function getAuthKeyPairIds()
     {
         $ids = array();
 
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
-                'authPluginId'
+                'id'
             ),
             'from'   => Tables::KEYPAIRS_USER,
             'where'  => array(
@@ -114,7 +130,7 @@ class CryptoUser extends QUI\Users\User
         ));
 
         foreach ($result as $row) {
-            $ids[] = $row['authPluginId'];
+            $ids[] = $row['id'];
         }
 
         return $ids;
@@ -144,6 +160,105 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $groupIds;
+    }
+
+    /**
+     * Get key to decrypt the private key of a specific CryptoGroup
+     *
+     * @param CryptoGroup $CryptoGroup
+     * @return Key
+     *
+     * @throws QUI\Exception
+     */
+    public function getGroupAccessKey($CryptoGroup)
+    {
+        if (!$CryptoGroup->hasCryptoUserAccess($this)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptouser.group.access.key.decrypt.user.has.no.access',
+                array(
+                    'userId'  => $this->getId(),
+                    'groupId' => $CryptoGroup->getId()
+                )
+            ));
+        }
+
+        // get parts of group access key
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => Tables::USER_TO_GROUPS,
+            'where' => array(
+                'userId'  => $this->getId(),
+                'groupId' => $CryptoGroup->getId()
+            )
+        ));
+
+        // assemble group access key
+        $accessKeyParts = array();
+
+        foreach ($result as $row) {
+            try {
+                $AuthKeyPair = Authentication::getAuthKeyPair($row['userKeyPairId']);
+            } catch (\Exception $Exception) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptouser.group.access.key.part.auth.key.error',
+                    array(
+                        'groupId'       => $CryptoGroup->getId(),
+                        'authKeyPairId' => $row['userKeyPairId'],
+                        'error'         => $Exception->getMessage()
+                    )
+                ));
+            }
+
+            // check integrity / authenticity of key part
+            $MACData = array(
+                $row['userId'],
+                $row['userKeyPairId'],
+                $row['groupId'],
+                $row['groupKey']
+            );
+
+            $MACExcpected = $row['MAC'];
+            $MACActual    = MAC::create(
+                implode('', $MACData),
+                Utils::getSystemKeyPairAuthKey()
+            );
+
+            if (!MAC::compare($MACActual, $MACExcpected)) {
+                QUI\System\Log::addCritical(
+                    'Group key part #' . $row['id'] . ' possibly altered. MAC mismatch!'
+                );
+
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptouser.group.access.key.part.not.authentic',
+                    array(
+                        'userId'  => $this->getId(),
+                        'groupId' => $CryptoGroup->getId()
+                    )
+                ));
+            }
+
+            try {
+                $accessKeyParts[] = AsymmetricCrypto::decrypt(
+                    $row['groupKey'],
+                    $AuthKeyPair
+                );
+            } catch (\Exception $Exception) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptouser.keypair.decryption.authentication.error',
+                    array(
+                        'userId'        => $this->getId(),
+                        'authKeyPairId' => $AuthKeyPair->getId(),
+                        'groupId'       => $CryptoGroup->getId(),
+                        'error'         => $Exception->getMessage()
+                    )
+                ));
+            }
+        }
+
+        return new Key(SecretSharing::recoverSecret($accessKeyParts));
     }
 
     /**

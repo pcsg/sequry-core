@@ -137,87 +137,11 @@ class CryptoGroup extends QUI\Groups\Group
             $DecryptUser = CryptoActors::getCryptoUser();
         }
 
-        if (!$this->hasCryptoUserAccess($DecryptUser)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptogroup.keypair.decrypt.user.has.no.access',
-                array(
-                    'groupId' => $this->getId(),
-                    'userId'  => $DecryptUser->getId()
-                )
-            ));
-        }
-
-        // get parts of private key decryption key
-        $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::USER_TO_GROUPS,
-            'where' => array(
-                'userId'  => $DecryptUser->getId(),
-                'groupId' => $this->getId()
-            )
-        ));
-
-        // assemble private key decryption key
-        $decryptionKeyParts = array();
-
-        foreach ($result as $row) {
-            $AuthKeyPair = Authentication::getAuthKeyPair($row['userKeyPairId']);
-
-            // check integrity / authenticity of key part
-            $MACData = array(
-                $row['userId'],
-                $row['userKeyPairId'],
-                $row['groupId'],
-                $row['groupKey']
-            );
-
-            $MACExcpected = $row['MAC'];
-            $MACActual    = MAC::create(
-                implode('', $MACData),
-                Utils::getSystemKeyPairAuthKey()
-            );
-
-            if (!MAC::compare($MACActual, $MACExcpected)) {
-                QUI\System\Log::addCritical(
-                    'Group key part #' . $row['id'] . ' possibly altered. MAC mismatch!'
-                );
-
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.cryptogroup.keypair.decryption.key.not.authentic',
-                    array(
-                        'userId'  => $DecryptUser->getId(),
-                        'groupId' => $this->getId()
-                    )
-                ));
-            }
-
-            try {
-                $decryptionKeyParts[] = AsymmetricCrypto::decrypt(
-                    $row['groupKey'],
-                    $AuthKeyPair
-                );
-            } catch (\Exception $Exception) {
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.cryptogroup.keypair.decryption.authentication.error',
-                    array(
-                        'userId'        => $DecryptUser->getId(),
-                        'authKeyPairId' => $AuthKeyPair->getId(),
-                        'groupId'       => $this->getId(),
-                        'error'         => $Exception->getMessage()
-                    )
-                ));
-            }
-        }
-
-        $GroupKeyDecryptionKey = new Key(SecretSharing::recoverSecret($decryptionKeyParts));
-
-        // decrypt group private key
+        // decrypt group access key
         $GroupPrivateKeyDecrypted = new Key(
             SymmetricCrypto::decrypt(
                 $this->KeyPair->getPrivateKey()->getValue(),
-                $GroupKeyDecryptionKey
+                $DecryptUser->getGroupAccessKey($this)
             )
         );
 
@@ -250,7 +174,7 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
-     * Adds user to this group so he can access all passwords the group has access to
+     * Adds a user to this group so he can access all passwords the group has access to
      *
      * @param CryptoUser $AddUser - The user that is added to the group
      * @param CryptoUser $CryptoUser - The user that adds $AddUser to the group; if omitted, use session user
@@ -277,11 +201,11 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         // split key
-        $authPlugins = $this->SecurityClass->getAuthPlugins();
-        $GroupKey    = $this->getKeyPairDecrypted($CryptoUser);
+        $authPlugins    = $this->SecurityClass->getAuthPlugins();
+        $GroupAccessKey = $CryptoUser->getGroupAccessKey($this);
 
-        $groupPrivateKeyParts = SecretSharing::splitSecret(
-            $GroupKey->getPrivateKey()->getValue(),
+        $groupAccessKeyParts = SecretSharing::splitSecret(
+            $GroupAccessKey->getValue(),
             count($authPlugins),
             $this->SecurityClass->getRequiredFactors()
         );
@@ -293,7 +217,7 @@ class CryptoGroup extends QUI\Groups\Group
         foreach ($authPlugins as $Plugin) {
             try {
                 $UserAuthKeyPair = $AddUser->getAuthKeyPair($Plugin);
-                $payloadKeyPart  = $groupPrivateKeyParts[$i++];
+                $payloadKeyPart  = $groupAccessKeyParts[$i++];
 
                 $groupPrivateKeyPartEncrypted = AsymmetricCrypto::encrypt(
                     $payloadKeyPart, $UserAuthKeyPair
@@ -366,6 +290,23 @@ class CryptoGroup extends QUI\Groups\Group
                 'groupId' => $this->getId()
             )
         );
+    }
+
+    /**
+     * Return all CryptoUsers that belong to this CryptoGroup
+     *
+     * @return array - CryptoUser objects
+     */
+    public function getCryptoUsers()
+    {
+        $userIds = $this->getCryptoUserIds();
+        $users   = array();
+
+        foreach ($userIds as $userId) {
+            $users[] = CryptoActors::getCryptoUser($userId);
+        }
+
+        return $users;
     }
 
     /**

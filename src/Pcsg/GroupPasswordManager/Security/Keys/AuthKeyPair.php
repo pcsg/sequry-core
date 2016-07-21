@@ -117,7 +117,7 @@ class AuthKeyPair extends KeyPair
     public function getPrivateKey()
     {
         $privateKeyEncrypted = $this->PrivateKey->getValue();
-        $AuthPluginKey       = $this->AuthPlugin->getDerivedKey();
+        $AuthPluginKey       = $this->AuthPlugin->getDerivedKey($this->User);
 
         $privateKey = SymmetricCrypto::decrypt(
             $privateKeyEncrypted,

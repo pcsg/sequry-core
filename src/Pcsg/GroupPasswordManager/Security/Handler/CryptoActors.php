@@ -8,7 +8,14 @@ namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
+use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\MAC;
+use Pcsg\GroupPasswordManager\Security\SecretSharing;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 
@@ -103,29 +110,29 @@ class CryptoActors
             ));
         }
 
-        if (!$this->checkGroupUsersForEligibility($Group)) {
+        if (!$SecurityClass->checkGroupUsersForEligibility($Group)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.securityclass.addcryptogroup.users.not.eligible',
                 array(
                     'groupId'         => $Group->getId(),
-                    'securityClassId' => $this->getId()
+                    'securityClassId' => $SecurityClass->getId()
                 )
             ));
         }
 
         // generate key pair and encrypt
-        $authPlugins = $this->getAuthPlugins();
+        $authPlugins = $SecurityClass->getAuthPlugins();
 
         $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
         $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
         $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();
 
-        $PrivateKeyEncryptionKey = SymmetricCrypto::generateKey();
+        $GroupAccessKey = SymmetricCrypto::generateKey();
 
         $privateGroupKeyEncrypted = SymmetricCrypto::encrypt(
             $privateGroupKey,
-            $PrivateKeyEncryptionKey
+            $GroupAccessKey
         );
 
         // insert group key data into database
@@ -133,7 +140,7 @@ class CryptoActors
 
         $data = array(
             'groupId'         => $Group->getId(),
-            'securityClassId' => $this->getId(),
+            'securityClassId' => $SecurityClass->getId(),
             'publicKey'       => $publicGroupKey,
             'privateKey'      => $privateGroupKeyEncrypted
         );
@@ -143,23 +150,22 @@ class CryptoActors
 
         $DB->insert(Tables::KEYPAIRS_GROUP, $data);
 
-        // split group private key encryption key into parts and share with group users
-        $privateKeyEncryptionKeyParts = SecretSharing::splitSecret(
-            $PrivateKeyEncryptionKey->getValue(),
-            count($authPlugins),
-            $this->requiredFactors
+        // split group access key into parts and share with group users
+        $groupAccessKeyParts = SecretSharing::splitSecret(
+            $GroupAccessKey->getValue(),
+            $SecurityClass->getAuthPluginCount(),
+            $SecurityClass->getRequiredFactors()
         );
 
         foreach ($users as $userData) {
-            $User        = CryptoActors::getCryptoUser($userData['id']);
-            $authPlugins = $User->getAuthPluginsBySecurityClass($this);
-            $i           = 0;
+            $User         = CryptoActors::getCryptoUser($userData['id']);
+            $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
+            $i            = 0;
 
-            /** @var Plugin $AuthPlugin */
-            foreach ($authPlugins as $AuthPlugin) {
-                $AuthKeyPair                          = $User->getAuthKeyPair($AuthPlugin);
+            /** @var AuthKeyPair $AuthKeyPair */
+            foreach ($authKeyPairs as $AuthKeyPair) {
                 $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $privateKeyEncryptionKeyParts[$i++],
+                    $groupAccessKeyParts[$i++],
                     $AuthKeyPair
                 );
 

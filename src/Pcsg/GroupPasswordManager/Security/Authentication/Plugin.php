@@ -57,19 +57,9 @@ class Plugin extends QUI\QDOM
             ), 404);
         }
 
-        $data      = current($result);
-        $classPath = $data['path'];
+        $data = current($result);
 
-        try {
-            $AuthClass = new $classPath();
-        } catch (QUI\Exception $Exception) {
-            throw new QUI\Exception(
-                'Could not create instance of Authentication plugin #' . $id . ' class ->'
-                . $Exception->getMessage()
-            );
-        }
-
-        $this->AuthClass = $AuthClass;
+        $this->AuthClass = new $data['path']();
         $this->id        = $data['id'];
 
         $this->setAttributes(array(
@@ -121,23 +111,33 @@ class Plugin extends QUI\QDOM
     /**
      * Authenticates a user with a plugin
      *
+     * @param QUI\Users\User $User (optional) - if omitted use session user
      * @param mixed $information (optional) - authentication information
      * @return true - if authenticated
      * @throws QUI\Exception
      */
-    public function authenticate($information = null)
+    public function authenticate($User = null, $information = null)
     {
-        return $this->AuthClass->authenticate($information);
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
+        return $this->AuthClass->authenticate($User, $information);
     }
 
     /**
      * Checks if current session user is authenticated with this plugin
      *
+     * @param QUI\Users\User $User (optional) - if omitted use session user
      * @return bool
      */
-    public function isAuthenticated()
+    public function isAuthenticated($User = null)
     {
-        return $this->AuthClass->isAuthenticated();
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
+        return $this->AuthClass->isAuthenticated($User);
     }
 
     /**
@@ -145,24 +145,29 @@ class Plugin extends QUI\QDOM
      *
      * @param mixed $old - current authentication information
      * @param mixed $new - new authentication information
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return void
      *
      * @throws QUI\Exception
      */
-    public function changeAuthenticationInformation($old, $new)
+    public function changeAuthenticationInformation($old, $new, $User = null)
     {
-        $this->AuthClass->authenticate($old);
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
+        $this->authenticate($User, $old);
 
         $AuthKeyPair     = CryptoActors::getCryptoUser()->getAuthKeyPair($this);
         $publicKeyValue  = $AuthKeyPair->getPublicKey()->getValue();
         $privateKeyValue = $AuthKeyPair->getPrivateKey()->getValue();
 
-        $this->AuthClass->changeAuthenticationInformation($old, $new);
+        $this->AuthClass->changeAuthenticationInformation($old, $new, $User);
 
         // encrypt auth private key with derived key from new authentication information
         $encryptedPrivateKeyValue = SymmetricCrypto::encrypt(
             $privateKeyValue,
-            $this->AuthClass->getDerivedKey()
+            $this->getDerivedKey($User)
         );
 
         // calculate new MAC
@@ -199,25 +204,28 @@ class Plugin extends QUI\QDOM
     }
 
     /**
-     * @todo auch für nicht session user
+     * Registers a user with this Plugin
      *
-     * Registers the current session user with this Plugin
-     *
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @param mixed $information (optional) - authentication information
      * @return void
      * @throws QUI\Exception
      */
-    public function registerUser($information = null)
+    public function registerUser($User = null, $information = null)
     {
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
         try {
             // register with plugin
-            $this->AuthClass->register(QUI::getUserBySession(), $information);
+            $this->AuthClass->register($User, $information);
 
             // authenticate with plugin
-            $this->AuthClass->authenticate($information);
+            $this->authenticate($User, $information);
 
             // get derived key from authentication information
-            $AuthKey = $this->AuthClass->getDerivedKey();
+            $AuthKey = $this->getDerivedKey($User);
         } catch (QUI\Database\Exception $Exception) {
             QUI\System\Log::addError(
                 'DB error while registering a user for an auth plugin: ' . $Exception->getMessage()
@@ -273,14 +281,19 @@ class Plugin extends QUI\QDOM
     /**
      * Get derived key from authentication information
      *
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return Key
      *
      * @throws QUI\Exception
      */
-    public function getDerivedKey()
+    public function getDerivedKey($User = null)
     {
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
         try {
-            return $this->AuthClass->getDerivedKey();
+            return $this->AuthClass->getDerivedKey($User);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',

@@ -10,19 +10,14 @@ use Pcsg\GroupPasswordManager\Security\Keys\Key;
 interface iAuthPlugin
 {
     /**
-     * @param \QUI\Users\User $User (optional) - The User this plugin should authenticate; if ommitted User = session user
-     */
-    public function __construct($User = null);
-
-    /**
      * Return internal name of auth plugin
      *
      * @return String
      */
-    public function getName();
+    public static function getName();
 
     /**
-     * Registers the current user and creates a new keypair
+     * Registers a user with this plugin
      *
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @param mixed $information (optional) - authentication information given by the user
@@ -45,36 +40,40 @@ interface iAuthPlugin
     public static function getRegisteredUserIds();
 
     /**
-     * Get the derived key from the authentication information
+     * Get the derived key from the authentication information of a specific user
      *
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return Key
      */
-    public function getDerivedKey();
+    public static function getDerivedKey($User = null);
 
     /**
-     * Authenticate the current user
+     * Authenticate a user with this plugin
      *
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @param mixed $information - authentication information given by the user
      * @return true - if authenticated
      * @throws \QUI\Exception
      */
-    public function authenticate($information = null);
+    public static function authenticate($User = null, $information = null);
 
     /**
-     * Checks if the current user is successfully authenticated for this runtime
+     * Checks if a user is successfully authenticated for this runtime
      *
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return bool
      */
-    public function isAuthenticated();
+    public static function isAuthenticated($User = null);
 
     /**
      * Change authentication information
      *
      * @param mixed $old - current authentication information
      * @param mixed $new - new authentication information
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return bool - success
      */
-    public function changeAuthenticationInformation($old, $new);
+    public static function changeAuthenticationInformation($old, $new, $User = null);
 
     /**
      * Registers the auth plugin with the main password manager module
@@ -88,19 +87,19 @@ interface iAuthPlugin
      *
      * @return \QUI\Control
      */
-    public function getRegistrationControl();
+    public static function getRegistrationControl();
 
     /**
      * Returns a QUI\Control object that collects authentification information
      *
      * @return \QUI\Control
      */
-    public function getAuthenticationControl();
+    public static function getAuthenticationControl();
 
     /**
      * Returns a QUI\Control object that allows changing of authentication information
      *
      * @return \QUI\Control
      */
-    public function getChangeAuthenticationControl();
+    public static function getChangeAuthenticationControl();
 }
