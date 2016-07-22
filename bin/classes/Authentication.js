@@ -249,7 +249,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getActor: function (id, type) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getActor', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_get', resolve, {
                     'package': pkg,
                     onError  : reject,
                     id       : id,

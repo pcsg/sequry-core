@@ -25,6 +25,8 @@
         <table name="pcsg_gpm_password_data" no-auto-update="1" no-site-reference="1">
             <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">securityClassId</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">ownerId</field>
+            <field type="TINYINT(1)">ownerType</field>
             <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
             <field type="TEXT NOT NULL">dataType</field>

@@ -132,19 +132,17 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
-         * Create a new password object (authentication required!)
+         * Create a new password object
          *
          * @param {Object} PasswordData - password data
-         * @param {Object} AuthData - Authentication data
          * @returns {Promise}
          */
-        createPassword: function (PasswordData, AuthData) {
+        createPassword: function (PasswordData) {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_create', resolve, {
                     'package'   : pkg,
                     onError     : reject,
-                    passwordData: JSON.encode(PasswordData),
-                    authData    : JSON.encode(AuthData)
+                    passwordData: JSON.encode(PasswordData)
                 });
             });
         },

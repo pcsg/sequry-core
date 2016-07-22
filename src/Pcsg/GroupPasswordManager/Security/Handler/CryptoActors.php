@@ -102,7 +102,7 @@ class CryptoActors
         if (empty($users)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.securityclass.addcryptogroup.no.users',
+                'exception.cryptoactors.addcryptogroup.no.users',
                 array(
                     'groupId'         => $Group->getId(),
                     'securityClassId' => $SecurityClass->getId()
@@ -113,7 +113,7 @@ class CryptoActors
         if (!$SecurityClass->checkGroupUsersForEligibility($Group)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.securityclass.addcryptogroup.users.not.eligible',
+                'exception.cryptoactors.addcryptogroup.users.not.eligible',
                 array(
                     'groupId'         => $Group->getId(),
                     'securityClassId' => $SecurityClass->getId()
@@ -122,8 +122,6 @@ class CryptoActors
         }
 
         // generate key pair and encrypt
-        $authPlugins = $SecurityClass->getAuthPlugins();
-
         $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
         $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
         $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();

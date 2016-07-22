@@ -6,12 +6,13 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
+use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
@@ -118,9 +119,7 @@ class Passwords
             ));
         }
 
-        $ownerUsers = array();
-        $ownerId    = (int)$owner['id'];
-        $groupId    = false;
+        $ownerId = (int)$owner['id'];
 
         switch ($owner['type']) {
             case 'user':
@@ -179,6 +178,8 @@ class Passwords
         );
 
         $passwordEntry = array(
+            'ownerId'         => $ownerId,
+            'ownerType'       => $ownerType,
             'securityClassId' => $SecurityClass->getId(),
             'title'           => $passwordData['title'],
             'description'     => $passwordData['description'],
@@ -217,22 +218,19 @@ class Passwords
         switch ($ownerType) {
             case Password::OWNER_TYPE_USER:
                 // split key
-                $authPlugins     = $SecurityClass->getAuthPlugins();
-                $requiredFactors = $SecurityClass->getRequiredFactors();
-
                 $passwordKeyParts = SecretSharing::splitSecret(
                     $PasswordKey->getValue(),
-                    count($authPlugins),
-                    $requiredFactors
+                    $SecurityClass->getAuthPluginCount(),
+                    $SecurityClass->getRequiredFactors()
                 );
 
-                $authPluginsUser = $OwnerActor->getAuthPluginsBySecurityClass($SecurityClass);
-                $i               = 0;
+                /** @var CryptoUser $OwnerActor */
+                $authKeyPairs = $OwnerActor->getAuthKeyPairsBySecurityClass($SecurityClass);
+                $i            = 0;
 
-                /** @var Plugin $Plugin */
-                foreach ($authPluginsUser as $Plugin) {
+                /** @var AuthKeyPair $UserAuthKeyPair */
+                foreach ($authKeyPairs as $UserAuthKeyPair) {
                     try {
-                        $UserAuthKeyPair = $OwnerActor->getAuthKeyPair($Plugin);
                         $passwordKeyPart = $passwordKeyParts[$i++];
 
                         $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
@@ -278,6 +276,7 @@ class Passwords
 
             case Password::OWNER_TYPE_GROUP:
                 try {
+                    /** @var CryptoGroup $OwnerActor */
                     $GroupKeyPair = $OwnerActor->getKeyPair();
 
                     // encrypt password payload key with group public key

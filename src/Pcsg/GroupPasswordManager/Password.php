@@ -183,6 +183,8 @@ class Password
             implode(
                 '',
                 array(
+                    $passwordData['ownerId'],
+                    $passwordData['ownerType'],
                     $passwordData['securityClassId'],
                     $passwordData['title'],
                     $passwordData['description'],
@@ -312,76 +314,89 @@ class Password
      * Edit password data
      *
      * @param $passwordData
+     *
+     * @throws QUI\Exception
      */
     public function setData($passwordData)
     {
-        foreach ($passwordData as $k => $v) {
-            switch ($k) {
-                // security class
-                case 'securityClassId':
-                    // @todo re-encrypt for every owner and access user with new security class
+        try {
+            foreach ($passwordData as $k => $v) {
+                switch ($k) {
+                    // security class
+                    case 'securityClassId':
+                        // @todo re-encrypt for every owner and access user with new security class
 //                    $sanitizedData['securityClassId'] = $this->SecurityClass->getId();
-                    break;
+                        break;
 
-                case 'title':
-                    if (is_string($v)
-                        && !empty($v)
-                    ) {
-                        $this->title = $v;
-                    }
-                    break;
-
-                case 'description':
-                    if (is_string($v)) {
-                        $this->description = $v;
-                    }
-                    break;
-
-                case 'payload':
-                    if (!empty($v)) {
-                        $oldPayload = $this->getSecretAttribute('payload');
-
-                        if ($oldPayload == $v) {
-                            continue;
+                    case 'title':
+                        if (is_string($v)
+                            && !empty($v)
+                        ) {
+                            $this->title = $v;
                         }
+                        break;
 
-                        $this->setSecretAttribute('payload', $v);
+                    case 'description':
+                        if (is_string($v)) {
+                            $this->description = $v;
+                        }
+                        break;
 
-                        // write history entry if payload changes
-                        $history = $this->getSecretAttribute('history');
+                    case 'payload':
+                        if (!empty($v)) {
+                            $oldPayload = $this->getSecretAttribute('payload');
 
-                        $history[] = array(
-                            'timestamp' => time(),
-                            'value'     => $oldPayload
-                        );
+                            if ($oldPayload == $v) {
+                                continue;
+                            }
 
-                        $this->setSecretAttribute('history', $history);
-                    }
-                    break;
+                            $this->setSecretAttribute('payload', $v);
 
-                case 'dataType':
-                    if (!empty($v)
-                        && is_string($v)
-                    ) {
-                        $this->dataType = $v;
-                    }
-                    break;
+                            // write history entry if payload changes
+                            $history = $this->getSecretAttribute('history');
 
-                case 'owner':
-                    if (is_array($v)
-                        && isset($v['id'])
-                        && !empty($v['id'])
-                        && is_numeric($v['id'])
-                        && isset($v['type'])
-                        && !empty($v['type'])
-                    ) {
-                        $newOwnerId   = (int)$v['id'];
-                        $newOwnerType = $v['type'];
+                            $history[] = array(
+                                'timestamp' => time(),
+                                'value'     => $oldPayload
+                            );
 
-                        $this->changeOwner($newOwnerId, $newOwnerType);
-                    }
-                    break;
+                            $this->setSecretAttribute('history', $history);
+                        }
+                        break;
+
+                    case 'dataType':
+                        if (!empty($v)
+                            && is_string($v)
+                        ) {
+                            $this->dataType = $v;
+                        }
+                        break;
+
+                    case 'owner':
+                        if (is_array($v)
+                            && isset($v['id'])
+                            && !empty($v['id'])
+                            && is_numeric($v['id'])
+                            && isset($v['type'])
+                            && !empty($v['type'])
+                        ) {
+                            $newOwnerId   = (int)$v['id'];
+                            $newOwnerType = $v['type'];
+
+                            $this->changeOwner($newOwnerId, $newOwnerType);
+                        }
+                        break;
+                }
             }
+        } catch (\Exception $Exception) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.setdata.error',
+                array(
+                    'passwordId' => $this->id,
+                    'error'      => $Exception->getMessage()
+                )
+            ));
         }
 
         $this->save();
@@ -442,7 +457,7 @@ class Password
 
                         // create password access for user
                         $CryptoUser = CryptoActors::getCryptoUser($actorId);
-                        $this->createAccessForUser($CryptoUser);
+                        $this->createUserPasswordAccess($CryptoUser);
                         $newShareUserIds[] = $CryptoUser->getId();
                     } catch (\Exception $Exception) {
                         QUI\System\Log::addError(
@@ -465,7 +480,7 @@ class Password
                             continue;
                         }
 
-                        $this->createAccessForGroup($Group);
+                        $this->createGroupPasswordAccess($Group);
 
                         $newShareGroupIds[] = $Group->getId();
                     } catch (\Exception $Exception) {
@@ -491,7 +506,7 @@ class Password
 
         foreach ($deleteShareUserIds as $id) {
             try {
-                $this->removePasswordAccess(QUI::getUsers()->get($id));
+                $this->removeUserPasswordAccess(CryptoActors::getCryptoUser($id));
             } catch (\Exception $Exception) {
                 // @todo error log und meldung an user
             }
@@ -500,19 +515,8 @@ class Password
         $deleteShareGroupIds = array_diff($currentShareGroupIds, $newShareGroupIds);
 
         foreach ($deleteShareGroupIds as $id) {
-            $Group = QUI::getGroups()->get($id);
-            $users = $Group->getUsers();
-
-            foreach ($users as $row) {
-                $User = QUI::getUsers()->get($row['id']);
-
-                // cannot unshare with owner
-//                if ($this->isOwner($User)) {
-//                    continue;
-//                }
-
-                $this->removePasswordAccess($User, $Group);
-            }
+            $Group = CryptoActors::getCryptoGroup($id);
+            $this->removeGroupPasswordAccess($Group);
         }
 
         $this->setSecretAttribute(
@@ -535,14 +539,14 @@ class Password
     {
         $cryptoData = $this->getSecretAttributes();
 
-        \QUI\System\Log::writeRecursive($cryptoData);
-
         $cryptoDataEncrypted = SymmetricCrypto::encrypt(
             json_encode($cryptoData),
             $this->getPasswordKey()
         );
 
         $passwordData = array(
+            'ownerId'         => $this->getSecretAttribute('ownerId'),
+            'ownerType'       => $this->getSecretAttribute('ownerType'),
             'securityClassId' => $this->SecurityClass->getId(),
             'title'           => $this->title,
             'description'     => $this->description,
@@ -658,7 +662,7 @@ class Password
                 $User = CryptoActors::getCryptoUser($id);
 
                 try {
-                    $this->createPasswordAccess($User);
+                    $this->createUserPasswordAccess($User);
                     $newOwnerId   = $User->getId();
                     $newOwnerType = self::OWNER_TYPE_USER;
                 } catch (\Exception $Exception) {
@@ -667,7 +671,14 @@ class Password
                         . $Exception->getMessage()
                     );
 
-                    // @todo abbrechen
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.change.owner.user.error',
+                        array(
+                            'passwordId' => $this->id,
+                            'newOwnerId' => $User->getId()
+                        )
+                    ));
                 }
                 break;
 
@@ -680,25 +691,27 @@ class Password
                 }
 
                 $Group = CryptoActors::getCryptoGroup($id);
-                $users = $Group->getUsers();
 
-                foreach ($users as $row) {
-                    $User = CryptoActors::getCryptoUser($row['id']);
+                try {
+                    $this->createGroupPasswordAccess($Group);
+                    $newOwnerId   = $Group->getId();
+                    $newOwnerType = self::OWNER_TYPE_GROUP;
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::addError(
+                        'Could not create access data for group #' . $Group->getId() . ': '
+                        . $Exception->getMessage()
+                    );
 
-                    try {
-                        $this->createPasswordAccess($User, $Group);
-                    } catch (\Exception $Exception) {
-                        QUI\System\Log::addError(
-                            'Could not create access data for user #' . $User->getId() . ': '
-                            . $Exception->getMessage()
-                        );
-
-                        // @todo abbrechen
-                    }
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.change.owner.group.error',
+                        array(
+                            'passwordId' => $this->id,
+                            'newOwnerId' => $Group->getId()
+                        )
+                    ));
                 }
 
-                $newOwnerId   = $Group->getId();
-                $newOwnerType = self::OWNER_TYPE_GROUP;
                 break;
 
             default:
@@ -716,10 +729,10 @@ class Password
         // delete access data for old owner(s)
         switch ($currentOwnerType) {
             case self::OWNER_TYPE_USER:
-                $User = QUI::getUsers()->get($currentOwnerId);
+                $User = CryptoActors::getCryptoUser($currentOwnerId);
 
                 try {
-                    $this->removePasswordAccess($User);
+                    $this->removeUserPasswordAccess($User);
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addError(
                         'Could not delete access data for user #' . $User->getId() . ': '
@@ -731,22 +744,17 @@ class Password
                 break;
 
             case self::OWNER_TYPE_GROUP:
-                $Group = QUI::getGroups()->get($currentOwnerId);
-                $users = $Group->getUsers();
+                $Group = CryptoActors::getCryptoGroup($currentOwnerId);
 
-                foreach ($users as $row) {
-                    $User = CryptoActors::getCryptoUser($row['id']);
+                try {
+                    $this->removeGroupPasswordAccess($Group);
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::addError(
+                        'Could not delete access data for user #' . $User->getId() . ': '
+                        . $Exception->getMessage()
+                    );
 
-                    try {
-                        $this->removePasswordAccess($User);
-                    } catch (\Exception $Exception) {
-                        QUI\System\Log::addError(
-                            'Could not delete access data for user #' . $User->getId() . ': '
-                            . $Exception->getMessage()
-                        );
-
-                        // @todo abbrechen
-                    }
+                    // @todo abbrechen
                 }
         }
 
@@ -776,7 +784,7 @@ class Password
      *
      * @throws QUI\Exception
      */
-    public function createAccessForUser($User)
+    public function createUserPasswordAccess($User)
     {
         // skip if user already has password access
         if ($this->hasPasswordAccess($User)) {
@@ -797,12 +805,9 @@ class Password
         }
 
         // split key
-        $authPlugins     = $this->SecurityClass->getAuthPlugins();
-        $userAuthPlugins = $User->getAuthPluginsBySecurityClass($this->SecurityClass);
-
         $payloadKeyParts = SecretSharing::splitSecret(
             $this->getPasswordKey()->getValue(),
-            count($authPlugins),
+            $this->SecurityClass->getAuthPluginCount(),
             $this->SecurityClass->getRequiredFactors()
         );
 
@@ -810,10 +815,11 @@ class Password
         $i  = 0;
         $DB = QUI::getDataBase();
 
-        /** @var Plugin $AuthPlugin */
-        foreach ($userAuthPlugins as $AuthPlugin) {
-            $UserAuthKeyPair = $User->getAuthKeyPair($AuthPlugin);
-            $payloadKeyPart  = $payloadKeyParts[$i++];
+        $userAuthKeyPairs = $User->getAuthKeyPairsBySecurityClass($this->SecurityClass);
+
+        /** @var AuthKeyPair $UserAuthKeyPair */
+        foreach ($userAuthKeyPairs as $UserAuthKeyPair) {
+            $payloadKeyPart = $payloadKeyParts[$i++];
 
             $encryptedPayloadKeyPart = AsymmetricCrypto::encrypt(
                 $payloadKeyPart, $UserAuthKeyPair
@@ -846,7 +852,7 @@ class Password
      *
      * @throws QUI\Exception
      */
-    public function createAccessForGroup($Group)
+    public function createGroupPasswordAccess($Group)
     {
         // skip if group already has password access
         if ($this->hasPasswordAccess($Group)) {
@@ -892,6 +898,41 @@ class Password
     }
 
     /**
+     * @todo
+     *
+     * Get IDs of all CryptoUsers that have access to this password
+     *
+     */
+    protected function getCryptoUserIds()
+    {
+//        $userIds      = array();
+//        $userIdsCheck = array();
+//
+//        $result = QUI::getDataBase()->fetch(array(
+//            'select' => array(
+//                'userId'
+//            ),
+//            'from'   => Tables::USER_TO_PASSWORDS,
+//            'where'  => array(
+//                'dataId' => $this->id
+//            )
+//        ));
+//
+//        foreach ($result as $row) {
+//            if (isset($userIdsCheck[$row['']]))
+//        }
+    }
+
+    /**
+     * @todo
+     *
+     */
+    protected function getCryptoGroupId()
+    {
+
+    }
+
+    /**
      * Checks if a user has access to this password
      *
      * @param CryptoUser|CryptoGroup $CryptoActor
@@ -925,25 +966,49 @@ class Password
     /**
      * Remove password access for a user
      *
-     * @param QUI\Users\User $User
-     * @param QUI\Groups\Group $Group (optional) - remove access via group
+     * @param CryptoUser $CryptoUser
      * @return true - on success
      *
      * @throws QUI\Exception
      */
-    public function removePasswordAccess($User, $Group = null)
+    public function removeUserPasswordAccess($CryptoUser)
     {
         // @todo experimental - check if possible
-        if ($this->isOwner($User)) {
+        if ($this->isOwner($CryptoUser)) {
             return false;
         }
 
         QUI::getDataBase()->delete(
             Tables::USER_TO_PASSWORDS,
             array(
-                'userId'  => $User->getId(),
-                'dataId'  => $this->id,
-                'groupId' => is_null($Group) ? null : $Group->getId()
+                'userId' => $CryptoUser->getId(),
+                'dataId' => $this->id,
+            )
+        );
+
+        return true;
+    }
+
+    /**
+     * Remove password access for a group
+     *
+     * @param CryptoGroup $CryptoGroup
+     * @return true - on success
+     *
+     * @throws QUI\Exception
+     */
+    public function removeGroupPasswordAccess($CryptoGroup)
+    {
+        // @todo experimental - check if possible
+        if ($this->isOwner($CryptoGroup)) {
+            return false;
+        }
+
+        QUI::getDataBase()->delete(
+            Tables::GROUP_TO_PASSWORDS,
+            array(
+                'userId' => $CryptoGroup->getId(),
+                'dataId' => $this->id,
             )
         );
 

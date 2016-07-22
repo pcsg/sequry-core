@@ -42,3 +42,15 @@
 .pcsg-gpm-password-authplugin {
     float: left;
 }
+
+.pcsg-gpm-securityclass-edit-group {
+    background-color: #EDEDED;
+    border-radius: 2px;
+    cursor: pointer;
+    padding: 5px;
+    width: 100%;
+}
+
+.pcsg-gpm-securityclass-edit-group:hover {
+    background-color: #eee7c2;
+}

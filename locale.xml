@@ -99,6 +99,21 @@
         <locale name="exception.password.group.password.key.not.authentic">
             <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] für das Password #[passwordId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.password.change.owner.user.error">
+            <de><![CDATA[Der Eigentümer des Passworts #[passwordId] konnte nicht auf den Benutzer #[newOwnerId] geändert werden, da ein unerwarteter Fehler aufgetreten ist. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.password.change.owner.group.error">
+            <de><![CDATA[Der Eigentümer des Passworts #[passwordId] konnte nicht auf die Gruppe #[newOwnerId] geändert werden, da ein unerwarteter Fehler aufgetreten ist. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="error.password.create" html="true">
+            <de><![CDATA[Das Passwort konnte nicht erstellt werden:<br/><br/>[error].]]></de>
+        </locale>
+        <locale name="success.password.create">
+            <de><![CDATA[Das Passwort wurde erfolgreich erstellt.]]></de>
+        </locale>
+        <locale name="exception.password.setdata.error" html="true">
+            <de><![CDATA[Beim Ändern der Daten des Passworts #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error].]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
@@ -169,6 +184,12 @@
         <locale name="exception.cryptogroup.keypair.decryption.authentication.error">
             <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error].]]></de>
         </locale>
+        <locale name="exception.cryptogroup.setsecurityclass.users.not.eligible">
+            <de><![CDATA[Die Sicherheitsklasse #[securityClassId] kann der Gruppe #[groupId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.setsecurityclass.users.has.no.group.access">
+            <de><![CDATA[Der Benutzer #[userId] kann die Sicherheitsklasse #[securityClassId] der Gruppe #[groupId] nicht zuordnen, da der Benutzer der Gruppe nicht zugewiesen ist.]]></de>
+        </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
         <locale name="exception.cryptoactors.addcryptogroup.otherwise.associated">
@@ -178,7 +199,7 @@
             <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse registriert sind.]]></de>
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindestanzahl der nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.group.already.exists">
             <de><![CDATA[Die Gruppe #]]></de>
@@ -250,12 +271,6 @@
         <locale name="exception.securityclass.authenticate.authdata.not.given">
             <de><![CDATA[Die Authentifizierungsinformationen wurden nicht übergeben.]]></de>
         </locale>
-        <locale name="exception.securityclass.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
-        </locale>
-        <locale name="exception.securityclass.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da der Benutzer #[userId] der Gruppe nicht zugewiesen ist.]]></de>
-        </locale>
         <locale name="attention.securityclass.edit.groups.cannot.delete.group">
             <de><![CDATA[Die Gruppe #[groupId] kann nicht aus der Sicherheitsklasse #[securityClassId] entfernt werden. Gruppen können nur aus einer Sicherheitsklasse entfernt werden, wenn sie einer anderen Sicherheitsklasse zugeordnet oder direkt gelöscht werden.]]></de>
         </locale>
@@ -291,6 +306,9 @@
         </locale>
         <locale name="menu.extras.gpm.securityclasses.title">
             <de><![CDATA[Sicherheitsklassen]]></de>
+        </locale>
+        <locale name="menu.extras.gpm.groups.title">
+            <de><![CDATA[Passwort-Gruppen]]></de>
         </locale>
 
     </groups>
@@ -682,6 +700,26 @@
         <!-- Control: password/View -->
         <locale name="password.view.restricted.info">
             <de><![CDATA[Sie müssen sich zuerst authentifizieren, bevor Passwort-Daten angezeigt werden können.]]></de>
+        </locale>
+
+        <!-- Control: actors/GroupEdit -->
+        <locale name="gpm.groups.panel.edit.title">
+            <de><![CDATA[Passwort-Gruppe bearbeiten]]></de>
+        </locale>
+        <locale name="actors.groups.edit.template.title">
+            <de><![CDATA[Passwort-Gruppe bearbeiten]]></de>
+        </locale>
+        <locale name="actors.groups.edit.template.basicData">
+            <de><![CDATA[Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="actors.groups.edit.template.securityclass">
+            <de><![CDATA[Zugeordnete Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="controls.groupedit.no.securityclass">
+            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.]]></de>
+        </locale>
+        <locale name="controls.groupedit.not.in.group">
+            <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>
         </locale>
     </groups>
 

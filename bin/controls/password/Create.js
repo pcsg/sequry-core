@@ -108,17 +108,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
                         self.$OwnerSelect = new ActorSelect({
                             max            : 1,
-                            securityClassId: value,
-                            events         : {
-                                onChange: function () {
-                                    self.$owner = self.$OwnerSelect.getValue();
-                                }
-                            }
+                            securityClassId: value
+                            //events         : {
+                            //    onChange: function () {
+                            //        self.$owner = self.$OwnerSelect.getValue();
+                            //    }
+                            //}
                         }).inject(OwnerSelectElm);
 
-                        if (self.$owner !== false) {
-                            self.$OwnerSelect.addItem(self.$owner);
-                        }
+                        //if (self.$owner !== false) {
+                        //    self.$OwnerSelect.addItem(self.$owner);
+                        //}
                     }
                 }
             }).inject(
@@ -172,28 +172,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
             this.$PasswordData.owner = actors[0];
 
-            var AuthControl = new AuthenticationControl({
-                securityClassId: this.$SecurityClassSelect.getValue(),
-                events         : {
-                    onSubmit: function (AuthData) {
-                        Passwords.createPassword(
-                            self.$PasswordData,
-                            AuthData
-                        ).then(
-                            function () {
-                                self.$PasswordData = null;
-                                AuthControl.destroy();
-                                self.fireEvent('finish');
-                            },
-                            function () {
-                                // @todo
-                            }
-                        );
-                    }
+            Passwords.createPassword(
+                self.$PasswordData
+            ).then(
+                function () {
+                    self.$PasswordData = null;
+                    self.fireEvent('finish');
+                },
+                function () {
+                    // @todo
                 }
-            });
-
-            AuthControl.open();
+            );
         }
     });
 });

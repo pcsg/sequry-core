@@ -7,11 +7,12 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * Create a new password object
  *
  * @param array $passwordData - password data
- * @param array $authData - authentication information
  * @return false|integer - false on error, Password ID on success
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData, $authData)
+function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
 {
+    ini_set('display_errors', 1);
+
     // @todo clearArray könnte zuviel kaputtmachen, evtl. eigene clear methode schreiben
     $passwordData = \QUI\Utils\Security\Orthos::clearArray(
         json_decode($passwordData, true)
@@ -29,15 +30,30 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData, 
         return false;
     }
 
-    // authenticate
-    Authentication::getSecurityClass(
-        (int)$passwordData['securityClassId']
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
+    // create password
+    try {
+        $newPasswordId = Passwords::createPassword($passwordData);
+    } catch (QUI\Exception $Exception) {
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'error.password.create', array(
+                    'error' => $Exception->getMessage()
+                )
+            )
+        );
+
+        return false;
+    }
+
+    QUI::getMessagesHandler()->addSuccess(
+        QUI::getLocale()->get(
+            'pcsg/grouppasswordmanager',
+            'success.password.create'
+        )
     );
 
-    // create password
-    return Passwords::createPassword($passwordData);
+    return $newPasswordId;
 }
 
 \QUI::$Ajax->register(

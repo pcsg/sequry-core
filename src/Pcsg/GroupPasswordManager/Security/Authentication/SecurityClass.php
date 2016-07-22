@@ -133,17 +133,22 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Checks if current session user is authenticated with all associated security plugin
+     * Checks if a user is authenticated with all associated authentication plugins
      *
+     * @param CryptoUser $CryptoUser (optional) - if omitted, use session user
      * @return bool
      */
-    public function isAuthenticated()
+    public function isAuthenticated($CryptoUser = null)
     {
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
         $plugins = $this->getAuthPlugins();
 
         /** @var Plugin $AuthPlugin */
         foreach ($plugins as $AuthPlugin) {
-            if (!$AuthPlugin->isAuthenticated()) {
+            if (!$AuthPlugin->isAuthenticated($CryptoUser)) {
                 return false;
             }
         }
@@ -513,33 +518,6 @@ class SecurityClass extends QUI\QDOM
                         $this->setAttribute($k, $v);
                     }
                     break;
-
-                case 'groups':
-                    $currentGroupIds = $this->getGroupIds();
-                    $newGroupIds     = array();
-
-                    foreach ($v as $groupData) {
-                        $newGroupIds[] = $groupData['id'];
-                        $Group         = new QUI\Groups\Group($groupData['id']);
-
-                        $this->addCryptoGroup($Group);
-                    }
-
-                    foreach ($currentGroupIds as $currentGroupId) {
-                        if (!in_array($currentGroupId, $newGroupIds)) {
-                            QUI::getMessagesHandler()->addAttention(
-                                QUI::getLocale()->get(
-                                    'pcsg/grouppasswordmanager',
-                                    'attention.securityclass.edit.groups.cannot.delete.group', array(
-                                        'groupId'         => $currentGroupId,
-                                        'securityClassId' => $this->id
-                                    )
-                                )
-                            );
-                        }
-                    }
-
-                    break;
             }
         }
 
@@ -610,125 +588,6 @@ class SecurityClass extends QUI\QDOM
         );
 
         return true;
-    }
-
-    /**
-     * Generate a random keypair for a QUIQQER Group and add it to this security class
-     *
-     * @param QUI\Groups\Group $Group
-     * @return void
-     *
-     * @throws QUI\Exception
-     */
-    public function addCryptoGroup($Group)
-    {
-        // check if group exists
-        $result = QUI::getDataBase()->fetch(array(
-            'count' => 1,
-            'from'  => Tables::KEYPAIRS_GROUP,
-            'where' => array(
-                'groupId' => $Group->getId()
-            )
-        ));
-
-        // if group doesnt exist -> create for this security class
-        if (current(current($result)) == 0) {
-            CryptoActors::createCryptoGroup($Group, $this);
-            return;
-        }
-
-        // if group does exist -> check if associated with this security class alread
-        $groupIds = $this->getGroupIds();
-
-        if (in_array($Group->getId(), $groupIds)) {
-            return;
-        }
-
-        // if group does exist and is not associated with this security class ->
-        // create access according to security class
-        $CryptoGroup = CryptoActors::getCryptoGroup($Group->getId());
-
-        if (!$this->checkGroupUsersForEligibility($Group)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.securityclass.addcryptogroup.users.not.eligible',
-                array(
-                    'groupId'         => $Group->getId(),
-                    'securityClassId' => $this->id
-                )
-            ));
-        }
-
-        if (!$CryptoGroup->hasCryptoUserAccess()) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.securityclass.addcryptogroup.users.has.no.group.access',
-                array(
-                    'groupId'         => $Group->getId(),
-                    'securityClassId' => $this->id,
-                    'userId'          => QUI::getUserBySession()->getId()
-                )
-            ));
-        }
-
-        // get (decrypted) group keypair
-        $CryptoSessionUser = CryptoActors::getCryptoUser();
-        $groupAccessKey    = $CryptoSessionUser->getGroupAccessKey($CryptoGroup)->getValue();
-
-        // split group access key according to new security class
-        $groupAccessKeyParts = SecretSharing::splitSecret(
-            $groupAccessKey,
-            $this->getAuthPluginCount(),
-            $this->requiredFactors
-        );
-
-        $users = $CryptoGroup->getCryptoUsers();
-        $DB    = QUI::getDataBase();
-
-        /** @var CryptoUser $CryptoUser */
-        foreach ($users as $CryptoUser) {
-            $authKeyPairs = $CryptoUser->getAuthKeyPairsBySecurityClass($this);
-            $i            = 0;
-
-            // delete old access entries for group
-            $DB->delete(
-                Tables::USER_TO_GROUPS,
-                array(
-                    'userId'  => $CryptoUser->getId(),
-                    'groupId' => $CryptoGroup->getId()
-                )
-            );
-
-            /** @var AuthKeyPair $AuthKeyPair */
-            foreach ($authKeyPairs as $AuthKeyPair) {
-                $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $groupAccessKeyParts[$i++],
-                    $AuthKeyPair
-                );
-
-                $data = array(
-                    'userId'        => $CryptoUser->getId(),
-                    'userKeyPairId' => $AuthKeyPair->getId(),
-                    'groupId'       => $Group->getId(),
-                    'groupKey'      => $privateKeyEncryptionKeyPartEncrypted
-                );
-
-                // calculate MAC
-                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
-
-                $DB->insert(Tables::USER_TO_GROUPS, $data);
-            }
-        }
-
-        $DB->update(
-            Tables::KEYPAIRS_GROUP,
-            array(
-                'securityClassId' => $this->id
-            ),
-            array(
-                'groupId' => $CryptoGroup->getId()
-            )
-        );
     }
 
     /**

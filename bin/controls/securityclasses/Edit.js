@@ -25,19 +25,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
     'Locale',
     'Mustache',
 
+    'package/pcsg/grouppasswordmanager/bin/classes/Actors',
     'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
 
     'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, AuthenticationHandler, ActorSelect, QUIAjax, template) {
+], function (QUI, QUIControl, QUILocale, Mustache, ActorHandler,
+             AuthenticationHandler, QUIAjax, template) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthenticationHandler();
+        Authentication = new AuthenticationHandler(),
+        Actors         = new ActorHandler();
 
     return new Class({
 
@@ -46,7 +48,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
 
         Binds: [
             '$onInject',
-            '$searchGroupsToAdd'
+            '$searchGroupsToAdd',
+            '$insertGroups'
         ],
 
         options: {
@@ -84,13 +87,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                 })
             });
 
-            this.$GroupSelect = new ActorSelect({
-                actorType: 'groups',
-                Search   : this.$searchGroupsToAdd
-            }).inject(
-                this.$Elm.getElement('.pcsg-gpm-securityclasses-groups')
-            );
-
             var AuthPluginElm = this.$Elm.getElement(
                 '.pcsg-gpm-password-authplugins'
             );
@@ -101,9 +97,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                 self.$Elm.getElement('.pcsg-gpm-securityclasses-title').value       = Info.title;
                 self.$Elm.getElement('.pcsg-gpm-securityclasses-description').value = Info.description;
 
-                var i, len;
-
-                for (i = 0, len = Info.authPlugins.length; i < len; i++) {
+                for (var i = 0, len = Info.authPlugins.length; i < len; i++) {
                     var Plugin = Info.authPlugins[i];
 
                     new Element('label', {
@@ -119,9 +113,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                     }).inject(AuthPluginElm);
                 }
 
-                for (i = 0, len = Info.groups.length; i < len; i++) {
-                    self.$GroupSelect.addItem('g' + Info.groups[i]);
-                }
+                self.$insertGroups(Info.groups);
 
                 self.$Elm.getElement('.pcsg-gpm-password-requiredfactors').set(
                     'html',
@@ -132,6 +124,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
             });
 
             return this.$Elm;
+        },
+
+        /**
+         * Insert groups that are associated with his security class
+         *
+         * @param groupIds
+         */
+        $insertGroups: function (groupIds) {
+            var GroupsElm = this.$Elm.getElement(
+                '.pcsg-gpm-securityclasses-groups'
+            );
+
+            for (var i = 0, len = groupIds.length; i < len; i++) {
+                Actors.getActor(groupIds[i], 'group').then(function (Actor) {
+                    new Element('div', {
+                        'class'       : 'pcsg-gpm-securityclass-edit-group',
+                        html          : Actor.name + ' (' + Actor.id + ')',
+                        'data-groupid': Actor.id,
+                        events: {
+                            click: function(event) {
+                                console.log("dbl click");
+                                console.log(event.target.getProperty('data-groupid'));
+                            }
+                        }
+                    }).inject(GroupsElm);
+                });
+            }
         },
 
         /**
@@ -151,8 +170,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
 
             this.$SecurityClassData = {
                 title      : this.$Elm.getElement('.pcsg-gpm-securityclasses-title').value,
-                description: this.$Elm.getElement('.pcsg-gpm-securityclasses-description').value,
-                groups     : this.$GroupSelect.getActors()
+                description: this.$Elm.getElement('.pcsg-gpm-securityclasses-description').value
             };
 
             Authentication.editSecurityClass(

@@ -34,11 +34,34 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          */
         getActor: function (id, type) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getActor', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_get', resolve, {
                     'package': pkg,
                     onError  : reject,
                     id       : id,
                     type     : type
+                });
+            });
+        },
+
+        /**
+         * Set security class to a group
+         *
+         * @param {number} groupId
+         * @param {number} securityClassId
+         * @param {AuthData} [AuthData] - authentication information; needed if security class is CHANGED
+         *
+         * @returns {Promise}
+         */
+        setGroupSecurityClass: function (groupId, securityClassId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                AuthData = AuthData || false;
+
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    groupId        : groupId,
+                    securityClassId: securityClassId,
+                    authData       : JSON.encode(AuthData)
                 });
             });
         }
