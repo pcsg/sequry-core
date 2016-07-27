@@ -6,25 +6,21 @@
 
 namespace Pcsg\GroupPasswordManager;
 
-use Monolog\Handler\Curl\Util;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
-use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
-use Symfony\Component\Console\Helper\Table;
-
+use QUI\Permissions\Permission;
 /**
  * Class Password
  *
@@ -428,9 +424,19 @@ class Password
      * Set share users and groups
      *
      * @param array $shareData
+     * @return void
+     *
+     * @throws QUI\Exception
      */
     public function setShareData($shareData)
     {
+        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.rights'
+            ));
+        }
+
         $newShareUserIds  = array();
         $newShareGroupIds = array();
 
@@ -448,15 +454,14 @@ class Password
             switch ($shareActor['type']) {
                 case self::OWNER_TYPE_USER:
                     try {
-                        $User = QUI::getUsers()->get($actorId);
+                        $CryptoUser = CryptoActors::getCryptoUser($actorId);
 
                         // cannot share with owner
-                        if ($this->isOwner($User)) {
+                        if ($this->isOwner($CryptoUser)) {
                             continue;
                         }
 
                         // create password access for user
-                        $CryptoUser = CryptoActors::getCryptoUser($actorId);
                         $this->createUserPasswordAccess($CryptoUser);
                         $newShareUserIds[] = $CryptoUser->getId();
                     } catch (\Exception $Exception) {
@@ -492,10 +497,11 @@ class Password
                         // @todo msg an user
                     }
                     break;
-
-                default:
             }
         }
+
+        $newShareUserIds  = array_unique($newShareUserIds);
+        $newShareGroupIds = array_unique($newShareGroupIds);
 
         // delete access from old share users and groups
         $currentShareActors   = $this->getSecretAttribute('sharedWith');
@@ -515,8 +521,12 @@ class Password
         $deleteShareGroupIds = array_diff($currentShareGroupIds, $newShareGroupIds);
 
         foreach ($deleteShareGroupIds as $id) {
-            $Group = CryptoActors::getCryptoGroup($id);
-            $this->removeGroupPasswordAccess($Group);
+            try {
+                $Group = CryptoActors::getCryptoGroup($id);
+                $this->removeGroupPasswordAccess($Group);
+            } catch (\Exception $Exception) {
+                // @todo error log und meldung an user
+            }
         }
 
         $this->setSecretAttribute(
@@ -762,21 +772,6 @@ class Password
     }
 
     /**
-     * Creates and inserts password access entry for a user
-     *
-     * @param CryptoUser $User
-     * @param CryptoGroup $Group (optional) - create access via group
-     *
-     * @return true - on success
-     *
-     * @throws QUI\Exception
-     */
-    public function createPasswordAccess($User, $Group = null)
-    {
-
-    }
-
-    /**
      * Create password access for user
      *
      * @param CryptoUser $User
@@ -786,6 +781,13 @@ class Password
      */
     public function createUserPasswordAccess($User)
     {
+        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.rights'
+            ));
+        }
+
         // skip if user already has password access
         if ($this->hasPasswordAccess($User)) {
             return;
@@ -854,6 +856,13 @@ class Password
      */
     public function createGroupPasswordAccess($Group)
     {
+        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.rights'
+            ));
+        }
+
         // skip if group already has password access
         if ($this->hasPasswordAccess($Group)) {
             return;
@@ -1007,8 +1016,8 @@ class Password
         QUI::getDataBase()->delete(
             Tables::GROUP_TO_PASSWORDS,
             array(
-                'userId' => $CryptoGroup->getId(),
-                'dataId' => $this->id,
+                'groupId' => $CryptoGroup->getId(),
+                'dataId'  => $this->id,
             )
         );
 
@@ -1287,15 +1296,19 @@ class Password
             }
         }
 
-        switch ($ownerType) {
-            case self::OWNER_TYPE_USER:
-                return false;
-                break;
+        if ($CryptoActor instanceof CryptoGroup) {
+            switch ($ownerType) {
+                case self::OWNER_TYPE_USER:
+                    return false;
+                    break;
 
-            case self::OWNER_TYPE_GROUP:
-                return $actorId === $ownerId;
-                break;
+                case self::OWNER_TYPE_GROUP:
+                    return $actorId === $ownerId;
+                    break;
+            }
         }
+
+        return false;
     }
 
     /**

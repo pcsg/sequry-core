@@ -206,6 +206,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataIndex: 'securityClassId',
                     dataType : 'integer',
                     hidden   : true
+                }, {
+                    dataIndex: 'isOwner',
+                    dataType : 'integer',
+                    hidden   : true
                 }]
             });
 

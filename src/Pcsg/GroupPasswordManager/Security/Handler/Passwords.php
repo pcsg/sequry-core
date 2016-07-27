@@ -18,6 +18,7 @@ use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
+use QUI\Permissions\Permission;
 
 /**
  * Class for for managing passwords
@@ -76,6 +77,30 @@ class Passwords
             ));
         }
 
+        $owner = $passwordData['owner'];
+
+        if (!isset($owner['id'])
+            || empty($owner['id'])
+            || !isset($owner['type'])
+            || empty($owner['type'])
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwords.create.owner.incorrect.data'
+            ));
+        }
+
+        $ownerId = (int)$owner['id'];
+
+        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')
+            && $ownerId !== QUI::getUserBySession()->getId()
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwords.create.no.share.rights'
+            ));
+        }
+
         // title check
         if (!isset($passwordData['title'])
             || empty($passwordData['title'])
@@ -105,21 +130,6 @@ class Passwords
                 'exception.passwords.create.missing.payload'
             ));
         }
-
-        $owner = $passwordData['owner'];
-
-        if (!isset($owner['id'])
-            || empty($owner['id'])
-            || !isset($owner['type'])
-            || empty($owner['type'])
-        ) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.passwords.create.owner.incorrect.data'
-            ));
-        }
-
-        $ownerId = (int)$owner['id'];
 
         switch ($owner['type']) {
             case 'user':

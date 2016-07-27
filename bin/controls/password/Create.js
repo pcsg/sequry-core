@@ -109,16 +109,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                         self.$OwnerSelect = new ActorSelect({
                             max            : 1,
                             securityClassId: value
-                            //events         : {
-                            //    onChange: function () {
-                            //        self.$owner = self.$OwnerSelect.getValue();
-                            //    }
-                            //}
                         }).inject(OwnerSelectElm);
 
-                        //if (self.$owner !== false) {
-                        //    self.$OwnerSelect.addItem(self.$owner);
-                        //}
+                        self.$OwnerSelect.addItem('u' + USER.id);
                     }
                 }
             }).inject(

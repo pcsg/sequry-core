@@ -116,21 +116,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
             this.$ActorSelectUsers.clear();
             this.$ActorSelectGroups.clear();
 
-            for (var type in this.$ShareData) {
-                if (!this.$ShareData.hasOwnProperty(type)) {
+            for (var type in this.$ShareData.sharedWith) {
+                if (!this.$ShareData.sharedWith.hasOwnProperty(type)) {
                     continue;
                 }
 
-                var actors = this.$ShareData[type];
+                var actors = this.$ShareData.sharedWith[type];
 
                 for (var i = 0, len = actors.length; i < len; i++) {
                     switch (type) {
                         case 'users':
-                            this.$addActor(this.$ShareData[type], 'user');
+                            this.$addActor(actors[i], 'user');
                             break;
 
                         case 'groups':
-                            this.$addActor(this.$ShareData[type], 'group');
+                            this.$addActor(actors[i], 'group');
                             break;
                     }
                 }
@@ -195,7 +195,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                                     self.fireEvent('loaded');
                                 },
                                 function () {
-                                    // @todo
+                                    // @todo getShareData error
                                 }
                             );
                         },

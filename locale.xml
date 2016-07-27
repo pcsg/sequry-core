@@ -57,9 +57,6 @@
         <locale name="error.password.create.no.security.class">
             <de><![CDATA[Sie müssen eine Sicherheitsklasse festlegen, bevor diese Operation ausgeführt werden kann.]]></de>
         </locale>
-        <locale name="exception.passwords.create.missing.data">
-            <de><![CDATA[Es wurde keine Daten für das Password übergeben.]]></de>
-        </locale>
         <locale name="exception.password.create.general.error">
             <de><![CDATA[Es ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
         </locale>
@@ -113,6 +110,17 @@
         </locale>
         <locale name="exception.password.setdata.error" html="true">
             <de><![CDATA[Beim Ändern der Daten des Passworts #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error].]]></de>
+        </locale>
+        <locale name="exception.password.no.share.rights">
+            <de><![CDATA[Das Passwort kann nicht mit anderen Benutzern geteilt werden, da Sie keine Berechtigung haben, Passwörter anderen zugänglich zu machen.]]></de>
+        </locale>
+
+        <!-- Class: Handler/Passwords -->
+        <locale name="exception.passwords.create.missing.data">
+            <de><![CDATA[Es wurde keine Daten für das Password übergeben.]]></de>
+        </locale>
+        <locale name="exception.passwords.create.no.share.rights">
+            <de><![CDATA[Es kann dein anderer Benutzer als Passwort-Eigentümer festgelegt werden, da Sie nicht die nötige Berechtigung besitzen, Passwörter anderen Benutzern zugänglich zu machen.]]></de>
         </locale>
 
         <!-- Class: CryptoUser -->
