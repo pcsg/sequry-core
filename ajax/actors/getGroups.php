@@ -11,8 +11,6 @@ function package_pcsg_grouppasswordmanager_ajax_actors_getGroups()
 {
     $groups = QUI::getGroups()->getAllGroups();
 
-    \QUI\System\Log::writeRecursive($groups);
-
     return $groups;
 }
 

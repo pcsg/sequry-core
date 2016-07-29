@@ -122,7 +122,7 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        return $this->AuthClass->authenticate($User, $information);
+        return $this->AuthClass->authenticate($information, $User);
     }
 
     /**
