@@ -334,33 +334,35 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         // split key
-        $authPlugins    = $this->SecurityClass->getAuthPlugins();
+        // @todo PERMISSION
+
         $GroupAccessKey = $CryptoUser->getGroupAccessKey($this);
 
         $groupAccessKeyParts = SecretSharing::splitSecret(
             $GroupAccessKey->getValue(),
-            count($authPlugins),
+            $this->SecurityClass->getAuthPluginCount(),
             $this->SecurityClass->getRequiredFactors()
         );
 
         // encrypt key parts with user public keys
-        $i = 0;
+        $i            = 0;
+        $authKeyPairs = $AddUser->getAuthKeyPairsBySecurityClass($this->SecurityClass);
 
-        /** @var Plugin $Plugin */
-        foreach ($authPlugins as $Plugin) {
+        /** @var AuthKeyPair $UserAuthKeyPair */
+        foreach ($authKeyPairs as $UserAuthKeyPair) {
             try {
-                $UserAuthKeyPair = $AddUser->getAuthKeyPair($Plugin);
-                $payloadKeyPart  = $groupAccessKeyParts[$i++];
+                $payloadKeyPart = $groupAccessKeyParts[$i++];
 
-                $groupPrivateKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $payloadKeyPart, $UserAuthKeyPair
+                $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
+                    $payloadKeyPart,
+                    $UserAuthKeyPair
                 );
 
                 $data = array(
                     'userId'        => $AddUser->getId(),
                     'userKeyPairId' => $UserAuthKeyPair->getId(),
                     'groupId'       => $this->getId(),
-                    'groupKey'      => $groupPrivateKeyPartEncrypted
+                    'groupKey'      => $groupAccessKeyPartEncrypted
                 );
 
                 // calculate MAC

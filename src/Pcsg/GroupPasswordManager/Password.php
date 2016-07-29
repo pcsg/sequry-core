@@ -21,6 +21,7 @@ use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 use QUI\Permissions\Permission;
+
 /**
  * Class Password
  *
@@ -1054,146 +1055,13 @@ class Password
      * @return Key
      * @throws QUI\Exception
      */
-    protected function getPasswordKey()
+    public function getPasswordKey()
     {
         if (!is_null($this->PasswordKey)) {
             return $this->PasswordKey;
         }
 
-        // try to get access data via user
-        $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::USER_TO_PASSWORDS,
-            'where' => array(
-                'userId' => $this->User->getId(),
-                'dataId' => $this->id
-            )
-        ));
-
-        // if not found, try to get access data via group
-        if (empty($result)) {
-            $accessGroupIds = $this->getAccessGroupsIds();
-
-            $result = QUI::getDataBase()->fetch(array(
-                'from'  => Tables::USER_TO_GROUPS,
-                'where' => array(
-                    'groupId' => array(
-                        'type'  => 'IN',
-                        'value' => $accessGroupIds
-                    ),
-                    'userId'  => $this->User->getId()
-                )
-            ));
-
-            if (empty($result)) {
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.access.data.not.found',
-                    array(
-                        'id'     => $this->id,
-                        'userId' => $this->User->getId()
-                    )
-                ), 404);
-            }
-
-            // get group key
-            $groupId               = $result[0]['groupId'];
-            $CryptoGroup           = CryptoActors::getCryptoGroup($groupId);
-            $GroupKeyPairDecrypted = $CryptoGroup->getKeyPairDecrypted($this->User);
-
-            // decrypt password key with group private key
-            $result = QUI::getDataBase()->fetch(array(
-                'from'  => Tables::GROUP_TO_PASSWORDS,
-                'where' => array(
-                    'dataId'  => $this->id,
-                    'groupId' => $groupId
-                )
-            ));
-
-            $data = current($result);
-
-            $MACData = array(
-                $data['groupId'],
-                $data['dataId'],
-                $data['dataKey']
-            );
-
-            $MACExpected = $data['MAC'];
-            $MACActual   = MAC::create(
-                implode('', $MACData),
-                Utils::getSystemKeyPairAuthKey()
-            );
-
-            if (!MAC::compare($MACActual, $MACExpected)) {
-                QUI\System\Log::addCritical(
-                    'Group password key #' . $data['id'] . ' possibly altered. MAC mismatch!'
-                );
-
-                // @todo eigenen 401 error code
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.group.password.key.not.authentic',
-                    array(
-                        'passwordId' => $this->id,
-                        'groupId'    => $CryptoGroup->getId()
-                    )
-                ));
-            }
-
-            $passwordKeyDecryptedValue = AsymmetricCrypto::decrypt(
-                $data['dataKey'],
-                $GroupKeyPairDecrypted
-            );
-
-            $this->PasswordKey = new Key($passwordKeyDecryptedValue);
-
-            return $this->PasswordKey;
-        }
-
-        $passwordKeyParts = array();
-
-        foreach ($result as $row) {
-            // check access data integrity/authenticity
-            $accessDataMAC      = $row['MAC'];
-            $accessDataMACCheck = MAC::create(
-                implode(
-                    '',
-                    array(
-                        $row['userId'],
-                        $row['dataId'],
-                        $row['dataKey'],
-                        $row['keyPairId']
-                    )
-                ),
-                Utils::getSystemKeyPairAuthKey()
-            );
-
-            if (!MAC::compare($accessDataMAC, $accessDataMACCheck)) {
-                QUI\System\Log::addCritical(
-                    'Password access data (uid #' . $row['userId'] . ', dataId #' . $row['dataId']
-                    . ', keyPairId #' . $row['keyPairId'] . ' is possibly altered! MAC mismatch!'
-                );
-
-                // @todo eigenen 401 error code
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.password.acces.data.not.authentic',
-                    array(
-                        'passwordId' => $this->id
-                    )
-                ));
-            }
-
-            $AuthKeyPair        = Authentication::getAuthKeyPair($row['keyPairId']);
-            $passwordKeyParts[] = AsymmetricCrypto::decrypt(
-                $row['dataKey'],
-                $AuthKeyPair
-            );
-        }
-
-        // build password key from its parts
-        $this->PasswordKey = new Key(
-            SecretSharing::recoverSecret($passwordKeyParts)
-        );
+        $this->PasswordKey = $this->User->getPasswordAccessKey($this->id);
 
         return $this->PasswordKey;
     }

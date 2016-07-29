@@ -126,7 +126,7 @@ class SecurityClass extends QUI\QDOM
                 ));
             }
 
-            $AuthPlugin->authenticate($CryptoUser, $authData[$AuthPlugin->getId()]);
+            $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
         }
 
         return true;
@@ -327,6 +327,31 @@ class SecurityClass extends QUI\QDOM
         }
 
         return $eligibleGroupIds;
+    }
+
+    /**
+     * Get IDs of all passwords that are associated with this security class
+     *
+     * @return array
+     */
+    public function getPasswordIds()
+    {
+        $ids    = array();
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::PASSWORDS,
+            'where'  => array(
+                'securityClassId' => $this->id
+            )
+        ));
+
+        foreach ($result as $row) {
+            $ids[] = $row['id'];
+        }
+
+        return $ids;
     }
 
     /**

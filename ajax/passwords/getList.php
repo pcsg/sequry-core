@@ -22,11 +22,11 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
     );
 
     $Grid = new \QUI\Utils\Grid($searchParams);
-    $passwords = $CryptoUser->getPasswords($searchParams);
+    $passwords = $CryptoUser->getPasswordList($searchParams);
 
     return $Grid->parseResult(
         $passwords,
-        $CryptoUser->getPasswords($searchParams, true)
+        $CryptoUser->getPasswordList($searchParams, true)
     );
 }
 

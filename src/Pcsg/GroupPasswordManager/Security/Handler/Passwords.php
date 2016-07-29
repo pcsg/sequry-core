@@ -340,15 +340,17 @@ class Passwords
      * Get password object
      *
      * @param integer $id - password id
+     * @param CryptoUser $CryptoUser (optional) - CryptoUser that interacts with the password;
+     * this user has to have access rights for this password; if omitted, use session user
      * @return Password
      */
-    public static function get($id)
+    public static function get($id, $CryptoUser = null)
     {
         if (isset(self::$passwords[$id])) {
             return self::$passwords[$id];
         }
 
-        self::$passwords[$id] = new Password($id);
+        self::$passwords[$id] = new Password($id, $CryptoUser);
 
         return self::$passwords[$id];
     }

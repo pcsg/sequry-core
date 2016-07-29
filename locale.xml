@@ -172,6 +172,9 @@
         <locale name="exception.cryptouser.group.access.key.part.auth.key.error" html="true">
             <de><![CDATA[Beim Zugriff auf das Schlüsselpaar einer Authentifizierungs-Methode (#[authKeyPairId]) zur Entschlüsselung des Schlüsselpaars der Gruppe #[groupId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
         </locale>
+        <locale name="exception.cryptouser.password.access.key.decrypt.user.has.no.access">
+            <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer keine Zugriffsrecht für dieses Passwort hat.]]></de>
+        </locale>
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">

@@ -19,10 +19,10 @@ interface iAuthPlugin
     /**
      * Registers a user with this plugin
      *
+     * @param mixed $information - authentication information given by the user
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
-     * @param mixed $information (optional) - authentication information given by the user
      */
-    public static function register($User = null, $information = null);
+    public static function register($information, $User = null);
 
     /**
      * Checks if the current user is successfully registered with this auth plugin
@@ -50,12 +50,12 @@ interface iAuthPlugin
     /**
      * Authenticate a user with this plugin
      *
-     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @param mixed $information - authentication information given by the user
+     * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return true - if authenticated
      * @throws \QUI\Exception
      */
-    public static function authenticate($User = null, $information = null);
+    public static function authenticate($information, $User = null);
 
     /**
      * Checks if a user is successfully authenticated for this runtime

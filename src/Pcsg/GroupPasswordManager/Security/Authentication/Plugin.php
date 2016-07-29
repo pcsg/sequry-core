@@ -111,12 +111,12 @@ class Plugin extends QUI\QDOM
     /**
      * Authenticates a user with a plugin
      *
-     * @param QUI\Users\User $User (optional) - if omitted use session user
      * @param mixed $information (optional) - authentication information
+     * @param QUI\Users\User $User (optional) - if omitted use session user
      * @return true - if authenticated
      * @throws QUI\Exception
      */
-    public function authenticate($User = null, $information = null)
+    public function authenticate($information, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
@@ -156,7 +156,7 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        $this->authenticate($User, $old);
+        $this->authenticate($old, $User);
 
         $AuthKeyPair     = CryptoActors::getCryptoUser()->getAuthKeyPair($this);
         $publicKeyValue  = $AuthKeyPair->getPublicKey()->getValue();
@@ -187,7 +187,7 @@ class Plugin extends QUI\QDOM
                     'MAC'        => $macValue
                 ),
                 array(
-                    'userId'       => QUI::getUserBySession()->getId(),
+                    'userId'       => $User->getId(),
                     'authPluginId' => $this->id
                 )
             );
@@ -211,7 +211,7 @@ class Plugin extends QUI\QDOM
      * @return void
      * @throws QUI\Exception
      */
-    public function registerUser($User = null, $information = null)
+    public function registerUser($information, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
@@ -219,10 +219,10 @@ class Plugin extends QUI\QDOM
 
         try {
             // register with plugin
-            $this->AuthClass->register($User, $information);
+            $this->AuthClass->register($information, $User);
 
             // authenticate with plugin
-            $this->authenticate($User, $information);
+            $this->authenticate($information, $User);
 
             // get derived key from authentication information
             $AuthKey = $this->getDerivedKey($User);
@@ -259,7 +259,7 @@ class Plugin extends QUI\QDOM
             QUI::getDataBase()->insert(
                 Tables::KEYPAIRS_USER,
                 array(
-                    'userId'       => QUI::getUserBySession()->getId(),
+                    'userId'       => $User->getId(),
                     'authPluginId' => $this->id,
                     'publicKey'    => $publicKeyValue,
                     'privateKey'   => $encryptedPrivateKeyValue,

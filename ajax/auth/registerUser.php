@@ -14,7 +14,6 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
     try {
         $AuthPlugin = Authentication::getAuthPlugin($authPluginId);
         $AuthPlugin->registerUser(
-            QUI::getUserBySession(),
             json_decode($registrationData, true)
         );
     } catch (QUI\Exception $Exception) {

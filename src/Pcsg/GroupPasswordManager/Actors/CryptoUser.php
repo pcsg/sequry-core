@@ -10,6 +10,8 @@ use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -137,6 +139,23 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
+     * Get CryptoGroups the user has access to (as objects)
+     *
+     * @return array
+     */
+    public function getCryptoGroups()
+    {
+        $groups   = array();
+        $groupIds = $this->getCryptoGroupIds();
+
+        foreach ($groupIds as $groupId) {
+            $groups[] = CryptoActors::getCryptoGroup($groupId);
+        }
+
+        return $groups;
+    }
+
+    /**
      * Get IDs of CryptoGroups the user has access to
      *
      * @return array
@@ -159,7 +178,229 @@ class CryptoUser extends QUI\Users\User
             $groupIds[] = $row['groupId'];
         }
 
-        return $groupIds;
+        return array_unique($groupIds);
+    }
+
+    /**
+     * Get IDs of all passwords the user has access to
+     *
+     * @return array
+     */
+    public function getPasswordIds()
+    {
+        return array_merge($this->getPasswordIdsDirectAccess(), $this->getPasswordIdsGroupAccess());
+    }
+
+    /**
+     * Get IDs of all passwords the user has direct access to
+     *
+     * @return array
+     */
+    public function getPasswordIdsDirectAccess()
+    {
+        $ids = array();
+
+        // direct access
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'dataId'
+            ),
+            'from'   => Tables::USER_TO_PASSWORDS,
+            'where'  => array(
+                'userId' => $this->getId()
+            )
+        ));
+
+        foreach ($result as $row) {
+            $ids[] = $row['dataId'];
+        }
+
+        return array_unique($ids);
+    }
+
+    /**
+     * Get IDs of all passwords the user has acces to via a group
+     *
+     * @return array
+     */
+    public function getPasswordIdsGroupAccess()
+    {
+        $ids    = array();
+        $groups = $this->getCryptoGroups();
+
+        /** @var CryptoGroup $CryptoGroup */
+        foreach ($groups as $CryptoGroup) {
+            $ids = array_merge($ids, $CryptoGroup->getPasswordIds());
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get password access key to decrypt a password
+     *
+     * @param integer $passwordId - Password ID
+     * @return Key
+     *
+     * @throws QUI\Exception
+     */
+    public function getPasswordAccessKey($passwordId)
+    {
+        $passwordIds = $this->getPasswordIds();
+
+        if (!in_array($passwordId, $passwordIds)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptouser.password.access.key.decrypt.user.has.no.access',
+                array(
+                    'userId'     => $this->getId(),
+                    'passwordId' => $passwordId
+                )
+            ));
+        }
+
+        $PasswordKey = $this->getPasswordAccessKeyUser($passwordId);
+
+        if (!$PasswordKey) {
+            $PasswordKey = $this->getPasswordAccessKeyGroup($passwordId);
+        }
+
+        return $PasswordKey;
+    }
+
+    /**
+     * Get password access key via direct access
+     *
+     * @param $passwordId
+     * @return Key|false - Password access key or false if not found
+     *
+     * @throws QUI\Exception
+     */
+    protected function getPasswordAccessKeyUser($passwordId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => Tables::USER_TO_PASSWORDS,
+            'where' => array(
+                'userId' => $this->getId(),
+                'dataId' => $passwordId
+            )
+        ));
+
+        if (empty($result)) {
+            return false;
+        }
+
+        $passwordKeyParts = array();
+
+        foreach ($result as $row) {
+            // check access data integrity/authenticity
+            $accessDataMAC      = $row['MAC'];
+            $accessDataMACCheck = MAC::create(
+                implode(
+                    '',
+                    array(
+                        $row['userId'],
+                        $row['dataId'],
+                        $row['dataKey'],
+                        $row['keyPairId']
+                    )
+                ),
+                Utils::getSystemKeyPairAuthKey()
+            );
+
+            if (!MAC::compare($accessDataMAC, $accessDataMACCheck)) {
+                QUI\System\Log::addCritical(
+                    'Password access data (uid #' . $row['userId'] . ', dataId #' . $row['dataId']
+                    . ', keyPairId #' . $row['keyPairId'] . ' is possibly altered! MAC mismatch!'
+                );
+
+                // @todo eigenen 401 error code
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.acces.data.not.authentic',
+                    array(
+                        'passwordId' => $passwordId
+                    )
+                ));
+            }
+
+            $AuthKeyPair        = Authentication::getAuthKeyPair($row['keyPairId']);
+            $passwordKeyParts[] = AsymmetricCrypto::decrypt(
+                $row['dataKey'],
+                $AuthKeyPair
+            );
+        }
+
+        // build password key from its parts
+        return new Key(SecretSharing::recoverSecret($passwordKeyParts));
+    }
+
+    /**
+     * Get password access key via group access
+     *
+     * @param $passwordId
+     * @return Key|false - Password access key or false if not found
+     *
+     * @throws QUI\Exception
+     */
+    protected function getPasswordAccessKeyGroup($passwordId)
+    {
+        $accessGroupIds = $this->getCryptoGroupIds();
+
+        if (empty($accessGroupIds)) {
+            return false;
+        }
+
+        // get group key
+        $groupId               = array_shift($accessGroupIds);
+        $CryptoGroup           = CryptoActors::getCryptoGroup($groupId);
+        $GroupKeyPairDecrypted = $CryptoGroup->getKeyPairDecrypted($this);
+
+        // decrypt password key with group private key
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => Tables::GROUP_TO_PASSWORDS,
+            'where' => array(
+                'dataId'  => $passwordId,
+                'groupId' => $groupId
+            )
+        ));
+
+        $data = current($result);
+
+        $MACData = array(
+            $data['groupId'],
+            $data['dataId'],
+            $data['dataKey']
+        );
+
+        $MACExpected = $data['MAC'];
+        $MACActual   = MAC::create(
+            implode('', $MACData),
+            Utils::getSystemKeyPairAuthKey()
+        );
+
+        if (!MAC::compare($MACActual, $MACExpected)) {
+            QUI\System\Log::addCritical(
+                'Group password key #' . $data['id'] . ' possibly altered. MAC mismatch!'
+            );
+
+            // @todo eigenen 401 error code
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.group.password.key.not.authentic',
+                array(
+                    'passwordId' => $this->id,
+                    'groupId'    => $CryptoGroup->getId()
+                )
+            ));
+        }
+
+        $passwordKeyDecryptedValue = AsymmetricCrypto::decrypt(
+            $data['dataKey'],
+            $GroupKeyPairDecrypted
+        );
+
+        return new Key($passwordKeyDecryptedValue);
     }
 
     /**
@@ -268,7 +509,7 @@ class CryptoUser extends QUI\Users\User
      * @param bool $countOnly (optional) - get count only
      * @return array
      */
-    public function getPasswords($searchParams, $countOnly = false)
+    public function getPasswordList($searchParams, $countOnly = false)
     {
         $PDO       = QUI::getDataBase()->getPDO();
         $passwords = array();
@@ -434,5 +675,139 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $passwords;
+    }
+
+    /**
+     * Takes all password and group access keys and re-encrypts them with the current
+     * number of authentication key pairs the user has registered according to the respective
+     * security class of a password.
+     *
+     * ATTENTION: This process may take several seconds to complete!
+     *
+     * @return void
+     * @throws QUI\Exception
+     */
+    public function reEncryptAccessKeys()
+    {
+        $DB = QUI::getDataBase();
+
+        // re encrypt direct access
+        $passwordIdsDirect = $this->getPasswordIdsDirectAccess();
+
+        foreach ($passwordIdsDirect as $passwordId) {
+            $Password      = Passwords::get($passwordId, $this);
+            $PasswordKey   = $Password->getPasswordKey();
+            $SecurityClass = Passwords::getSecurityClass($passwordId);
+
+            // split key
+            $passwordKeyParts = SecretSharing::splitSecret(
+                $PasswordKey->getValue(),
+                $SecurityClass->getAuthPluginCount(),
+                $SecurityClass->getRequiredFactors()
+            );
+
+            $authKeyPairs = $this->getAuthKeyPairsBySecurityClass($SecurityClass);
+            $i            = 0;
+
+            /** @var AuthKeyPair $UserAuthKeyPair */
+            foreach ($authKeyPairs as $UserAuthKeyPair) {
+                try {
+                    $passwordKeyPart = $passwordKeyParts[$i++];
+
+                    $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
+                        $passwordKeyPart, $UserAuthKeyPair
+                    );
+
+                    $dataAccessEntry = array(
+                        'userId'    => $this->getId(),
+                        'dataId'    => $passwordId,
+                        'dataKey'   => $encryptedPasswordKeyPart,
+                        'keyPairId' => $UserAuthKeyPair->getId()
+                    );
+
+                    $dataAccessEntry['MAC'] = MAC::create(
+                        implode('', $dataAccessEntry),
+                        Utils::getSystemKeyPairAuthKey()
+                    );
+
+                    $DB->insert(
+                        Tables::USER_TO_PASSWORDS,
+                        $dataAccessEntry
+                    );
+                } catch (\Exception $Exception) {
+                    // on error delete password entry
+                    $DB->delete(
+                        Tables::PASSWORDS,
+                        array(
+                            'id' => $passwordId
+                        )
+                    );
+
+                    QUI\System\Log::addError(
+                        'CryptoUser :: reEncryptKey() :: Error writing password key parts to database: '
+                        . $Exception->getMessage()
+                    );
+
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.crptouser.reencryptkeys.general.error'
+                    ));
+                }
+            }
+        }
+
+        // re encrypt group access
+        $groupIds = $this->getCryptoGroupIds();
+
+        foreach ($groupIds as $groupId) {
+            $CryptoGroup    = CryptoActors::getCryptoGroup($groupId);
+            $GroupAccessKey = $this->getGroupAccessKey($CryptoGroup);
+            $SecurityClass  = $CryptoGroup->getSecurityClass();
+
+            // split key
+            $groupAccessKeyParts = SecretSharing::splitSecret(
+                $GroupAccessKey->getValue(),
+                $SecurityClass->getAuthPluginCount(),
+                $SecurityClass->getRequiredFactors()
+            );
+
+            // encrypt key parts with user public keys
+            $i            = 0;
+            $authKeyPairs = $this->getAuthKeyPairsBySecurityClass($SecurityClass);
+
+            /** @var AuthKeyPair $UserAuthKeyPair */
+            foreach ($authKeyPairs as $UserAuthKeyPair) {
+                try {
+                    $payloadKeyPart = $groupAccessKeyParts[$i++];
+
+                    $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
+                        $payloadKeyPart,
+                        $UserAuthKeyPair
+                    );
+
+                    $data = array(
+                        'userId'        => $this->getId(),
+                        'userKeyPairId' => $UserAuthKeyPair->getId(),
+                        'groupId'       => $this->getId(),
+                        'groupKey'      => $groupAccessKeyPartEncrypted
+                    );
+
+                    // calculate MAC
+                    $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+
+                    QUI::getDataBase()->insert(Tables::USER_TO_GROUPS, $data);
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::addError(
+                        'CryptoUser :: reEncryptAccessKeys :: Error writing password key parts to database: '
+                        . $Exception->getMessage()
+                    );
+
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.crptouser.reencryptkeys.general.error'
+                    ));
+                }
+            }
+        }
     }
 }
