@@ -122,6 +122,9 @@
         <locale name="exception.passwords.create.no.share.rights">
             <de><![CDATA[Es kann dein anderer Benutzer als Passwort-Eigentümer festgelegt werden, da Sie nicht die nötige Berechtigung besitzen, Passwörter anderen Benutzern zugänglich zu machen.]]></de>
         </locale>
+        <locale name="exception.passwords.create.no.permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Passwörter zu erstellen.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
@@ -731,6 +734,11 @@
         </locale>
         <locale name="controls.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>
+        </locale>
+
+        <!-- Control: auth/Panel -->
+        <locale name="auth.panel.title">
+            <de><![CDATA[Authentifizierungs-Module]]></de>
         </locale>
     </groups>
 

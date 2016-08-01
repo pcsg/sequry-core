@@ -8,6 +8,7 @@ namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
+use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
@@ -431,7 +432,7 @@ class Password
      */
     public function setShareData($shareData)
     {
-        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')) {
+        if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.password.no.share.rights'
@@ -782,7 +783,7 @@ class Password
      */
     public function createUserPasswordAccess($User)
     {
-        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')) {
+        if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.password.no.share.rights'
@@ -857,7 +858,7 @@ class Password
      */
     public function createGroupPasswordAccess($Group)
     {
-        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')) {
+        if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.password.no.share.rights'
@@ -1074,30 +1075,11 @@ class Password
      */
     protected function hasPermission($permission)
     {
-        $shareActors = $this->getSecretAttribute('sharedWith');
-        $ownerType   = $this->getSecretAttribute('ownerType');
+        $ownerType = $this->getSecretAttribute('ownerType');
 
         switch ($permission) {
             case self::PERMISSION_VIEW:
-                if ($this->isOwner($this->User)) {
-                    return true;
-                }
-
-                $uId = $this->User->getId();
-
-                if (in_array($uId, $shareActors['users'])) {
-                    return true;
-                }
-
-                $groupIds = $shareActors['groups'];
-
-                foreach ($groupIds as $groupId) {
-                    if ($this->User->isInGroup($groupId)) {
-                        return true;
-                    }
-                }
-
-                return false;
+                return $this->hasPasswordAccess($this->User);
                 break;
             case self::PERMISSION_EDIT:
                 return $this->isOwner($this->User);
@@ -1108,11 +1090,7 @@ class Password
                     return $this->isOwner($this->User);
                 }
 
-                try {
-                    QUI\Permissions\Permission::hasPermission(
-                        'pcsg.gpm.cryptodata.delete'
-                    );
-                } catch (QUI\Exception $Exception) {
+                if (!QUI\Permissions\Permission::hasPermission(Permissions::PASSWORDS_DELETE)) {
                     return false;
                 }
 
@@ -1123,11 +1101,7 @@ class Password
                     return $this->isOwner($this->User);
                 }
 
-                try {
-                    QUI\Permissions\Permission::hasPermission(
-                        'pcsg.gpm.cryptodata.share'
-                    );
-                } catch (QUI\Exception $Exception) {
+                if (!QUI\Permissions\Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
                     return false;
                 }
 

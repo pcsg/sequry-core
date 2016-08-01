@@ -7,6 +7,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
+use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Password;
@@ -43,6 +44,13 @@ class Passwords
      */
     public static function createPassword($passwordData)
     {
+        if (!Permission::hasPermission(Permissions::PASSWORDS_CREATE)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwords.create.no.permission'
+            ));
+        }
+
         // check if necessary data is given
         if (empty($passwordData)
             || !is_array($passwordData)
