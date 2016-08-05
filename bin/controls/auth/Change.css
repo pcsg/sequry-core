@@ -2,3 +2,20 @@
     float: left;
     width: 100%;
 }
+
+.pcsg-gpm-auth-change-recovery,
+.pcsg-gpm-auth-change-recovery-info {
+    float: left;
+    width: 100%;
+}
+
+.pcsg-gpm-auth-change-recovery-inputs {
+    float: left;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.pcsg-gpm-auth-change-recovery-input {
+    margin-right: 10px;
+    width: 85px;
+}

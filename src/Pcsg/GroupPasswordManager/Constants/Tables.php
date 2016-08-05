@@ -27,4 +27,6 @@ class Tables
 
     const USER_TO_GROUPS     = 'pcsg_gpm_user_group_access';
     const GROUP_TO_PASSWORDS = 'pcsg_gpm_group_data_access';
+
+    const RECOVERY = 'pcsg_gpm_recovery';
 }

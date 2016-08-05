@@ -114,16 +114,21 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @param {number} authPluginId - ID of authentication plugin
          * @param {string} oldInfo - old (current) authentication information
          * @param {string} newInfo - new authentication information
+         * @param {boolean} recovery - change information with help of recovery code if old auth info is lost
          * @returns {Promise}
          */
-        changeAuthInformation: function (authPluginId, oldInfo, newInfo) {
+        changeAuthInformation: function (authPluginId, oldInfo, newInfo, recovery) {
+
+            console.log(recovery);
+
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId,
                     oldAuthInfo : oldInfo,
-                    newAuthInfo : newInfo
+                    newAuthInfo : newInfo,
+                    recovery    : recovery ? 1 : 0
                 });
             });
         },

@@ -23,7 +23,7 @@ class Scrypt implements iKDF
     {
         try {
             $hash = ScryptClass::createHash($str, $salt);
-        } catch (QUI\Exception $Exception) {
+        } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'Scrypt :: Hash operation failed: ' . $Exception->getMessage()
             );

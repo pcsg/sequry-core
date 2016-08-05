@@ -207,8 +207,8 @@ class Plugin extends QUI\QDOM
      * Registers a user with this Plugin
      *
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
-     * @param mixed $information (optional) - authentication information
-     * @return void
+     * @param mixed $information (optional) - registration information
+     * @return mixed - authentication information that can decrypt the private key
      * @throws QUI\Exception
      */
     public function registerUser($information, $User = null)
@@ -219,10 +219,10 @@ class Plugin extends QUI\QDOM
 
         try {
             // register with plugin
-            $this->AuthClass->register($information, $User);
+            $authInformation = $this->AuthClass->register($information, $User);
 
             // authenticate with plugin
-            $this->authenticate($information, $User);
+            $this->authenticate($authInformation, $User);
 
             // get derived key from authentication information
             $AuthKey = $this->getDerivedKey($User);
@@ -276,6 +276,8 @@ class Plugin extends QUI\QDOM
                 'exception.auth.plugin.register.database.error'
             ));
         }
+
+        return $authInformation;
     }
 
     /**

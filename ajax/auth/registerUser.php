@@ -1,21 +1,26 @@
 <?php
 
 use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
 
 /**
  * Register current session user and create a keypair for an authentication plugin
  *
  * @param integer $authPluginId - ID of authentication plugin
  * @param array $registrationData - authentication data
- * @return bool
+ * @return string - recovery code
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId, $registrationData)
 {
     try {
-        $AuthPlugin = Authentication::getAuthPlugin($authPluginId);
-        $AuthPlugin->registerUser(
+        // register with auth plugin
+        $AuthPlugin      = Authentication::getAuthPlugin($authPluginId);
+        $authInformation = $AuthPlugin->registerUser(
             json_decode($registrationData, true)
         );
+
+        // generate recovery code
+        $recoveryCode = Recovery::createEntry($AuthPlugin, $authInformation);
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
@@ -36,7 +41,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
         )
     );
 
-    return true;
+    return $recoveryCode;
 }
 
 \QUI::$Ajax->register(

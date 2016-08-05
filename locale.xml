@@ -305,6 +305,20 @@
             <de><![CDATA[Der Benutzer #[userId] konnte der Gruppe #[groupId] nicht zugeordnet werden:<br/><br/>[error].]]></de>
         </locale>
 
+        <!-- Recovery -->
+        <locale name="exception.recovery.create.entry.wrong.authentication.information">
+            <de><![CDATA[Es kann kein Wiederherstellungs-Eintrag erzeugt werden, da die Authentifizierungsinformationen falsch sind.]]></de>
+        </locale>
+        <locale name="exception.recovery.recover.entry.not.found">
+            <de><![CDATA[Es wurde kein Wiederherstellungs-Eintrag für den Benutzer #[userId] und das Authentifizierungs-Modul #[authPluginId] gefunden.]]></de>
+        </locale>
+        <locale name="exception.recovery.recover.entry.mac.mismatch">
+            <de><![CDATA[Der Wiederherstellungs-Eintrag hat die Authentizitäts-Prüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.recovery.recover.wrong.code">
+            <de><![CDATA[Der Wiederherstellungs-Code ist nicht korrekt.]]></de>
+        </locale>
+
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
@@ -323,6 +337,44 @@
         </locale>
         <locale name="menu.extras.gpm.groups.title">
             <de><![CDATA[Passwort-Gruppen]]></de>
+        </locale>
+
+        <!-- print recovery code -->
+        <locale name="auth.recoverycodewindow.info" html="true">
+            <de><![CDATA[Mit diesem Wiederherstellungs-Code können Sie ihre Authentifizierungsinformationen ändern, wenn Sie auf die Authentifizierungsinformationen keinen Zugriff mehr haben. <b>Dieser Wiederherstellungs-Code wird nur einmalig angezeigt und nach dem Schließen dieses Fensters dauerhaft gelöscht!</b> Klicken Sie auf <b>Drucken</b>, um den Wiederherstellungs-Code auszudrucken oder schreiben Sie ihn auf und verwahren Sie ihn an einem sicheren Ort.]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.print.info" html="true">
+            <de><![CDATA[Wiederherstellungs-Code für den QUIQQER Passwort-Manager bei Verlust der Authentifizierungsinformationen. Mit diesem Code können Sie Ihre aktuellen Zugangsdaten für das unten genannte Authentifizierungs-Modul einmalig ändern.]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.print.warning.title">
+            <de><![CDATA[ACHTUNG!]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.print.warning">
+            <de><![CDATA[Bewahren Sie diesen Wiederherstellungs-Code an einem sicheren Ort auf. Geben Sie ihn nicht an Dritte weiter. Mit Zugriff auf diesen Code können u.U. alle Passwörter eingesehen werden, auf die Sie Zugriff haben!]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.print.title">
+            <de><![CDATA[QUIQQER Passwort-Manager]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.basicData">
+            <de><![CDATA[Wiederherstellungs-Informationen]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.username">
+            <de><![CDATA[Benutzername]]></de>
+        </locale>
+        <locale name="auth.auth.recoverycodewindow.authplugin">
+            <de><![CDATA[Authentifizierungs-Modul]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.date">
+            <de><![CDATA[Datum]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.print.btn.text">
+            <de><![CDATA[Drucken]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.close.btn.text">
+            <de><![CDATA[Schließen]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.popup.recoverycode.btn.text.countdown">
+            <de><![CDATA[Schließen ([number])]]></de>
         </locale>
 
     </groups>
@@ -464,7 +516,7 @@
             <de><![CDATA[Bestätigen]]></de>
         </locale>
         <locale name="gpm.auth.panel.change.title">
-            <de><![CDATA[Authentifizierungsinformationen ändern]]></de>
+            <de><![CDATA[Authentifizierungsinformationen für "[authPluginTitle]" ändern]]></de>
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Neue Informationen senden]]></de>
@@ -480,10 +532,19 @@
 
         <!-- Control: auth/Change -->
         <locale name="auth.change.template.title">
-            <de><![CDATA[Änderung der Authentifizierungsinformationen für ein Authentifizierungs-Methode]]></de>
+            <de><![CDATA[Änderung der Authentifizierungsinformationen für eine Authentifizierungs-Methode]]></de>
         </locale>
         <locale name="auth.change.template.basicData">
             <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
+        </locale>
+        <locale name="auth.change.template.recovery">
+            <de><![CDATA[Authentifizierungsinformationen vergessen]]></de>
+        </locale>
+        <locale name="auth.change.btn.recovery">
+            <de><![CDATA[Ich habe meine aktuellen Authentifizierungsinformationen vergessen]]></de>
+        </locale>
+        <locale name="auth.recovery.information">
+            <de><![CDATA[Sie können Ihre aktuellen Authentifizierungsinformationen mit dem Wiederherstellungscode, der bei Registrierung mit dieser Authentifizierungs-Methode angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Authentifizierungsinformationen dafür leer.]]></de>
         </locale>
 
         <!-- Control: auth/EligibleActorSelect -->
@@ -739,6 +800,11 @@
         <!-- Control: auth/Panel -->
         <locale name="auth.panel.title">
             <de><![CDATA[Authentifizierungs-Module]]></de>
+        </locale>
+
+        <!-- Control: auth/RecoveryCodeWindow -->
+        <locale name="auth.recoverycodewindow.title">
+            <de><![CDATA[Wiederherstellungs-Code]]></de>
         </locale>
     </groups>
 

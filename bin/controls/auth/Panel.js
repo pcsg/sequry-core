@@ -17,20 +17,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'qui/QUI',
     'qui/controls/desktop/Panel',
     'qui/controls/buttons/Button',
+    'qui/controls/windows/Popup',
     'qui/controls/loader/Loader',
     'controls/grid/Grid',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
 
     'Ajax',
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
-], function (QUI, QUIPanel, QUIButton, QUILoader, Grid, AuthHandler, AuthRegister,
-             AuthChange, Ajax, QUILocale) {
+], function (QUI, QUIPanel, QUIButton, QUIPopup, QUILoader, Grid, AuthHandler, AuthRegister,
+             AuthChange, RecoveryCodeWindow, Ajax, QUILocale) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager';
@@ -257,6 +259,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.Loader.show();
 
+            var AuthPluginData  = self.$Grid.getSelectedData()[0];
+
             this.createSheet({
                 title : QUILocale.get(lg, 'gpm.auth.panel.register.title'),
                 events: {
@@ -264,7 +268,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         Sheet.getContent().setStyle('padding', 20);
 
                         var Register = new AuthRegister({
-                            authPluginId: self.$Grid.getSelectedData()[0].id,
+                            authPluginId: AuthPluginData.id,
                             events      : {
                                 onFinish: function () {
                                     self.Loader.hide();
@@ -280,16 +284,27 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                     onClick: function () {
                                         self.Loader.show();
 
-                                        Register.submit().then(function (success) {
+                                        Register.submit().then(function (recoveryCode) {
                                             self.Loader.hide();
 
-                                            if (!success) {
+                                            if (!recoveryCode) {
                                                 return;
                                             }
 
                                             Sheet.hide().then(function () {
                                                 Sheet.destroy();
-                                                self.refresh();
+
+                                                new RecoveryCodeWindow({
+                                                    'authPluginId'   : AuthPluginData.id,
+                                                    'authPluginTitle': AuthPluginData.title,
+                                                    'recoveryCode'   : recoveryCode,
+                                                    events: {
+                                                        onClose: function() {
+                                                            recoveryCode = null;
+                                                            self.refresh();
+                                                        }
+                                                    }
+                                                }).open();
                                             });
                                         });
                                     }
@@ -312,14 +327,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.Loader.show();
 
+            var AuthPluginData = self.$Grid.getSelectedData()[0];
+
             this.createSheet({
-                title : QUILocale.get(lg, 'gpm.auth.panel.change.title'),
+                title : QUILocale.get(lg, 'gpm.auth.panel.change.title', {
+                    authPluginTitle: AuthPluginData.title
+                }),
                 events: {
                     onShow : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
                         var Change = new AuthChange({
-                            authPluginId: self.$Grid.getSelectedData()[0].id,
+                            authPluginId: AuthPluginData.id,
                             events      : {
                                 onFinish: function () {
                                     self.Loader.hide();
@@ -333,18 +352,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
+                                        if (!Change.check()) {
+                                            return;
+                                        }
+
                                         self.Loader.show();
 
-                                        Change.submit().then(function (success) {
+                                        Change.submit().then(function (recoveryCode) {
                                             self.Loader.hide();
 
-                                            if (!success) {
+                                            if (!recoveryCode) {
                                                 return;
                                             }
 
                                             Sheet.hide().then(function () {
                                                 Sheet.destroy();
-                                                self.refresh();
+
+                                                new RecoveryCodeWindow({
+                                                    'authPluginId'   : AuthPluginData.id,
+                                                    'authPluginTitle': AuthPluginData.title,
+                                                    'recoveryCode'   : recoveryCode,
+                                                    events: {
+                                                        onClose: function() {
+                                                            recoveryCode = null;
+                                                            self.refresh();
+                                                        }
+                                                    }
+                                                }).open();
                                             });
                                         });
                                     }

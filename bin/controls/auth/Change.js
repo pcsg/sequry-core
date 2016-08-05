@@ -18,6 +18,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/controls/buttons/Button',
     'qui/utils/Form',
     'Locale',
     'Mustache',
@@ -29,8 +30,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css'
 
-], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, AuthHandler,
-             Ajax, template) {
+], function (QUI, QUIControl, QUIButton, QUIFormUtils, QUILocale, Mustache,
+             AuthHandler, Ajax, template) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager',
@@ -43,7 +44,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
 
         Binds: [
             '$onInject',
-            'submit'
+            'submit',
+            '$showRecovery'
         ],
 
         options: {
@@ -60,7 +62,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                 onInject: this.$onInject
             });
 
-            this.$Parent = this.getAttribute('Parent');
+            this.$Parent       = this.getAttribute('Parent');
+            this.$recoveryMode = false;
 
             if (this.$Parent) {
                 this.$Parent.addEvents({
@@ -84,9 +87,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                 'class': 'pcsg-gpm-auth-register',
                 html   : Mustache.render(template, {
                     title    : QUILocale.get(lg, lg_prefix + 'title'),
-                    basicData: QUILocale.get(lg, lg_prefix + 'basicData')
+                    basicData: QUILocale.get(lg, lg_prefix + 'basicData'),
+                    recovery : QUILocale.get(lg, lg_prefix + 'recovery')
                 })
             });
+
+            new QUIButton({
+                textimage: 'fa fa-question-circle',
+                text     : QUILocale.get(lg, 'auth.change.btn.recovery'),
+                events   : {
+                    onClick: this.$showRecovery
+                }
+            }).inject(
+                this.$Elm.getElement(
+                    '.pcsg-gpm-auth-change-recovery'
+                )
+            );
 
             var AuthPluginControlElm = this.$Elm.getElement(
                 '.pcsg-gpm-auth-change-control'
@@ -99,7 +115,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                     authPluginControlPath
                 ], function (Control) {
                     self.$AuthPluginControl = new Control({
-                        events : {
+                        events: {
                             onSubmit: self.submit
                         }
                     }).inject(
@@ -114,10 +130,92 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
         },
 
         /**
+         * Show recovery information and input
+         */
+        $showRecovery: function () {
+            this.$recoveryMode = true;
+
+            var RecoveryElm = this.$Elm.getElement(
+                '.pcsg-gpm-auth-change-recovery'
+            );
+
+            RecoveryElm.set(
+                'html',
+                '<span class="pcsg-gpm-auth-change-recovery-info">' + QUILocale.get(lg, 'auth.recovery.information') + '</span>' +
+                '<div class="pcsg-gpm-auth-change-recovery-inputs"></div>'
+            );
+
+            var InputsElm = RecoveryElm.getElement('.pcsg-gpm-auth-change-recovery-inputs');
+
+            for (var i = 0; i < 5; i++) {
+                var InputElm = new Element('input', {
+                    'class'  : 'pcsg-gpm-auth-change-recovery-input',
+                    'data-id': i + 1,
+                    type     : 'text',
+                    maxlength: 5,
+                    events   : {
+                        input: function (event) {
+                            var Elm = event.target;
+
+                            if (Elm.value.length < 5) {
+                                return;
+                            }
+
+                            var id = parseInt(Elm.getProperty('data-id'));
+
+                            if (id === 5) {
+                                return;
+                            }
+
+                            RecoveryElm.getElement('input[data-id="' + (id + 1) + '"]').focus();
+                        }
+                    }
+                }).inject(InputsElm);
+
+                if (i === 0) {
+                    InputElm.focus();
+                }
+            }
+        },
+
+        /**
+         * Get recovery code
+         *
+         * @return {string} - the recovery code
+         */
+        $getRecoveryCode: function () {
+            if (!this.$recoveryMode) {
+                return;
+            }
+
+            var inputs = this.$Elm.getElement('.pcsg-gpm-auth-change-recovery-inputs').getElements('input');
+            var code   = '';
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                code += inputs[i].value;
+            }
+
+            return code;
+        },
+
+        /**
          * event : on inject
          */
         $onInject: function () {
             // @todo
+        },
+
+        /**
+         * Check validity of changes
+         *
+         * @return {boolean}
+         */
+        check: function () {
+            if (!this.$recoveryMode) {
+                return this.$AuthPluginControl.check();
+            }
+
+            return true;
         },
 
         /**
@@ -126,14 +224,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
          * @returns {Promise}
          */
         submit: function () {
-            if (!this.$AuthPluginControl.check()) {
-                return;
+            var OldAuthData = this.$AuthPluginControl.getOldAuthData();
+
+            if (this.$recoveryMode) {
+                OldAuthData = this.$getRecoveryCode();
             }
 
             return Authentication.changeAuthInformation(
                 this.getAttribute('authPluginId'),
-                this.$AuthPluginControl.getOldAuthData(),
-                this.$AuthPluginControl.getNewAuthData()
+                OldAuthData,
+                this.$AuthPluginControl.getNewAuthData(),
+                this.$recoveryMode
             );
         }
     });

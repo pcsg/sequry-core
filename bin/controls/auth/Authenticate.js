@@ -184,7 +184,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 require(
                     paths,
                     function () {
-                        var controls = arguments;
+                        var controls     = arguments;
+                        var FirstControl = false;
 
                         for (var i = 0, len = controls.length; i < len; i++) {
                             var Control = new controls[i]();
@@ -200,6 +201,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                             });
 
                             Control.inject(PluginElm);
+
+                            if (!FirstControl) {
+                                FirstControl = Control;
+                            }
+                        }
+
+                        if (FirstControl) {
+                            FirstControl.focus();
                         }
 
                         AuthPopup.Loader.hide();
@@ -211,12 +220,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         /**
          * Get authentication data
          *
-         * @return {{}}
+         * @return {Object}
          */
         getAuthData: function () {
             var AuthData = {};
 
-            for (var i = 0, len = this.$authPluginIds; i < len; i++) {
+            for (var i = 0, len = this.$authPluginIds.length; i < len; i++) {
                 // not optimal
                 AuthData[this.$authPluginIds[i]] = this.$authPluginControls[i].getAuthData();
             }
