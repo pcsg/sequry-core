@@ -18,8 +18,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
     $oldAuthInfo,
     $newAuthInfo,
     $recovery = false
-)
-{
+) {
     $oldAuthInfo = Orthos::clear($oldAuthInfo);
     $newAuthInfo = Orthos::clear($newAuthInfo);
 
@@ -38,7 +37,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.auth.changeauth', array(
+                'error.auth.changeauth',
+                array(
                     'error' => $Exception->getMessage()
                 )
             )

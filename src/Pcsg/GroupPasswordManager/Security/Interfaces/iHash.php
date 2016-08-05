@@ -5,7 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a Hash API for the pcsg/grouppasswordmanager module
  */
-interface iHash
+interface IHash
 {
     /**
      * Creates a hash

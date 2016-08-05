@@ -2,8 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iHash;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iKDF;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IHash;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 
 /**
@@ -16,7 +15,7 @@ class Hash
     /**
      * Hash Class Object for the configured hash module
      *
-     * @var iHash
+     * @var IHash
      */
     protected static $HashModule = null;
     
@@ -33,7 +32,7 @@ class Hash
     }
 
     /**
-     * @return iHash
+     * @return IHash
      */
     protected static function getHashModule()
     {

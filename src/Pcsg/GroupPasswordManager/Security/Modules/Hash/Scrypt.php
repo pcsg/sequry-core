@@ -2,14 +2,14 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\Hash;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iHash;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IHash;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Classes\Scrypt as ScryptClass;
 
 /**
  * This class provides a hashing API for the pcsg/grouppasswordmanager module
  */
-class Scrypt implements iHash
+class Scrypt implements IHash
 {
     /**
      * Creates a hash

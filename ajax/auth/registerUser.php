@@ -25,7 +25,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.auth.registeruser', array(
+                'error.auth.registeruser',
+                array(
                     'error' => $Exception->getMessage()
                 )
             )
