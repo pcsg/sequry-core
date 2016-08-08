@@ -60,7 +60,7 @@ $html = '
 <html>
 <head>
 <meta charset="UTF-8">
-<title>HKL USED</title>
+<title>QUIQQER Password Manager</title>
 
 <script type="text/javascript">
     window.onload = function() {
