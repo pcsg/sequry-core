@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager\Actors;
 
+use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
@@ -149,7 +150,7 @@ class CryptoUser extends QUI\Users\User
         $groupIds = $this->getCryptoGroupIds();
 
         foreach ($groupIds as $groupId) {
-            $groups[] = CryptoActors::getCryptoGroup($groupId);
+            $groups[] = CryptoActors::getCryptoGroup($groupId, $this);
         }
 
         return $groups;
@@ -255,6 +256,32 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $ids;
+    }
+
+    /**
+     * Get IDs of all passwords the user owns
+     *
+     * @return array - password IDs
+     */
+    public function getOwnerPasswordIds()
+    {
+        $passwordIds = array();
+        $result      = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::PASSWORDS,
+            'where'  => array(
+                'ownerId'   => $this->getId(),
+                'ownerType' => Password::OWNER_TYPE_USER
+            )
+        ));
+
+        foreach ($result as $row) {
+            $passwordIds[] = $row['id'];
+        }
+
+        return $passwordIds;
     }
 
     /**
@@ -393,8 +420,8 @@ class CryptoUser extends QUI\Users\User
 
         // get group key
         $groupId               = array_shift($accessGroupIds);
-        $CryptoGroup           = CryptoActors::getCryptoGroup($groupId);
-        $GroupKeyPairDecrypted = $CryptoGroup->getKeyPairDecrypted($this);
+        $CryptoGroup           = CryptoActors::getCryptoGroup($groupId, $this);
+        $GroupKeyPairDecrypted = $this->getGroupAccessKey($CryptoGroup);
 
         // decrypt password key with group private key
         $result = QUI::getDataBase()->fetch(array(
@@ -732,6 +759,10 @@ class CryptoUser extends QUI\Users\User
      */
     public function getNonFullyAccessiblePasswordIds($AuthPlugin)
     {
+        if (!$AuthPlugin->isRegistered($this)) {
+            return array();
+        }
+
         $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblepasswordids/' . $AuthPlugin->getId();
 
         try {
@@ -776,7 +807,7 @@ class CryptoUser extends QUI\Users\User
         ));
 
         foreach ($result as $row) {
-            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId']);
+            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId'], $this);
             $groupPasswordIds = $CryptoGroup->getPasswordIds();
 
             foreach ($groupPasswordIds as $groupPasswordId) {
@@ -939,7 +970,7 @@ class CryptoUser extends QUI\Users\User
             ));
         }
 
-        $CryptoGroup    = CryptoActors::getCryptoGroup($groupId);
+        $CryptoGroup    = CryptoActors::getCryptoGroup($groupId, $this);
         $GroupAccessKey = $this->getGroupAccessKey($CryptoGroup);
         $SecurityClass  = $CryptoGroup->getSecurityClass();
 
@@ -1013,5 +1044,60 @@ class CryptoUser extends QUI\Users\User
         foreach ($groupIds as $groupId) {
             $this->reEncryptGroupAccessKey($groupId);
         }
+    }
+
+    /**
+     * Delete crypto user permanently
+     */
+    public function delete()
+    {
+        // check if user is last user of any CryptoGroups
+        $groups = $this->getCryptoGroups();
+
+        /** @var CryptoGroup $CryptoGroup */
+        foreach ($groups as $CryptoGroup) {
+            $userCount = (int)$CryptoGroup->countUser();
+
+            if ($userCount <= 1) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptouser.delete.last.group.member',
+                    array(
+                        'groupId' => $CryptoGroup->getId()
+                    )
+                ));
+            }
+        }
+
+        /** @var CryptoGroup $CryptoGroup */
+        foreach ($groups as $CryptoGroup) {
+            $CryptoGroup->removeCryptoUser($this);
+        }
+
+        // delete all passwords the user owns
+        $ownerPasswordIds = $this->getOwnerPasswordIds();
+
+        foreach ($ownerPasswordIds as $passwordId) {
+            $Password = Passwords::get($passwordId, $this);
+            $Password->delete();
+        }
+
+        // delete keypairs
+        $DB = QUI::getDataBase();
+
+        // delete auth plugin users
+        $authPlugins = Authentication::getAuthPlugins();
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($authPlugins as $AuthPlugin) {
+            $AuthPlugin->deleteUser($this);
+        }
+
+        $DB->delete(
+            Tables::KEYPAIRS_USER,
+            array(
+                'userId' => $this->getId()
+            )
+        );
     }
 }

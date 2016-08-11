@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 
 /**
@@ -102,4 +103,12 @@ interface iAuthPlugin
      * @return \QUI\Control
      */
     public static function getChangeAuthenticationControl();
+
+    /**
+     * Delete a user from this plugin
+     *
+     * @param CryptoUser $CryptoUser
+     * @return mixed
+     */
+    public static function deleteUser($CryptoUser);
 }

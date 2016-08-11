@@ -476,7 +476,7 @@ class Password
 
                 case self::OWNER_TYPE_GROUP:
                     try {
-                        $Group = CryptoActors::getCryptoGroup($actorId);
+                        $Group = CryptoActors::getCryptoGroup($actorId, $this->User);
 
                         // cannot share with owner group
                         if ($this->getSecretAttribute('ownerType') === $this::OWNER_TYPE_GROUP
@@ -522,7 +522,7 @@ class Password
 
         foreach ($deleteShareGroupIds as $id) {
             try {
-                $Group = CryptoActors::getCryptoGroup($id);
+                $Group = CryptoActors::getCryptoGroup($id, $this->User);
                 $this->removeGroupPasswordAccess($Group);
             } catch (\Exception $Exception) {
                 // @todo error log und meldung an user
@@ -609,9 +609,16 @@ class Password
         try {
             $DB = QUI::getDataBase();
 
-            // first: delete access entries
+            // first: delete access entries for users and groups
             $DB->delete(
                 Tables::USER_TO_PASSWORDS,
+                array(
+                    'dataId' => $this->id
+                )
+            );
+
+            $DB->delete(
+                Tables::GROUP_TO_PASSWORDS,
                 array(
                     'dataId' => $this->id
                 )
@@ -700,7 +707,7 @@ class Password
                     return true;
                 }
 
-                $Group = CryptoActors::getCryptoGroup($id);
+                $Group = CryptoActors::getCryptoGroup($id, $this->User);
 
                 try {
                     $this->createGroupPasswordAccess($Group);
@@ -754,7 +761,7 @@ class Password
                 break;
 
             case self::OWNER_TYPE_GROUP:
-                $Group = CryptoActors::getCryptoGroup($currentOwnerId);
+                $Group = CryptoActors::getCryptoGroup($currentOwnerId, $this->User);
 
                 try {
                     $this->removeGroupPasswordAccess($Group);

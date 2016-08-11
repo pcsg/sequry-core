@@ -101,7 +101,7 @@ class Passwords
         $ownerId = (int)$owner['id'];
 
         if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')
-            && $ownerId !== QUI::getUserBySession()->getId()
+            && $ownerId !== (int)QUI::getUserBySession()->getId()
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',

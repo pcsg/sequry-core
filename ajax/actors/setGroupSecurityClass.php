@@ -12,7 +12,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  *
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass($groupId, $securityClassId)
+function package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass($groupId, $securityClassId)
 {
     // @todo PERMISSION CHECK
 
@@ -32,14 +32,14 @@ function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass($gr
         CryptoActors::createCryptoGroup($Group, $SecurityClass);
     } else {
         $CryptoGroup = CryptoActors::getCryptoGroup($Group->getId());
-        $CryptoGroup->addSecurityClass($SecurityClass);
+        $CryptoGroup->setSecurityClass($SecurityClass);
     }
 
     return true;
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass',
+    'package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass',
     array('groupId', 'securityClassId', 'authData'),
     'Permission::checkAdminUser'
 );

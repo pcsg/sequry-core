@@ -145,6 +145,29 @@ class Authentication
     }
 
     /**
+     * Get all authentication plugins
+     *
+     * @return array
+     */
+    public static function getAuthPlugins()
+    {
+        $authPlugins = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from' => Tables::AUTH_PLUGINS,
+        ));
+
+        foreach ($result as $row) {
+            $authPlugins[] = self::getAuthPlugin($row['id']);
+        }
+
+        return $authPlugins;
+    }
+
+    /**
      * Return every auth plugin associated with a specific auth level
      *
      * @param integer $securityClassId - ID of security class

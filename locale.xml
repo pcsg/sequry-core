@@ -120,7 +120,7 @@
             <de><![CDATA[Es wurde keine Daten für das Password übergeben.]]></de>
         </locale>
         <locale name="exception.passwords.create.no.share.rights">
-            <de><![CDATA[Es kann dein anderer Benutzer als Passwort-Eigentümer festgelegt werden, da Sie nicht die nötige Berechtigung besitzen, Passwörter anderen Benutzern zugänglich zu machen.]]></de>
+            <de><![CDATA[Es kann kein anderer Benutzer als Passwort-Eigentümer festgelegt werden, da Sie nicht die nötige Berechtigung besitzen, Passwörter anderen Benutzern zugänglich zu machen.]]></de>
         </locale>
         <locale name="exception.passwords.create.no.permission">
             <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Passwörter zu erstellen.]]></de>
@@ -170,13 +170,13 @@
             <de><![CDATA[Ein Teil des Entschlüsselungsschlüssels des Benutzers #[userId] für das Schlüsselpaar der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptouser.group.access.key.decrypt.user.has.no.access">
-            <de><![CDATA[Das Schlüsselpaar der Gruppe #[groupId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer keine Zugriffsrecht für diese Gruppe hat.]]></de>
+            <de><![CDATA[Das Schlüsselpaar der Gruppe #[groupId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer kein Zugriffsrecht für diese Gruppe hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.group.access.key.part.auth.key.error" html="true">
             <de><![CDATA[Beim Zugriff auf das Schlüsselpaar einer Authentifizierungs-Methode (#[authKeyPairId]) zur Entschlüsselung des Schlüsselpaars der Gruppe #[groupId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.cryptouser.password.access.key.decrypt.user.has.no.access">
-            <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer keine Zugriffsrecht für dieses Passwort hat.]]></de>
+            <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer kein Zugriffsrecht für dieses Passwort hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.reencryptdirect.no.direct.access">
             <de><![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer #[userId] nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer keinen direkten Zugriff auf das Passwort hat.]]></de>
@@ -212,6 +212,24 @@
         </locale>
         <locale name="exception.cryptogroup.setsecurityclass.users.has.no.group.access">
             <de><![CDATA[Der Benutzer #[userId] kann die Sicherheitsklasse #[securityClassId] der Gruppe #[groupId] nicht zuordnen, da der Benutzer der Gruppe nicht zugewiesen ist.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.add.user.has.no.access">
+            <de><![CDATA[Der Benutzer #[userId] kann keine anderen Benutzer der Gruppe #[groupId] zuweisen, da er dieser Gruppe nicht selbst angehört.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.add.user.has.no.permission">
+            <de><![CDATA[Der Benutzer #[userId] kann keine anderen Benutzer der Gruppe #[groupId] zuweisen, da er dafür nicht die nötige Berechtigung besitzt.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.remove.user.has.no.access">
+            <de><![CDATA[Der Benutzer #[userId] kann keine anderen Benutzer aus der Gruppe #[groupId] entfernen, da er dieser Gruppe nicht selbst angehört.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.remove.user.has.no.permission">
+            <de><![CDATA[Der Benutzer #[userId] kann keine anderen Benutzer aus der Gruppe #[groupId] entfernen, da er dafür nicht die nötige Berechtigung besitzt.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.no.group.access">
+            <de><![CDATA[Der Benutzer #[userId] gehört der Gruppe #[groupId] nicht an.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.remove.user.has.no.permission">
+            <de><![CDATA[Der Benutzer #[userId] besitzt nicht die nötige Berechtigung.]]></de>
         </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->

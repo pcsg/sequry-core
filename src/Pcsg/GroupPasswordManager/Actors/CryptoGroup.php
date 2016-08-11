@@ -6,23 +6,20 @@
 
 namespace Pcsg\GroupPasswordManager\Actors;
 
-use Monolog\Handler\Curl\Util;
-use ParagonIE\Halite\Symmetric\Crypto;
+use Pcsg\GroupPasswordManager\Constants\Permissions;
+use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
-use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
-use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
+use QUI\Permissions\Permission as QUIPermissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
-use Symfony\Component\Console\Helper\Table;
 
 /**
  * Group Class
@@ -49,14 +46,27 @@ class CryptoGroup extends QUI\Groups\Group
     protected $SecurityClass = null;
 
     /**
+     * CryptoUser that interacts with this group
+     *
+     * @var CryptoUser
+     */
+    protected $CryptoUser = null;
+
+    /**
      * CryptoGroup constructor.
      *
      * @param integer $groupId - quiqqer group id
+     * @param CryptoUser $CryptoUser (optional) - The user that interacts with this group; if omitted, use session user
      */
-    public function __construct($groupId)
+    public function __construct($groupId, CryptoUser $CryptoUser = null)
     {
         parent::__construct($groupId);
 
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
+        $this->CryptoUser    = $CryptoUser;
         $this->KeyPair       = $this->getKeyPair();
         $this->SecurityClass = $this->getSecurityClass();
     }
@@ -124,37 +134,6 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
-     * Get Group KeyPair with DECRYPTED private key
-     *
-     * @param CryptoUser $DecryptUser (optional) - The user whose authentication information is used to decrypt
-     * the group private key; if omitted use session user
-     * @return KeyPair
-     *
-     * @throws QUI\Exception
-     */
-    public function getKeyPairDecrypted($DecryptUser = null)
-    {
-        if (is_null($DecryptUser)) {
-            $DecryptUser = CryptoActors::getCryptoUser();
-        }
-
-        // decrypt group access key
-        $GroupPrivateKeyDecrypted = new Key(
-            SymmetricCrypto::decrypt(
-                $this->KeyPair->getPrivateKey()->getValue(),
-                $DecryptUser->getGroupAccessKey($this)
-            )
-        );
-
-        $GroupKeyPairDecrypted = new KeyPair(
-            $this->KeyPair->getPublicKey()->getValue(),
-            $GroupPrivateKeyDecrypted->getValue()
-        );
-
-        return $GroupKeyPairDecrypted;
-    }
-
-    /**
      * Return SecurityClass that is associated with this group
      *
      * @return SecurityClass
@@ -192,8 +171,15 @@ class CryptoGroup extends QUI\Groups\Group
      *
      * @throws QUI\Exception
      */
-    public function addSecurityClass($SecurityClass)
+    public function setSecurityClass($SecurityClass)
     {
+        $this->checkCryptoUserPermission();
+
+        // check if security class is already set to this group
+        if ($this->getSecurityClassId() == $SecurityClass->getId()) {
+            return;
+        }
+
         if (!$SecurityClass->checkGroupUsersForEligibility($this)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -201,19 +187,6 @@ class CryptoGroup extends QUI\Groups\Group
                 array(
                     'groupId'         => $this->getId(),
                     'securityClassId' => $SecurityClass->getId()
-                )
-            ));
-        }
-
-        // check if session user has group access
-        if (!$this->hasCryptoUserAccess()) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptogroup.setsecurityclass.users.has.no.group.access',
-                array(
-                    'groupId'         => $this->getId(),
-                    'securityClassId' => $SecurityClass->getId(),
-                    'userId'          => QUI::getUserBySession()->getId()
                 )
             ));
         }
@@ -290,7 +263,7 @@ class CryptoGroup extends QUI\Groups\Group
             Utils::getSystemKeyPairAuthKey()
         );
 
-        $DB->inser(
+        $DB->update(
             Tables::KEYPAIRS_GROUP,
             $data,
             array(
@@ -303,16 +276,13 @@ class CryptoGroup extends QUI\Groups\Group
      * Adds a user to this group so he can access all passwords the group has access to
      *
      * @param CryptoUser $AddUser - The user that is added to the group
-     * @param CryptoUser $CryptoUser - The user that adds $AddUser to the group; if omitted, use session user
      * @return void
      *
      * @throws QUI\Exception
      */
-    public function addCryptoUser($AddUser, $CryptoUser = null)
+    public function addCryptoUser(CryptoUser $AddUser)
     {
-        if (is_null($CryptoUser)) {
-            $CryptoUser = CryptoActors::getCryptoUser();
-        }
+        $this->checkCryptoUserPermission();
 
         if (!$this->SecurityClass->isUserEligible($AddUser)) {
             throw new QUI\Exception(array(
@@ -327,8 +297,6 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         // split key
-        // @todo PERMISSION
-
         $GroupAccessKey = $CryptoUser->getGroupAccessKey($this);
 
         $groupAccessKeyParts = SecretSharing::splitSecret(
@@ -382,29 +350,29 @@ class CryptoGroup extends QUI\Groups\Group
     /**
      * Remove access to group for crypto user
      *
-     * @param CryptoUser $CryptoUser
+     * @param CryptoUser $RemoveUser - the user that is removed
      * @return void
      *
      * @throws QUI\Exception
      */
-    public function removeCryptoUser($CryptoUser)
+    public function removeCryptoUser(CryptoUser $RemoveUser)
     {
-        if (!$this->hasCryptoUserAccess($CryptoUser)) {
+        $this->checkCryptoUserPermission();
+
+        if (!$this->hasCryptoUserAccess($RemoveUser)) {
             return;
         }
 
         $userCount = (int)$this->countUser();
 
-        \QUI\System\Log::writeRecursive($userCount);
-
         // if the user that is to be removed is the last user of this group,
         // the user cannot be deleted
-        if ($userCount === 1) {
+        if ($userCount <= 1) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptogroup.cannot.remove.last.user',
                 array(
-                    'userId'          => $CryptoUser->getId(),
+                    'userId'          => $RemoveUser->getId(),
                     'groupId'         => $this->getId(),
                     'securityClassId' => $this->SecurityClass->getId()
                 )
@@ -414,7 +382,7 @@ class CryptoGroup extends QUI\Groups\Group
         QUI::getDataBase()->delete(
             Tables::USER_TO_GROUPS,
             array(
-                'userId'  => $CryptoUser->getId(),
+                'userId'  => $RemoveUser->getId(),
                 'groupId' => $this->getId()
             )
         );
@@ -508,14 +476,58 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
-     * Decrypt group private key with current session user
+     * Get IDs of all password this group owns
      *
-     * @return Key - (decrypted) private key
+     * @return array
      */
-    protected function decryptGroupPrivateKey()
+    public function getOwnerPasswordIds()
     {
-        $CryptoUser = CryptoActors::getCryptoUser();
+        $passwordIds = array();
+        $result      = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::PASSWORDS,
+            'where'  => array(
+                'ownerId'   => $this->getId(),
+                'ownerType' => Password::OWNER_TYPE_GROUP
+            )
+        ));
 
+        foreach ($result as $row) {
+            $passwordIds[] = $row['id'];
+        }
 
+        return $passwordIds;
+    }
+
+    /**
+     * Checks if the current Group CryptoUser is part of this group AND has permission to edit it
+     *
+     * @return void
+     * @throws QUI\Exception
+     */
+    protected function checkCryptoUserPermission()
+    {
+        if (!$this->hasCryptoUserAccess($this->CryptoUser)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.no.group.access',
+                array(
+                    'groupId' => $this->getId(),
+                    'userId'  => $this->CryptoUser->getId()
+                )
+            ));
+        }
+
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_EDIT, $this->CryptoUser)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.no.permission',
+                array(
+                    'groupId' => $this->getId()
+                )
+            ));
+        };
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Authentication;
 
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
@@ -281,6 +282,21 @@ class Plugin extends QUI\QDOM
     }
 
     /**
+     * Checks if the user is registered with this plugin
+     *
+     * @param QUI\Users\User $User
+     * @return bool
+     */
+    public function isRegistered($User = null)
+    {
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
+        return $this->AuthClass->isRegistered($User);
+    }
+
+    /**
      * Get derived key from authentication information
      *
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
@@ -316,5 +332,16 @@ class Plugin extends QUI\QDOM
     public function getRegisteredUserIds()
     {
         return $this->AuthClass->getRegisteredUserIds();
+    }
+
+    /**
+     * Deletes user from this plugin
+     *
+     * @param CryptoUser $CryptoUser
+     * @return void
+     */
+    public function deleteUser($CryptoUser)
+    {
+        $this->AuthClass->deleteUser($CryptoUser);
     }
 }

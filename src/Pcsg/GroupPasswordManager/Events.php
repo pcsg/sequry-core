@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use ParagonIE\Halite\Symmetric\Crypto;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
@@ -138,6 +139,22 @@ class Events
             }
         }
 
+        if (empty($groupsNow)) {
+            $User->clearGroups();
+            return;
+        }
+
         $User->setGroups($groupsNow);
+    }
+
+    /**
+     * event: on user delete
+     *
+     * @param QUI\Users\User $User
+     */
+    public static function onUserDelete($User)
+    {
+        $CryptoUser = CryptoActors::getCryptoUser($User->getId());
+        $CryptoUser->delete();
     }
 }

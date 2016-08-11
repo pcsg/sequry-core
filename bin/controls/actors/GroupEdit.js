@@ -98,6 +98,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
             ).then(function (Actor) {
                 self.fireEvent('loaded');
 
+                if (!Actor.sessionUserInGroup) {
+                    self.$SecurityClassSelect.disable();
+                    self.$canEditGroup = false;
+
+                    self.$NoEditWarnElm = new Element('div', {
+                        'class': 'pcsg-gpm-group-edit-error',
+                        html   : '<span>' +
+                        QUILocale.get(lg, 'controls.groupedit.not.in.group') +
+                        '</span>'
+                    }).inject(
+                        self.$Elm.getElement('.pcsg-gpm-group-edit-securityclass'),
+                        'top'
+                    );
+                }
+
                 if (!Actor.securityClassId) {
                     new Element('div', {
                         'class': 'pcsg-gpm-group-edit-warning',
@@ -114,21 +129,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
                 self.$currentSecurityClassId = Actor.securityClassId;
                 self.$SecurityClassSelect.setValue(Actor.securityClassId);
-
-                if (!Actor.sessionUserInGroup) {
-                    self.$SecurityClassSelect.disable();
-                    self.$canEditGroup = false;
-
-                    self.$NoEditWarnElm = new Element('div', {
-                        'class': 'pcsg-gpm-group-edit-error',
-                        html   : '<span>' +
-                        QUILocale.get(lg, 'controls.groupedit.not.in.group') +
-                        '</span>'
-                    }).inject(
-                        self.$Elm.getElement('.pcsg-gpm-group-edit-securityclass'),
-                        'top'
-                    );
-                }
             });
 
             return this.$Elm;

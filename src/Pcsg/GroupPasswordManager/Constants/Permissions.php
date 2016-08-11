@@ -17,4 +17,6 @@ class Permissions
     const PASSWORDS_EDIT   = 'pcsg.gpm.cryptodata.edit';
     const PASSWORDS_DELETE = 'pcsg.gpm.cryptodata.delete';
     const PASSWORDS_SHARE  = 'pcsg.gpm.cryptodata.share';
+
+    const GROUP_EDIT = 'pcsg.gpm.cryptogroup.edit';
 }

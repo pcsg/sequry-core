@@ -186,16 +186,28 @@ class CryptoActors
      * Get crypto user
      *
      * @param integer $id - QUIQQER Group ID
+     * @param CryptoUser $CryotpUser (optional) - User that interacts with the group; if omitted, use session user
      * @return CryptoGroup
      */
-    public static function getCryptoGroup($id)
+    public static function getCryptoGroup($id, $CryotpUser = null)
     {
-        if (isset(self::$groups[$id])) {
-            return self::$groups[$id];
+        if (is_null($CryotpUser)) {
+            $CryotpUser = CryptoActors::getCryptoUser();
         }
 
-        self::$groups[$id] = new CryptoGroup($id);
+        $userId = $CryotpUser->getId();
 
-        return self::$groups[$id];
+        if (isset(self::$groups[$id])
+            && isset(self::$groups[$id][$userId])) {
+            return self::$groups[$id][$userId];
+        }
+
+        if (!isset(self::$groups[$id])) {
+            self::$groups[$id] = array();
+        }
+
+        self::$groups[$id][$userId] = new CryptoGroup($id, $CryotpUser);
+
+        return self::$groups[$id][$userId];
     }
 }
