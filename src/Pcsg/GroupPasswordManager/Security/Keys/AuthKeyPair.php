@@ -105,8 +105,19 @@ class AuthKeyPair extends KeyPair
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Return AuthPlugin of this KeyPair
+     *
+     * @return Plugin
+     */
+    public function getAuthPlugin()
+    {
+        return $this->AuthPlugin;
     }
 
     /**

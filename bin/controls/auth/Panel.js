@@ -25,6 +25,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow',
 
     'Ajax',
     'Locale',
@@ -32,7 +33,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUIPopup, QUILoader, Grid, AuthHandler, AuthRegister,
-             AuthChange, RecoveryCodeWindow, Ajax, QUILocale) {
+             AuthChange, RecoveryCodeWindow, SyncAuthPluginWindow, Ajax, QUILocale) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager';
@@ -134,6 +135,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     dataIndex: 'registered',
                     dataType : 'text',
                     width    : 75
+                }, {
+                    header   : '&nbsp;',
+                    dataIndex: 'sync',
+                    dataType : 'node',
+                    width    : 65
                 }, {
                     dataIndex: 'isregistered',
                     hidden   : true
@@ -241,6 +247,29 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     Row.isregistered = false;
                 }
 
+                if (Data.sync) {
+                    Row.sync = new QUIButton({
+                        icon        : 'fa fa-exclamation-triangle',
+                        authPluginId: Data.id,
+                        height      : 20,
+                        styles      : {
+                            color        : 'red',
+                            'line-height': 0
+                        },
+                        events      : {
+                            onClick: function (Btn) {
+                                new SyncAuthPluginWindow({
+                                    authPluginId: Btn.getAttribute('authPluginId')
+                                }).open();
+                            }
+                        }
+                    }).create();
+                } else {
+                    Row.sync = new Element('span', {
+                        html: '&nbsp;'
+                    });
+                }
+
                 data.push(Row);
             }
 
@@ -259,15 +288,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.Loader.show();
 
-            var AuthPluginData  = self.$Grid.getSelectedData()[0];
+            var AuthPluginData = self.$Grid.getSelectedData()[0];
+            var Register, RegisterSheet;
 
             this.createSheet({
                 title : QUILocale.get(lg, 'gpm.auth.panel.register.title'),
                 events: {
                     onShow : function (Sheet) {
+                        RegisterSheet = Sheet;
+
                         Sheet.getContent().setStyle('padding', 20);
 
-                        var Register = new AuthRegister({
+                        Register = new AuthRegister({
                             authPluginId: AuthPluginData.id,
                             events      : {
                                 onFinish: function () {
@@ -281,33 +313,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                 text     : QUILocale.get(lg, 'auth.panel.register.btn.register'),
                                 textimage: 'fa fa-save',
                                 events   : {
-                                    onClick: function () {
-                                        self.Loader.show();
-
-                                        Register.submit().then(function (recoveryCode) {
-                                            self.Loader.hide();
-
-                                            if (!recoveryCode) {
-                                                return;
-                                            }
-
-                                            Sheet.hide().then(function () {
-                                                Sheet.destroy();
-
-                                                new RecoveryCodeWindow({
-                                                    'authPluginId'   : AuthPluginData.id,
-                                                    'authPluginTitle': AuthPluginData.title,
-                                                    'recoveryCode'   : recoveryCode,
-                                                    events: {
-                                                        onClose: function() {
-                                                            recoveryCode = null;
-                                                            self.refresh();
-                                                        }
-                                                    }
-                                                }).open();
-                                            });
-                                        });
-                                    }
+                                    onClick: FuncOnRegisterBtnClick
                                 }
                             })
                         );
@@ -317,6 +323,54 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     }
                 }
             }).show();
+
+            var FuncOnRegisterBtnClick = function () {
+                self.Loader.show();
+
+                Register.submit().then(function (recoveryCode) {
+                    self.Loader.hide();
+
+                    if (!recoveryCode) {
+                        return;
+                    }
+
+                    RegisterSheet.hide().then(function () {
+                        RegisterSheet.destroy();
+
+                        new RecoveryCodeWindow({
+                            'authPluginId'   : AuthPluginData.id,
+                            'authPluginTitle': AuthPluginData.title,
+                            'recoveryCode'   : recoveryCode,
+                            events           : {
+                                onClose: function () {
+                                    recoveryCode = null;
+                                    self.$nonFullyAccessiblePasswordCheck(
+                                        AuthPluginData.id
+                                    );
+                                }
+                            }
+                        }).open();
+                    });
+                });
+            };
+        },
+
+        $nonFullyAccessiblePasswordCheck: function (authPluginId) {
+            var self = this;
+
+            Authentication.hasNonFullyAccessiblePasswords(
+                authPluginId
+            ).then(function (result) {
+                if (!result) {
+                    self.refresh();
+                    return;
+                }
+
+                // @todo open synch auth window
+                new SyncAuthPluginWindow({
+                    authPluginId: authPluginId
+                }).open();
+            });
         },
 
         /**
@@ -372,8 +426,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                                     'authPluginId'   : AuthPluginData.id,
                                                     'authPluginTitle': AuthPluginData.title,
                                                     'recoveryCode'   : recoveryCode,
-                                                    events: {
-                                                        onClose: function() {
+                                                    events           : {
+                                                        onClose: function () {
                                                             recoveryCode = null;
                                                             self.refresh();
                                                         }

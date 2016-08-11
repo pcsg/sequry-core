@@ -10,37 +10,37 @@
 
         <!-- Class: Password -->
         <locale name="exception.password.not.found">
-            <de><![CDATA[Das Passwort mit der ID [passwordId] wurde nicht gefunden.]]></de>
+            <de><![CDATA[Das Passwort mit der ID #[passwordId] wurde nicht gefunden.]]></de>
         </locale>
         <locale name="exception.password.decryption.error">
-            <de><![CDATA[Das Passwort mit der ID [passwordId] konnte nicht erfolgreich entschlüsselt werden.]]></de>
+            <de><![CDATA[Das Passwort mit der ID #[passwordId] konnte nicht erfolgreich entschlüsselt werden.]]></de>
         </locale>
         <locale name="exception.password.payload.wrong.datatype">
-            <de><![CDATA[Die Nutzdaten für das Passwort mit der ID [passwordId] konnte nicht gesetzt werden.]]></de>
+            <de><![CDATA[Die Nutzdaten für das Passwort mit der ID #[passwordId] konnte nicht gesetzt werden.]]></de>
         </locale>
         <locale name="exception.password.addviewuser.no.rights">
-            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Ansichtsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID #[passwordId] keine Ansichtsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
         </locale>
         <locale name="exception.password.addviewuser.error">
-            <de><![CDATA[Beim Hinzufügen des Ansichtsrechts für das Passwort mit der ID [passwordId] für Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de><![CDATA[Beim Hinzufügen des Ansichtsrechts für das Passwort mit der ID #[passwordId] für Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.password.removviewtuser.no.rights">
-            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Ansichtsrechte entziehen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID #[passwordId] keine Ansichtsrechte entziehen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
         </locale>
         <locale name="exception.password.removviewtuser.no.user">
-            <de><![CDATA[Sie können dem Benutzer mit der ID [userId] für das Passwort mit der ID [passwordId] keine Ansichtsrechte entziehen, weil dieser das Recht nicht besitzt.]]></de>
+            <de><![CDATA[Sie können dem Benutzer mit der ID [userId] für das Passwort mit der ID #[passwordId] keine Ansichtsrechte entziehen, weil dieser das Recht nicht besitzt.]]></de>
         </locale>
         <locale name="exception.password.removviewtuser.error">
-            <de><![CDATA[Beim Enziehen des Ansichtsrechts für Benutzer mit der ID [userId] für das Passwort mit der ID [passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de><![CDATA[Beim Enziehen des Ansichtsrechts für Benutzer mit der ID #[userId] für das Passwort mit der ID [passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.password.addedituser.no.rights">
-            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Bearbeitungsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID #[passwordId] keine Bearbeitungsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
         </locale>
         <locale name="exception.password.removeedituser.no.rights">
-            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID [passwordId] keine Bearbeitungsrechte entziehen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
+            <de><![CDATA[Sie können Benutzern für das Passwort mit der ID #[passwordId] keine Bearbeitungsrechte entziehen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
         </locale>
         <locale name="exception.password.removeedituser.no.user">
-            <de><![CDATA[Sie können dem Benutzer mit der ID [userId] für das Passwort mit der ID [passwordId] keine Bearbeitungsrechte entziehen, weil dieser das Recht nicht besitzt.]]></de>
+            <de><![CDATA[Sie können dem Benutzer mit der ID [userId] für das Passwort mit der ID #[passwordId] keine Bearbeitungsrechte entziehen, weil dieser das Recht nicht besitzt.]]></de>
         </locale>
         <locale name="exception.password.save.error">
             <de><![CDATA[Das Password mit der ID [passwordId] konnte nicht gespeichert werden. Bitte wenden Sie sich an einen Administrator.]]></de>
@@ -178,6 +178,15 @@
         <locale name="exception.cryptouser.password.access.key.decrypt.user.has.no.access">
             <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer keine Zugriffsrecht für dieses Passwort hat.]]></de>
         </locale>
+        <locale name="exception.cryptouser.reencryptdirect.no.direct.access">
+            <de><![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer #[userId] nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer keinen direkten Zugriff auf das Passwort hat.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.reencryptgroup.no.group.access">
+            <de><![CDATA[Der Schlüssel für die Gruppe #[groupId] kann für den Benutzer #[userId] nicht erneut verschlüsselt werden, da der Benutzer keinen Zugriff auf die Gruppe hat.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.password.key.recovery.error">
+            <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer sich nicht für die ausreichende Anzahl an Authentifizierungs-Faktoren für das Passwort authentifiziert hat.]]></de>
+        </locale>
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
@@ -237,6 +246,12 @@
         <locale name="exception.auth.plugin.not.found">
             <de><![CDATA[Das Authentifizierungs-Plugin mit der ID [id] wurde nicht gefunden.]]></de>
         </locale>
+        <locale name="success.authentication.sync.authplugin">
+            <de><![CDATA[Der Vorgang war erfolgreich. Der Authentifizierungs-Faktor #[authPluginId] kann von Ihnen nun für alle Passwörter mit entsprechender Sicherheitsklasse verwendet werden.]]></de>
+        </locale>
+        <locale name="error.authentication.sync.authplugin">
+            <de><![CDATA[Der Vorgang war nicht erfolgreich. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
 
         <!-- Ajax -->
         <locale name="success.auth.registeruser">
@@ -287,6 +302,12 @@
         </locale>
         <locale name="attention.securityclass.edit.groups.cannot.delete.group">
             <de><![CDATA[Die Gruppe #[groupId] kann nicht aus der Sicherheitsklasse #[securityClassId] entfernt werden. Gruppen können nur aus einer Sicherheitsklasse entfernt werden, wenn sie einer anderen Sicherheitsklasse zugeordnet oder direkt gelöscht werden.]]></de>
+        </locale>
+        <locale name="exception.securityclass.authenticate.wrong.authdata">
+            <de><![CDATA[Die Authentifizierungsinformationen für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] sind nicht korrekt.]]></de>
+        </locale>
+        <locale name="exception.securityclass.authenticate.insufficient.authentication.count">
+            <de><![CDATA[Zur Authentifizierung für die Sicherheitsklasse #[securityClassId] wurden nicht ausreichend Authentifizierungsinformationen übergeben. Sie müssen sich bei mindestens [requiredFactors] verschiedenen Faktoren authentifizieren.]]></de>
         </locale>
 
         <!-- Class: Security\Keys\AuthKeyPair -->
@@ -578,6 +599,11 @@
             <de><![CDATA[Hier klicken, um den Authentifizierungsvorgang abzubrechen]]></de>
         </locale>
 
+        <!-- Control: password/Authenticate -->
+        <locale name="controls.password.authenticate.warning">
+            <de><![CDATA[Dieser Authentifizierungs-Faktor kann für dieses Passwort z.Z. nicht verwendet werden. Um dies zu beheben, gehen Sie bitte in die Authentifizierungsverwaltung und klicken auf den Warn-Button für diesen Authentifizierungs-Faktor.]]></de>
+        </locale>
+
         <!-- Control: passwords/View -->
         <locale name="controls.password.view.popup.title">
             <de><![CDATA[Passwort ansehen]]></de>
@@ -805,6 +831,20 @@
         <!-- Control: auth/RecoveryCodeWindow -->
         <locale name="auth.recoverycodewindow.title">
             <de><![CDATA[Wiederherstellungs-Code]]></de>
+        </locale>
+
+        <!-- Control: auth/SyncAuthPluginWindow -->
+        <locale name="auth.syncauthpluginwindow.title">
+            <de><![CDATA[Authentifizierungs-Faktor synchronisieren]]></de>
+        </locale>
+        <locale name="auth.syncauthpluginwindow.info" html="true">
+            <de><![CDATA[Sie haben Berechtigungen für Passwörter, für deren Zugriff das Authentifizierungs-Modul <b>"[authPluginTitle]"</b> verwendet werden kann. Da Sie bereits Zugriff auf diese Passwörter hatten, bevor Sie sich für dieses Authentifizierungs-Modul registriert haben, ist es nötig, sich einmalig für die Sicherheitsklassen dieser Passwörter zu authentifizieren. Dadurch wird sichergestellt, dass sie auch diesen Authentifizierungs-Faktor für den Zugriff auf diese Passwörter nutzen können.]]></de>
+        </locale>
+        <locale name="auth.syncauthpluginwindow.btn.unlock.text">
+            <de><![CDATA[Authentifizierung]]></de>
+        </locale>
+        <locale name="auth.syncauthpluginwindow.authdata.incorrect">
+            <de><![CDATA[Die Authentifizierungsinformationen sind nicht korrekt.]]></de>
         </locale>
     </groups>
 

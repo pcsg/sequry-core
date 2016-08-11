@@ -146,8 +146,6 @@ class Password
      */
     public function __construct($id, $CryptoUser = null)
     {
-        ini_set('display_errors', 1);
-
         $id = (int)$id;
 
         if (is_null($CryptoUser)) {
@@ -168,7 +166,7 @@ class Password
                 'pcsg/grouppasswordmanager',
                 'exception.password.not.found',
                 array(
-                    'id' => $id
+                    'passwordId' => $id
                 )
             ), 404);
         }

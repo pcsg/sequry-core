@@ -192,15 +192,8 @@ class CryptoGroup extends QUI\Groups\Group
      *
      * @throws QUI\Exception
      */
-    public function setSecurityClass($SecurityClass)
+    public function addSecurityClass($SecurityClass)
     {
-        // check if security class is already set to this group
-        $securityClassGroupIds = $SecurityClass->getGroupIds();
-
-        if (in_array($this->getId(), $securityClassGroupIds)) {
-            return;
-        }
-
         if (!$SecurityClass->checkGroupUsersForEligibility($this)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -297,7 +290,7 @@ class CryptoGroup extends QUI\Groups\Group
             Utils::getSystemKeyPairAuthKey()
         );
 
-        $DB->update(
+        $DB->inser(
             Tables::KEYPAIRS_GROUP,
             $data,
             array(

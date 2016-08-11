@@ -82,13 +82,18 @@ class Authentication
             'from'   => Tables::AUTH_PLUGINS
         ));
 
+        $CryptoUser = CryptoActors::getCryptoUser();
+
         foreach ($result as $row) {
             $AuthPlugin = self::getAuthPlugin($row['id']);
 
+
             $row['registered'] = self::isRegistered(
-                CryptoActors::getCryptoUser(),
+                $CryptoUser,
                 $AuthPlugin
             );
+
+            $row['sync'] = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin)) > 0;
 
             $list[] = $row;
         }

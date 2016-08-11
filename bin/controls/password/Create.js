@@ -26,7 +26,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
@@ -36,7 +35,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
-             AuthenticationControl, SecurityClassSelect, ActorSelect, PasswordTypes, template) {
+             SecurityClassSelect, ActorSelect, PasswordTypes, template) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager',

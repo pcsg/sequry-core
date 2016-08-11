@@ -197,6 +197,22 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                     onError  : reject,
                 });
             });
+        },
+
+        /**
+         * Get IDs of authentication plugins which are availble for accessing a specific password
+         *
+         * @param {number} passwordId
+         * @returns {Promise}
+         */
+        getAvailableAuthPluginIds: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPluginIds', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId
+                });
+            });
         }
     });
 });

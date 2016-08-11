@@ -21,7 +21,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
     'qui/controls/Control',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
 
@@ -81,61 +81,57 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
         $onInject: function () {
             var self = this;
 
-            Passwords.getSecurityClassId(
-                this.getAttribute('passwordId')
-            ).then(function (securityClassId) {
-                var AuthControl = new AuthenticationControl({
-                    securityClassId: securityClassId,
-                    events         : {
-                        onSubmit: function (AuthData) {
-                            Passwords.getView(
-                                self.getAttribute('passwordId'),
-                                AuthData
-                            ).then(
-                                function (PasswordData) {
-                                    AuthControl.destroy();
+            var AuthControl = new AuthenticationControl({
+                passwordId: this.getAttribute('passwordId'),
+                events         : {
+                    onSubmit: function (AuthData) {
+                        Passwords.getView(
+                            self.getAttribute('passwordId'),
+                            AuthData
+                        ).then(
+                            function (PasswordData) {
+                                AuthControl.destroy();
 
-                                    self.$Elm.set(
-                                        'html',
-                                        '<h1 class="pcsg-gpm-password-view-info-title">' +
-                                        PasswordData.title +
-                                        '</h1>' +
-                                        '<div class="pcsg-gpm-password-view-info">' +
-                                        '<p class="pcsg-gpm-password-view-info-datatype">' +
-                                        PasswordData.dataType +
-                                        '</p>' +
-                                        '<p class="pcsg-gpm-password-view-info-description">' +
-                                        PasswordData.description +
-                                        '</p>' +
-                                        '</div>' +
-                                        '<div class="pcsg-gpm-password-view-payload"></div>'
-                                    );
+                                self.$Elm.set(
+                                    'html',
+                                    '<h1 class="pcsg-gpm-password-view-info-title">' +
+                                    PasswordData.title +
+                                    '</h1>' +
+                                    '<div class="pcsg-gpm-password-view-info">' +
+                                    '<p class="pcsg-gpm-password-view-info-datatype">' +
+                                    PasswordData.dataType +
+                                    '</p>' +
+                                    '<p class="pcsg-gpm-password-view-info-description">' +
+                                    PasswordData.description +
+                                    '</p>' +
+                                    '</div>' +
+                                    '<div class="pcsg-gpm-password-view-payload"></div>'
+                                );
 
-                                    var PassContent = new PasswordContent({
-                                        type  : PasswordData.dataType,
-                                        events: {
-                                            onLoaded: function () {
-                                                PassContent.setData(PasswordData.payload);
-                                                self.fireEvent('loaded');
-                                            }
+                                var PassContent = new PasswordContent({
+                                    type  : PasswordData.dataType,
+                                    events: {
+                                        onLoaded: function () {
+                                            PassContent.setData(PasswordData.payload);
+                                            self.fireEvent('loaded');
                                         }
-                                    }).inject(
-                                        self.$Elm.getElement('.pcsg-gpm-password-view-payload')
-                                    );
-                                },
-                                function () {
-                                    // @todo
-                                }
-                            );
-                        },
-                        onClose : function () {
-                            self.fireEvent('close');
-                        }
+                                    }
+                                }).inject(
+                                    self.$Elm.getElement('.pcsg-gpm-password-view-payload')
+                                );
+                            },
+                            function () {
+                                // @todo
+                            }
+                        );
+                    },
+                    onClose : function () {
+                        self.fireEvent('close');
                     }
-                });
-
-                AuthControl.open();
+                }
             });
+
+            AuthControl.open();
         }
     });
 });

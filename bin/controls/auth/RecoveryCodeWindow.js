@@ -140,7 +140,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
          * event: on open
          */
         $onOpen: function () {
-            var i    = 20;
+            var i    = 1;
             var self = this;
 
             var CloseCountdown = setInterval(function () {

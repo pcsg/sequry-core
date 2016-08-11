@@ -134,6 +134,40 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
+         * Get id, title and description of an authentication plugin
+         *
+         * @param {number} authPluginId - ID of authentication plugin
+         * @returns {Promise}
+         */
+        getAuthPluginInfo: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginInfo', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId
+                });
+            });
+        },
+
+        /**
+         * Get id, title and description of an authentication plugin
+         *
+         * @param {number} securityClassId - id of security class
+         * @param {Object} AuthData - authentication information
+         * @returns {Promise}
+         */
+        checkAuthInfo: function (securityClassId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfo', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    securityClassId: securityClassId,
+                    authData       : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
          * Get id, title and description of a security class
          *
          * @param {number} securityClassId - ID of security class
@@ -164,38 +198,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Get all users that are eligible as password owner or receiver
-         *
-         * @param securityClassId
-         * @returns {Promise}
-         */
-        getEligibleUsersBySecurityClass: function (securityClassId) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getEligibleUsers', resolve, {
-                    'package'      : pkg,
-                    onError        : reject,
-                    securityClassId: securityClassId
-                });
-            });
-        },
-
-        /**
-         * Get all groups of which all users are eligible as password owner or receiver
-         *
-         * @param securityClassId
-         * @returns {Promise}
-         */
-        getEligibleGroupsBySecurityClass: function (securityClassId) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getEligibleGroups', resolve, {
-                    'package'      : pkg,
-                    onError        : reject,
-                    securityClassId: securityClassId
-                });
-            });
-        },
-
-        /**
          * Create new security class
          *
          * @param {Object} Data
@@ -203,7 +205,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         createSecurityClass: function (Data) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass', resolve, {
                     'package': pkg,
                     onError  : reject,
                     data     : JSON.encode(Data)
@@ -259,6 +261,39 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     onError  : reject,
                     id       : id,
                     type     : type
+                });
+            });
+        },
+
+        /**
+         * Checks if a user has access to passwords which keys are not protected by all possible authentication plugins
+         *
+         * @param {number} authPluginId - authentication plugin
+         * @returns {Promise}
+         */
+        hasNonFullyAccessiblePasswords: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_hasNonFullyAccessiblePasswords', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId
+                });
+            });
+        },
+
+        /**
+         * Get IDs of security classes of passwords which keys are not protected by
+         * all possible authentication plugins (current session user)
+         *
+         * @param {number} authPluginId - authentication plugin
+         * @returns {Promise}
+         */
+        getNonFullyAccessiblePasswordSecurityClassIds: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessiblePasswordSecurityClassIds', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId
                 });
             });
         }

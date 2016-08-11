@@ -9,12 +9,14 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  *
  * @param integer $groupId - id of QUIQQER group
  * @param integer $securityClassId - id of security class
- * @param array $authData - authentication data
  *
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass($groupId, $securityClassId, $authData)
+function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass($groupId, $securityClassId)
 {
+    // @todo PERMISSION CHECK
+
+
     $Group         = QUI::getGroups()->get((int)$groupId);
     $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 
@@ -29,19 +31,15 @@ function package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass($gr
     if (current(current($result)) == 0) {
         CryptoActors::createCryptoGroup($Group, $SecurityClass);
     } else {
-        $SecurityClass->authenticate(
-            json_decode($authData, true) // @todo diese daten ggf. filtern
-        );
-
         $CryptoGroup = CryptoActors::getCryptoGroup($Group->getId());
-        $CryptoGroup->setSecurityClass($SecurityClass);
+        $CryptoGroup->addSecurityClass($SecurityClass);
     }
 
     return true;
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass',
+    'package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass',
     array('groupId', 'securityClassId', 'authData'),
     'Permission::checkAdminUser'
 );

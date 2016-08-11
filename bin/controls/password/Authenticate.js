@@ -1,0 +1,108 @@
+/**
+ * Control for creating a new password
+ *
+ * @module package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate
+ * @author www.pcsg.de (Patrick Müller)
+ *
+ * @require qui/QUI
+ * @require qui/controls/Control
+ * @require Locale
+ * @require Mustache
+ * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
+ * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate.html
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate.css
+ *
+ * @event onFinish
+ * @event onAbort - on AuthPopup user close
+ * @event onClose - on AuthPopup close
+ */
+define('package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate', [
+
+    'qui/controls/loader/Loader',
+    'Locale',
+
+    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+
+    'css!package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate.css'
+
+], function (QUILoader, QUILocale, PasswordHandler, AuthenticationControl) {
+    "use strict";
+
+    var lg        = 'pcsg/grouppasswordmanager',
+        Passwords = new PasswordHandler();
+
+    return new Class({
+
+        Extends: AuthenticationControl,
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
+
+        Binds: [
+            '$onLoaded',
+            '$getPasswordId'
+        ],
+
+        options: {
+            'passwordId': false // id of the password the authentication is for
+        },
+
+        initialize: function (options) {
+            this.parent(
+                Object.merge(
+                    options, {
+                        beforeOpen: this.$getPasswordId
+                    }
+                )
+            );
+
+            this.addEvents({
+                onLoaded: this.$onLoaded
+            });
+        },
+
+        /**
+         * Fetch password ID before opening popup
+         *
+         * @returns {*}
+         */
+        $getPasswordId: function() {
+            var self = this;
+
+            return Passwords.getSecurityClassId(
+                self.getAttribute('passwordId')
+            ).then(function(securityClassId) {
+                self.setAttribute(
+                    'securityClassId',
+                    securityClassId
+                );
+            });
+        },
+
+        $onLoaded: function()
+        {
+            var self = this;
+
+            Passwords.getAvailableAuthPluginIds(
+                self.getAttribute('passwordId')
+            ).then(function(availableAuthPluginIds) {
+                for (var i = 0, len = self.$authPluginControls.length; i < len; i++) {
+                    var authPluginId = self.$authPluginControls[i].getAttribute('authPluginId');
+
+                    if (availableAuthPluginIds.contains(authPluginId)) {
+                        continue;
+                    }
+
+                    var AuthPluginElm = self.$authPluginControls[i].getElm();
+
+                    new Element('div', {
+                        'class': 'pcsg-gpm-password-auth-warning',
+                        html: '<span>' + QUILocale.get(lg, 'controls.password.authenticate.warning') + '</span>'
+                    }).inject(
+                        AuthPluginElm,
+                        'top'
+                    );
+                }
+            });
+        }
+    });
+});

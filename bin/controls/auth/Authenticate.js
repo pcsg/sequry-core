@@ -12,7 +12,7 @@
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.css
  *
- * @event onFinish
+ * @event onLoaded
  * @event onAbort - on AuthPopup user close
  * @event onClose - on AuthPopup close
  */
@@ -43,11 +43,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
         Binds: [
             '$onInject',
-            'submit'
+            'submit',
+            'open',
+            '$openPopup'
         ],
 
         options: {
-            'securityClassId': false // id the security class the authentication is for
+            'securityClassId': false, // id the security class the authentication is for
+            'beforeOpen'     : false // Promise Object that is resolved before the popup opens
         },
 
         initialize: function (options) {
@@ -87,9 +90,27 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         },
 
         /**
-         * Open authentication popup
+         * Open authentication popup and check if a Promise has to be resolved beforehand
          */
         open: function () {
+            var self = this,
+                Prom = Promise.resolve();
+
+            if (this.getAttribute('beforeOpen')) {
+                Prom = this.getAttribute('beforeOpen')();
+            }
+
+            Prom.then(function () {
+                self.$openPopup();
+            }).catch(function () {
+                self.destroy();
+            });
+        },
+
+        /**
+         * Open popup
+         */
+        $openPopup: function () {
             var self = this;
 
             var AuthPopup = new QUIPopup({
@@ -180,7 +201,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     paths.push(authPluginPath);
                 }
 
-                // load auth pluginsIm 
+                // load auth plugins
                 require(
                     paths,
                     function () {
@@ -188,7 +209,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         var FirstControl = false;
 
                         for (var i = 0, len = controls.length; i < len; i++) {
-                            var Control = new controls[i]();
+                            var Control = new controls[i]({
+                                authPluginId: self.$authPluginIds[i]
+                            });
 
                             self.$authPluginControls.push(Control);
 
@@ -212,6 +235,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         }
 
                         AuthPopup.Loader.hide();
+                        self.fireEvent('loaded');
                     }
                 );
             });
@@ -225,9 +249,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         getAuthData: function () {
             var AuthData = {};
 
-            for (var i = 0, len = this.$authPluginIds.length; i < len; i++) {
-                // not optimal
-                AuthData[this.$authPluginIds[i]] = this.$authPluginControls[i].getAuthData();
+            for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
+                var Control      = this.$authPluginControls[i];
+                var authPluginId = Control.getAttribute('authPluginId');
+
+                AuthData[authPluginId] = Control.getAuthData();
             }
 
             return AuthData;

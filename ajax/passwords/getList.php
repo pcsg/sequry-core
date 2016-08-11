@@ -8,13 +8,6 @@
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
 {
-    ini_set('display_errors', 1);
-//    QUI\Rights\Permission::checkPermission(
-//        'hklused.machines.category.list.view'
-//    );
-
-    \Pcsg\GroupPasswordManager\Security\AsymmetricCrypto::generateKeyPair();
-
     $CryptoUser = \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors::getCryptoUser();
 
     $searchParams = \QUI\Utils\Security\Orthos::clearArray(

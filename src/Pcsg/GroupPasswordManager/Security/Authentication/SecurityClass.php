@@ -98,7 +98,9 @@ class SecurityClass extends QUI\QDOM
      */
     public function authenticate($authData, $CryptoUser = null)
     {
-        if (empty($authData)) {
+        if (empty($authData)
+            || !is_array($authData)
+        ) {
             // @todo eigenen 401 error code
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -110,7 +112,8 @@ class SecurityClass extends QUI\QDOM
             $CryptoUser = CryptoActors::getCryptoUser();
         }
 
-        $plugins = $this->getAuthPlugins();
+        $plugins                      = $this->getAuthPlugins();
+        $succesfulAuthenticationCount = 0;
 
         /** @var Plugin $AuthPlugin */
         foreach ($plugins as $AuthPlugin) {
@@ -126,7 +129,37 @@ class SecurityClass extends QUI\QDOM
                 ));
             }
 
-            $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
+            $pluginAuthData = $authData[$AuthPlugin->getId()];
+
+            if (empty($pluginAuthData)) {
+                continue;
+            }
+
+            try {
+                $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
+            } catch (\Exception $Exception) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.securityclass.authenticate.wrong.authdata',
+                    array(
+                        'authPluginId'    => $AuthPlugin->getId(),
+                        'authPluginTitle' => $AuthPlugin->getAttribute('title')
+                    )
+                ));
+            }
+
+            $succesfulAuthenticationCount++;
+        }
+
+        if ($succesfulAuthenticationCount < $this->requiredFactors) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.authenticate.insufficient.authentication.count',
+                array(
+                    'securityClassId' => $this->id,
+                    'requiredFactor'  => $this->requiredFactors
+                )
+            ));
         }
 
         return true;
@@ -144,13 +177,18 @@ class SecurityClass extends QUI\QDOM
             $CryptoUser = CryptoActors::getCryptoUser();
         }
 
-        $plugins = $this->getAuthPlugins();
+        $plugins     = $this->getAuthPlugins();
+        $isAuthCount = 0;
 
         /** @var Plugin $AuthPlugin */
         foreach ($plugins as $AuthPlugin) {
-            if (!$AuthPlugin->isAuthenticated($CryptoUser)) {
-                return false;
+            if ($AuthPlugin->isAuthenticated($CryptoUser)) {
+                $isAuthCount++;
             }
+        }
+
+        if ($isAuthCount < $this->requiredFactors) {
+            return false;
         }
 
         return true;

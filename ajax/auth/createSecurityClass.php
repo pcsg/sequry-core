@@ -7,7 +7,7 @@ use QUI\Utils\Security\Orthos;
  * Create a new security class
  *
  * @param array $data - security class data
- * @return array
+ * @return integer - id of new security class
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass($data)
 {
