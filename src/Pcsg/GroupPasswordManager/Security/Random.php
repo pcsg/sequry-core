@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iCSPRNG;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ICSPRNG;
 
 /**
  * This class provides a Cryptographically Secure Pseudo Random Number Generator (CSPRNG)
@@ -22,7 +22,7 @@ class Random
     /**
      * Random Number Generator Class Object for the configured hash module
      *
-     * @var iCSPRNG
+     * @var ICSPRNG
      */
     protected static $RNGModule = null;
 
@@ -42,7 +42,7 @@ class Random
     }
 
     /**
-     * @return iCSPRNG
+     * @return ICSPRNG
      */
     protected static function getRNGModule()
     {

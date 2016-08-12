@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\SecretSharing;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iSecretSharing;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ISecretSharing;
 use phpseclib\Crypt\Hash as HMACClass;
 
 /**
@@ -12,7 +12,7 @@ use phpseclib\Crypt\Hash as HMACClass;
  *
  * @author PCSG (Patrick Müller)
  */
-class SimpleSplit implements iSecretSharing
+class SimpleSplit implements ISecretSharing
 {
     /**
      * Splits a secret into multiple parts

@@ -10,7 +10,7 @@ use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IAuthPlugin;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use QUI;
 use Symfony\Component\Console\Helper\Table;
@@ -260,10 +260,10 @@ class Authentication
 
         $AuthClass = new $class();
 
-        if (!($AuthClass instanceof iAuthPlugin)) {
+        if (!($AuthClass instanceof IAuthPlugin)) {
             throw new QUI\Exception(
                 'The plugin "' . $title . '" cannot be registered. The authentication class has'
-                . ' to implement iAuthPlugin interface.'
+                . ' to implement IAuthPlugin interface.'
             );
         }
 

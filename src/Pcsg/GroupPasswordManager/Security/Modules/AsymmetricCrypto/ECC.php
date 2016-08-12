@@ -7,14 +7,14 @@ use ParagonIE\Halite\Asymmetric\EncryptionPublicKey;
 use ParagonIE\Halite\Asymmetric\EncryptionSecretKey;
 use ParagonIE\Halite\KeyFactory;
 use QUI;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iAsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
 
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
  *
  * ECC - Ellicptic Curce Cryptography (Curve25519)
  */
-class ECC implements iAsymmetricCrypto
+class ECC implements IAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string

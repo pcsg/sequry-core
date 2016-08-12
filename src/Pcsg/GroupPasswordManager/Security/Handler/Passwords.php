@@ -358,7 +358,7 @@ class Passwords
             return self::$passwords[$id];
         }
 
-        self::$passwords[$id] = new Password($id, $CryptoUser);
+        self::$passwords[$id] = new Password($id);
 
         return self::$passwords[$id];
     }

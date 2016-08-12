@@ -5,7 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a encryption/decryption API for the pcsg/grouppasswordmanager module
  */
-interface iSymmetricCrypto
+interface ISymmetricCrypto
 {
     /**
      * Encrypts a plaintext string

@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iSecretSharing;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ISecretSharing;
 
 /**
  * This class provides a key derivation API for the pcsg/grouppasswordmanager module
@@ -14,7 +14,7 @@ class SecretSharing
     /**
      * KDF Class Object for the configured hash module
      *
-     * @var iSecretSharing
+     * @var ISecretSharing
      */
     protected static $SecretModule = null;
 
@@ -45,7 +45,7 @@ class SecretSharing
     }
 
     /**
-     * @return iSecretSharing
+     * @return ISecretSharing
      */
     protected static function getSecretModule()
     {

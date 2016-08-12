@@ -5,9 +5,8 @@ namespace Pcsg\GroupPasswordManager\Security\Authentication;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iAuthPlugin;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IAuthPlugin;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
@@ -29,7 +28,7 @@ class Plugin extends QUI\QDOM
     /**
      * External authentication plugin class
      *
-     * @var iAuthPlugin
+     * @var IAuthPlugin
      */
     protected $AuthClass = null;
 
@@ -339,9 +338,22 @@ class Plugin extends QUI\QDOM
      *
      * @param CryptoUser $CryptoUser
      * @return void
+     *
+     * @throws QUI\Exception
      */
     public function deleteUser($CryptoUser)
     {
+        $SessionUser = QUI::getUserBySession();
+
+        if ((int)$SessionUser->getId() !== $CryptoUser->getId()
+            && !$SessionUser->isSU()
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.auth.plugin.delete.user.no.permission',
+            ));
+        }
+
         $this->AuthClass->deleteUser($CryptoUser);
     }
 }

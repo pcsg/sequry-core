@@ -3,7 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\HashWrapper;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iKDF;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IKDF;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 
 /**
@@ -23,7 +23,7 @@ class KDF
     /**
      * KDF Class Object for the configured hash module
      *
-     * @var iKDF
+     * @var IKDF
      */
     protected static $KDFModule = null;
     
@@ -41,7 +41,7 @@ class KDF
     }
 
     /**
-     * @return iKDF
+     * @return IKDF
      */
     protected static function getKDFModule()
     {

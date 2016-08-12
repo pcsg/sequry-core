@@ -140,19 +140,13 @@ class Password
      * Password constructor.
      *
      * @param integer $id - Password ID
-     * @param CryptoUser $CryptoUser (optional) - The user that wants to interact with this password;
      * if omitted use session user
      * @throws QUI\Exception
      */
-    public function __construct($id, $CryptoUser = null)
+    public function __construct($id)
     {
         $id = (int)$id;
 
-        if (is_null($CryptoUser)) {
-            $CryptoUser = CryptoActors::getCryptoUser();
-        }
-
-        $this->User = $CryptoUser;
 
         $result = QUI::getDataBase()->fetch(array(
             'from'  => Tables::PASSWORDS,
@@ -171,6 +165,7 @@ class Password
             ), 404);
         }
 
+        $this->User   = CryptoActors::getCryptoUser(); // session user
         $passwordData = current($result);
 
         // check integrity/authenticity of password data
@@ -476,7 +471,7 @@ class Password
 
                 case self::OWNER_TYPE_GROUP:
                     try {
-                        $Group = CryptoActors::getCryptoGroup($actorId, $this->User);
+                        $Group = CryptoActors::getCryptoGroup($actorId);
 
                         // cannot share with owner group
                         if ($this->getSecretAttribute('ownerType') === $this::OWNER_TYPE_GROUP
@@ -522,7 +517,7 @@ class Password
 
         foreach ($deleteShareGroupIds as $id) {
             try {
-                $Group = CryptoActors::getCryptoGroup($id, $this->User);
+                $Group = CryptoActors::getCryptoGroup($id);
                 $this->removeGroupPasswordAccess($Group);
             } catch (\Exception $Exception) {
                 // @todo error log und meldung an user
@@ -707,7 +702,7 @@ class Password
                     return true;
                 }
 
-                $Group = CryptoActors::getCryptoGroup($id, $this->User);
+                $Group = CryptoActors::getCryptoGroup($id);
 
                 try {
                     $this->createGroupPasswordAccess($Group);
@@ -746,13 +741,13 @@ class Password
         // delete access data for old owner(s)
         switch ($currentOwnerType) {
             case self::OWNER_TYPE_USER:
-                $User = CryptoActors::getCryptoUser($currentOwnerId);
+                $CryptoUser = CryptoActors::getCryptoUser($currentOwnerId);
 
                 try {
-                    $this->removeUserPasswordAccess($User);
+                    $this->removeUserPasswordAccess($CryptoUser);
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addError(
-                        'Could not delete access data for user #' . $User->getId() . ': '
+                        'Could not delete access data for user #' . $CryptoUser->getId() . ': '
                         . $Exception->getMessage()
                     );
 
@@ -761,13 +756,13 @@ class Password
                 break;
 
             case self::OWNER_TYPE_GROUP:
-                $Group = CryptoActors::getCryptoGroup($currentOwnerId, $this->User);
+                $CryptoGroup = CryptoActors::getCryptoGroup($currentOwnerId);
 
                 try {
-                    $this->removeGroupPasswordAccess($Group);
+                    $this->removeGroupPasswordAccess($CryptoGroup);
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addError(
-                        'Could not delete access data for user #' . $User->getId() . ': '
+                        'Could not delete access data for group #' . $CryptoGroup->getId() . ': '
                         . $Exception->getMessage()
                     );
 
@@ -1091,6 +1086,10 @@ class Password
                 break;
 
             case self::PERMISSION_DELETE:
+                if ($this->User->isSU()) {
+                    return true;
+                }
+
                 if ($ownerType === self::OWNER_TYPE_USER) {
                     return $this->isOwner($this->User);
                 }

@@ -150,11 +150,45 @@ class Events
     /**
      * event: on user delete
      *
+     * Throws an exception so the standard user deletion progress is immediately aborted
+     * and an own procedure can be called from the frontend
+     *
      * @param QUI\Users\User $User
+     * @throws QUI\Exception
      */
     public static function onUserDelete($User)
     {
-        $CryptoUser = CryptoActors::getCryptoUser($User->getId());
-        $CryptoUser->delete();
+        throw new QUI\Exception(array(
+            'pcsg/grouppasswordmanager',
+            'exception.events.user.delete.info'
+        ));
+    }
+
+    /**
+     * event: onAdminLoad
+     *
+     * Load javascript code into admin header
+     */
+    public static function onAdminLoadFooter()
+    {
+        echo "
+        <script>
+            require([
+                'Users',
+                'qui/controls/windows/Confirm',
+                'Locale'
+            ], function(UserManager, QUIConfirm, QUILocale) {
+                var lg = 'pcsg/grouppasswordmanager';
+                
+                UserManager.addEvents({
+                    onDelete: function(UserManager, deleteUserIds) {
+                        new QUIConfirm({
+                            title: QUILocale.),
+                            information: 
+                        }).open();
+                    } 
+                });
+            });
+        </script>";
     }
 }

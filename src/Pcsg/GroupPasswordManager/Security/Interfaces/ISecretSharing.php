@@ -5,7 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a secret sharing plugin API for the pcsg/grouppasswordmanager module
  */
-interface iSecretSharing
+interface ISecretSharing
 {
     /**
      * Splits a secret into multiple parts

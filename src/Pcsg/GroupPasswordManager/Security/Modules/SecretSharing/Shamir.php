@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\SecretSharing;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iSecretSharing;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ISecretSharing;
 use TQ;
 
 /**
@@ -12,7 +12,7 @@ use TQ;
  *
  * @author PCSG (Patrick Müller)
  */
-class Shamir implements iSecretSharing
+class Shamir implements ISecretSharing
 {
     /**
      * Splits a secret into multiple parts

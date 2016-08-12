@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iSymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ISymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use phpseclib\Crypt\AES as AESClass;
 
@@ -11,7 +11,7 @@ use phpseclib\Crypt\AES as AESClass;
  *
  * AES-256
  */
-class AES implements iSymmetricCrypto
+class AES implements ISymmetricCrypto
 {
     /**
      * Encryption Mode

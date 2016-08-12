@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Keys\Key;
 /**
  * This class provides a authentication plugin API for the pcsg/grouppasswordmanager module
  */
-interface iAuthPlugin
+interface IAuthPlugin
 {
     /**
      * Return internal name of auth plugin

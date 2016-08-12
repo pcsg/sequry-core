@@ -6,14 +6,14 @@ use ParagonIE\Halite\KeyFactory;
 use QUI;
 use ParagonIE\Halite\Symmetric\Crypto;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iSymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ISymmetricCrypto;
 
 /**
  * This class provides an ecnryption API for the pcsg/grouppasswordmanager module
  *
  * XSalsa20 stream cipher
  */
-class XSalsa20 implements iSymmetricCrypto
+class XSalsa20 implements ISymmetricCrypto
 {
     /**
      * Encrypts a plaintext string

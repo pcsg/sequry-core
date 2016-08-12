@@ -5,7 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a asymmetric encryption/decryption API for the pcsg/grouppasswordmanager module
  */
-interface iAsymmetricCrypto
+interface IAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string

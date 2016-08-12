@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iSymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ISymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use QUI;
 
@@ -21,7 +21,7 @@ class SymmetricCrypto
     /**
      * HashWrapper Class Object for the configured hash module
      *
-     * @var iSymmetricCrypto
+     * @var ISymmetricCrypto
      */
     protected static $CryptoModule = null;
 
@@ -63,7 +63,7 @@ class SymmetricCrypto
     /**
      * Get Crypto Module for symmetric encryption/decryption
      *
-     * @return iSymmetricCrypto
+     * @return ISymmetricCrypto
      * @throws QUI\Exception
      */
     protected static function getCryptoModule()

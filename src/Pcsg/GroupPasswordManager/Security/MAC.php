@@ -2,7 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iMAC;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IMAC;
 
 /**
  * This class provides a MAC API for the pcsg/grouppasswordmanager module
@@ -14,7 +14,7 @@ class MAC
     /**
      * HashWrapper Class Object for the configured hash module
      *
-     * @var iMAC
+     * @var IMAC
      */
     protected static $MACModule = null;
 
@@ -43,7 +43,7 @@ class MAC
     }
 
     /**
-     * @return iMAC
+     * @return IMAC
      */
     protected static function getMACModule()
     {

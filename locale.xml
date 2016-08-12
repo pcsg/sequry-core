@@ -187,6 +187,9 @@
         <locale name="exception.cryptouser.password.key.recovery.error">
             <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer sich nicht für die ausreichende Anzahl an Authentifizierungs-Faktoren für das Passwort authentifiziert hat.]]></de>
         </locale>
+        <locale name="exception.cryptouser.delete.no.permission">
+            <de><![CDATA[Benutzer können nur durch SuperUser oder sich selbst gelöscht werden.]]></de>
+        </locale>
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
@@ -255,6 +258,9 @@
         </locale>
         <locale name="exception.auth.plugin.derived.key.error">
             <de><![CDATA[Die Ableitung des Schlüssel aus Authentifizierungsinformationen für das Authentifizierungs-Plugin #[pluginId] schlug fehl:<br/><br/>[error].]]></de>
+        </locale>
+        <locale name="exception.auth.plugin.delete.user.no.permission">
+            <de><![CDATA[Das Löschen der Registrierung für ein Authentifizierungs-Plugin kann nur durch einen SuperUser oder den Benutzer selbst vorgenommen werden.]]></de>
         </locale>
 
         <!-- Class: Security\Handler\Authentication -->
@@ -342,6 +348,9 @@
         </locale>
         <locale name="attention.events.onusersavebegin.add.user.error">
             <de><![CDATA[Der Benutzer #[userId] konnte der Gruppe #[groupId] nicht zugeordnet werden:<br/><br/>[error].]]></de>
+        </locale>
+        <locale name="exception.events.user.delete.info">
+            <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen des Benutzers.]]></de>
         </locale>
 
         <!-- Recovery -->

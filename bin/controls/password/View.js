@@ -44,7 +44,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
         ],
 
         options: {
-            'passwordId': false,   // id of the password
+            'passwordId': false   // id of the password
         },
 
         initialize: function (options) {

@@ -150,7 +150,7 @@ class CryptoUser extends QUI\Users\User
         $groupIds = $this->getCryptoGroupIds();
 
         foreach ($groupIds as $groupId) {
-            $groups[] = CryptoActors::getCryptoGroup($groupId, $this);
+            $groups[] = CryptoActors::getCryptoGroup($groupId);
         }
 
         return $groups;
@@ -259,7 +259,7 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
-     * Get IDs of all passwords the user owns
+     * Get IDs of all passwords the user owns directly (not via group)
      *
      * @return array - password IDs
      */
@@ -420,7 +420,7 @@ class CryptoUser extends QUI\Users\User
 
         // get group key
         $groupId               = array_shift($accessGroupIds);
-        $CryptoGroup           = CryptoActors::getCryptoGroup($groupId, $this);
+        $CryptoGroup           = CryptoActors::getCryptoGroup($groupId);
         $GroupKeyPairDecrypted = $this->getGroupAccessKey($CryptoGroup);
 
         // decrypt password key with group private key
@@ -807,7 +807,7 @@ class CryptoUser extends QUI\Users\User
         ));
 
         foreach ($result as $row) {
-            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId'], $this);
+            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId']);
             $groupPasswordIds = $CryptoGroup->getPasswordIds();
 
             foreach ($groupPasswordIds as $groupPasswordId) {
@@ -894,7 +894,7 @@ class CryptoUser extends QUI\Users\User
             ));
         }
 
-        $Password      = Passwords::get($passwordId, $this);
+        $Password      = Passwords::get($passwordId);
         $PasswordKey   = $Password->getPasswordKey();
         $SecurityClass = Passwords::getSecurityClass($passwordId);
 
@@ -970,7 +970,7 @@ class CryptoUser extends QUI\Users\User
             ));
         }
 
-        $CryptoGroup    = CryptoActors::getCryptoGroup($groupId, $this);
+        $CryptoGroup    = CryptoActors::getCryptoGroup($groupId);
         $GroupAccessKey = $this->getGroupAccessKey($CryptoGroup);
         $SecurityClass  = $CryptoGroup->getSecurityClass();
 
@@ -1051,6 +1051,18 @@ class CryptoUser extends QUI\Users\User
      */
     public function delete()
     {
+        // users can only be deleted by themselves or super users
+        $SessionUser = QUI::getUserBySession();
+
+        if ((int)$SessionUser->getId() !== (int)$this->getId()
+            && !$SessionUser->isSU()
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptouser.delete.no.permission'
+            ));
+        }
+
         // check if user is last user of any CryptoGroups
         $groups = $this->getCryptoGroups();
 
@@ -1069,16 +1081,17 @@ class CryptoUser extends QUI\Users\User
             }
         }
 
+        // remove user from all crypto groups
         /** @var CryptoGroup $CryptoGroup */
         foreach ($groups as $CryptoGroup) {
             $CryptoGroup->removeCryptoUser($this);
         }
 
-        // delete all passwords the user owns
+        // delete all passwords the user owns directly (not via group)
         $ownerPasswordIds = $this->getOwnerPasswordIds();
 
         foreach ($ownerPasswordIds as $passwordId) {
-            $Password = Passwords::get($passwordId, $this);
+            $Password = Passwords::get($passwordId);
             $Password->delete();
         }
 

@@ -2,14 +2,14 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\KDF;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iKDF;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IKDF;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Classes\Scrypt as ScryptClass;
 
 /**
  * This class provides a hashing API for the pcsg/grouppasswordmanager module
  */
-class Scrypt implements iKDF
+class Scrypt implements IKDF
 {
     /**
      * Creates a hash value from a given string

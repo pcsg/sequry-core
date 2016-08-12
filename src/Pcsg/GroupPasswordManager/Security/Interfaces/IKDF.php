@@ -5,7 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 /**
  * This class provides a KDF API for the pcsg/grouppasswordmanager module
  */
-interface iKDF
+interface IKDF
 {
     /**
      * Creates a symmetric key with a key derivation function (KDF)

@@ -2,13 +2,13 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\CSPRNG;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iCSPRNG;
+use Pcsg\GroupPasswordManager\Security\Interfaces\ICSPRNG;
 use QUI;
 
 /**
  * This class provides a hashing API for the pcsg/grouppasswordmanager module
  */
-class Libsodium implements iCSPRNG
+class Libsodium implements ICSPRNG
 {
     /**
      * Creates random data

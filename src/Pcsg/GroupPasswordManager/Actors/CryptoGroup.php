@@ -56,17 +56,12 @@ class CryptoGroup extends QUI\Groups\Group
      * CryptoGroup constructor.
      *
      * @param integer $groupId - quiqqer group id
-     * @param CryptoUser $CryptoUser (optional) - The user that interacts with this group; if omitted, use session user
      */
-    public function __construct($groupId, CryptoUser $CryptoUser = null)
+    public function __construct($groupId)
     {
         parent::__construct($groupId);
 
-        if (is_null($CryptoUser)) {
-            $CryptoUser = CryptoActors::getCryptoUser();
-        }
-
-        $this->CryptoUser    = $CryptoUser;
+        $this->CryptoUser    = CryptoActors::getCryptoUser();   // session user
         $this->KeyPair       = $this->getKeyPair();
         $this->SecurityClass = $this->getSecurityClass();
     }
@@ -297,7 +292,7 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         // split key
-        $GroupAccessKey = $CryptoUser->getGroupAccessKey($this);
+        $GroupAccessKey = $this->CryptoUser->getGroupAccessKey($this);
 
         $groupAccessKeyParts = SecretSharing::splitSecret(
             $GroupAccessKey->getValue(),
@@ -357,7 +352,10 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function removeCryptoUser(CryptoUser $RemoveUser)
     {
-        $this->checkCryptoUserPermission();
+        // SU can always remove users from groups
+        if (!$this->CryptoUser->isSU()) {
+            $this->checkCryptoUserPermission();
+        }
 
         if (!$this->hasCryptoUserAccess($RemoveUser)) {
             return;

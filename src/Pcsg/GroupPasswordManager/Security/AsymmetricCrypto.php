@@ -2,10 +2,9 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\iAsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use QUI;
-use Pcsg\GroupPasswordManager\Security\Interfaces\AsymmetricCryptoWrapper;
 
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
@@ -30,7 +29,7 @@ class AsymmetricCrypto
     /**
      * HashWrapper Class Object for the configured hash module
      *
-     * @var iAsymmetricCrypto
+     * @var IAsymmetricCrypto
      */
     protected static $CryptoModule = null;
 
@@ -126,7 +125,7 @@ class AsymmetricCrypto
     /**
      * Get Crypto Module for symmetric encryption/decryption
      *
-     * @return iAsymmetricCrypto
+     * @return IAsymmetricCrypto
      * @throws QUI\Exception
      */
     protected static function getCryptoModule()

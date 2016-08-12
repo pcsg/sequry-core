@@ -3,7 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Modules\AsymmetricCrypto;
 
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Interfaces\iAsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
 use QUI;
 
 /**
@@ -11,7 +11,7 @@ use QUI;
  *
  * AES-256
  */
-class RSA implements iAsymmetricCrypto
+class RSA implements IAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
