@@ -252,7 +252,8 @@ class Passwords
                         $passwordKeyPart = $passwordKeyParts[$i++];
 
                         $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
-                            $passwordKeyPart, $UserAuthKeyPair
+                            $passwordKeyPart,
+                            $UserAuthKeyPair
                         );
 
                         $dataAccessEntry = array(
