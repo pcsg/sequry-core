@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager\Actors;
 
+use Pcsg\GroupPasswordManager\Events;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
@@ -21,6 +22,7 @@ use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use QUI\Utils\Security\Orthos;
+use Symfony\Component\Console\Helper\Table;
 
 /**
  * User Class
@@ -263,7 +265,7 @@ class CryptoUser extends QUI\Users\User
      *
      * @return array - password IDs
      */
-    public function getOwnerPasswordIds()
+    public function getDirectOwnerPasswordIds()
     {
         $passwordIds = array();
         $result      = QUI::getDataBase()->fetch(array(
@@ -1047,7 +1049,10 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
-     * Delete crypto user permanently
+     * Delete crypto user (and QUIQQER user) permanently
+     *
+     * @return void
+     * @throws QUI\Exception
      */
     public function delete()
     {
@@ -1088,15 +1093,22 @@ class CryptoUser extends QUI\Users\User
         }
 
         // delete all passwords the user owns directly (not via group)
-        $ownerPasswordIds = $this->getOwnerPasswordIds();
+        $ownerPasswordIds = $this->getDirectOwnerPasswordIds();
 
         foreach ($ownerPasswordIds as $passwordId) {
             $Password = Passwords::get($passwordId);
             $Password->delete();
         }
 
-        // delete keypairs
         $DB = QUI::getDataBase();
+
+        // delete all password access data
+        $DB->delete(
+            Tables::USER_TO_PASSWORDS,
+            array(
+                'userId' => $this->getId()
+            )
+        );
 
         // delete auth plugin users
         $authPlugins = Authentication::getAuthPlugins();
@@ -1106,11 +1118,24 @@ class CryptoUser extends QUI\Users\User
             $AuthPlugin->deleteUser($this);
         }
 
+        // delete keypairs
         $DB->delete(
             Tables::KEYPAIRS_USER,
             array(
                 'userId' => $this->getId()
             )
         );
+
+        // delete recovery data
+        $DB->delete(
+            Tables::RECOVERY,
+            array(
+                'userId' => $this->getId()
+            )
+        );
+
+        Events::$triggerUserDeleteConfirm = false;
+
+        parent::delete();
     }
 }

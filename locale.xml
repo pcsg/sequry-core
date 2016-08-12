@@ -234,6 +234,9 @@
         <locale name="exception.cryptogroup.remove.user.has.no.permission">
             <de><![CDATA[Der Benutzer #[userId] besitzt nicht die nötige Berechtigung.]]></de>
         </locale>
+        <locale name="exception.cryptogroup.delete.no.permission">
+            <de><![CDATA[Gruppen können nur durch SuperUser gelöscht werden.]]></de>
+        </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
         <locale name="exception.cryptoactors.addcryptogroup.otherwise.associated">
@@ -352,6 +355,9 @@
         <locale name="exception.events.user.delete.info">
             <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen des Benutzers.]]></de>
         </locale>
+        <locale name="exception.events.group.delete.info">
+            <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen der Gruppe.]]></de>
+        </locale>
 
         <!-- Recovery -->
         <locale name="exception.recovery.create.entry.wrong.authentication.information">
@@ -423,6 +429,26 @@
         </locale>
         <locale name="auth.recoverycodewindow.popup.recoverycode.btn.text.countdown">
             <de><![CDATA[Schließen ([number])]]></de>
+        </locale>
+
+        <!-- Events bridge -->
+        <locale name="event.user.delete.confirm.title">
+            <de><![CDATA[Achtung!]]></de>
+        </locale>
+        <locale name="event.user.delete.confirm.information" html="true">
+            <de><![CDATA[Wenn Sie den Benutzer <b>[userName]</b> (ID: [userId]) löschen, wird er aus allen Gruppen entfernt und es werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer er ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
+        </locale>
+        <locale name="event.group.delete.confirm.title">
+            <de><![CDATA[Achtung!]]></de>
+        </locale>
+        <locale name="event.group.delete.confirm.information" html="true">
+            <de><![CDATA[Wenn Sie die Gruppe <b>[groupName]</b> (ID: [groupId]) löschen, werden alle Benutzer, die der Gruppe angehören, aus der Gruppe entfernt. Zudem werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer sie ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
+        </locale>
+        <locale name="exception.events.user.delete.no.permission">
+            <de><![CDATA[Der Benutzer kann nicht gelöscht werden. Benutzer können nur durch SuperUser oder sich selbst gelöscht werden.]]></de>
+        </locale>
+        <locale name="exception.events.group.delete.no.permission">
+            <de><![CDATA[Die Gruppe kann nicht gelöscht werden. Gruppen können nur durch SuperUser gelöscht werden.]]></de>
         </locale>
 
     </groups>

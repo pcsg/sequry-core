@@ -6,10 +6,8 @@
 
 namespace Pcsg\GroupPasswordManager;
 
-use ParagonIE\Halite\Symmetric\Crypto;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
@@ -21,6 +19,20 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  */
 class Events
 {
+    /**
+     * If warning on user delete should be triggered or not
+     *
+     * @var bool
+     */
+    public static $triggerUserDeleteConfirm = true;
+
+    /**
+     * If warning on group delete should be triggered or not
+     *
+     * @var bool
+     */
+    public static $triggerGroupDeleteConfirm = true;
+
     /**
      * on event : onPackageSetup
      */
@@ -155,14 +167,77 @@ class Events
      * Throws an exception so the standard user deletion progress is immediately aborted
      * and an own procedure can be called from the frontend
      *
+     * @return void
      * @param QUI\Users\User $User
      * @throws QUI\Exception
      */
     public static function onUserDelete($User)
     {
+        if (!self::$triggerUserDeleteConfirm) {
+            return;
+        }
+
+        $SessionUser = QUI::getUserBySession();
+
+        if ((int)$User->getId() !== (int)$SessionUser->getId()
+            && !$SessionUser->isSU()
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.events.user.delete.no.permission'
+            ));
+        }
+
+        QUI::getAjax()->triggerGlobalJavaScriptCallback(
+            'userDeleteConfirm',
+            array(
+                'userId'   => $User->getId(),
+                'userName' => $User->getUsername()
+            )
+        );
+
         throw new QUI\Exception(array(
             'pcsg/grouppasswordmanager',
             'exception.events.user.delete.info'
+        ));
+    }
+
+    /**
+     * event: on group delete
+     *
+     * Throws an exception so the standard group deletion progress is immediately aborted
+     * and an own procedure can be called from the frontend
+     *
+     * @return void
+     * @param QUI\Groups\Group $Group
+     * @throws QUI\Exception
+     */
+    public static function onGroupDelete($Group)
+    {
+        if (!self::$triggerGroupDeleteConfirm) {
+            return;
+        }
+
+        $SessionUser = QUI::getUserBySession();
+
+        if ($SessionUser->isSU()) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.events.group.delete.no.permission'
+            ));
+        }
+
+        QUI::getAjax()->triggerGlobalJavaScriptCallback(
+            'groupDeleteConfirm',
+            array(
+                'groupId'   => $Group->getId(),
+                'groupName' => $Group->getAttribute('name')
+            )
+        );
+
+        throw new QUI\Exception(array(
+            'pcsg/grouppasswordmanager',
+            'exception.events.group.delete.info'
         ));
     }
 
@@ -173,24 +248,10 @@ class Events
      */
     public static function onAdminLoadFooter()
     {
-        echo "
-        <script>
-            require([
-                'Users',
-                'qui/controls/windows/Confirm',
-                'Locale'
-            ], function(UserManager, QUIConfirm, QUILocale) {
-                var lg = 'pcsg/grouppasswordmanager';
-                
-                UserManager.addEvents({
-                    onDelete: function(UserManager, deleteUserIds) {
-                        new QUIConfirm({
-                            title: QUILocale.),
-                            information: 
-                        }).open();
-                    } 
-                });
-            });
-        </script>";
+        $jsFile = URL_OPT_DIR . 'pcsg/grouppasswordmanager/bin/onAdminLoadFooter.js';
+
+        \QUI\System\Log::writeRecursive('<script src="' . $jsFile . '"></script>');
+
+        echo '<script src="' . $jsFile . '"></script>';
     }
 }

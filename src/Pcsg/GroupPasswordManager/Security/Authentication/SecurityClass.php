@@ -157,7 +157,7 @@ class SecurityClass extends QUI\QDOM
                 'exception.securityclass.authenticate.insufficient.authentication.count',
                 array(
                     'securityClassId' => $this->id,
-                    'requiredFactor'  => $this->requiredFactors
+                    'requiredFactors'  => $this->requiredFactors
                 )
             ));
         }

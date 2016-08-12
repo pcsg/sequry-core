@@ -7,11 +7,13 @@
 namespace Pcsg\GroupPasswordManager\Actors;
 
 use Pcsg\GroupPasswordManager\Constants\Permissions;
+use Pcsg\GroupPasswordManager\Events;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -527,5 +529,62 @@ class CryptoGroup extends QUI\Groups\Group
                 )
             ));
         };
+    }
+
+    /**
+     * Irrevocably delete group and all passwords owned by it
+     *
+     * @return void
+     * @throws QUI\Exception
+     */
+    public function delete()
+    {
+        // groups can only be deleted by super users
+        $SessionUser = QUI::getUserBySession();
+
+        if (!$SessionUser->isSU()) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.delete.no.permission'
+            ));
+        }
+
+        $DB = QUI::getDataBase();
+
+        // delete all passwords this group owns
+        $ownerPasswordIds = $this->getOwnerPasswordIds();
+
+        foreach ($ownerPasswordIds as $passwordId) {
+            $Password = Passwords::get($passwordId);
+            $Password->delete();
+        }
+
+        // delete all password access data
+        $DB->delete(
+            Tables::GROUP_TO_PASSWORDS,
+            array(
+                'groupId' => $this->getId()
+            )
+        );
+
+        // delete all key pairs
+        $DB->delete(
+            Tables::KEYPAIRS_GROUP,
+            array(
+                'groupId' => $this->getId()
+            )
+        );
+
+        // delete all access data of users to this group
+        $DB->delete(
+            Tables::USER_TO_GROUPS,
+            array(
+                'groupId' => $this->getId()
+            )
+        );
+
+        Events::$triggerGroupDeleteConfirm = false;
+
+        parent::delete();
     }
 }

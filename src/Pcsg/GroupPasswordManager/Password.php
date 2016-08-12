@@ -31,7 +31,7 @@ use QUI\Permissions\Permission;
  * @package pcsg/grouppasswordmanager
  * @author www.pcsg.de (Patrick Müller)
  */
-class Password
+class Password extends QUI\QDOM
 {
     /**
      * Permission constants
@@ -51,62 +51,6 @@ class Password
      * @var integer
      */
     protected $id = null;
-
-    /**
-     * ID of password owner
-     *
-     * @var integer
-     */
-    protected $ownerId = null;
-
-    /**
-     * Owner type: "user" or "group"
-     *
-     * @var string
-     */
-    protected $ownerType = null;
-
-    /**
-     * Password payload (secret data)
-     *
-     * @var mixed
-     */
-    protected $payload = null;
-
-    /**
-     * Password history
-     *
-     * @var array
-     */
-    protected $history = null;
-
-    /**
-     * List of users/groups the password is shared with
-     *
-     * @var array
-     */
-    protected $sharedWith = null;
-
-    /**
-     * Password title
-     *
-     * @var string
-     */
-    protected $title = null;
-
-    /**
-     * Password description
-     *
-     * @var string
-     */
-    protected $description = null;
-
-    /**
-     * Password type
-     *
-     * @var string
-     */
-    protected $dataType = null;
 
     /**
      * Security Class of this password
@@ -201,58 +145,23 @@ class Password
             ));
         }
 
-        $this->id            = $passwordData['id'];
-        $this->title         = $passwordData['title'];
-        $this->description   = $passwordData['description'];
-        $this->dataType      = $passwordData['dataType'];
-        $this->SecurityClass = Authentication::getSecurityClass($passwordData['securityClassId']);
+        $this->id = $passwordData['id'];
 
-        if (!$this->SecurityClass->isAuthenticated()) {
-            // @todo eigenen 401 error code einfügen
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.user.not.authenticated',
-                array(
-                    'id'     => $id,
-                    'userId' => $CryptoUser->getId()
-                )
-            ));
-        }
-
-        $PasswordKey = $this->getPasswordKey();
-
-        // decrypt password content
-        $contentDecrypted = SymmetricCrypto::decrypt(
-            $passwordData['cryptoData'],
-            $PasswordKey
-        );
-
-        $contentDecrypted = json_decode($contentDecrypted, true);
-
-        // check password content
-        if (json_last_error() !== JSON_ERROR_NONE
-            || !isset($contentDecrypted['ownerId'])
-            || !isset($contentDecrypted['ownerType'])
-            || !isset($contentDecrypted['payload'])
-            || !isset($contentDecrypted['sharedWith'])
-            || !isset($contentDecrypted['history'])
-        ) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.acces.data.decryption.fail',
-                array(
-                    'passwordId' => $id
-                )
-            ));
-        }
-
-        $this->setSecretAttributes(array(
-            'ownerId'    => $contentDecrypted['ownerId'],
-            'ownerType'  => $contentDecrypted['ownerType'],
-            'payload'    => $contentDecrypted['payload'],
-            'history'    => $contentDecrypted['history'],
-            'sharedWith' => $contentDecrypted['sharedWith']
+        // set public attributes
+        $this->setAttributes(array(
+            'title'       => $passwordData['title'],
+            'description' => $passwordData['description'],
+            'dataType'    => $passwordData['dataType'],
+            'ownerId'     => $passwordData['ownerId'],
+            'ownerType'   => $passwordData['ownerType']
         ));
+
+        // set private attributes
+        $this->setSecretAttributes(array(
+            'cryptoDataEncrypted' => $passwordData['cryptoData']
+        ));
+
+        $this->SecurityClass = Authentication::getSecurityClass($passwordData['securityClassId']);
     }
 
     /**
@@ -266,12 +175,14 @@ class Password
             $this->permissionDenied();
         }
 
+        $this->decrypt();
+
         $viewData = array(
             'id'          => $this->id,
-            'title'       => $this->title,
-            'description' => $this->description,
+            'title'       => $this->getAttribute('title'),
+            'description' => $this->getAttribute('description'),
             'payload'     => $this->getSecretAttribute('payload'),
-            'dataType'    => $this->dataType
+            'dataType'    => $this->getAttribute('dataType')
         );
 
         return $viewData;
@@ -288,14 +199,16 @@ class Password
             $this->permissionDenied();
         }
 
+        $this->decrypt();
+
         $data = array(
             'id'          => $this->id,
-            'title'       => $this->title,
-            'description' => $this->description,
+            'title'       => $this->getAttribute('title'),
+            'description' => $this->getAttribute('description'),
             'payload'     => $this->getSecretAttribute('payload'),
-            'ownerId'     => $this->getSecretAttribute('ownerId'),
-            'ownerType'   => $this->getSecretAttribute('ownerType'),
-            'dataType'    => $this->dataType
+            'ownerId'     => $this->getAttribute('ownerId'),
+            'ownerType'   => $this->getAttribute('ownerType'),
+            'dataType'    => $this->getAttribute('dataType')
         );
 
         return $data;
@@ -310,6 +223,12 @@ class Password
      */
     public function setData($passwordData)
     {
+        if (!$this->hasPermission(self::PERMISSION_EDIT)) {
+            $this->permissionDenied();
+        }
+
+        $this->decrypt();
+
         try {
             foreach ($passwordData as $k => $v) {
                 switch ($k) {
@@ -323,13 +242,13 @@ class Password
                         if (is_string($v)
                             && !empty($v)
                         ) {
-                            $this->title = $v;
+                            $this->setAttribute('title', $v);
                         }
                         break;
 
                     case 'description':
                         if (is_string($v)) {
-                            $this->description = $v;
+                            $this->setAttribute('description', $v);
                         }
                         break;
 
@@ -359,7 +278,7 @@ class Password
                         if (!empty($v)
                             && is_string($v)
                         ) {
-                            $this->dataType = $v;
+                            $this->setAttribute('dataType', $v);
                         }
                         break;
 
@@ -404,11 +323,13 @@ class Password
             $this->permissionDenied();
         }
 
+        $this->decrypt();
+
         $data = array(
             'id'          => $this->id,
-            'title'       => $this->title,
-            'description' => $this->description,
-            'dataType'    => $this->dataType,
+            'title'       => $this->getAttribute('title'),
+            'description' => $this->getAttribute('description'),
+            'dataType'    => $this->getAttribute('dataType'),
             'sharedWith'  => $this->getSecretAttribute('sharedWith')
         );
 
@@ -425,12 +346,11 @@ class Password
      */
     public function setShareData($shareData)
     {
-        if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.no.share.rights'
-            ));
+        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
+            $this->permissionDenied();
         }
+
+        $this->decrypt();
 
         $newShareUserIds  = array();
         $newShareGroupIds = array();
@@ -474,8 +394,8 @@ class Password
                         $Group = CryptoActors::getCryptoGroup($actorId);
 
                         // cannot share with owner group
-                        if ($this->getSecretAttribute('ownerType') === $this::OWNER_TYPE_GROUP
-                            && $actorId === $this->getSecretAttribute('ownerId')
+                        if ($this->getAttribute('ownerType') === $this::OWNER_TYPE_GROUP
+                            && $actorId === $this->getAttribute('ownerId')
                         ) {
                             continue;
                         }
@@ -550,12 +470,12 @@ class Password
         );
 
         $passwordData = array(
-            'ownerId'         => $this->getSecretAttribute('ownerId'),
-            'ownerType'       => $this->getSecretAttribute('ownerType'),
+            'ownerId'         => $this->getAttribute('ownerId'),
+            'ownerType'       => $this->getAttribute('ownerType'),
             'securityClassId' => $this->SecurityClass->getId(),
-            'title'           => $this->title,
-            'description'     => $this->description,
-            'dataType'        => $this->dataType,
+            'title'           => $this->getAttribute('title'),
+            'description'     => $this->getAttribute('description'),
+            'dataType'        => $this->getAttribute('dataType'),
             'cryptoData'      => $cryptoDataEncrypted
         );
 
@@ -653,8 +573,8 @@ class Password
      */
     protected function changeOwner($id, $type)
     {
-        $currentOwnerId   = $this->getSecretAttribute('ownerId');
-        $currentOwnerType = $this->getSecretAttribute('ownerType');
+        $currentOwnerId   = $this->getAttribute('ownerId');
+        $currentOwnerType = $this->getAttribute('ownerType');
 
         // set access data for new owner(s)
         switch ($type) {
@@ -783,11 +703,8 @@ class Password
      */
     public function createUserPasswordAccess($User)
     {
-        if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.no.share.rights'
-            ));
+        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
+            $this->permissionDenied();
         }
 
         // skip if user already has password access
@@ -807,6 +724,8 @@ class Password
                 )
             ));
         }
+
+        $this->decrypt();
 
         // split key
         $payloadKeyParts = SecretSharing::splitSecret(
@@ -859,11 +778,8 @@ class Password
      */
     public function createGroupPasswordAccess($Group)
     {
-        if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.no.share.rights'
-            ));
+        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
+            $this->permissionDenied();
         }
 
         // skip if group already has password access
@@ -883,6 +799,8 @@ class Password
                 )
             ));
         }
+
+        $this->decrypt();
 
         $GroupKeyPair = $Group->getKeyPair();
 
@@ -948,7 +866,7 @@ class Password
      *
      * @throws QUI\Exception
      */
-    public function removeUserPasswordAccess($CryptoUser)
+    protected function removeUserPasswordAccess($CryptoUser)
     {
         // @todo experimental - check if possible
         if ($this->isOwner($CryptoUser)) {
@@ -974,7 +892,7 @@ class Password
      *
      * @throws QUI\Exception
      */
-    public function removeGroupPasswordAccess($CryptoGroup)
+    protected function removeGroupPasswordAccess($CryptoGroup)
     {
         // @todo experimental - check if possible
         if ($this->isOwner($CryptoGroup)) {
@@ -1041,7 +959,7 @@ class Password
      */
     protected function hasPermission($permission)
     {
-        $ownerType = $this->getSecretAttribute('ownerType');
+        $ownerType = $this->getAttribute('ownerType');
 
         switch ($permission) {
             case self::PERMISSION_VIEW:
@@ -1093,8 +1011,8 @@ class Password
     protected function isOwner($CryptoActor)
     {
         $actorId   = (int)$CryptoActor->getId();
-        $ownerId   = (int)$this->getSecretAttribute('ownerId');
-        $ownerType = $this->getSecretAttribute('ownerType');
+        $ownerId   = (int)$this->getAttribute('ownerId');
+        $ownerType = $this->getAttribute('ownerType');
 
         if ($CryptoActor instanceof CryptoUser) {
             switch ($ownerType) {
@@ -1183,5 +1101,53 @@ class Password
     protected function getSecretAttributes()
     {
         return $this->secretAttributes;
+    }
+
+    protected function decrypt()
+    {
+        if (!$this->SecurityClass->isAuthenticated()) {
+            // @todo eigenen 401 error code einfügen
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.user.not.authenticated',
+                array(
+                    'id'     => $this->id,
+                    'userId' => $this->User->getId()
+                )
+            ));
+        }
+
+        $PasswordKey = $this->getPasswordKey();
+
+        // decrypt password content
+        $contentDecrypted = SymmetricCrypto::decrypt(
+            $this->getSecretAttribute('cryptoDataEncrypted'),
+            $PasswordKey
+        );
+
+        $contentDecrypted = json_decode($contentDecrypted, true);
+
+        // check password content
+        if (json_last_error() !== JSON_ERROR_NONE
+            || !isset($contentDecrypted['ownerId'])
+            || !isset($contentDecrypted['ownerType'])
+            || !isset($contentDecrypted['payload'])
+            || !isset($contentDecrypted['sharedWith'])
+            || !isset($contentDecrypted['history'])
+        ) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.acces.data.decryption.fail',
+                array(
+                    'passwordId' => $this->id
+                )
+            ));
+        }
+
+        $this->setSecretAttributes(array(
+            'payload'    => $contentDecrypted['payload'],
+            'history'    => $contentDecrypted['history'],
+            'sharedWith' => $contentDecrypted['sharedWith']
+        ));
     }
 }
