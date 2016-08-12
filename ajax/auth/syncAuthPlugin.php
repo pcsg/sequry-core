@@ -24,7 +24,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',
-                    'error.authentication.sync.authplugin', array(
+                    'error.authentication.sync.authplugin',
+                    array(
                         'authPluginId' => $authPluginId
                     )
                 )
@@ -46,7 +47,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.authentication.sync.authplugin', array(
+                'error.authentication.sync.authplugin',
+                array(
                     'authPluginId' => $authPluginId
                 )
             )
@@ -58,7 +60,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
             'pcsg/grouppasswordmanager',
-            'success.authentication.sync.authplugin', array(
+            'success.authentication.sync.authplugin',
+            array(
                 'authPluginId' => $authPluginId
             )
         )

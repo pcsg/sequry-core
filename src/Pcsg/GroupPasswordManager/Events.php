@@ -88,7 +88,8 @@ class Events
                     QUI::getMessagesHandler()->addAttention(
                         QUI::getLocale()->get(
                             'pcsg/grouppasswordmanager',
-                            'attention.events.onusersavebegin.remove.user.error', array(
+                            'attention.events.onusersavebegin.remove.user.error',
+                            array(
                                 'userId'  => $User->getId(),
                                 'groupId' => $CryptoGroup->getId(),
                                 'error'   => $Exception->getMessage()
@@ -125,7 +126,8 @@ class Events
                     QUI::getMessagesHandler()->addAttention(
                         QUI::getLocale()->get(
                             'pcsg/grouppasswordmanager',
-                            'attention.events.onusersavebegin.add.user.error', array(
+                            'attention.events.onusersavebegin.add.user.error',
+                            array(
                                 'userId'  => $User->getId(),
                                 'groupId' => $CryptoGroup->getId(),
                                 'error'   => $Exception->getMessage()

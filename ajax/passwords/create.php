@@ -37,7 +37,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.password.create', array(
+                'error.password.create',
+                array(
                     'error' => $Exception->getMessage()
                 )
             )

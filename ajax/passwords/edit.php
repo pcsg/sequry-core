@@ -35,7 +35,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'success.password.edit', array(
+                'success.password.edit',
+                array(
                     'passwordId' => $passwordId
                 )
             )
@@ -44,7 +45,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.password.edit', array(
+                'error.password.edit',
+                array(
                     'reason'     => $Exception->getMessage(),
                     'passwordId' => $passwordId
                 )

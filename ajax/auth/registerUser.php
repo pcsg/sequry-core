@@ -50,4 +50,3 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
     array('authPluginId', 'registrationData'),
     'Permission::checkAdminUser'
 );
-

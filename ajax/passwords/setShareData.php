@@ -46,7 +46,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'success.password.share', array(
+                'success.password.share',
+                array(
                     'passwordId' => $passwordId
                 )
             )
@@ -55,7 +56,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.password.share', array(
+                'error.password.share',
+                array(
                     'passwordId' => $passwordId,
                     'reason'     => $Exception->getMessage()
                 )

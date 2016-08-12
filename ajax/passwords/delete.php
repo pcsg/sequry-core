@@ -28,7 +28,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'success.password.delete', array(
+                'success.password.delete',
+                array(
                     'passwordId' => $passwordId
                 )
             )
@@ -37,7 +38,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.password.delete', array(
+                'error.password.delete',
+                array(
                     'passwordId' => $passwordId,
                     'reason'     => $Exception->getMessage()
                 )

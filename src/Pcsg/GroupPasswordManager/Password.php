@@ -826,7 +826,8 @@ class Password
             $payloadKeyPart = $payloadKeyParts[$i++];
 
             $encryptedPayloadKeyPart = AsymmetricCrypto::encrypt(
-                $payloadKeyPart, $UserAuthKeyPair
+                $payloadKeyPart,
+                $UserAuthKeyPair
             );
 
             $dataAccessEntry = array(
@@ -906,41 +907,6 @@ class Password
             Tables::GROUP_TO_PASSWORDS,
             $dataAccessEntry
         );
-    }
-
-    /**
-     * @todo
-     *
-     * Get IDs of all CryptoUsers that have access to this password
-     *
-     */
-    protected function getCryptoUserIds()
-    {
-//        $userIds      = array();
-//        $userIdsCheck = array();
-//
-//        $result = QUI::getDataBase()->fetch(array(
-//            'select' => array(
-//                'userId'
-//            ),
-//            'from'   => Tables::USER_TO_PASSWORDS,
-//            'where'  => array(
-//                'dataId' => $this->id
-//            )
-//        ));
-//
-//        foreach ($result as $row) {
-//            if (isset($userIdsCheck[$row['']]))
-//        }
-    }
-
-    /**
-     * @todo
-     *
-     */
-    protected function getCryptoGroupId()
-    {
-
     }
 
     /**
