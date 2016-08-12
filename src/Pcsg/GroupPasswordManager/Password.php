@@ -246,13 +246,15 @@ class Password
             ));
         }
 
-        $this->setSecretAttributes(array(
-            'ownerId'    => $contentDecrypted['ownerId'],
-            'ownerType'  => $contentDecrypted['ownerType'],
-            'payload'    => $contentDecrypted['payload'],
-            'history'    => $contentDecrypted['history'],
-            'sharedWith' => $contentDecrypted['sharedWith']
-        ));
+        $this->setSecretAttributes(
+            array(
+                'ownerId'    => $contentDecrypted['ownerId'],
+                'ownerType'  => $contentDecrypted['ownerType'],
+                'payload'    => $contentDecrypted['payload'],
+                'history'    => $contentDecrypted['history'],
+                'sharedWith' => $contentDecrypted['sharedWith']
+            )
+        );
     }
 
     /**
