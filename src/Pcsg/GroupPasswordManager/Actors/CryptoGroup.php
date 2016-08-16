@@ -279,6 +279,13 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function addCryptoUser(CryptoUser $AddUser)
     {
+        if ((int)$AddUser->getId() === (int)QUI::getUserBySession()->getId()) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.add.user.cannot.add.himself'
+            ));
+        }
+
         $this->checkCryptoUserPermission();
 
         if (!$this->SecurityClass->isUserEligible($AddUser)) {

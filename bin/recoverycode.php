@@ -10,6 +10,46 @@ if (!isset($_REQUEST['code'])
     exit;
 }
 
+if (!isset($_REQUEST['id'])
+    || empty($_REQUEST['id'])
+) {
+    exit;
+}
+
+// get recovery data
+try {
+    $result = QUI::getDataBase()->fetch(array(
+        'select' => array(
+            'id',
+            'userId',
+            'authPluginId'
+        ),
+        'from'   => \Pcsg\GroupPasswordManager\Constants\Tables::RECOVERY,
+        'where'  => array(
+            'id' => (int)$_REQUEST['id']
+        )
+    ));
+} catch (\Exception $Exception) {
+    exit;
+}
+
+if (empty($result)) {
+    exit;
+}
+
+$recoveryData = current($result);
+
+// get auth plugin and user data
+try {
+    $AuthPlugin = \Pcsg\GroupPasswordManager\Security\Handler\Authentication::getAuthPlugin(
+        $recoveryData['authPluginId']
+    );
+
+    $User = QUI::getUsers()->get($recoveryData['userId']);
+} catch (\Exception $Exception) {
+    exit;
+}
+
 $code         = preg_split("//u", $_REQUEST['code'], -1, PREG_SPLIT_NO_EMPTY);
 $codeReadable = '';
 $i            = 0;
@@ -23,12 +63,6 @@ foreach ($code as $char) {
     $i++;
 }
 
-if (!isset($_REQUEST['authPluginId'])
-    || empty($_REQUEST['authPluginId'])
-) {
-    exit;
-}
-
 if (!isset($_REQUEST['lang'])
     || empty($_REQUEST['lang'])
 ) {
@@ -40,14 +74,6 @@ $langs = QUI::availableLanguages();
 
 if (!in_array($lang, $langs)) {
     $lang = 'en';
-}
-
-try {
-    $AuthPlugin = \Pcsg\GroupPasswordManager\Security\Handler\Authentication::getAuthPlugin(
-        (int)$_REQUEST['authPluginId']
-    );
-} catch (\Exception $Exception) {
-    exit;
 }
 
 $L = QUI::getLocale();
@@ -127,11 +153,23 @@ $html = '
     <tr>
         <td>
             <label class="field-container">
+                <span class="field-container-item" title="' . $L->get($lg, 'auth.recoverycodewindow.recoveryCodeId') . '">
+                    ' . $L->get($lg, 'auth.recoverycodewindow.recoveryCodeId') . '
+                </span>
+                <span class="field-container-field">
+                    ' . $recoveryData['id'] . '
+                </span>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
                 <span class="field-container-item" title="' . $L->get($lg, 'auth.recoverycodewindow.username') . '">
                     ' . $L->get($lg, 'auth.recoverycodewindow.username') . '
                 </span>
                 <span class="field-container-field">
-                    ' . QUI::getUserBySession()->getUsername() . '
+                    ' . $User->getUsername() . ' (ID: ' . $User->getId() . ')
                 </span>
             </label>
         </td>
@@ -143,7 +181,7 @@ $html = '
                     ' . $L->get($lg, 'auth.auth.recoverycodewindow.authplugin') . '
                 </span>
                 <span class="field-container-field">
-                    ' . $AuthPlugin->getAttribute('title') . ' (ID:' . $_REQUEST['authPluginId'] . ')
+                    ' . $AuthPlugin->getAttribute('title') . ' (ID:' . $AuthPlugin->getId() . ')
                 </span>
             </label>
         </td>

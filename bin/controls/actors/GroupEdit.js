@@ -79,24 +79,25 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
             this.$Elm = this.parent();
 
-            this.$Elm.set({
-                'class': 'pcsg-gpm-group-edit',
-                html   : Mustache.render(template, {
-                    title        : QUILocale.get(lg, lg_prefix + 'title'),
-                    basicData    : QUILocale.get(lg, lg_prefix + 'basicData'),
-                    securityclass: QUILocale.get(lg, lg_prefix + 'securityclass')
-                })
-            });
-
-            this.$SecurityClassSelect = new SecurityClassSelect().inject(
-                this.$Elm.getElement('.pcsg-gpm-group-edit-securityclass')
-            );
-
             Actors.getActor(
                 this.getAttribute('groupId'),
                 'group'
             ).then(function (Actor) {
-                self.fireEvent('loaded');
+                self.$Elm.set({
+                    'class': 'pcsg-gpm-group-edit',
+                    html   : Mustache.render(template, {
+                        title        : QUILocale.get(lg, lg_prefix + 'title', {
+                            groupId  : Actor.id,
+                            groupName: Actor.name
+                        }),
+                        basicData    : QUILocale.get(lg, lg_prefix + 'basicData'),
+                        securityclass: QUILocale.get(lg, lg_prefix + 'securityclass')
+                    })
+                });
+
+                self.$SecurityClassSelect = new SecurityClassSelect().inject(
+                    self.$Elm.getElement('.pcsg-gpm-group-edit-securityclass')
+                );
 
                 if (!Actor.sessionUserInGroup) {
                     self.$SecurityClassSelect.disable();
@@ -112,6 +113,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                         'top'
                     );
                 }
+
+                self.fireEvent('loaded');
 
                 if (!Actor.securityClassId) {
                     new Element('div', {
@@ -159,7 +162,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                     this.getAttribute('groupId'),
                     this.$SecurityClassSelect.getValue()
                 ).then(function () {
-                    self.fireEvent('finish');
+                    self.fireEvent('success');
                 });
 
                 return;
@@ -174,7 +177,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                             self.$SecurityClassSelect.getValue(),
                             AuthData
                         ).then(function () {
-                            self.fireEvent('finish');
+                            self.fireEvent('success');
                             AuthData = null;
                             AuthControl.destroy();
                         });

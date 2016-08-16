@@ -26,6 +26,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo($secur
     /** @var \Pcsg\GroupPasswordManager\Security\Authentication\Plugin $AuthPlugin */
     foreach ($authPlugins as $AuthPlugin) {
         $info['authPlugins'][] = array(
+            'id'          => $AuthPlugin->getId(),
             'title'       => $AuthPlugin->getAttribute('title'),
             'description' => $AuthPlugin->getAttribute('description')
         );

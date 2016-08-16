@@ -44,6 +44,10 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
             $CryptoUser->reEncryptAccessKey($passwordId);
         }
     } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'syncAuchPlugin error: ' . $Exception->getMessage()
+        );
+
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',

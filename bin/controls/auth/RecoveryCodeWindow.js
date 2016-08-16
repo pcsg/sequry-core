@@ -23,19 +23,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-
     'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow.css'
 
 ], function (QUI, QUIPopup, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             AuthHandler, Ajax, template) {
+             Ajax, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -50,14 +47,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
         ],
 
         options: {
-            'authPluginId'   : false,   // id of auth plugin the recovery code is for
-            'authPluginTitle': false, // title of authentication plugin
-            'recoveryCode'   : false    // recovery code
+            'RecoveryCodeData': false    // recovery code data
         },
 
         initialize: function (options) {
-            var self = this;
-
             this.parent(options);
 
             this.setAttributes({
@@ -68,8 +61,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
 
             this.addEvents({
                 onCreate: this.$onCreate,
-                onOpen  : this.$onOpen
+                onOpen  : this.$onOpen,
+                onClose : this.$onClose
             });
+
+            this.$RecoveryData = null;
 
             this.$CloseBtn = null;
         },
@@ -94,9 +90,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
                 }
             });
 
-            var lg_prefix = 'auth.recoverycodewindow.';
+            var lg_prefix        = 'auth.recoverycodewindow.';
+            var RecoveryCodeData = this.getAttribute('RecoveryCodeData');
 
-            var recoveryCode         = this.getAttribute('recoveryCode');
+            self.$RecoveryData = RecoveryCodeData;
+
+            var recoveryCode         = RecoveryCodeData.recoveryCode;
             var recoveryCodeReadable = '';
 
             for (var i = 0, len = recoveryCode.length; i < len; i++) {
@@ -122,16 +121,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
 
             this.setContent(
                 Mustache.render(template, {
-                    title          : QUILocale.get(lg, lg_prefix + 'title'),
-                    info           : QUILocale.get(lg, lg_prefix + 'info'),
-                    basicData      : QUILocale.get(lg, lg_prefix + 'basicData'),
-                    username       : QUILocale.get(lg, lg_prefix + 'username'),
-                    usernameValue  : USER.name,
-                    authPlugin     : QUILocale.get(lg, lg_prefix + 'authplugin'),
-                    authPluginValue: this.getAttribute('authPluginTitle'),
-                    date           : QUILocale.get(lg, lg_prefix + 'date'),
-                    dateValue      : new Date().format('%d.%m.%Y'),
-                    recoveryCode   : recoveryCodeReadable
+                    title              : QUILocale.get(lg, lg_prefix + 'title'),
+                    info               : QUILocale.get(lg, lg_prefix + 'info'),
+                    basicData          : QUILocale.get(lg, lg_prefix + 'basicData'),
+                    username           : QUILocale.get(lg, lg_prefix + 'username'),
+                    usernameValue      : RecoveryCodeData.userName + ' (ID: ' + RecoveryCodeData.userId + ')',
+                    authPlugin         : QUILocale.get(lg, lg_prefix + 'authplugin'),
+                    authPluginValue    : RecoveryCodeData.authPluginTitle + ' (ID: ' + RecoveryCodeData.authPluginId + ')',
+                    date               : QUILocale.get(lg, lg_prefix + 'date'),
+                    dateValue          : RecoveryCodeData.date,
+                    recoveryCode       : recoveryCodeReadable,
+                    recoveryCodeId     : QUILocale.get(lg, lg_prefix + 'recoveryCodeId'),
+                    recoveryCodeIdValue: RecoveryCodeData.recoveryCodeId
                 })
             );
         },
@@ -168,14 +169,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
         },
 
         /**
+         * event: on popup close
+         */
+        $onClose: function () {
+            this.$RecoveryData = null;
+        },
+
+        /**
          * Open new tab with print view and start print automatically
          */
         $print: function () {
             var url = window.location.protocol + '//' +
                 window.location.host + URL_OPT_DIR + 'pcsg/grouppasswordmanager/bin/recoverycode.php?';
 
-            url += 'code=' + this.getAttribute('recoveryCode');
-            url += '&authPluginId=' + this.getAttribute('authPluginId');
+            url += 'code=' + this.$RecoveryData.recoveryCode;
+            url += '&id=' + this.$RecoveryData.recoveryCodeId;
             url += '&lang=' + USER.lang;
 
             var Link = new Element('a', {

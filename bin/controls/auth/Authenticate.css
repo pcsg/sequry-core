@@ -11,3 +11,14 @@
     background-color: #f2f2f2;
     margin-bottom: 5px;
 }
+
+.pcsg-gpm-auth-authenticate-warning {
+    background-color: #FAF6D4;
+    border: 1px solid #F11212;
+    border-radius: 5px;
+    color: #000;
+    float: left;
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 100%;
+}

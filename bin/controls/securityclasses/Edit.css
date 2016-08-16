@@ -1,18 +1,8 @@
-.data-table {
-    float: left;
-    height: 100%;
-    position: relative;
-    width: 100%;
+.securityclasses-edit-table .field-container-item {
+    white-space: inherit !important;
 }
 
-.data-table .field-container-item {
-    width: 140px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.pcsg-gpm-password-authplugins-label {
+.pcsg-gpm-securityclasses-label {
     background-color: #EDEDED;
     border-radius: 5px;
     float: left;
@@ -20,22 +10,20 @@
     width: 100% !important;
 }
 
-.pcsg-gpm-password-authplugins-label:hover {
-    background-color: #eee7c2;
-    cursor: pointer;
+.pcsg-gpm-securityclasses-label:not(:first-of-type) {
+    margin-top: 10px;
 }
 
-.pcsg-gpm-password-authplugins-title {
-    float: left;
-    font-weight: 900;
+.pcsg-gpm-securityclasses-label:hover {
+    background-color: #DEDEDD;
 }
 
-.pcsg-gpm-password-authplugins-description {
+.pcsg-gpm-securityclasses-description {
     clear: both;
     float: left;
 }
 
-.pcsg-gpm-password-authplugins-label input {
+.pcsg-gpm-securityclasses-label input {
     float: left;
 }
 
@@ -46,11 +34,14 @@
 .pcsg-gpm-securityclass-edit-group {
     background-color: #EDEDED;
     border-radius: 2px;
-    cursor: pointer;
     padding: 5px;
     width: 100%;
 }
 
+.pcsg-gpm-securityclass-edit-group:not(:first-of-type) {
+    margin-top: 10px;
+}
+
 .pcsg-gpm-securityclass-edit-group:hover {
-    background-color: #eee7c2;
+    background-color: #DEDEDD;
 }

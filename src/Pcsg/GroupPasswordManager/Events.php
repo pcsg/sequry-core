@@ -220,7 +220,7 @@ class Events
 
         $SessionUser = QUI::getUserBySession();
 
-        if ($SessionUser->isSU()) {
+        if (!$SessionUser->isSU()) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.events.group.delete.no.permission'

@@ -190,6 +190,9 @@
         <locale name="exception.cryptouser.delete.no.permission">
             <de><![CDATA[Benutzer können nur durch SuperUser oder sich selbst gelöscht werden.]]></de>
         </locale>
+        <locale name="exception.cryptouser.delete.last.group.member">
+            <de><![CDATA[Der Benutzer kann nicht gelöscht werden, da er das letzte Mitglied der Passwort-Gruppe "[groupName]" (#[groupId]) ist. Weisen Sie der Gruppe ein weiteres Mitglied zu und entfernen Sie diesen Benutzer dann oder löschen Sie vorher die Passwort-Gruppe.]]></de>
+        </locale>
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
@@ -237,6 +240,12 @@
         <locale name="exception.cryptogroup.delete.no.permission">
             <de><![CDATA[Gruppen können nur durch SuperUser gelöscht werden.]]></de>
         </locale>
+        <locale name="exception.cryptogroup.setsecurityclass.users.not.eligible">
+            <de><![CDATA[Der Benutzer #[userId] kann der Gruppe #[groupId] keine Sicherheitsklasse zuweisen, da er nicht Teil der Gruppe ist.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.add.user.cannot.add.himself">
+            <de><![CDATA[Sie können sich nicht selbst zu einer Passwort-Gruppe hinzufügen.]]></de>
+        </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
         <locale name="exception.cryptoactors.addcryptogroup.otherwise.associated">
@@ -278,6 +287,21 @@
         </locale>
         <locale name="error.authentication.sync.authplugin">
             <de><![CDATA[Der Vorgang war nicht erfolgreich. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.securityclass.create.missing.title">
+            <de><![CDATA[Bitte geben Sie einen Titel für die Sicherheitsklasse an.]]></de>
+        </locale>
+        <locale name="exception.securityclass.create.missing.authplugins">
+            <de><![CDATA[Bitte legen Sie mindestens einen Authentifizierungs-Faktor für die Sicherheitsklasse fest.]]></de>
+        </locale>
+        <locale name="exception.securityclass.create.missing.requiredFactors">
+            <de><![CDATA[Bitte legen Sie die Mindestanzahl der benötigten Authentifizierungs-Faktoren für die Sicherheitsklasse fest.]]></de>
+        </locale>
+        <locale name="exception.securityclass.create.too.many.requiredFactors">
+            <de><![CDATA[Die festgelegte Mindestanzahl der benötigten Authentifizierungs-Faktoren übersteigt die Anzahl der gewählten Authentifizierungs-Faktoren.]]></de>
+        </locale>
+        <locale name="exception.securityclass.create.error">
+            <de><![CDATA[Beim Anlegen der Sicherheitsklasse ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- Ajax -->
@@ -335,6 +359,9 @@
         </locale>
         <locale name="exception.securityclass.authenticate.insufficient.authentication.count">
             <de><![CDATA[Zur Authentifizierung für die Sicherheitsklasse #[securityClassId] wurden nicht ausreichend Authentifizierungsinformationen übergeben. Sie müssen sich bei mindestens [requiredFactors] verschiedenen Faktoren authentifizieren.]]></de>
+        </locale>
+        <locale name="exception.securityclass.create.no.permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Sicherheitsklassen zu erstellen oder zu bearbeiten.]]></de>
         </locale>
 
         <!-- Class: Security\Keys\AuthKeyPair -->
@@ -413,10 +440,13 @@
             <de><![CDATA[Wiederherstellungs-Informationen]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.username">
-            <de><![CDATA[Benutzername]]></de>
+            <de><![CDATA[Benutzer]]></de>
         </locale>
-        <locale name="auth.auth.recoverycodewindow.authplugin">
+        <locale name="auth.recoverycodewindow.authplugin">
             <de><![CDATA[Authentifizierungs-Modul]]></de>
+        </locale>
+        <locale name="auth.recoverycodewindow.recoveryCodeId">
+            <de><![CDATA[Wiederherstellungs-ID]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.date">
             <de><![CDATA[Datum]]></de>
@@ -470,6 +500,9 @@
         </locale>
         <locale name="controls.gpm.passwords.panel.tbl.header.datatype">
             <de><![CDATA[Typ]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.accesstype">
+            <de><![CDATA[Zugriff]]></de>
         </locale>
         <locale name="gpm.passwords.panel.create.title">
             <de><![CDATA[Neues Passwort erstellen]]></de>
@@ -651,9 +684,12 @@
         <locale name="controls.authenticate.popup.btn.abort">
             <de><![CDATA[Hier klicken, um den Authentifizierungsvorgang abzubrechen]]></de>
         </locale>
+        <locale name="controls.auth.authenticate.warning.nonregistered">
+            <de><![CDATA[Dieser Authentifizierungs-Faktor kann nicht verwendet werden, da Sie für ihn nicht registriert sind. Um sich für diesen Authentifizierungs-Faktor zu registrieren, gehen Sie bitte in die Authentifizierungsverwaltung.]]></de>
+        </locale>
 
         <!-- Control: password/Authenticate -->
-        <locale name="controls.password.authenticate.warning">
+        <locale name="controls.password.authenticate.warning.unsynced">
             <de><![CDATA[Dieser Authentifizierungs-Faktor kann für dieses Passwort z.Z. nicht verwendet werden. Um dies zu beheben, gehen Sie bitte in die Authentifizierungsverwaltung und klicken auf den Warn-Button für diesen Authentifizierungs-Faktor.]]></de>
         </locale>
 
@@ -734,7 +770,10 @@
             <de><![CDATA[Mindestens benötigte Faktoren]]></de>
         </locale>
         <locale name="securityclasses.create.template.authPluginsWarning" html="true">
-            <de><![CDATA[<b>Hinweis:</b> Die festgelegten Authentifizierungs-Faktoren können nach der Erstellung der Sicherheitsklasse nicht mehr geändert werden.]]></de>
+            <de><![CDATA[<b>Hinweis:</b> Nach der Erstellung der Sicherheitsklasse können nur noch Authentifizierungs-Faktoren hinzugefügt werden. Bestehende Faktoren können nicht mehr aus der Sicherheitsklasse entfernt werden.]]></de>
+        </locale>
+        <locale name="securityclasses.create.template.authPluginsRequiredFactorsWarning" html="true">
+            <de><![CDATA[<b>Hinweis:</b> Die festgelegte Mindestanzahl an zur Authentifizierung benötigten Faktoren kann im Nachhinein nicht mehr geändert werden.]]></de>
         </locale>
         <locale name="securityclasses.create.template.groups">
             <de><![CDATA[Gruppen]]></de>
@@ -744,6 +783,9 @@
         </locale>
 
         <!-- Control: securityclasses/Edit -->
+        <locale name="securityclasses.panel.title">
+            <de><![CDATA[Sicherheitsklassen]]></de>
+        </locale>
         <locale name="securityclasses.edit.template.edittitle">
             <de><![CDATA[Sicherheitsklasse bearbeiten]]></de>
         </locale>
@@ -756,11 +798,20 @@
         <locale name="securityclasses.edit.template.authPlugins">
             <de><![CDATA[Auth.-Faktoren]]></de>
         </locale>
+        <locale name="securityclasses.edit.template.authPluginsAdd">
+            <de><![CDATA[Zusätzliche Auth.-Faktoren]]></de>
+        </locale>
         <locale name="securityclasses.edit.template.groups">
             <de><![CDATA[Gruppen]]></de>
         </locale>
         <locale name="securityclasses.edit.template.requiredFactors">
             <de><![CDATA[Mindestens benötigte Faktoren]]></de>
+        </locale>
+        <locale name="securityclasses.edit.addauthfactors.none.available">
+            <de><![CDATA[Dieser Sicherheitsklasse sind bereits alle verfügbaren Authentifizierungs-Faktoren zugeordnet.]]></de>
+        </locale>
+        <locale name="securityclasses.edit.addauthfactors.not.removable">
+            <de><![CDATA[Einmal hinzugefügte Authentifizierungs-Faktoren können nicht wieder aus der Sicherheitsklasse entfernt werden.]]></de>
         </locale>
 
         <!-- Control: password/Share -->
@@ -795,6 +846,9 @@
         <locale name="passwordtypes.select.type.Login">
             <de><![CDATA[Login-Daten]]></de>
         </locale>
+        <locale name="passwordtypes.select.type.Input">
+            <de><![CDATA[Geheimtext]]></de>
+        </locale>
 
         <!-- Control: passwordtypes/FTP -->
         <locale name="password.types.ftp.template.title">
@@ -822,6 +876,17 @@
             <de><![CDATA[Passwort]]></de>
         </locale>
         <locale name="password.types.login.template.note">
+            <de><![CDATA[Notiz]]></de>
+        </locale>
+
+        <!-- Control: passwordtypes/Input -->
+        <locale name="password.types.Input.template.title">
+            <de><![CDATA[Geheimtext]]></de>
+        </locale>
+        <locale name="password.types.Input.template.password">
+            <de><![CDATA[Geheimtext]]></de>
+        </locale>
+        <locale name="password.types.Input.template.note">
             <de><![CDATA[Notiz]]></de>
         </locale>
 
@@ -857,11 +922,23 @@
         </locale>
 
         <!-- Control: actors/GroupEdit -->
+        <locale name="actors.groups.panel.title">
+            <de><![CDATA[Passwort-Gruppen]]></de>
+        </locale>
         <locale name="gpm.groups.panel.edit.title">
             <de><![CDATA[Passwort-Gruppe bearbeiten]]></de>
         </locale>
+        <locale name="gpm.groups.panel.table.nosecurityclass">
+            <de><![CDATA[keine (Gruppe kann nicht für den Passwort-Manager verwendet werden)]]></de>
+        </locale>
+        <locale name="group.panel.tbl.header.name">
+            <de><![CDATA[Gruppe]]></de>
+        </locale>
+        <locale name="group.panel.tbl.header.securityclass">
+            <de><![CDATA[Sicherheitsklasse]]></de>
+        </locale>
         <locale name="actors.groups.edit.template.title">
-            <de><![CDATA[Passwort-Gruppe bearbeiten]]></de>
+            <de><![CDATA[Passwort-Gruppe "[groupName]" (#[groupId]) bearbeiten]]></de>
         </locale>
         <locale name="actors.groups.edit.template.basicData">
             <de><![CDATA[Sicherheitsklasse]]></de>
@@ -869,8 +946,8 @@
         <locale name="actors.groups.edit.template.securityclass">
             <de><![CDATA[Zugeordnete Sicherheitsklasse]]></de>
         </locale>
-        <locale name="controls.groupedit.no.securityclass">
-            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.]]></de>
+        <locale name="controls.groupedit.no.securityclass" html="true">
+            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann. <b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
         </locale>
         <locale name="controls.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>
@@ -892,6 +969,12 @@
         </locale>
         <locale name="auth.syncauthpluginwindow.info" html="true">
             <de><![CDATA[Sie haben Berechtigungen für Passwörter, für deren Zugriff das Authentifizierungs-Modul <b>"[authPluginTitle]"</b> verwendet werden kann. Da Sie bereits Zugriff auf diese Passwörter hatten, bevor Sie sich für dieses Authentifizierungs-Modul registriert haben, ist es nötig, sich einmalig für die Sicherheitsklassen dieser Passwörter zu authentifizieren. Dadurch wird sichergestellt, dass sie auch diesen Authentifizierungs-Faktor für den Zugriff auf diese Passwörter nutzen können.]]></de>
+        </locale>
+        <locale name="auth.syncauthpluginwindow.btn.sync.text">
+            <de><![CDATA[Synchronisieren]]></de>
+        </locale>
+        <locale name="auth.syncauthpluginwindow.btn.sync">
+            <de><![CDATA[Hier klicken, um den Synchronisierungsvorgang zu starten]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.btn.unlock.text">
             <de><![CDATA[Authentifizierung]]></de>

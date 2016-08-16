@@ -39,7 +39,7 @@ class Recovery
      * @param CryptoUser $CryptoUser (optional) - the user the recovery data is created for;
      * if omitted uses session user
      *
-     * @return string - recovery code
+     * @return array - recovery code information
      *
      * @throws QUI\Exception
      */
@@ -102,7 +102,17 @@ class Recovery
             )
         );
 
-        return $recoveryCode;
+        $recoveryCodeData = array(
+            'userId'          => $CryptoUser->getId(),
+            'userName'        => $CryptoUser->getUsername(),
+            'authPluginId'    => $AuthPlugin->getId(),
+            'authPluginTitle' => $AuthPlugin->getAttribute('title'),
+            'recoveryCodeId'  => QUI::getDataBase()->getPDO()->lastInsertId(),
+            'recoveryCode'    => $recoveryCode,
+            'date'            => date('d.m.Y')
+        );
+
+        return $recoveryCodeData;
     }
 
     /**

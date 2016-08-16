@@ -171,8 +171,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 Authentication.getSecurityClassInfo(securityClassId),
                 Authentication.getAuthPluginControlsBySecurityClass(securityClassId)
             ]).then(function (result) {
-                var SecurityClassInfo = result[0];
-                var AuthPluginPaths   = result[1];
+                var SecurityClassInfo  = result[0];
+                var AuthPluginControls = result[1];
 
                 // set popup html and texts
                 InfoElm.set(
@@ -188,17 +188,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     '</span>'
                 );
 
-                var paths = [];
+                var paths                 = [];
+                var AuthPluginsRegistered = {};
 
-                for (var authPluginId in AuthPluginPaths) {
-                    if (!AuthPluginPaths.hasOwnProperty(authPluginId)) {
+                for (var authPluginId in AuthPluginControls) {
+                    if (!AuthPluginControls.hasOwnProperty(authPluginId)) {
                         continue;
                     }
 
-                    var authPluginPath = AuthPluginPaths[authPluginId];
+                    var AuthPluginControl = AuthPluginControls[authPluginId];
 
                     self.$authPluginIds.push(authPluginId);
-                    paths.push(authPluginPath);
+                    AuthPluginsRegistered[authPluginId] = AuthPluginControl.registered;
+                    paths.push(AuthPluginControl.control);
                 }
 
                 // load auth plugins
@@ -224,6 +226,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                             });
 
                             Control.inject(PluginElm);
+
+                            if (!AuthPluginsRegistered[self.$authPluginIds[i]]) {
+                                new Element('div', {
+                                    'class': 'pcsg-gpm-auth-authenticate-warning',
+                                    html   : '<span>' + QUILocale.get(lg, 'controls.auth.authenticate.warning.nonregistered') + '</span>'
+                                }).inject(
+                                    PluginElm,
+                                    'top'
+                                );
+                            }
 
                             if (!FirstControl) {
                                 FirstControl = Control;

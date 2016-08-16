@@ -1,6 +1,5 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
@@ -14,21 +13,10 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  */
 function package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass($groupId, $securityClassId)
 {
-    // @todo PERMISSION CHECK
-
-
     $Group         = QUI::getGroups()->get((int)$groupId);
     $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 
-    $result = QUI::getDataBase()->fetch(array(
-        'count' => 1,
-        'from'  => Tables::KEYPAIRS_GROUP,
-        'where' => array(
-            'groupId' => $Group->getId()
-        )
-    ));
-
-    if (current(current($result)) == 0) {
+    if (!CryptoActors::existsCryptoGroup($Group->getId())) {
         CryptoActors::createCryptoGroup($Group, $SecurityClass);
     } else {
         $CryptoGroup = CryptoActors::getCryptoGroup($Group->getId());

@@ -327,10 +327,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             var FuncOnRegisterBtnClick = function () {
                 self.Loader.show();
 
-                Register.submit().then(function (recoveryCode) {
+                Register.submit().then(function (RecoveryCodeData) {
                     self.Loader.hide();
 
-                    if (!recoveryCode) {
+                    if (!RecoveryCodeData) {
                         return;
                     }
 
@@ -338,12 +338,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         RegisterSheet.destroy();
 
                         new RecoveryCodeWindow({
-                            'authPluginId'   : AuthPluginData.id,
-                            'authPluginTitle': AuthPluginData.title,
-                            'recoveryCode'   : recoveryCode,
-                            events           : {
+                            RecoveryCodeData: RecoveryCodeData,
+                            events          : {
                                 onClose: function () {
-                                    recoveryCode = null;
+                                    RecoveryCodeData = null;
                                     self.$nonFullyAccessiblePasswordCheck(
                                         AuthPluginData.id
                                     );
@@ -355,6 +353,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             };
         },
 
+        /**
+         * Checks for all passwords that can be accessed with a specific
+         * authentication plugin of the user has access to all those passwords
+         * via this authentication plugin
+         *
+         * @param {number} authPluginId
+         */
         $nonFullyAccessiblePasswordCheck: function (authPluginId) {
             var self = this;
 
@@ -366,9 +371,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     return;
                 }
 
-                // @todo open synch auth window
                 new SyncAuthPluginWindow({
-                    authPluginId: authPluginId
+                    authPluginId: authPluginId,
+                    events      : {
+                        onSuccess: function (SyncWindow) {
+                            SyncWindow.close();
+                            self.refresh();
+                        }
+                    }
                 }).open();
             });
         },

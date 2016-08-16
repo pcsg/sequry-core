@@ -203,6 +203,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataType : 'text',
                     width    : 150
                 }, {
+                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.accesstype'),
+                    dataIndex: 'accessType',
+                    dataType : 'node',
+                    width    : 50
+                }, {
                     dataIndex: 'securityClassId',
                     dataType : 'integer',
                     hidden   : true
@@ -221,10 +226,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     );
                 },
                 onClick   : function () {
-                    self.getButtons('delete').enable();
+                    var Data = self.$Grid.getSelectedData()[0];
+
                     self.getButtons('view').enable();
-                    self.getButtons('edit').enable();
-                    self.getButtons('share').enable();
+
+                    if (Data.isOwner) {
+                        self.getButtons('delete').enable();
+                        self.getButtons('edit').enable();
+                        self.getButtons('share').enable();
+                    }
                 },
                 onRefresh : this.$listRefresh
             });
@@ -287,7 +297,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.getButtons('share').disable();
 
             for (var i = 0, len = GridData.data.length; i < len; i++) {
-                Row = GridData.data[i];
+                var Data = GridData.data[i];
+
+                Row = Data;
+
+                switch (Data.access) {
+                    case 'user':
+                        Row.accessType = new Element('span', {
+                            'class': 'fa fa-user',
+                            styles : {
+                                'text-align'   : 'center',
+                                'padding-right': 5,
+                                width          : '100%'
+                            }
+                        });
+                        break;
+
+                    case 'group':
+                        Row.accessType = new Element('span', {
+                            'class': 'fa fa-users',
+                            styles : {
+                                'text-align'   : 'center',
+                                'padding-right': 5,
+                                width          : '100%'
+                            }
+                        });
+                        break;
+                }
             }
 
             this.$Grid.setData(GridData);
@@ -426,7 +462,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
-                                onClose: function() {
+                                onClose : function () {
                                     View.destroy();
                                     Sheet.destroy();
                                     self.Loader.hide();
@@ -463,7 +499,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
-                                onClose: function() {
+                                onClose : function () {
                                     Share.destroy();
                                     Sheet.destroy();
                                     self.Loader.hide();
@@ -512,8 +548,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
-                                onClose: function() {
+                                onClose : function () {
                                     Edit.destroy();
+                                    Sheet.destroy();
                                     self.refresh();
                                     self.Loader.hide();
                                 }
@@ -616,42 +653,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     }
                 }
             });
-        },
-
-        /**
-         * (Re-)opens a single password panel
-         *
-         * @param {integer} passwordId
-         */
-        $openPasswordPanel: function (passwordId) {
-            var self = this;
-
-            require([
-                'package/pcsg/grouppasswordmanager/bin/controls/password/Panel',
-                'utils/Panels'
-            ], function (PasswordPanel, Panels) {
-                var PPanel = new PasswordPanel({
-                    passwordId: passwordId,
-                    '#id'     : passwordId
-                });
-
-                //MPanel.addEvents({
-                //    onDeleteMachine: function (machineId) {
-                //        //var row = self.$getRowByMachineId(machineId);
-                //        //
-                //        //if (row !== false) {
-                //        //    self.Table.deleteRow(row);
-                //        //}
-                //    },
-                //    onEditMachine  : function (machineId) {
-                //        //self.$refreshMachine(machineId);
-                //    }
-                //});
-
-                Panels.openPanelInTasks(PPanel);
-            });
         }
-
     });
-
 });

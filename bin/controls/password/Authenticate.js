@@ -61,16 +61,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate', [
         },
 
         /**
-         * Fetch password ID before opening popup
+         * Fetch security class ID of password before opening popup
          *
-         * @returns {*}
+         * @returns {Promise}
          */
-        $getPasswordId: function() {
+        $getPasswordId: function () {
             var self = this;
 
             return Passwords.getSecurityClassId(
                 self.getAttribute('passwordId')
-            ).then(function(securityClassId) {
+            ).then(function (securityClassId) {
                 self.setAttribute(
                     'securityClassId',
                     securityClassId
@@ -78,29 +78,37 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate', [
             });
         },
 
-        $onLoaded: function()
-        {
+        /**
+         * Get auth plugin information
+         */
+        $onLoaded: function () {
+
+            console.log("$onLoaded Password");
+
             var self = this;
 
-            Passwords.getAvailableAuthPluginIds(
+            Passwords.getAvailableAuthPluginsInfo(
                 self.getAttribute('passwordId')
-            ).then(function(availableAuthPluginIds) {
+            ).then(function (AuthPluginsInfo) {
                 for (var i = 0, len = self.$authPluginControls.length; i < len; i++) {
                     var authPluginId = self.$authPluginControls[i].getAttribute('authPluginId');
 
-                    if (availableAuthPluginIds.contains(authPluginId)) {
+                    if (!(authPluginId in AuthPluginsInfo)) {
                         continue;
                     }
 
+                    var authStatus    = AuthPluginsInfo[authPluginId];
                     var AuthPluginElm = self.$authPluginControls[i].getElm();
 
-                    new Element('div', {
-                        'class': 'pcsg-gpm-password-auth-warning',
-                        html: '<span>' + QUILocale.get(lg, 'controls.password.authenticate.warning') + '</span>'
-                    }).inject(
-                        AuthPluginElm,
-                        'top'
-                    );
+                    if (!authStatus) {
+                        new Element('div', {
+                            'class': 'pcsg-gpm-password-auth-warning',
+                            html   : '<span>' + QUILocale.get(lg, 'controls.password.authenticate.warning.unsynced') + '</span>'
+                        }).inject(
+                            AuthPluginElm,
+                            'top'
+                        );
+                    }
                 }
             });
         }

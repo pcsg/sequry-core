@@ -26,7 +26,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
@@ -109,39 +109,40 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             var self = this;
             var pwId = this.getAttribute('passwordId');
 
-            Passwords.getSecurityClassId(pwId).then(function (securityClassId) {
-                var AuthControl = new AuthenticationControl({
-                    securityClassId: securityClassId,
-                    events         : {
-                        onSubmit: function (AuthData) {
-                            self.$AuthData = AuthData;
+            var AuthControl = new AuthenticationControl({
+                passwordId: pwId,
+                events         : {
+                    onSubmit: function (AuthData) {
+                        self.$AuthData = AuthData;
 
-                            Passwords.get(
-                                pwId,
-                                AuthData
-                            ).then(
-                                function (PasswordData) {
-                                    AuthControl.destroy();
+                        Passwords.get(
+                            pwId,
+                            AuthData
+                        ).then(
+                            function (PasswordData) {
+                                AuthControl.destroy();
 
-                                    self.$PasswordData    = PasswordData;
-                                    self.$AuthData        = AuthData;
-                                    self.$securityClassId = securityClassId;
+                                self.$PasswordData    = PasswordData;
+                                self.$AuthData        = AuthData;
+                                self.$securityClassId = PasswordData.securityClassId;
 
-                                    self.$onPasswordDataLoaded();
-                                },
-                                function () {
-                                    // @todo
-                                }
-                            );
-                        },
-                        onClose : function () {
-                            self.fireEvent('close');
-                        }
+                                self.$onPasswordDataLoaded();
+                            },
+                            function () {
+                                // @todo
+                            }
+                        );
+                    },
+                    onAbort: function() {
+                        self.fireEvent('close');
+                    },
+                    onClose : function () {
+                        self.fireEvent('close');
                     }
-                });
-
-                AuthControl.open();
+                }
             });
+
+            AuthControl.open();
         },
 
         $onPasswordDataLoaded: function () {
@@ -200,7 +201,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$OwnerSelect.clear();
 
             if (this.$PasswordData.ownerId && this.$PasswordData.ownerType) {
-                switch (this.$PasswordData.ownerType) {
+                switch (parseInt(this.$PasswordData.ownerType)) {
                     case 1:
                         this.$OwnerSelect.addItem('u' + this.$PasswordData.ownerId);
                         break;

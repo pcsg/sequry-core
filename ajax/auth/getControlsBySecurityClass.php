@@ -16,7 +16,10 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getControlsBySecurityClass(
 
     /** @var \Pcsg\GroupPasswordManager\Security\Authentication\Plugin $AuthPlugin */
     foreach ($authPlugins as $AuthPlugin) {
-        $controls[$AuthPlugin->getId()] = $AuthPlugin->getAuthenticationControl();
+        $controls[$AuthPlugin->getId()] = array(
+            'control'    => $AuthPlugin->getAuthenticationControl(),
+            'registered' => $AuthPlugin->isRegistered()
+        );
     }
 
     return $controls;

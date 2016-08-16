@@ -74,6 +74,13 @@ class Password extends QUI\QDOM
     protected $User = null;
 
     /**
+     * Encrypted password data
+     *
+     * @var string
+     */
+    protected $cryptoDataEncrypted = null;
+
+    /**
      * Attributes that are secret (and saved encrypted)
      *
      * @var array
@@ -157,11 +164,8 @@ class Password extends QUI\QDOM
         ));
 
         // set private attributes
-        $this->setSecretAttributes(array(
-            'cryptoDataEncrypted' => $passwordData['cryptoData']
-        ));
-
-        $this->SecurityClass = Authentication::getSecurityClass($passwordData['securityClassId']);
+        $this->cryptoDataEncrypted = $passwordData['cryptoData'];
+        $this->SecurityClass       = Authentication::getSecurityClass($passwordData['securityClassId']);
     }
 
     /**
@@ -178,11 +182,12 @@ class Password extends QUI\QDOM
         $this->decrypt();
 
         $viewData = array(
-            'id'          => $this->id,
-            'title'       => $this->getAttribute('title'),
-            'description' => $this->getAttribute('description'),
-            'payload'     => $this->getSecretAttribute('payload'),
-            'dataType'    => $this->getAttribute('dataType')
+            'id'              => $this->id,
+            'title'           => $this->getAttribute('title'),
+            'description'     => $this->getAttribute('description'),
+            'payload'         => $this->getSecretAttribute('payload'),
+            'dataType'        => $this->getAttribute('dataType'),
+            'securityClassId' => $this->SecurityClass->getId()
         );
 
         return $viewData;
@@ -202,13 +207,14 @@ class Password extends QUI\QDOM
         $this->decrypt();
 
         $data = array(
-            'id'          => $this->id,
-            'title'       => $this->getAttribute('title'),
-            'description' => $this->getAttribute('description'),
-            'payload'     => $this->getSecretAttribute('payload'),
-            'ownerId'     => $this->getAttribute('ownerId'),
-            'ownerType'   => $this->getAttribute('ownerType'),
-            'dataType'    => $this->getAttribute('dataType')
+            'id'              => $this->id,
+            'title'           => $this->getAttribute('title'),
+            'description'     => $this->getAttribute('description'),
+            'payload'         => $this->getSecretAttribute('payload'),
+            'ownerId'         => $this->getAttribute('ownerId'),
+            'ownerType'       => $this->getAttribute('ownerType'),
+            'dataType'        => $this->getAttribute('dataType'),
+            'securityClassId' => $this->SecurityClass->getId()
         );
 
         return $data;
@@ -326,11 +332,12 @@ class Password extends QUI\QDOM
         $this->decrypt();
 
         $data = array(
-            'id'          => $this->id,
-            'title'       => $this->getAttribute('title'),
-            'description' => $this->getAttribute('description'),
-            'dataType'    => $this->getAttribute('dataType'),
-            'sharedWith'  => $this->getSecretAttribute('sharedWith')
+            'id'              => $this->id,
+            'title'           => $this->getAttribute('title'),
+            'description'     => $this->getAttribute('description'),
+            'dataType'        => $this->getAttribute('dataType'),
+            'sharedWith'      => $this->getSecretAttribute('sharedWith'),
+            'securityClassId' => $this->SecurityClass->getId()
         );
 
         return $data;
@@ -1103,6 +1110,11 @@ class Password extends QUI\QDOM
         return $this->secretAttributes;
     }
 
+    /**
+     * Decrypt password sensitive data
+     *
+     * @throws QUI\Exception
+     */
     protected function decrypt()
     {
         if (!$this->SecurityClass->isAuthenticated()) {
@@ -1121,7 +1133,7 @@ class Password extends QUI\QDOM
 
         // decrypt password content
         $contentDecrypted = SymmetricCrypto::decrypt(
-            $this->getSecretAttribute('cryptoDataEncrypted'),
+            $this->cryptoDataEncrypted,
             $PasswordKey
         );
 
@@ -1129,8 +1141,6 @@ class Password extends QUI\QDOM
 
         // check password content
         if (json_last_error() !== JSON_ERROR_NONE
-            || !isset($contentDecrypted['ownerId'])
-            || !isset($contentDecrypted['ownerType'])
             || !isset($contentDecrypted['payload'])
             || !isset($contentDecrypted['sharedWith'])
             || !isset($contentDecrypted['history'])

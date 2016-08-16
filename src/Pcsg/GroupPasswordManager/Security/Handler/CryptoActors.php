@@ -77,16 +77,20 @@ class CryptoActors
      */
     public static function createCryptoGroup($Group, $SecurityClass)
     {
-        // check if group is associated with any other security class
-        $result = QUI::getDataBase()->fetch(array(
-            'count' => 1,
-            'from'  => Tables::KEYPAIRS_GROUP,
-            'where' => array(
-                'groupId' => $Group->getId()
-            )
-        ));
+        $SessionUser = QUI::getUserBySession();
 
-        if (current(current($result)) > 0) {
+        if (!$SessionUser->isInGroup($Group->getId())) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptoactors.addcryptogroup.user.not.in.group',
+                array(
+                    'groupId' => $Group->getId(),
+                    'userId'  => $SessionUser->getId()
+                )
+            ));
+        }
+
+        if (self::existsCryptoGroup($Group->getId())) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptoactors.addcryptogroup.otherwise.associated',
@@ -197,5 +201,24 @@ class CryptoActors
         self::$groups[$id] = new CryptoGroup($id);
 
         return self::$groups[$id];
+    }
+
+    /**
+     * Checks if a group has a registered key pair
+     *
+     * @param integer $groupId - group ID
+     * @return bool
+     */
+    public static function existsCryptoGroup($groupId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'count' => 1,
+            'from'  => Tables::KEYPAIRS_GROUP,
+            'where' => array(
+                'groupId' => $groupId
+            )
+        ));
+
+        return (int)current(current($result)) > 0;
     }
 }

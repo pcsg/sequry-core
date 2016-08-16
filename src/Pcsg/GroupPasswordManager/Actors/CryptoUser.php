@@ -261,6 +261,16 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
+     * Get IDs of all passwords the user owner (directly or via group)
+     *
+     * @return array
+     */
+    public function getOwnerPasswordIds()
+    {
+        return array_merge($this->getDirectOwnerPasswordIds(), $this->getGroupOwnerPasswordIds());
+    }
+
+    /**
      * Get IDs of all passwords the user owns directly (not via group)
      *
      * @return array - password IDs
@@ -284,6 +294,24 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $passwordIds;
+    }
+
+    /**
+     * Get IDs of all passwords the user owns via group
+     *
+     * @return array - password IDs
+     */
+    public function getGroupOwnerPasswordIds()
+    {
+        $ids    = array();
+        $groups = $this->getCryptoGroups();
+
+        /** @var CryptoGroup $CryptoGroup */
+        foreach ($groups as $CryptoGroup) {
+            $ids = array_merge($ids, $CryptoGroup->getOwnerPasswordIds());
+        }
+
+        return $ids;
     }
 
     /**
@@ -585,46 +613,7 @@ class CryptoUser extends QUI\Users\User
         $binds     = array();
         $where     = array();
 
-        // fetch all password ids the user has (direct)access to
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'dataId'
-            ),
-            'from'   => Tables::USER_TO_PASSWORDS,
-            'where'  => array(
-                'userId' => $this->getId()
-            )
-        ));
-
-        $passwordIdsAssoc = array();
-
-        foreach ($result as $row) {
-            $passwordIdsAssoc[$row['dataId']] = true;
-        }
-
-        // fetch all password ids the user has access to via groups
-        $groupIds = $this->getCryptoGroupIds();
-
-        if (!empty($groupIds)) {
-            $result = QUI::getDataBase()->fetch(array(
-                'select' => array(
-                    'dataId'
-                ),
-                'from'   => Tables::GROUP_TO_PASSWORDS,
-                'where'  => array(
-                    'groupId' => array(
-                        'type'  => 'IN',
-                        'value' => $groupIds
-                    )
-                )
-            ));
-        }
-
-        foreach ($result as $row) {
-            $passwordIdsAssoc[$row['dataId']] = true;
-        }
-
-        $passwordIds = array_keys($passwordIdsAssoc);
+        $passwordIds = $this->getPasswordIds();
         $Grid        = new \QUI\Utils\Grid($searchParams);
         $gridParams  = $Grid->parseDBParams($searchParams);
 
@@ -739,11 +728,42 @@ class CryptoUser extends QUI\Users\User
             return (int)current(current($result));
         }
 
+        $ownerPasswordIds        = $this->getOwnerPasswordIds();
+        $directAccessPasswordIds = $this->getPasswordIdsDirectAccess();
+
         foreach ($result as $row) {
+            $row['isOwner'] = in_array($row['id'], $ownerPasswordIds);
+
+            if (in_array($row['id'], $directAccessPasswordIds)) {
+                $row['access'] = 'user';
+            } else {
+                $row['access'] = 'group';
+            }
+
             $passwords[] = $row;
         }
 
         return $passwords;
+    }
+
+    /**
+     * Get IDs of authentication plugins this user is not registered for
+     *
+     * @return array
+     */
+    public function getNonRegisteredAuthPluginIds()
+    {
+        $authPlugins                = Authentication::getAuthPlugins();
+        $nonRegisteredAuthPluginIds = array();
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($authPlugins as $AuthPlugin) {
+            if (!$AuthPlugin->isRegistered($this)) {
+                $nonRegisteredAuthPluginIds[] = $AuthPlugin->getId();
+            }
+        }
+
+        return $nonRegisteredAuthPluginIds;
     }
 
     /**
@@ -914,6 +934,16 @@ class CryptoUser extends QUI\Users\User
         /** @var AuthKeyPair $UserAuthKeyPair */
         foreach ($authKeyPairs as $UserAuthKeyPair) {
             try {
+                // delete old access entry
+                $DB->delete(
+                    Tables::USER_TO_PASSWORDS,
+                    array(
+                        'userId'    => $this->getId(),
+                        'keyPairId' => $UserAuthKeyPair->getId(),
+                        'dataId'    => $passwordId
+                    )
+                );
+
                 $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
                     $passwordKeyParts[$i++],
                     $UserAuthKeyPair
@@ -936,14 +966,6 @@ class CryptoUser extends QUI\Users\User
                     $dataAccessEntry
                 );
             } catch (\Exception $Exception) {
-                // on error delete password entry
-                $DB->delete(
-                    Tables::PASSWORDS,
-                    array(
-                        'id' => $passwordId
-                    )
-                );
-
                 QUI\System\Log::addError(
                     'CryptoUser :: reEncryptDirectAccessKey() :: Error writing password key parts to database: '
                     . $Exception->getMessage()
@@ -957,6 +979,15 @@ class CryptoUser extends QUI\Users\User
         }
     }
 
+    /**
+     * Takes a group access key and re-encrypts it with the current
+     * number of authentication key pairs the user has registered with, according to the respective
+     * security class of this group.
+     *
+     * @param integer $groupId - group ID
+     * @return void
+     * @throws QUI\Exception
+     */
     protected function reEncryptGroupAccessKey($groupId)
     {
         $passwordIdsGroupAccess = $this->getPasswordIdsGroupAccess();
@@ -991,6 +1022,16 @@ class CryptoUser extends QUI\Users\User
         /** @var AuthKeyPair $UserAuthKeyPair */
         foreach ($authKeyPairs as $UserAuthKeyPair) {
             try {
+                // delete old access entry
+                $DB->delete(
+                    Tables::USER_TO_GROUPS,
+                    array(
+                        'userId'        => $this->getId(),
+                        'userKeyPairId' => $UserAuthKeyPair->getId(),
+                        'groupId'       => $groupId
+                    )
+                );
+
                 $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
                     $groupAccessKeyParts[$i++],
                     $UserAuthKeyPair
@@ -1080,7 +1121,8 @@ class CryptoUser extends QUI\Users\User
                     'pcsg/grouppasswordmanager',
                     'exception.cryptouser.delete.last.group.member',
                     array(
-                        'groupId' => $CryptoGroup->getId()
+                        'groupId'   => $CryptoGroup->getId(),
+                        'groupName' => $CryptoGroup->getAttribute('name')
                     )
                 ));
             }

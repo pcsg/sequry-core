@@ -6,6 +6,7 @@ use Monolog\Handler\Curl\Util;
 use ParagonIE\Halite\Symmetric\Crypto;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
+use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
@@ -570,9 +571,18 @@ class SecurityClass extends QUI\QDOM
      * Edits title and/or description of a security class
      *
      * @param array $data
+     *
+     * @throws QUI\Exception
      */
     public function edit($data)
     {
+        if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.no.permission'
+            ));
+        }
+
         foreach ($data as $k => $v) {
             switch ($k) {
                 case 'title':
@@ -581,10 +591,53 @@ class SecurityClass extends QUI\QDOM
                         $this->setAttribute($k, $v);
                     }
                     break;
+
+                case 'newAuthPluginIds':
+                    \QUI\System\Log::writeRecursive($v);
+                    foreach ($v as $authPluginId) {
+                        try {
+                            $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
+                            $this->addAuthPlugin($AuthPlugin);
+                        } catch (\Exception $Exception) {
+                            // nothing, ignore plugin id
+                        }
+                    }
+
+                    break;
             }
         }
 
         $this->save();
+    }
+
+    /**
+     * Add an authentication plugin to this security class (CAN NOT BE REMOVED LATER!)
+     *
+     * @param Plugin $AuthPlugin
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function addAuthPlugin($AuthPlugin)
+    {
+        if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.no.permission'
+            ));
+        }
+
+        if (in_array($AuthPlugin->getId(), $this->getAuthPluginIds())) {
+            return;
+        }
+
+        QUI::getDataBase()->insert(
+            Tables::SECURITY_TO_AUTH,
+            array(
+                'securityClassId' => $this->id,
+                'authPluginId'    => $AuthPlugin->getId()
+            )
+        );
     }
 
     /**

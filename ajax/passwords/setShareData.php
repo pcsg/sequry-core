@@ -59,7 +59,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
                 'error.password.share',
                 array(
                     'passwordId' => $passwordId,
-                    'reason'     => $Exception->getMessage()
+                    'error'     => $Exception->getMessage()
                 )
             )
         );

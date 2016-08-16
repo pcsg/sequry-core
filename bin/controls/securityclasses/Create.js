@@ -69,32 +69,32 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
             this.$Elm = this.parent();
 
             this.$Elm.set({
-                'class': 'pcsg-gpm-password-create',
+                'class': 'pcsg-gpm-securityclasses-create',
                 html   : Mustache.render(template, {
-                    createtitle       : QUILocale.get(lg, lg_prefix + 'createtitle'),
-                    title             : QUILocale.get(lg, lg_prefix + 'title'),
-                    description       : QUILocale.get(lg, lg_prefix + 'description'),
-                    authPlugins       : QUILocale.get(lg, lg_prefix + 'authPlugins'),
-                    authPluginsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsWarning'),
-                    groups            : QUILocale.get(lg, lg_prefix + 'groups'),
-                    groupsInfo        : QUILocale.get(lg, lg_prefix + 'groupsInfo'),
-                    requiredFactors   : QUILocale.get(lg, lg_prefix + 'requiredFactors')
+                    createtitle                      : QUILocale.get(lg, lg_prefix + 'createtitle'),
+                    title                            : QUILocale.get(lg, lg_prefix + 'title'),
+                    description                      : QUILocale.get(lg, lg_prefix + 'description'),
+                    authPlugins                      : QUILocale.get(lg, lg_prefix + 'authPlugins'),
+                    authPluginsWarning               : QUILocale.get(lg, lg_prefix + 'authPluginsWarning'),
+                    groups                           : QUILocale.get(lg, lg_prefix + 'groups'),
+                    requiredFactors                  : QUILocale.get(lg, lg_prefix + 'requiredFactors'),
+                    authPluginsRequiredFactorsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsRequiredFactorsWarning')
                 })
             });
 
-            var AuthPluginElm = this.$Elm.getElement('.pcsg-gpm-password-authplugins');
+            var AuthPluginElm = this.$Elm.getElement('.pcsg-gpm-securityclasses-authplugins');
 
             Authentication.getAuthPlugins().then(function (authPlugins) {
                 for (var i = 0, len = authPlugins.length; i < len; i++) {
                     var Plugin = authPlugins[i];
 
                     var Label = new Element('label', {
-                        'class': 'pcsg-gpm-password-authplugins-label',
-                        html   : '<div class="pcsg-gpm-password-authplugin">' +
-                        '<span class="pcsg-gpm-password-authplugins-title">' +
+                        'class': 'pcsg-gpm-securityclasses-authplugins-create-label',
+                        html   : '<div class="pcsg-gpm-securityclasses-authplugin">' +
+                        '<span class="pcsg-gpm-securityclasses-authplugins-create-title">' +
                         Plugin.title +
                         '</span>' +
-                        '<span class="pcsg-gpm-password-authplugins-description">' +
+                        '<span class="pcsg-gpm-securityclasses-authplugins-create-description">' +
                         Plugin.description +
                         '</span>' +
                         '</div>'
@@ -114,7 +114,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
             });
 
             this.$RequiredFactorsSelect = new QUISelect().inject(
-                this.$Elm.getElement('.pcsg-gpm-password-requiredfactors')
+                this.$Elm.getElement('.pcsg-gpm-securityclasses-requiredfactors')
             );
 
             this.$RequiredFactorsSelect.disable();
@@ -134,7 +134,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
          */
         $refreshFactorSelect: function () {
             var authPluginElms = this.$Elm.getElements(
-                '.pcsg-gpm-password-authplugins input'
+                '.pcsg-gpm-securityclasses-authplugins input'
             );
 
             var i, len;
@@ -175,7 +175,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
             var self = this;
 
             var authPluginElms = this.$Elm.getElements(
-                '.pcsg-gpm-password-authplugins input'
+                '.pcsg-gpm-securityclasses-authplugins input'
             );
 
             var authPluginIds = [];

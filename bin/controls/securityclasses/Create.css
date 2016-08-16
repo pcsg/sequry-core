@@ -12,7 +12,7 @@
     white-space: nowrap;
 }
 
-.pcsg-gpm-password-authplugins-label {
+.pcsg-gpm-securityclasses-authplugins-create-label {
     background-color: #EDEDED;
     border-radius: 5px;
     float: left;
@@ -20,26 +20,30 @@
     width: 100% !important;
 }
 
-.pcsg-gpm-password-authplugins-label:hover {
-    background-color: #eee7c2;
+.pcsg-gpm-securityclasses-authplugins-create-label:not(:first-of-type) {
+    margin-top: 10px;
+}
+
+.pcsg-gpm-securityclasses-authplugins-create-label:hover {
+    background-color: #DEDEDD;
     cursor: pointer;
 }
 
-.pcsg-gpm-password-authplugins-title {
+.pcsg-gpm-securityclasses-authplugins-create-title {
     float: left;
     font-weight: 900;
 }
 
-.pcsg-gpm-password-authplugins-description {
+.pcsg-gpm-securityclasses-authplugins-create-description {
     clear: both;
     float: left;
 }
 
-.pcsg-gpm-password-authplugins-label input {
+.pcsg-gpm-securityclasses-authplugins-create-label input {
     float: left;
 }
 
-.pcsg-gpm-password-authplugin {
+.pcsg-gpm-securityclasses-authplugin {
     float: left;
 }
 

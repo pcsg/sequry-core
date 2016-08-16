@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
+use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
@@ -307,6 +308,13 @@ class Authentication
      */
     public static function createSecurityClass($params)
     {
+        if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.no.permission'
+            ));
+        }
+
         if (!isset($params['title'])
             || empty($params['title'])
         ) {
@@ -317,7 +325,8 @@ class Authentication
         }
 
         if (!isset($params['authPluginIds'])
-            || empty($params['authPluginIds'])
+            || empty($params['authPluginIds']
+            || !is_array($params['authPluginIds']))
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -334,6 +343,13 @@ class Authentication
             ));
         }
 
+        if ((int)$params['requiredFactors'] > count($params['authPluginIds'])) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.too.many.requiredFactors'
+            ));
+        }
+
         $authPlugins = array();
 
         foreach ($params['authPluginIds'] as $authPluginId) {
@@ -346,26 +362,38 @@ class Authentication
             }
         }
 
-        QUI::getDataBase()->insert(
-            Tables::SECURITY_CLASSES,
-            array(
-                'title'           => $params['title'],
-                'description'     => $params['description'],
-                'requiredFactors' => (int)$params['requiredFactors']
-            )
-        );
-
-        $securityClassId = QUI::getDataBase()->getPDO()->lastInsertId();
-
-        /** @var Plugin $AuthPlugin */
-        foreach ($authPlugins as $AuthPlugin) {
+        try {
             QUI::getDataBase()->insert(
-                Tables::SECURITY_TO_AUTH,
+                Tables::SECURITY_CLASSES,
                 array(
-                    'securityClassId' => $securityClassId,
-                    'authPluginId'    => $AuthPlugin->getId()
+                    'title'           => $params['title'],
+                    'description'     => $params['description'],
+                    'requiredFactors' => (int)$params['requiredFactors']
                 )
             );
+
+            $securityClassId = QUI::getDataBase()->getPDO()->lastInsertId();
+
+            /** @var Plugin $AuthPlugin */
+            foreach ($authPlugins as $AuthPlugin) {
+                QUI::getDataBase()->insert(
+                    Tables::SECURITY_TO_AUTH,
+                    array(
+                        'securityClassId' => $securityClassId,
+                        'authPluginId'    => $AuthPlugin->getId()
+                    )
+                );
+            }
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError(
+                'Authentication :: createSecurityClass -> Error on inserting security class data into database: '
+                . $Exception->getMessage()
+            );
+
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.error'
+            ));
         }
 
         return $securityClassId;

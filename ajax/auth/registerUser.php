@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
  *
  * @param integer $authPluginId - ID of authentication plugin
  * @param array $registrationData - authentication data
- * @return string - recovery code
+ * @return false|array - recovery code data; false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId, $registrationData)
 {
@@ -20,7 +20,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
         );
 
         // generate recovery code
-        $recoveryCode = Recovery::createEntry($AuthPlugin, $authInformation);
+        $recoveryCodeData = Recovery::createEntry($AuthPlugin, $authInformation);
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
@@ -42,7 +42,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
         )
     );
 
-    return $recoveryCode;
+    return $recoveryCodeData;
 }
 
 \QUI::$Ajax->register(

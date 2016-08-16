@@ -52,7 +52,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
             'deleteSecurityClass'
         ],
 
-        options: {},
+        options: {
+            title: QUILocale.get(lg, 'securityclasses.panel.title')
+        },
 
         initialize: function (options) {
             this.parent(options);
@@ -177,6 +179,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
                         Edit.disable();
                         Delete.disable();
                     }
+                },
+                onDblClick: function() {
+                    self.editSecurityClass(
+                        self.$Grid.getSelectedData()[0].id
+                    );
                 },
                 onRefresh: this.refresh
             });

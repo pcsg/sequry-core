@@ -48,7 +48,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
             'refresh',
         ],
 
-        options: {},
+        options: {
+            title: QUILocale.get(lg, 'actors.groups.panel.title')
+        },
 
         initialize: function (options) {
             this.parent(options);
@@ -98,6 +100,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
                     dataIndex: 'name',
                     dataType : 'text',
                     width    : 200
+                }, {
+                    header   : QUILocale.get(lg, 'group.panel.tbl.header.securityclass'),
+                    dataIndex: 'securityClass',
+                    dataType : 'text',
+                    width    : 400
                 }],
 
                 pagination : false,
@@ -166,8 +173,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
 
             for (var i = 0, len = groups.length; i < len; i++) {
                 Row = {
-                    id  : groups[i].id,
-                    name: groups[i].name
+                    id           : groups[i].id,
+                    name         : groups[i].name,
+                    securityClass: groups[i].securityClass ?
+                        groups[i].securityClass :
+                        QUILocale.get(lg, 'gpm.groups.panel.table.nosecurityclass')
                 };
 
                 data.push(Row);
@@ -198,7 +208,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
 
                         var Edit = new GroupEdit({
                             groupId: id,
-                            events         : {
+                            events : {
                                 onLoaded : function () {
                                     self.Loader.hide();
                                 },

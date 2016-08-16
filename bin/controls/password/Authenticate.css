@@ -1,5 +1,6 @@
 .pcsg-gpm-password-auth-warning {
     background-color: #FAF6D4;
+    border: 1px solid #F11212;
     border-radius: 5px;
     color: #000;
     float: left;

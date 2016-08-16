@@ -205,9 +205,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * @param {number} passwordId
          * @returns {Promise}
          */
-        getAvailableAuthPluginIds: function (passwordId) {
+        getAvailableAuthPluginsInfo: function (passwordId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPluginIds', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPluginsInfo', resolve, {
                     'package' : pkg,
                     onError   : reject,
                     passwordId: passwordId
