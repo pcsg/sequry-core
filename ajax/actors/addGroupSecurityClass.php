@@ -13,8 +13,6 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  */
 function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass($groupId, $securityClassId)
 {
-    ini_set('display_errors', 1);
-
     $Group         = QUI::getGroups()->get((int)$groupId);
     $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 
@@ -29,7 +27,8 @@ function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass($gr
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.cryptogroup.securityclass.add', array(
+                'error.cryptogroup.securityclass.add',
+                array(
                     'groupId'            => $Group->getId(),
                     'groupName'          => $Group->getAttribute('name'),
                     'securityClassId'    => $SecurityClass->getId(),
@@ -45,7 +44,8 @@ function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass($gr
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
             'pcsg/grouppasswordmanager',
-            'success.cryptogroup.securityclass.add', array(
+            'success.cryptogroup.securityclass.add',
+            array(
                 'groupId'            => $Group->getId(),
                 'groupName'          => $Group->getAttribute('name'),
                 'securityClassId'    => $SecurityClass->getId(),

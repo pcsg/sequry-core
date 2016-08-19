@@ -25,7 +25,8 @@ function package_pcsg_grouppasswordmanager_ajax_actors_removeGroupSecurityClass(
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'error.cryptogroup.securityclass.remove', array(
+                'error.cryptogroup.securityclass.remove',
+                array(
                     'groupId'            => $Group->getId(),
                     'groupName'          => $Group->getAttribute('name'),
                     'securityClassId'    => $SecurityClass->getId(),
@@ -41,7 +42,8 @@ function package_pcsg_grouppasswordmanager_ajax_actors_removeGroupSecurityClass(
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
             'pcsg/grouppasswordmanager',
-            'success.cryptogroup.securityclass.remove', array(
+            'success.cryptogroup.securityclass.remove',
+            array(
                 'groupId'            => $Group->getId(),
                 'groupName'          => $Group->getAttribute('name'),
                 'securityClassId'    => $SecurityClass->getId(),
