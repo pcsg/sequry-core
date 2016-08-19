@@ -105,7 +105,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         setShareData: function (passwordId, shareData, AuthData) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_setShareData', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_setShareData', resolve, {
                     'package' : pkg,
                     onError   : reject,
                     passwordId: passwordId,
@@ -139,7 +139,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         createPassword: function (PasswordData) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_create', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_create', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     passwordData: JSON.encode(PasswordData)
@@ -157,7 +157,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         editPassword: function (passwordId, PasswordData, AuthData) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_edit', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_edit', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     passwordId  : passwordId,
@@ -176,7 +176,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         deletePassword: function (passwordId, AuthData) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_delete', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_delete', resolve, {
                     'package' : pkg,
                     onError   : reject,
                     passwordId: passwordId,

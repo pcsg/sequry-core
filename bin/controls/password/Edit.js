@@ -145,6 +145,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             AuthControl.open();
         },
 
+        /**
+         * Build further controls after password data has been loaded
+         */
         $onPasswordDataLoaded: function () {
             var self = this;
 
@@ -182,6 +185,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             }).inject(
                 SecurityClassElm
             );
+
+            // if owner is group, show warning
+            if (this.$PasswordData.ownerType == 2) {
+                new Element('div', {
+                    'class': 'pcsg-gpm-password-warning',
+                    html: QUILocale.get(lg, 'password.edit.securityclass.change.warning')
+                }).inject(SecurityClassElm, 'top');
+            }
         },
 
         /**

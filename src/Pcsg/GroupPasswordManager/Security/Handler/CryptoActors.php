@@ -8,8 +8,8 @@ namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
+use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
-use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -18,6 +18,7 @@ use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use QUI\Permissions\Permission as QUIPermissions;
 
 /**
  * Class for for managing system actors - users and groups
@@ -89,6 +90,13 @@ class CryptoActors
                 )
             ));
         }
+
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_EDIT, $SessionUser)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.no.permission'
+            ));
+        };
 
         if (self::existsCryptoGroup($Group->getId())) {
             throw new QUI\Exception(array(
@@ -172,10 +180,11 @@ class CryptoActors
                 );
 
                 $data = array(
-                    'userId'        => $User->getId(),
-                    'userKeyPairId' => $AuthKeyPair->getId(),
-                    'groupId'       => $Group->getId(),
-                    'groupKey'      => $privateKeyEncryptionKeyPartEncrypted
+                    'userId'          => $User->getId(),
+                    'userKeyPairId'   => $AuthKeyPair->getId(),
+                    'securityClassId' => $SecurityClass->getId(),
+                    'groupId'         => $Group->getId(),
+                    'groupKey'        => $privateKeyEncryptionKeyPartEncrypted
                 );
 
                 // calculate MAC

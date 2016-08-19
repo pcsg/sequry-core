@@ -9,7 +9,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param integer $passwordId - ID of password
  * @param array $passwordData - edited data of password
  * @param array $authData - authentication information
- * @return array - new pasword data
+ * @return false|array - new pasword data; false if data could not be retrieved
  *
  * @throws QUI\Exception
  */
@@ -25,9 +25,9 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
     );
 
     // edit password
-    $Password = Passwords::get($passwordId);
-
     try {
+        $Password = Passwords::get($passwordId);
+
         $Password->setData(
             Orthos::clearArray(json_decode($passwordData, true))
         );
@@ -41,6 +41,13 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
                 )
             )
         );
+
+        // if owner changed during this edit process, data cannot be retrieved
+        try {
+            return $Password->getData();
+        } catch (\Exception $Exception) {
+            return false;
+        }
     } catch (\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
@@ -53,8 +60,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
             )
         );
     }
-
-    return $Password->getData();
 }
 
 \QUI::$Ajax->register(

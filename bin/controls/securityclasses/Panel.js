@@ -150,7 +150,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
                     header   : QUILocale.get(lg, 'securityclasses.panel.tbl.header.factors'),
                     dataIndex: 'factors',
                     dataType : 'text',
-                    width    : 200
+                    width    : 400
                 }],
 
                 pagination : false,
@@ -167,7 +167,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
             });
 
             this.$Grid.addEvents({
-                onClick  : function () {
+                onClick   : function () {
                     var selectedCount = self.$Grid.getSelectedData().length,
                         Delete        = self.getButtons('delete'),
                         Edit          = self.getButtons('edit');
@@ -180,12 +180,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
                         Delete.disable();
                     }
                 },
-                onDblClick: function() {
+                onDblClick: function () {
                     self.editSecurityClass(
                         self.$Grid.getSelectedData()[0].id
                     );
                 },
-                onRefresh: this.refresh
+                onRefresh : this.refresh
             });
         },
 
@@ -235,19 +235,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
                     continue;
                 }
 
-                var Info           = SecurityClasses[id];
-                var authPlugins    = Info.authPlugins;
-                var authPluginInfo = '';
+                var Info             = SecurityClasses[id];
+                var authPlugins      = Info.authPlugins;
+                var authPluginTitles = [];
 
                 for (var i = 0, len = authPlugins.length; i < len; i++) {
-                    authPluginInfo += authPlugins[i].title;
+                    authPluginTitles.push(authPlugins[i].title);
                 }
 
                 Row = {
                     id         : id,
                     title      : Info.title,
                     description: Info.description,
-                    factors    : authPluginInfo
+                    factors    : authPluginTitles.join(', ')
                 };
 
                 data.push(Row);

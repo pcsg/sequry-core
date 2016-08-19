@@ -33,17 +33,17 @@ function package_pcsg_grouppasswordmanager_ajax_actors_get($id, $type)
                 )
             ));
 
-            $securityClassId = false;
+            $securityClassIds = array();
 
             if (current(current($result)) > 0) {
-                $CryptoGroup     = CryptoActors::getCryptoGroup((int)$id);
-                $securityClassId = $CryptoGroup->getSecurityClassId();
+                $CryptoGroup      = CryptoActors::getCryptoGroup((int)$id);
+                $securityClassIds = $CryptoGroup->getSecurityClassIds();
             }
 
             $info = array(
                 'id'                 => $Actor->getId(),
                 'name'               => $Actor->getAttribute('name'),
-                'securityClassId'    => $securityClassId,
+                'securityClassIds'   => $securityClassIds,
                 'sessionUserInGroup' => QUI::getUserBySession()->isInGroup($Actor->getId())
             );
             break;

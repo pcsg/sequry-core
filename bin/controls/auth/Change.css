@@ -19,3 +19,9 @@
     margin-right: 10px;
     width: 85px;
 }
+
+.pcsg-gpm-auth-change-recovery-code {
+    float: left;
+    margin: 10px 0;
+    font-size: 20px;
+}

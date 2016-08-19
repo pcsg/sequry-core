@@ -11,7 +11,7 @@
 }
 
 .pcsg-gpm-securityclasses-label:not(:first-of-type) {
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .pcsg-gpm-securityclasses-label:hover {

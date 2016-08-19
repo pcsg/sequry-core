@@ -88,6 +88,13 @@ class Password extends QUI\QDOM
     protected $secretAttributes = array();
 
     /**
+     * Flag if password content has already been decrypted
+     *
+     * @var bool
+     */
+    protected $decrypted = false;
+
+    /**
      * Password constructor.
      *
      * @param integer $id - Password ID
@@ -159,6 +166,13 @@ class Password extends QUI\QDOM
             'title'       => $passwordData['title'],
             'description' => $passwordData['description'],
             'dataType'    => $passwordData['dataType'],
+            'ownerId'     => $passwordData['ownerId'],
+            'ownerType'   => $passwordData['ownerType']
+        ));
+
+        // ownerId and ownerTye are additionally saved as secret attributes
+        // because they may not be altered via public "setAttribute()"-method
+        $this->setSecretAttributes(array(
             'ownerId'     => $passwordData['ownerId'],
             'ownerType'   => $passwordData['ownerType']
         ));
@@ -477,8 +491,8 @@ class Password extends QUI\QDOM
         );
 
         $passwordData = array(
-            'ownerId'         => $this->getAttribute('ownerId'),
-            'ownerType'       => $this->getAttribute('ownerType'),
+            'ownerId'         => $this->getSecretAttribute('ownerId'),
+            'ownerType'       => $this->getSecretAttribute('ownerType'),
             'securityClassId' => $this->SecurityClass->getId(),
             'title'           => $this->getAttribute('title'),
             'description'     => $this->getAttribute('description'),
@@ -580,8 +594,15 @@ class Password extends QUI\QDOM
      */
     protected function changeOwner($id, $type)
     {
-        $currentOwnerId   = $this->getAttribute('ownerId');
-        $currentOwnerType = $this->getAttribute('ownerType');
+        if (!$this->isOwner($this->User)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.change.owner.no.permission'
+            ));
+        }
+
+        $currentOwnerId   = $this->getSecretAttribute('ownerId');
+        $currentOwnerType = $this->getSecretAttribute('ownerType');
 
         // set access data for new owner(s)
         switch ($type) {
@@ -660,6 +681,7 @@ class Password extends QUI\QDOM
                 ));
         }
 
+        // set new owner
         $this->setSecretAttributes(array(
             'ownerId'   => $newOwnerId,
             'ownerType' => $newOwnerType
@@ -809,7 +831,7 @@ class Password extends QUI\QDOM
 
         $this->decrypt();
 
-        $GroupKeyPair = $Group->getKeyPair();
+        $GroupKeyPair = $Group->getKeyPair($this->SecurityClass);
 
         // encrypt password payload key with group public key
         $passwordKeyEncrypted = AsymmetricCrypto::encrypt(
@@ -918,7 +940,35 @@ class Password extends QUI\QDOM
     }
 
     /**
+     * Get IDs of users that have access to this password
+     *
+     * @return array
+     */
+    protected function getAccessUserIds()
+    {
+        $userIds = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'userId'
+            ),
+            'from'   => Tables::USER_TO_PASSWORDS,
+            'where'  => array(
+                'dataId' => $this->id
+            )
+        ));
+
+        foreach ($result as $row) {
+            $userIds[] = $row['userId'];
+        }
+
+        return array_unique($userIds);
+    }
+
+    /**
      * Get IDs of groups that have access to this password
+     *
+     * @return array
      */
     protected function getAccessGroupsIds()
     {
@@ -1018,8 +1068,8 @@ class Password extends QUI\QDOM
     protected function isOwner($CryptoActor)
     {
         $actorId   = (int)$CryptoActor->getId();
-        $ownerId   = (int)$this->getAttribute('ownerId');
-        $ownerType = $this->getAttribute('ownerType');
+        $ownerId   = (int)$this->getSecretAttribute('ownerId');
+        $ownerType = $this->getSecretAttribute('ownerType');
 
         if ($CryptoActor instanceof CryptoUser) {
             switch ($ownerType) {
@@ -1117,6 +1167,10 @@ class Password extends QUI\QDOM
      */
     protected function decrypt()
     {
+        if ($this->decrypted) {
+            return;
+        }
+
         if (!$this->SecurityClass->isAuthenticated()) {
             // @todo eigenen 401 error code einfügen
             throw new QUI\Exception(array(
@@ -1159,5 +1213,7 @@ class Password extends QUI\QDOM
             'history'    => $contentDecrypted['history'],
             'sharedWith' => $contentDecrypted['sharedWith']
         ));
+
+        $this->decrypted = true;
     }
 }

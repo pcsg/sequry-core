@@ -63,6 +63,7 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">userKeyPairId</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">groupId</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">securityClassId</field>
             <field type="BLOB NOT NULL">groupKey</field>
             <field type="BLOB NOT NULL">MAC</field>
             <primary>id</primary>

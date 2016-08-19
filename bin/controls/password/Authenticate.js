@@ -1,15 +1,13 @@
 /**
- * Control for creating a new password
+ * Control authentication for a password operation
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
+ * @require qui/controls/loader/Loader
  * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate.html
+ * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
+ * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate.css
  *
  * @event onFinish
@@ -82,9 +80,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate', [
          * Get auth plugin information
          */
         $onLoaded: function () {
-
-            console.log("$onLoaded Password");
-
             var self = this;
 
             Passwords.getAvailableAuthPluginsInfo(

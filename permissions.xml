@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <permissions>
 
-    <permission name="pcsg.gpm.cryptodata.create" type="bool">
+    <permission name="gpm.cryptodata.create" type="bool">
         <defaultvalue>0</defaultvalue>
     </permission>
-    <permission name="pcsg.gpm.cryptodata.edit" type="bool">
+    <permission name="gpm.cryptodata.edit" type="bool">
         <defaultvalue>0</defaultvalue>
     </permission>
-    <permission name="pcsg.gpm.cryptodata.delete" type="bool">
+    <permission name="gpm.cryptodata.delete" type="bool">
         <defaultvalue>0</defaultvalue>
     </permission>
-    <permission name="pcsg.gpm.cryptodata.share" type="bool">
-        <defaultvalue>0</defaultvalue>
-    </permission>
-
-    <permission name="pcsg.gpm.cryptogroup.edit" type="bool">
+    <permission name="gpm.cryptodata.share" type="bool">
         <defaultvalue>0</defaultvalue>
     </permission>
 
-    <permission name="pcsg.gpm.securityclass.edit" type="bool">
+    <permission name="gpm.cryptogroup.edit" type="bool">
+        <defaultvalue>0</defaultvalue>
+    </permission>
+
+    <permission name="gpm.securityclass.edit" type="bool">
         <defaultvalue>0</defaultvalue>
     </permission>
 

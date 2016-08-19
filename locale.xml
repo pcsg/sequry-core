@@ -114,6 +114,9 @@
         <locale name="exception.password.no.share.rights">
             <de><![CDATA[Das Passwort kann nicht mit anderen Benutzern geteilt werden, da Sie keine Berechtigung haben, Passwörter anderen zugänglich zu machen.]]></de>
         </locale>
+        <locale name="exception.password.change.owner.no.permission">
+            <de><![CDATA[Der Eigentümer eines Passworts kann nur vom aktuellen Eigentümer des Passworts geändert werden.]]></de>
+        </locale>
 
         <!-- Class: Handler/Passwords -->
         <locale name="exception.passwords.create.missing.data">
@@ -193,6 +196,12 @@
         <locale name="exception.cryptouser.delete.last.group.member">
             <de><![CDATA[Der Benutzer kann nicht gelöscht werden, da er das letzte Mitglied der Passwort-Gruppe "[groupName]" (#[groupId]) ist. Weisen Sie der Gruppe ein weiteres Mitglied zu und entfernen Sie diesen Benutzer dann oder löschen Sie vorher die Passwort-Gruppe.]]></de>
         </locale>
+        <locale name="exception.cryptouser.getgroupkeypairdecrypted.error">
+            <de><![CDATA[Das Schlüsselpaar der Gruppe "[groupName]" (#[groupId]) für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.getpasswordaccesskeygroup.error">
+        <de><![CDATA[Der Passwort-Schlüssel für das Passwort #[passwordId] konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
@@ -213,8 +222,8 @@
         <locale name="exception.cryptogroup.keypair.decryption.authentication.error">
             <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error].]]></de>
         </locale>
-        <locale name="exception.cryptogroup.setsecurityclass.users.not.eligible">
-            <de><![CDATA[Die Sicherheitsklasse #[securityClassId] kann der Gruppe #[groupId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+        <locale name="exception.cryptogroup.addsecurityclass.users.not.eligible">
+            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
         </locale>
         <locale name="exception.cryptogroup.setsecurityclass.users.has.no.group.access">
             <de><![CDATA[Der Benutzer #[userId] kann die Sicherheitsklasse #[securityClassId] der Gruppe #[groupId] nicht zuordnen, da der Benutzer der Gruppe nicht zugewiesen ist.]]></de>
@@ -232,10 +241,13 @@
             <de><![CDATA[Der Benutzer #[userId] kann keine anderen Benutzer aus der Gruppe #[groupId] entfernen, da er dafür nicht die nötige Berechtigung besitzt.]]></de>
         </locale>
         <locale name="exception.cryptogroup.no.group.access">
-            <de><![CDATA[Der Benutzer #[userId] gehört der Gruppe #[groupId] nicht an.]]></de>
+            <de><![CDATA[Diese Operation kann nicht ausgeführt werden, da Sie nicht Teil der Gruppe "[groupName]" (#[groupId]) sind.]]></de>
         </locale>
         <locale name="exception.cryptogroup.remove.user.has.no.permission">
             <de><![CDATA[Der Benutzer #[userId] besitzt nicht die nötige Berechtigung.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.no.permission">
+            <de><![CDATA[Sie haben nicht die benötigte Berechtigung für diese Operation.]]></de>
         </locale>
         <locale name="exception.cryptogroup.delete.no.permission">
             <de><![CDATA[Gruppen können nur durch SuperUser gelöscht werden.]]></de>
@@ -245,6 +257,21 @@
         </locale>
         <locale name="exception.cryptogroup.add.user.cannot.add.himself">
             <de><![CDATA[Sie können sich nicht selbst zu einer Passwort-Gruppe hinzufügen.]]></de>
+        </locale>
+        <locale name="success.cryptogroup.securityclass.add">
+            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) wurde der Gruppe "[groupName]" (#[groupId]) erfolgreich hinzugefügt. Die Gruppe kann nun mit Passwörtern verknüpft werden, die dieser Sicherheitsklasse entsprechen.]]></de>
+        </locale>
+        <locale name="error.cryptogroup.securityclass.add" html="true">
+            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte der Gruppe "[groupName]" (#[groupId]) nicht hinzugefügt werden:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="success.cryptogroup.securityclass.remove">
+            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) wurde asu der Gruppe "[groupName]" (#[groupId]) erfolgreich entfernt. Die Gruppe kann nun nicht mehr mit Passwörtern verknüpft werden, die dieser Sicherheitsklasse entsprechen.]]></de>
+        </locale>
+        <locale name="error.cryptogroup.securityclass.remove" html="true">
+            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte nicht aus der Gruppe "[groupName]" (#[groupId]) entfernt werden:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.removesecurityclass.no.permission">
+            <de><![CDATA[Nur SuperUser können Sicherheitsklassen aus Passwort-Gruppen entfernen.]]></de>
         </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
@@ -374,10 +401,10 @@
 
         <!-- Events -->
         <locale name="attention.events.onusersavebegin.remove.user.error">
-            <de><![CDATA[Der Benutzer #[userId] konnte aus der Gruppe #[groupId] nicht entfernt werden:<br/><br/>[error].]]></de>
+            <de><![CDATA[Der Benutzer "[userName]" (#[userId]) konnte aus der Passwort-Gruppe "[groupName]" (#[groupId]) nicht entfernt werden:<br/><br/>[error]]]></de>
         </locale>
         <locale name="attention.events.onusersavebegin.add.user.error">
-            <de><![CDATA[Der Benutzer #[userId] konnte der Gruppe #[groupId] nicht zugeordnet werden:<br/><br/>[error].]]></de>
+            <de><![CDATA[Der Benutzer "[userName]" (#[userId]) konnte der Passwort-Gruppe "[groupName]" (#[groupId]) nicht zugeordnet werden:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.events.user.delete.info">
             <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen des Benutzers.]]></de>
@@ -481,6 +508,37 @@
             <de><![CDATA[Die Gruppe kann nicht gelöscht werden. Gruppen können nur durch SuperUser gelöscht werden.]]></de>
         </locale>
 
+        <!-- Permissions -->
+        <locale name="permission.gpm._header">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptodata._header">
+            <de><![CDATA[Passwörter]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptodata.create">
+            <de><![CDATA[Darf neue Passwörter anlegen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptodata.edit">
+            <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) bearbeiten]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptodata.delete">
+            <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) löschen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptodata.share">
+            <de><![CDATA[Darf Passwörter mit anderen Benutzern und Gruppen teilen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptogroup._header">
+            <de><![CDATA[Passwort-Gruppen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptogroup.edit">
+            <de><![CDATA[Darf Passwort-Gruppen Sicherheitklassen zuweisen]]></de>
+        </locale>
+        <locale name="permission.gpm.securityclass._header">
+            <de><![CDATA[Sicherheitsklassen]]></de>
+        </locale>
+        <locale name="permission.gpm.securityclass.edit">
+            <de><![CDATA[Darf Sicherheitsklassen erstellen und bearbeiten]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="js">
@@ -653,6 +711,9 @@
         <locale name="auth.recovery.information">
             <de><![CDATA[Sie können Ihre aktuellen Authentifizierungsinformationen mit dem Wiederherstellungscode, der bei Registrierung mit dieser Authentifizierungs-Methode angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Authentifizierungsinformationen dafür leer.]]></de>
         </locale>
+        <locale name="auth.recovery.code">
+            <de><![CDATA[Wiederherstellungs-Code #[recoveryCodeId]]]></de>
+        </locale>
 
         <!-- Control: auth/EligibleActorSelect -->
         <locale name="controls.eligibleactorselect.switch.groups.btn">
@@ -670,7 +731,7 @@
             <de><![CDATA[Authentifizierung erforderlich!]]></de>
         </locale>
         <locale name="controls.authenticate.popup.info.description" html="true">
-            <de><![CDATA[Für diese Operation ist eine Authentifizierung für die Sicherheitsklasse <b>[securityClass]</b> erforderlich. Bitte authentifzieren Sie sich bei <b>mindestens [requiredFactors]</b> dafür nötigen Authentifizierungs-Plugins.]]></de>
+            <de><![CDATA[Für diese Operation ist eine Authentifizierung erforderlich.<br/><br/><b>Sicherheitsklasse:</b> [securityClass]<br/><br/>Bitte authentifzieren Sie sich mit <b>mindestens [requiredFactors]</b> dafür nötigen Authentifizierungs-Faktoren.]]></de>
         </locale>
         <locale name="controls.authenticate.popup.btn.text">
             <de><![CDATA[Authentifizieren]]></de>
@@ -769,11 +830,11 @@
         <locale name="securityclasses.create.template.requiredFactors">
             <de><![CDATA[Mindestens benötigte Faktoren]]></de>
         </locale>
-        <locale name="securityclasses.create.template.authPluginsWarning" html="true">
-            <de><![CDATA[<b>Hinweis:</b> Nach der Erstellung der Sicherheitsklasse können nur noch Authentifizierungs-Faktoren hinzugefügt werden. Bestehende Faktoren können nicht mehr aus der Sicherheitsklasse entfernt werden.]]></de>
+        <locale name="securityclasses.create.template.authPluginsWarning">
+            <de><![CDATA[Nach der Erstellung der Sicherheitsklasse können nur noch Authentifizierungs-Faktoren hinzugefügt werden. Bestehende Faktoren können nicht mehr aus der Sicherheitsklasse entfernt werden.]]></de>
         </locale>
-        <locale name="securityclasses.create.template.authPluginsRequiredFactorsWarning" html="true">
-            <de><![CDATA[<b>Hinweis:</b> Die festgelegte Mindestanzahl an zur Authentifizierung benötigten Faktoren kann im Nachhinein nicht mehr geändert werden.]]></de>
+        <locale name="securityclasses.create.template.authPluginsRequiredFactorsWarning">
+            <de><![CDATA[Die festgelegte Mindestanzahl an zur Authentifizierung benötigten Faktoren kann im Nachhinein nicht mehr geändert werden.]]></de>
         </locale>
         <locale name="securityclasses.create.template.groups">
             <de><![CDATA[Gruppen]]></de>
@@ -941,16 +1002,28 @@
             <de><![CDATA[Passwort-Gruppe "[groupName]" (#[groupId]) bearbeiten]]></de>
         </locale>
         <locale name="actors.groups.edit.template.basicData">
-            <de><![CDATA[Sicherheitsklasse]]></de>
+            <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
-        <locale name="actors.groups.edit.template.securityclass">
-            <de><![CDATA[Zugeordnete Sicherheitsklasse]]></de>
+        <locale name="actors.groups.edit.template.securityclasses">
+            <de><![CDATA[Zugeordnete Sicherheitsklassen]]></de>
         </locale>
-        <locale name="controls.groupedit.no.securityclass" html="true">
+        <locale name="actors.groupedit.no.securityclass" html="true">
             <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann. <b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
         </locale>
-        <locale name="controls.groupedit.not.in.group">
+        <locale name="actors.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.remove">
+            <de><![CDATA[Entfernen]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.add">
+            <de><![CDATA[Hinzufügen]]></de>
+        </locale>
+        <locale name="actors.groupedit.remove.securityclass.title">
+            <de><![CDATA[Sicherheitsklasse aus Gruppe entfernen]]></de>
+        </locale>
+        <locale name="actors.groupedit.remove.securityclass.information" html="true">
+            <de><![CDATA[Sind Sie sicher, dass sie die Sicherheitsklasse <b>[securityClassTitle]</b> (ID: [securityClassId]) aus der Passwort-Gruppe <b>[groupName]</b> (ID: [groupId]) entfernen möchten? Bei diesem Vorgang werden alle Passwörter gelöscht, deren Eigentümer diese Gruppe ist und die dieser Sicherheitsklasse angehören. Zudem verlieren alle Benutzer der Gruppe Zugriff auf Passwörter dieser Sicherheitsklasse, die den Zugriff über diese Gruppe haben. Wenn Sie den Vorgang durchführen möchten, klicken Sie bitte auf <b>Bestätigen</b>.]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->
@@ -966,6 +1039,9 @@
         <!-- Control: auth/SyncAuthPluginWindow -->
         <locale name="auth.syncauthpluginwindow.title">
             <de><![CDATA[Authentifizierungs-Faktor synchronisieren]]></de>
+        </locale>
+        <locale name="auth.syncauthpluginwindow.tableHeader">
+            <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.info" html="true">
             <de><![CDATA[Sie haben Berechtigungen für Passwörter, für deren Zugriff das Authentifizierungs-Modul <b>"[authPluginTitle]"</b> verwendet werden kann. Da Sie bereits Zugriff auf diese Passwörter hatten, bevor Sie sich für dieses Authentifizierungs-Modul registriert haben, ist es nötig, sich einmalig für die Sicherheitsklassen dieser Passwörter zu authentifizieren. Dadurch wird sichergestellt, dass sie auch diesen Authentifizierungs-Faktor für den Zugriff auf diese Passwörter nutzen können.]]></de>

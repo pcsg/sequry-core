@@ -296,7 +296,7 @@ class Passwords
             case Password::OWNER_TYPE_GROUP:
                 try {
                     /** @var CryptoGroup $OwnerActor */
-                    $GroupKeyPair = $OwnerActor->getKeyPair();
+                    $GroupKeyPair = $OwnerActor->getKeyPair($SecurityClass);
 
                     // encrypt password payload key with group public key
                     $passwordKeyEncrypted = AsymmetricCrypto::encrypt(

@@ -102,9 +102,11 @@ class Events
                             'pcsg/grouppasswordmanager',
                             'attention.events.onusersavebegin.remove.user.error',
                             array(
-                                'userId'  => $User->getId(),
-                                'groupId' => $CryptoGroup->getId(),
-                                'error'   => $Exception->getMessage()
+                                'userId'    => $User->getId(),
+                                'userName'  => $User->getUsername(),
+                                'groupId'   => $CryptoGroup->getId(),
+                                'groupName' => $CryptoGroup->getAttribute('name'),
+                                'error'     => $Exception->getMessage()
                             )
                         )
                     );
@@ -140,8 +142,10 @@ class Events
                             'pcsg/grouppasswordmanager',
                             'attention.events.onusersavebegin.add.user.error',
                             array(
-                                'userId'  => $User->getId(),
-                                'groupId' => $CryptoGroup->getId(),
+                                'userId'    => $User->getId(),
+                                'userName'  => $User->getUsername(),
+                                'groupId'   => $CryptoGroup->getId(),
+                                'groupName' => $CryptoGroup->getAttribute('name'),
                                 'error'   => $Exception->getMessage()
                             )
                         )
@@ -244,14 +248,22 @@ class Events
     /**
      * event: onAdminLoad
      *
-     * Load javascript code into admin header
+     * Load css files into admin header
+     */
+    public static function onAdminLoad()
+    {
+        $cssFile = URL_OPT_DIR . 'pcsg/grouppasswordmanager/bin/style.css';
+        echo '<link href="' . $cssFile . '" rel="stylesheet" type="text/css"/>';
+    }
+
+    /**
+     * event: onAdminLoadFooter
+     *
+     * Load javascript code into admin footer
      */
     public static function onAdminLoadFooter()
     {
         $jsFile = URL_OPT_DIR . 'pcsg/grouppasswordmanager/bin/onAdminLoadFooter.js';
-
-        \QUI\System\Log::writeRecursive('<script src="' . $jsFile . '"></script>');
-
         echo '<script src="' . $jsFile . '"></script>';
     }
 }

@@ -25,7 +25,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate',
 
     'Ajax',
 
@@ -54,7 +54,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
         ],
 
         options: {
-            'authPluginId': false   // id of auth plugin that is to be synced
+            'authPluginId': false,   // id of auth plugin that is to be synced
+            title         : QUILocale.get(lg, 'auth.syncauthpluginwindow.title')
         },
 
         initialize: function (options) {
@@ -105,8 +106,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
             ).then(function (AuthPluginData) {
                 self.setContent(
                     Mustache.render(template, {
-                        title: QUILocale.get(lg, lg_prefix + 'title'),
-                        info : QUILocale.get(lg, lg_prefix + 'info', {
+                        tableHeader: QUILocale.get(lg, lg_prefix + 'tableHeader'),
+                        info       : QUILocale.get(lg, lg_prefix + 'info', {
                             authPluginTitle: AuthPluginData.title
                         })
                     })
@@ -132,6 +133,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
 
                 var AuthControl = new AuthenticationControl({
                     securityClassId: securityClassId,
+                    authPluginId   : self.getAttribute('authPluginId'),
                     events         : {
                         onSubmit: function (AuthData) {
                             Authentication.checkAuthInfo(
@@ -142,7 +144,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
                                 AuthControl.destroy();
 
                                 if (!authDataCorrect) {
-                                    QUI.getMessageHandler().then(function(MH) {
+                                    QUI.getMessageHandler().then(function (MH) {
                                         MH.addError(
                                             QUILocale.get(
                                                 lg,
@@ -231,8 +233,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
         /**
          * Start authentication plugin synchronisations
          */
-        $startSync: function()
-        {
+        $startSync: function () {
             var self = this;
 
             new Promise(function (resolve, reject) {
@@ -242,7 +243,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
                     authPluginId: self.getAttribute('authPluginId'),
                     authData    : JSON.encode(self.$AuthData)
                 });
-            }).then(function(success) {
+            }).then(function (success) {
                 self.$AuthData = null;
                 self.close();
 

@@ -133,49 +133,64 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
          * Show recovery information and input
          */
         $showRecovery: function () {
-            this.$recoveryMode = true;
+            var self = this;
 
-            var RecoveryElm = this.$Elm.getElement(
-                '.pcsg-gpm-auth-change-recovery'
-            );
-
-            RecoveryElm.set(
-                'html',
-                '<span class="pcsg-gpm-auth-change-recovery-info">' + QUILocale.get(lg, 'auth.recovery.information') + '</span>' +
-                '<div class="pcsg-gpm-auth-change-recovery-inputs"></div>'
-            );
-
-            var InputsElm = RecoveryElm.getElement('.pcsg-gpm-auth-change-recovery-inputs');
-
-            for (var i = 0; i < 5; i++) {
-                var InputElm = new Element('input', {
-                    'class'  : 'pcsg-gpm-auth-change-recovery-input',
-                    'data-id': i + 1,
-                    type     : 'text',
-                    maxlength: 5,
-                    events   : {
-                        input: function (event) {
-                            var Elm = event.target;
-
-                            if (Elm.value.length < 5) {
-                                return;
-                            }
-
-                            var id = parseInt(Elm.getProperty('data-id'));
-
-                            if (id === 5) {
-                                return;
-                            }
-
-                            RecoveryElm.getElement('input[data-id="' + (id + 1) + '"]').focus();
-                        }
-                    }
-                }).inject(InputsElm);
-
-                if (i === 0) {
-                    InputElm.focus();
+            Authentication.getRecoveryCodeId(
+                this.getAttribute('authPluginId')
+            ).then(function(recoveryCodeId) {
+                if (!recoveryCodeId) {
+                    return;
                 }
-            }
+
+                self.$recoveryMode = true;
+
+                var RecoveryElm = self.$Elm.getElement(
+                    '.pcsg-gpm-auth-change-recovery'
+                );
+
+                RecoveryElm.set(
+                    'html',
+                    '<span class="pcsg-gpm-auth-change-recovery-info">' + QUILocale.get(lg, 'auth.recovery.information') + '</span>' +
+                    '<span class="pcsg-gpm-auth-change-recovery-code">' +
+                        QUILocale.get(lg, 'auth.recovery.code', {
+                            recoveryCodeId: recoveryCodeId
+                        }) +
+                    '</span>' +
+                    '<div class="pcsg-gpm-auth-change-recovery-inputs"></div>'
+                );
+
+                var InputsElm = RecoveryElm.getElement('.pcsg-gpm-auth-change-recovery-inputs');
+
+                for (var i = 0; i < 5; i++) {
+                    var InputElm = new Element('input', {
+                        'class'  : 'pcsg-gpm-auth-change-recovery-input',
+                        'data-id': i + 1,
+                        type     : 'text',
+                        maxlength: 5,
+                        events   : {
+                            input: function (event) {
+                                var Elm = event.target;
+
+                                if (Elm.value.length < 5) {
+                                    return;
+                                }
+
+                                var id = parseInt(Elm.getProperty('data-id'));
+
+                                if (id === 5) {
+                                    return;
+                                }
+
+                                RecoveryElm.getElement('input[data-id="' + (id + 1) + '"]').focus();
+                            }
+                        }
+                    }).inject(InputsElm);
+
+                    if (i === 0) {
+                        InputElm.focus();
+                    }
+                }
+            });
         },
 
         /**

@@ -296,6 +296,22 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     authPluginId: authPluginId
                 });
             });
+        },
+
+        /**
+         * Get ID of recovery code for authentication plugin for current session user
+         *
+         * @param {number} authPluginId - authentication plugin
+         * @returns {Promise}
+         */
+        getRecoveryCodeId: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getRecoveryCodeId', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId
+                });
+            });
         }
     });
 });

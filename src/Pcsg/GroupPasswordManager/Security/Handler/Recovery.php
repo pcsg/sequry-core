@@ -116,6 +116,37 @@ class Recovery
     }
 
     /**
+     * Get ID of recovery code
+     *
+     * @param Plugin $AuthPlugin
+     * @param null $CryptoUser
+     * @return false|integer - false if no recovery code found; else recovery code
+     */
+    public static function getRecoveryCodeId(Plugin $AuthPlugin, $CryptoUser = null)
+    {
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::RECOVERY,
+            'where'  => array(
+                'userId'       => $CryptoUser->getId(),
+                'authPluginId' => $AuthPlugin->getId()
+            )
+        ));
+
+        if (empty($result)) {
+            return false;
+        }
+
+        return (int)$result[0]['id'];
+    }
+
+    /**
      * Recover recovery information for specific authenticataion plugin
      *
      * @param Plugin $AuthPlugin - Authentication Plugin the recovery entry is created for

@@ -171,12 +171,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
 
                 if (!available) {
                     new Element('div', {
-                        'class': 'pcsg-gpm-securityclasses-authplugins-warning',
+                        'class': 'pcsg-gpm-password-warning',
                         html: QUILocale.get(lg, 'securityclasses.edit.addauthfactors.none.available')
                     }).inject(AuthPluginsAddElm);
                 } else {
                     new Element('div', {
-                        'class': 'pcsg-gpm-securityclasses-authplugins-warning',
+                        'class': 'pcsg-gpm-password-warning',
                         html: QUILocale.get(lg, 'securityclasses.edit.addauthfactors.not.removable')
                     }).inject(AuthPluginsAddElm, 'top');
                 }

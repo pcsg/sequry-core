@@ -48,20 +48,35 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          *
          * @param {number} groupId
          * @param {number} securityClassId
-         * @param {AuthData} [AuthData] - authentication information; needed if security class is CHANGED
          *
          * @returns {Promise}
          */
-        setGroupSecurityClass: function (groupId, securityClassId, AuthData) {
+        addGroupSecurityClass: function (groupId, securityClassId) {
             return new Promise(function (resolve, reject) {
-                AuthData = AuthData || false;
-
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_setGroupSecurityClass', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     groupId        : groupId,
-                    securityClassId: securityClassId,
-                    authData       : JSON.encode(AuthData)
+                    securityClassId: securityClassId
+                });
+            });
+        },
+
+        /**
+         * Remove security class from a group
+         *
+         * @param {number} groupId
+         * @param {number} securityClassId
+         *
+         * @returns {Promise}
+         */
+        removeGroupSecurityClass: function (groupId, securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_removeGroupSecurityClass', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    groupId        : groupId,
+                    securityClassId: securityClassId
                 });
             });
         }

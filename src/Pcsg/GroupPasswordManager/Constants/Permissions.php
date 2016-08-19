@@ -13,12 +13,12 @@ namespace Pcsg\GroupPasswordManager\Constants;
  */
 class Permissions
 {
-    const PASSWORDS_CREATE = 'pcsg.gpm.cryptodata.create';
-    const PASSWORDS_EDIT   = 'pcsg.gpm.cryptodata.edit';
-    const PASSWORDS_DELETE = 'pcsg.gpm.cryptodata.delete';
-    const PASSWORDS_SHARE  = 'pcsg.gpm.cryptodata.share';
+    const PASSWORDS_CREATE = 'gpm.cryptodata.create';
+    const PASSWORDS_EDIT   = 'gpm.cryptodata.edit';
+    const PASSWORDS_DELETE = 'gpm.cryptodata.delete';
+    const PASSWORDS_SHARE  = 'gpm.cryptodata.share';
 
-    const GROUP_EDIT = 'pcsg.gpm.cryptogroup.edit';
+    const GROUP_EDIT = 'gpm.cryptogroup.edit';
 
-    const SECURITY_CLASS_EDIT = '';
+    const SECURITY_CLASS_EDIT = 'gpm.securityclass.edit';
 }

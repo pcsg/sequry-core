@@ -1,0 +1,21 @@
+.pcsg-gpm-password-warning {
+    background-color: #FAF6D4;
+    border: 1px solid #E6C26E;
+    border-radius: 5px;
+    color: #000;
+    float: left;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+}
+
+.pcsg-gpm-password-error {
+    background-color: #F2D4CE;
+    border: 1px solid #AE432E;
+    border-radius: 5px;
+    color: #000;
+    float: left;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+}

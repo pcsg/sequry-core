@@ -25,11 +25,12 @@ function package_pcsg_grouppasswordmanager_ajax_actors_getGroups()
 
         $securityClass = false;
 
-        if (CryptoActors::existsCryptoGroup($groupData['id'])) {
-            $CryptoGroup   = CryptoActors::getCryptoGroup($groupData['id']);
-            $SecurityClass = $CryptoGroup->getSecurityClass();
-            $securityClass = $SecurityClass->getAttribute('title');
-        }
+        // @todo
+//        if (CryptoActors::existsCryptoGroup($groupData['id'])) {
+//            $CryptoGroup   = CryptoActors::getCryptoGroup($groupData['id']);
+//            $SecurityClass = $CryptoGroup->getSecurityClass();
+//            $securityClass = $SecurityClass->getAttribute('title');
+//        }
 
         $groupData['securityClass'] = $securityClass;
 
