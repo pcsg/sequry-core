@@ -274,7 +274,7 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Checks if a user has the necessary key pairs to use this security class
+     * Checks if a group has the necessary key pairs to use this security class
      *
      * @param QUI\Groups\Group $Group
      * @return bool

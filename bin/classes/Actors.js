@@ -53,7 +53,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          */
         addGroupSecurityClass: function (groupId, securityClassId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     groupId        : groupId,

@@ -1,11 +1,23 @@
 .pcsg-gpm-actors-groupedit-securityclass {
+    background-color: #EDEDED;
+    border-radius: 5px;
+    clear: both;
     float: left;
-    width: 100%;
+    padding: 10px;
+    width: 50%;
+}
+
+.pcsg-gpm-actors-groupedit-securityclass:not(:first-of-type) {
+    margin-top: 10px;
 }
 
 .pcsg-gpm-actors-groupedit-securityclass-info {
     float: left;
-    width: 80%;
+    width: 60%;
+}
+
+.pcsg-gpm-actors-groupedit-securityclass-title {
+    font-weight: 900;
 }
 
 .pcsg-gpm-actors-groupedit-securityclass-title,
@@ -15,6 +27,5 @@
 }
 
 .pcsg-gpm-actors-groupedit-securityclass-btn {
-    float: left;
-    width: 20%;
+    float: right;
 }

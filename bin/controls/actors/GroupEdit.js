@@ -50,7 +50,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit',
 
         Binds: [
-            '$onInject'
+            '$onInject',
+            '$addSecurityClass',
+            '$removeSecurityClass'
         ],
 
         options: {
@@ -164,7 +166,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
                                 Btn.setAttributes({
                                     text     : QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add'),
-                                    textimage: 'fa fa-add-square',
+                                    textimage: 'fa fa-plus-square',
                                     action   : 'add'
                                 });
                             });
@@ -203,7 +205,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                         btnText    = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add');
                         btnIcon    = 'fa fa-plus-square';
                         btnAction  = 'add';
-                        disableBtn = true;
+                        //disableBtn = true;
                     }
 
                     var SwitchBtn = new QUIButton({
@@ -277,7 +279,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                             Confirm.Loader.show();
 
                             Actors.removeGroupSecurityClass(
-                                this.getAttribute('groupId'),
+                                self.getAttribute('groupId'),
                                 securityClassId
                             ).then(function(success) {
                                 Confirm.close();

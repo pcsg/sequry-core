@@ -54,7 +54,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
                 'pcsg/grouppasswordmanager',
                 'error.password.edit',
                 array(
-                    'reason'     => $Exception->getMessage(),
+                    'error'      => $Exception->getMessage(),
                     'passwordId' => $passwordId
                 )
             )

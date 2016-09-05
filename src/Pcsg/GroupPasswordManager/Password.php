@@ -173,8 +173,8 @@ class Password extends QUI\QDOM
         // ownerId and ownerTye are additionally saved as secret attributes
         // because they may not be altered via public "setAttribute()"-method
         $this->setSecretAttributes(array(
-            'ownerId'     => $passwordData['ownerId'],
-            'ownerType'   => $passwordData['ownerType']
+            'ownerId'   => $passwordData['ownerId'],
+            'ownerType' => $passwordData['ownerType']
         ));
 
         // set private attributes
@@ -249,15 +249,19 @@ class Password extends QUI\QDOM
 
         $this->decrypt();
 
+        // handle some attributes with priority
+        $SecurityClass = false;
+
+        if (isset($passwordData['securityClassId'])
+            && !empty($passwordData['securityClassId'])
+        ) {
+            $SecurityClass = Authentication::getSecurityClass((int)$passwordData['securityClassId']);
+            $this->SecurityClass = $SecurityClass;
+        }
+
         try {
             foreach ($passwordData as $k => $v) {
                 switch ($k) {
-                    // security class
-                    case 'securityClassId':
-                        // @todo re-encrypt for every owner and access user with new security class
-//                    $sanitizedData['securityClassId'] = $this->SecurityClass->getId();
-                        break;
-
                     case 'title':
                         if (is_string($v)
                             && !empty($v)
@@ -327,6 +331,10 @@ class Password extends QUI\QDOM
                     'error'      => $Exception->getMessage()
                 )
             ));
+        }
+
+        if ($SecurityClass) {
+            $this->setSecurityClass($SecurityClass);
         }
 
         $this->save();
@@ -854,6 +862,111 @@ class Password extends QUI\QDOM
             Tables::GROUP_TO_PASSWORDS,
             $dataAccessEntry
         );
+    }
+
+    /**
+     * Sets security class of this password
+     *
+     * @param SecurityClass $SecurityClass
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function setSecurityClass(SecurityClass $SecurityClass)
+    {
+        if (!$this->hasPermission(self::PERMISSION_EDIT)) {
+            $this->permissionDenied();
+        }
+
+        $ownerId = $this->getSecretAttribute('ownerId');
+
+        switch ($this->getSecretAttribute('ownerType')) {
+            case self::OWNER_TYPE_USER:
+                $CryptoUser = CryptoActors::getCryptoUser($ownerId);
+
+                if (!$SecurityClass->isUserEligible($CryptoUser)) {
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.setsecurityclass.owner.user.not.eligible',
+                        array(
+                            'securityClassId'    => $SecurityClass->getId(),
+                            'securityClassTitle' => $SecurityClass->getAttribute('title')
+                        )
+                    ));
+                }
+                break;
+
+            case self::OWNER_TYPE_GROUP:
+                $CryptoGroup = CryptoActors::getCryptoGroup($ownerId);
+
+                if (!$SecurityClass->isGroupEligible($CryptoGroup)) {
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.setsecurityclass.owner.group.not.eligible',
+                        array(
+                            'securityClassId'    => $SecurityClass->getId(),
+                            'securityClassTitle' => $SecurityClass->getAttribute('title')
+                        )
+                    ));
+                }
+                break;
+        }
+
+        $this->SecurityClass = $SecurityClass;
+
+        // re-encrypt password key for all users
+        $userIds = $this->getAccessUserIds();
+
+        foreach ($userIds as $userId) {
+            $CryptoUser = CryptoActors::getCryptoUser($userId);
+
+            // if user is not eligible for security class -> delete password access
+            if (!$SecurityClass->isUserEligible($CryptoUser)) {
+                $this->removeUserPasswordAccess($CryptoUser);
+                continue;
+            }
+
+            try {
+                $CryptoUser->reEncryptPasswordAccessKey($this->id);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::addError(
+                    'Password :: setSecurityClass() -> could not set password access key for user #'
+                    . $CryptoUser->getId() . ': ' . $Exception->getMessage()
+                );
+            }
+        }
+
+        // re-encrypt password key for all groups
+        $groupIds = $this->getAccessGroupsIds();
+
+        foreach ($groupIds as $groupId) {
+            $CryptoGroup = CryptoActors::getCryptoGroup($groupId);
+
+            // if user is not eligible for security class -> delete password access
+            if (!$SecurityClass->isGroupEligible($CryptoGroup)) {
+                $this->removeGroupPasswordAccess($CryptoGroup);
+                continue;
+            }
+
+            try {
+                $CryptoGroup->reEncryptPasswordAccessKey($this->id);
+            } catch (QUI\Exception $Exception) {
+                QUI\System\Log::addError(
+                    'Password :: setSecurityClass() -> could not set password access key for group #'
+                    . $CryptoGroup->getId() . ': ' . $Exception->getMessage()
+                );
+            }
+        }
+    }
+
+    /**
+     * Get current SecurityClass of password
+     *
+     * @return SecurityClass
+     */
+    public function getSecurityClass()
+    {
+        return $this->SecurityClass;
     }
 
     /**

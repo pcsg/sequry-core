@@ -23,16 +23,18 @@ function package_pcsg_grouppasswordmanager_ajax_actors_getGroups()
                 break;
         }
 
-        $securityClass = false;
+        $groupData['securityClasses'] = array();
 
         // @todo
-//        if (CryptoActors::existsCryptoGroup($groupData['id'])) {
-//            $CryptoGroup   = CryptoActors::getCryptoGroup($groupData['id']);
-//            $SecurityClass = $CryptoGroup->getSecurityClass();
-//            $securityClass = $SecurityClass->getAttribute('title');
-//        }
+        if (CryptoActors::existsCryptoGroup($groupData['id'])) {
+            $CryptoGroup     = CryptoActors::getCryptoGroup($groupData['id']);
+            $securityClasses = $CryptoGroup->getSecurityClasses();
 
-        $groupData['securityClass'] = $securityClass;
+            /** @var \Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass $SecurityClass */
+            foreach ($securityClasses as $SecurityClass) {
+                $groupData['securityClasses'][] = $SecurityClass->getAttribute('title');
+            }
+        }
 
         $groups[] = $groupData;
     }

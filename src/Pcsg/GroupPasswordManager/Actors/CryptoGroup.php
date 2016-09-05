@@ -77,7 +77,7 @@ class CryptoGroup extends QUI\Groups\Group
             'from'  => Tables::KEYPAIRS_GROUP,
             'where' => array(
                 'groupId'         => $this->getId(),
-                'securityClassId' => $SecurityClass
+                'securityClassId' => $SecurityClass->getId()
             ),
             'limit' => 1
         ));
@@ -280,8 +280,6 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function removeSecurityClass(SecurityClass $SecurityClass)
     {
-//        $this->checkCryptoUserPermission();
-
         if (!$this->CryptoUser->isSU()) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -304,18 +302,22 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         // delete all password access data of passwords with security class
-        $DB->delete(
-            Tables::GROUP_TO_PASSWORDS,
-            array(
-                'groupId' => $this->getId(),
-                'dataId'  => array(
-                    'type'  => 'IN',
-                    'value' => $SecurityClass->getPasswordIds()
-                )
-            )
-        );
+        $securityClassPasswordIds = $SecurityClass->getPasswordIds();
 
-        // delete all key for this security class
+        if (!empty($securityClassPasswordIds)) {
+            $DB->delete(
+                Tables::GROUP_TO_PASSWORDS,
+                array(
+                    'groupId' => $this->getId(),
+                    'dataId'  => array(
+                        'type'  => 'IN',
+                        'value' => $securityClassPasswordIds
+                    )
+                )
+            );
+        }
+
+        // delete the group key pair for this security class
         $DB->delete(
             Tables::KEYPAIRS_GROUP,
             array(
@@ -638,6 +640,100 @@ class CryptoGroup extends QUI\Groups\Group
                 'exception.cryptogroup.no.permission'
             ));
         };
+    }
+
+    /**
+     * Takes a password access key and re-encrypts it with the current
+     * key pair according to the security class of the password
+     *
+     * @param integer $passwordId - password ID
+     * @return void
+     * @throws QUI\Exception
+     */
+    public function reEncryptPasswordAccessKey($passwordId)
+    {
+        $accessPasswordIdsAccess = $this->getPasswordIds();
+
+        if (!in_array($passwordId, $accessPasswordIdsAccess)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.reencryptpasswordaccesskey.no.access',
+                array(
+                    'groupId'    => $this->getId(),
+                    'groupName'  => $this->getAttribute('name'),
+                    'passwordId' => $passwordId
+                )
+            ));
+        }
+
+        $Password      = Passwords::get($passwordId);
+        $PasswordKey   = $Password->getPasswordKey();
+        $SecurityClass = $Password->getSecurityClass();
+
+        if (!$SecurityClass->isGroupEligible($this)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.reencryptpasswordaccesskey.securityclass.not.eligible',
+                array(
+                    'groupId'            => $this->getId(),
+                    'groupName'          => $this->getAttribute('name'),
+                    'passwordId'         => $passwordId,
+                    'securityClassId'    => $SecurityClass->getId(),
+                    'securityClassTitle' => $SecurityClass->getAttribute('title')
+                )
+            ));
+        }
+
+        // split key
+        $KeyPair = $this->getKeyPair($SecurityClass);
+        $DB      = QUI::getDataBase();
+
+        try {
+            // delete old access entry
+            $DB->delete(
+                Tables::GROUP_TO_PASSWORDS,
+                array(
+                    'groupId' => $this->getId(),
+                    'dataId'  => $passwordId
+                )
+            );
+
+            $encryptedPasswordKeyValue = AsymmetricCrypto::encrypt(
+                $PasswordKey->getValue(),
+                $KeyPair
+            );
+
+            $dataAccessEntry = array(
+                'groupId' => $this->getId(),
+                'dataId'  => $passwordId,
+                'dataKey' => $encryptedPasswordKeyValue
+            );
+
+            $dataAccessEntry['MAC'] = MAC::create(
+                implode('', $dataAccessEntry),
+                Utils::getSystemKeyPairAuthKey()
+            );
+
+            $DB->insert(
+                Tables::GROUP_TO_PASSWORDS,
+                $dataAccessEntry
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError(
+                'CryptoGroup :: reEncryptPasswordAccessKey() :: Error writing password key parts to database: '
+                . $Exception->getMessage()
+            );
+
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.reencryptpasswordaccesskey.general.error',
+                array(
+                    'groupId'    => $this->getId(),
+                    'groupName'  => $this->getAttribute('name'),
+                    'passwordId' => $passwordId,
+                )
+            ));
+        }
     }
 
     /**

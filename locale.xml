@@ -117,6 +117,12 @@
         <locale name="exception.password.change.owner.no.permission">
             <de><![CDATA[Der Eigentümer eines Passworts kann nur vom aktuellen Eigentümer des Passworts geändert werden.]]></de>
         </locale>
+        <locale name="exception.password.setsecurityclass.owner.user.not.eligible">
+            <de><![CDATA[Der aktuelle Eigentümer-Benutzer des Passworts ist für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) nicht geeignet.]]></de>
+        </locale>
+        <locale name="exception.password.setsecurityclass.owner.group.not.eligible">
+            <de><![CDATA[Die aktuelle Eigentümer-Gruppe des Passworts ist für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) nicht geeignet.]]></de>
+        </locale>
 
         <!-- Class: Handler/Passwords -->
         <locale name="exception.passwords.create.missing.data">
@@ -181,8 +187,11 @@
         <locale name="exception.cryptouser.password.access.key.decrypt.user.has.no.access">
             <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer kein Zugriffsrecht für dieses Passwort hat.]]></de>
         </locale>
-        <locale name="exception.cryptouser.reencryptdirect.no.direct.access">
+        <locale name="exception.cryptouser.rencryptpasswordaccessKey.no.direct.access">
             <de><![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer #[userId] nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer keinen direkten Zugriff auf das Passwort hat.]]></de>
+        </locale>
+        <locale name="exception.cryptouser.rencryptpasswordaccessKey.securityclass.not.eligible">
+            <de><![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer "[userName]" (#[userId]) nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet ist.]]></de>
         </locale>
         <locale name="exception.cryptouser.reencryptgroup.no.group.access">
             <de><![CDATA[Der Schlüssel für die Gruppe #[groupId] kann für den Benutzer #[userId] nicht erneut verschlüsselt werden, da der Benutzer keinen Zugriff auf die Gruppe hat.]]></de>
@@ -272,6 +281,15 @@
         </locale>
         <locale name="exception.cryptogroup.removesecurityclass.no.permission">
             <de><![CDATA[Nur SuperUser können Sicherheitsklassen aus Passwort-Gruppen entfernen.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.reencryptpasswordaccesskey.no.access">
+            <de><![CDATA[Der Passwort-Schlüssel für Passwort #[passwordId] kann für die Gruppe "[groupName]" (#[groupId]) nicht neu verschlüsselt werden, da die Gruppe kein Zugriffsrecht auf das Passwort hat.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.reencryptpasswordaccesskey.securityclass.not.eligible">
+            <de><![CDATA[Der Passwort-Schlüssel für Passwort #[passwordId] kann für die Gruppe "[groupName]" (#[groupId]) nicht neu verschlüsselt werden, da die Gruppe für die Sicherheitsklasse des Passworts ("[securityClassTitle]" #[securityClassId]) nicht geeignet ist.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.reencryptpasswordaccesskey.general.error">
+            <de><![CDATA[Beim Verschlüsseln des Passwort-Schlüssels des Passworts #[passwordId] für die Gruppe "[groupName]" (#[groupId]) ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
@@ -493,13 +511,13 @@
             <de><![CDATA[Achtung!]]></de>
         </locale>
         <locale name="event.user.delete.confirm.information" html="true">
-            <de><![CDATA[Wenn Sie den Benutzer <b>[userName]</b> (ID: [userId]) löschen, wird er aus allen Gruppen entfernt und es werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer er ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
+            <de><![CDATA[Wenn Sie den Benutzer <b>[userName]</b> (#[userId]) löschen, wird er aus allen Gruppen entfernt und es werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer er ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
         </locale>
         <locale name="event.group.delete.confirm.title">
             <de><![CDATA[Achtung!]]></de>
         </locale>
         <locale name="event.group.delete.confirm.information" html="true">
-            <de><![CDATA[Wenn Sie die Gruppe <b>[groupName]</b> (ID: [groupId]) löschen, werden alle Benutzer, die der Gruppe angehören, aus der Gruppe entfernt. Zudem werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer sie ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
+            <de><![CDATA[Wenn Sie die Gruppe <b>[groupName]</b> (#[groupId]) löschen, werden alle Benutzer, die der Gruppe angehören, aus der Gruppe entfernt. Zudem werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer sie ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
         </locale>
         <locale name="exception.events.user.delete.no.permission">
             <de><![CDATA[Der Benutzer kann nicht gelöscht werden. Benutzer können nur durch SuperUser oder sich selbst gelöscht werden.]]></de>
@@ -995,8 +1013,8 @@
         <locale name="group.panel.tbl.header.name">
             <de><![CDATA[Gruppe]]></de>
         </locale>
-        <locale name="group.panel.tbl.header.securityclass">
-            <de><![CDATA[Sicherheitsklasse]]></de>
+        <locale name="group.panel.tbl.header.securityclasses">
+            <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
         <locale name="actors.groups.edit.template.title">
             <de><![CDATA[Passwort-Gruppe "[groupName]" (#[groupId]) bearbeiten]]></de>
@@ -1023,7 +1041,7 @@
             <de><![CDATA[Sicherheitsklasse aus Gruppe entfernen]]></de>
         </locale>
         <locale name="actors.groupedit.remove.securityclass.information" html="true">
-            <de><![CDATA[Sind Sie sicher, dass sie die Sicherheitsklasse <b>[securityClassTitle]</b> (ID: [securityClassId]) aus der Passwort-Gruppe <b>[groupName]</b> (ID: [groupId]) entfernen möchten? Bei diesem Vorgang werden alle Passwörter gelöscht, deren Eigentümer diese Gruppe ist und die dieser Sicherheitsklasse angehören. Zudem verlieren alle Benutzer der Gruppe Zugriff auf Passwörter dieser Sicherheitsklasse, die den Zugriff über diese Gruppe haben. Wenn Sie den Vorgang durchführen möchten, klicken Sie bitte auf <b>Bestätigen</b>.]]></de>
+            <de><![CDATA[Sind Sie sicher, dass sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) aus der Passwort-Gruppe <b>[groupName]</b> (#[groupId]) entfernen möchten? Bei diesem Vorgang werden alle Passwörter gelöscht, deren Eigentümer diese Gruppe ist und die dieser Sicherheitsklasse angehören. Zudem verlieren alle Benutzer der Gruppe Zugriff auf Passwörter dieser Sicherheitsklasse, die den Zugriff über diese Gruppe haben. Wenn Sie den Vorgang durchführen möchten, klicken Sie bitte auf <b>Übernehmen</b>.]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->

@@ -17,6 +17,7 @@
  *
  * @event onLoaded
  * @event onAuthAbort - on user authentication abort
+ * @event onClose (this) - if password is closed
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
@@ -286,11 +287,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 this.$AuthData
             ).then(
                 function (PasswordData) {
+                    if (!PasswordData) {
+                        self.fireEvent('close', [self]);
+                        return;
+                    }
+
                     self.$PasswordData = PasswordData;
                     self.$insertData();
                 },
                 function () {
-                    // @todo error handling
+                    self.fireEvent('close', [self]);
                 }
             );
         }

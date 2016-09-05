@@ -101,8 +101,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
                     dataType : 'text',
                     width    : 200
                 }, {
-                    header   : QUILocale.get(lg, 'group.panel.tbl.header.securityclass'),
-                    dataIndex: 'securityClass',
+                    header   : QUILocale.get(lg, 'group.panel.tbl.header.securityclasses'),
+                    dataIndex: 'securityClasses',
                     dataType : 'text',
                     width    : 400
                 }],
@@ -172,13 +172,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
             var data = [];
 
             for (var i = 0, len = groups.length; i < len; i++) {
+                var Group = groups[i];
+
                 Row = {
-                    id           : groups[i].id,
-                    name         : groups[i].name,
-                    securityClass: groups[i].securityClass ?
-                        groups[i].securityClass :
-                        QUILocale.get(lg, 'gpm.groups.panel.table.nosecurityclass')
+                    id  : Group.id,
+                    name: Group.name
                 };
+
+                if (Group.securityClasses.length) {
+                    Row.securityClasses = Group.securityClasses.join(', ');
+                } else {
+                    Row.securityClasses = QUILocale.get(lg, 'gpm.groups.panel.table.nosecurityclass');
+                }
 
                 data.push(Row);
             }
@@ -219,17 +224,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
                             }
                         }).inject(Sheet.getContent());
 
-                        Sheet.addButton(
-                            new QUIButton({
-                                text     : QUILocale.get('quiqqer/system', 'save'),
-                                textimage: 'fa fa-save',
-                                events   : {
-                                    onClick: function () {
-                                        Edit.submit();
-                                    }
-                                }
-                            })
-                        );
+                        //Sheet.addButton(
+                        //    new QUIButton({
+                        //        text     : QUILocale.get('quiqqer/system', 'save'),
+                        //        textimage: 'fa fa-save',
+                        //        events   : {
+                        //            onClick: function () {
+                        //                Edit.submit();
+                        //            }
+                        //        }
+                        //    })
+                        //);
                     },
                     onClose: function (Sheet) {
                         Sheet.destroy();

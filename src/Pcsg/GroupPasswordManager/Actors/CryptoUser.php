@@ -954,28 +954,6 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
-     * Re-encrypts access key to a password (either directly or via group) with the current
-     * number of authentication key pairs the user has registered with, according to the respective
-     * security class of a password.
-     *
-     * @param $passwordId
-     */
-    public function reEncryptAccessKey($passwordId)
-    {
-        $passwordIdsDirectAccess = $this->getPasswordIdsDirectAccess();
-
-        if (in_array($passwordId, $passwordIdsDirectAccess)) {
-            $this->reEncryptDirectAccessKey($passwordId);
-        }
-
-        $accessGroupIds = $this->getGroupIdsByPasswordId($passwordId);
-
-        foreach ($accessGroupIds as $accessGroupId) {
-            $this->reEncryptGroupAccessKey($accessGroupId);
-        }
-    }
-
-    /**
      * Takes a password access key and re-encrypts it with the current
      * number of authentication key pairs the user has registered with, according to the respective
      * security class of a password.
@@ -984,14 +962,14 @@ class CryptoUser extends QUI\Users\User
      * @return void
      * @throws QUI\Exception
      */
-    protected function reEncryptDirectAccessKey($passwordId)
+    public function reEncryptPasswordAccessKey($passwordId)
     {
         $passwordIdsDirectAccess = $this->getPasswordIdsDirectAccess();
 
         if (!in_array($passwordId, $passwordIdsDirectAccess)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.cryptouser.reencryptdirect.no.direct.access',
+                'exception.cryptouser.rencryptpasswordaccessKey.no.direct.access',
                 array(
                     'userId'     => $this->getId(),
                     'passwordId' => $passwordId
@@ -1001,7 +979,21 @@ class CryptoUser extends QUI\Users\User
 
         $Password      = Passwords::get($passwordId);
         $PasswordKey   = $Password->getPasswordKey();
-        $SecurityClass = Passwords::getSecurityClass($passwordId);
+        $SecurityClass = $Password->getSecurityClass();
+
+        if (!$SecurityClass->isUserEligible($this)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptouser.rencryptpasswordaccessKey.securityclass.not.eligible',
+                array(
+                    'userId'             => $this->getId(),
+                    'userName'           => $this->getUsername(),
+                    'passwordId'         => $passwordId,
+                    'securityClassId'    => $SecurityClass->getId(),
+                    'securityClassTitle' => $SecurityClass->getAttribute('title')
+                )
+            ));
+        }
 
         // split key
         $passwordKeyParts = SecretSharing::splitSecret(
@@ -1050,103 +1042,14 @@ class CryptoUser extends QUI\Users\User
                 );
             } catch (\Exception $Exception) {
                 QUI\System\Log::addError(
-                    'CryptoUser :: reEncryptDirectAccessKey() :: Error writing password key parts to database: '
+                    'CryptoUser :: reEncryptPasswordAccessKey() :: Error writing password key parts to database: '
                     . $Exception->getMessage()
                 );
 
                 throw new QUI\Exception(array(
                     'pcsg/grouppasswordmanager',
-                    'exception.crptouser.reencryptkeys.general.error'
+                    'exception.crptouser.rencryptpasswordaccessKey.general.error'
                 ));
-            }
-        }
-    }
-
-    /**
-     * Takes  group access keys and re-encrypts them with the current
-     * number of authentication key pairs the user has registered with, according to the respective
-     * security classes of this group.
-     *
-     * @param integer $groupId - group ID
-     * @return void
-     * @throws QUI\Exception
-     */
-    protected function reEncryptGroupAccessKey($groupId)
-    {
-        $passwordIdsGroupAccess = $this->getPasswordIdsGroupAccess();
-
-        if (!in_array($groupId, $passwordIdsGroupAccess)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptouser.reencryptgroup.no.group.access',
-                array(
-                    'userId'  => $this->getId(),
-                    'groupId' => $groupId
-                )
-            ));
-        }
-
-        $CryptoGroup     = CryptoActors::getCryptoGroup($groupId);
-        $securityClasses = $CryptoGroup->getSecurityClasses();
-
-        /** @var SecurityClass $SecurityClass */
-        foreach ($securityClasses as $SecurityClass) {
-            $GroupAccessKey = $this->getGroupAccessKey($CryptoGroup, $SecurityClass);
-
-            // split key
-            $groupAccessKeyParts = SecretSharing::splitSecret(
-                $GroupAccessKey->getValue(),
-                $SecurityClass->getAuthPluginCount(),
-                $SecurityClass->getRequiredFactors()
-            );
-
-            // encrypt key parts with user public keys
-            $i            = 0;
-            $authKeyPairs = $this->getAuthKeyPairsBySecurityClass($SecurityClass);
-            $DB           = QUI::getDataBase();
-
-            /** @var AuthKeyPair $UserAuthKeyPair */
-            foreach ($authKeyPairs as $UserAuthKeyPair) {
-                try {
-                    // delete old access entry
-                    $DB->delete(
-                        Tables::USER_TO_GROUPS,
-                        array(
-                            'userId'          => $this->getId(),
-                            'userKeyPairId'   => $UserAuthKeyPair->getId(),
-                            'groupId'         => $groupId,
-                            'securityClassId' => $SecurityClass->getId()
-                        )
-                    );
-
-                    $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                        $groupAccessKeyParts[$i++],
-                        $UserAuthKeyPair
-                    );
-
-                    $data = array(
-                        'userId'          => $this->getId(),
-                        'userKeyPairId'   => $UserAuthKeyPair->getId(),
-                        'securityClassId' => $SecurityClass->getId(),
-                        'groupId'         => $this->getId(),
-                        'groupKey'        => $groupAccessKeyPartEncrypted
-                    );
-
-                    // calculate MAC
-                    $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
-
-                    $DB->insert(Tables::USER_TO_GROUPS, $data);
-                } catch (\Exception $Exception) {
-                    QUI\System\Log::addError(
-                        'CryptoUser :: reEncryptGroupAccessKey :: Error writing group key parts to database: '
-                        . $Exception->getMessage()
-                    );
-
-                    throw new QUI\Exception(array(
-                        'pcsg/grouppasswordmanager',
-                        'exception.cryptouser.reencryptkeys.general.error'
-                    ));
-                }
             }
         }
     }
@@ -1161,20 +1064,13 @@ class CryptoUser extends QUI\Users\User
      * @return void
      * @throws QUI\Exception
      */
-    public function reEncryptAllAccessKeys()
+    public function reEncryptAllPasswordAccessKeys()
     {
         // re encrypt direct access
         $passwordIdsDirect = $this->getPasswordIdsDirectAccess();
 
         foreach ($passwordIdsDirect as $passwordId) {
-            $this->reEncryptDirectAccessKey($passwordId);
-        }
-
-        // re encrypt group access
-        $groupIds = $this->getCryptoGroupIds();
-
-        foreach ($groupIds as $groupId) {
-            $this->reEncryptGroupAccessKey($groupId);
+            $this->reEncryptPasswordAccessKey($passwordId);
         }
     }
 
