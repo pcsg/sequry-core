@@ -2,6 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
+use QUI;
+
 /**
  * This class provides general security function the pcsg/grouppasswordmanager module
  */
@@ -17,11 +19,17 @@ class Utils
     {
         $keyFile = ETC_DIR . 'plugins/pcsg/gpm_auth_keypairs.key';
 
+        // if key does not exit -> create
         if (!file_exists($keyFile)) {
-            throw new \QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.system.auth.key.file.not.found'
-            ), 404);
+            $RandomKey = SymmetricCrypto::generateKey();
+            file_put_contents($keyFile, $RandomKey->getValue());
+
+            if (!file_exists($keyFile)) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.system.auth.key.file.not.found'
+                ), 404);
+            }
         }
 
         return file_get_contents($keyFile);
@@ -37,11 +45,17 @@ class Utils
     {
         $keyFile = ETC_DIR . 'plugins/pcsg/gpm_auth_passwords.key';
 
+        // if key does not exit -> create
         if (!file_exists($keyFile)) {
-            throw new \QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.system.auth.key.file.not.found'
-            ), 404);
+            $RandomKey = SymmetricCrypto::generateKey();
+            file_put_contents($keyFile, $RandomKey->getValue());
+
+            if (!file_exists($keyFile)) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.system.auth.key.file.not.found'
+                ), 404);
+            }
         }
 
         return file_get_contents($keyFile);
