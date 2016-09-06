@@ -926,7 +926,10 @@
             <de><![CDATA[Login-Daten]]></de>
         </locale>
         <locale name="passwordtypes.select.type.Input">
-            <de><![CDATA[Geheimtext]]></de>
+            <de><![CDATA[Geheimtext (Input)]]></de>
+        </locale>
+        <locale name="passwordtypes.select.type.Textarea">
+            <de><![CDATA[Geheimtext (Textfeld)]]></de>
         </locale>
 
         <!-- Control: passwordtypes/FTP -->
@@ -960,12 +963,23 @@
 
         <!-- Control: passwordtypes/Input -->
         <locale name="password.types.Input.template.title">
-            <de><![CDATA[Geheimtext]]></de>
+            <de><![CDATA[Geheimtext (Input)]]></de>
         </locale>
         <locale name="password.types.Input.template.password">
             <de><![CDATA[Geheimtext]]></de>
         </locale>
         <locale name="password.types.Input.template.note">
+            <de><![CDATA[Notiz]]></de>
+        </locale>
+
+        <!-- Control: passwordtypes/Textarea -->
+        <locale name="password.types.Textarea.template.title">
+            <de><![CDATA[Geheimtext (Textfeld)]]></de>
+        </locale>
+        <locale name="password.types.Textarea.template.password">
+            <de><![CDATA[Geheimtext]]></de>
+        </locale>
+        <locale name="password.types.Textarea.template.note">
             <de><![CDATA[Notiz]]></de>
         </locale>
 
