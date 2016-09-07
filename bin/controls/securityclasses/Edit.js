@@ -223,7 +223,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
             var newAuthPluginIds = [];
 
             var authPluginElms = this.$Elm.getElements(
-                '.pcsg-gpm-securityclasses-add input'
+                '.pcsg-gpm-securityclasses-authplugins-add input'
             );
 
             for (var i = 0, len = authPluginElms.length; i < len; i++) {

@@ -114,7 +114,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
                     'package'       : 'pcsg/grouppasswordmanager',
                     onError         : reject,
                     authPluginId    : self.getAttribute('authPluginId'),

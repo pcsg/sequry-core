@@ -19,8 +19,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
     $newAuthInfo,
     $recovery = false
 ) {
-    $oldAuthInfo = Orthos::clear($oldAuthInfo);
-    $newAuthInfo = Orthos::clear($newAuthInfo);
+//    $oldAuthInfo = Orthos::clear($oldAuthInfo);
+//    $newAuthInfo = Orthos::clear($newAuthInfo);
 
     try {
         $AuthPlugin = Authentication::getAuthPlugin($authPluginId);
