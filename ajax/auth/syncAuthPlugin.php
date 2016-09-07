@@ -41,7 +41,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
         $passwordIds = $CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin);
 
         foreach ($passwordIds as $passwordId) {
-            $CryptoUser->reEncryptAccessKey($passwordId);
+            $CryptoUser->reEncryptPasswordAccessKey($passwordId);
         }
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(

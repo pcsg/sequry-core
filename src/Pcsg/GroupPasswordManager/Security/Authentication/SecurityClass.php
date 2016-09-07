@@ -118,17 +118,17 @@ class SecurityClass extends QUI\QDOM
 
         /** @var Plugin $AuthPlugin */
         foreach ($plugins as $AuthPlugin) {
-            if (!isset($authData[$AuthPlugin->getId()])) {
-                // @todo eigenen 401 error code
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.securityclass.authenticate.missing.authdata',
-                    array(
-                        'authPluginId'    => $AuthPlugin->getId(),
-                        'authPluginTitle' => $AuthPlugin->getAttribute('title')
-                    )
-                ));
-            }
+//            if (!isset($authData[$AuthPlugin->getId()])) {
+//                // @todo eigenen 401 error code
+//                throw new QUI\Exception(array(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.securityclass.authenticate.missing.authdata',
+//                    array(
+//                        'authPluginId'    => $AuthPlugin->getId(),
+//                        'authPluginTitle' => $AuthPlugin->getAttribute('title')
+//                    )
+//                ));
+//            }
 
             $pluginAuthData = $authData[$AuthPlugin->getId()];
 

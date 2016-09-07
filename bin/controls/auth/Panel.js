@@ -422,10 +422,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
                                         self.Loader.show();
 
-                                        Change.submit().then(function (recoveryCode) {
+                                        Change.submit().then(function (RecoveryCodeData) {
                                             self.Loader.hide();
 
-                                            if (!recoveryCode) {
+                                            if (!RecoveryCodeData) {
                                                 return;
                                             }
 
@@ -433,12 +433,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                                 Sheet.destroy();
 
                                                 new RecoveryCodeWindow({
-                                                    'authPluginId'   : AuthPluginData.id,
-                                                    'authPluginTitle': AuthPluginData.title,
-                                                    'recoveryCode'   : recoveryCode,
-                                                    events           : {
+                                                    authPluginId    : AuthPluginData.id,
+                                                    authPluginTitle : AuthPluginData.title,
+                                                    RecoveryCodeData: RecoveryCodeData,
+                                                    events          : {
                                                         onClose: function () {
-                                                            recoveryCode = null;
+                                                            RecoveryCodeData = null;
                                                             self.refresh();
                                                         }
                                                     }

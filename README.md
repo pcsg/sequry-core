@@ -30,7 +30,10 @@ Abhängigkeiten
 ------------
 
 * PHP >= 5.6
-* libsodium-dev (`sudo apt-get install libsodium-dev`) [s. auch: https://paragonie.com/book/pecl-libsodium/read/00-intro.md#installing-libsodium]
+* libsodium (**Reihenfolge beachten!**) [s. auch: https://paragonie.com/book/pecl-libsodium/read/00-intro.md#installing-libsodium]
+  1. `sudo apt-get install php-dev`
+  2. `sudo apt-get install libsodium-dev`
+  3. `sudo pecl install libsodium`
 * scrypt (`sudo pecl install scrypt`) [s. auch: https://github.com/DomBlack/php-scrypt]
 
 Mitwirken
