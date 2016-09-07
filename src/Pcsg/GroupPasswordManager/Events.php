@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use QUI\Package\Package;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use QUI;
@@ -35,9 +36,16 @@ class Events
 
     /**
      * on event : onPackageSetup
+     *
+     * @param Package $Package
+     * @return void
      */
-    public static function onPackageSetup()
+    public static function onPackageSetup(Package $Package)
     {
+        if ($Package->getName() !== 'pcsg/grouppasswordmanager') {
+            return;
+        }
+
         Authentication::loadAuthPlugins();
     }
 
@@ -91,8 +99,15 @@ class Events
                 )
             ));
 
+            $groupsHandled = array();
+
             foreach ($result as $row) {
-                $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
+                if (isset($groupsHandled[$row['groupId']])) {
+                    continue;
+                }
+
+                $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
+                $groupsHandled[$row['groupId']] = true;
 
                 try {
                     $CryptoGroup->removeCryptoUser($CryptoUser);
@@ -131,8 +146,15 @@ class Events
                 )
             ));
 
+            $groupsHandled = array();
+
             foreach ($result as $row) {
-                $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
+                if (isset($groupsHandled[$row['groupId']])) {
+                    continue;
+                }
+
+                $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
+                $groupsHandled[$row['groupId']] = true;
 
                 try {
                     $CryptoGroup->addCryptoUser($CryptoUser);
@@ -146,7 +168,7 @@ class Events
                                 'userName'  => $User->getUsername(),
                                 'groupId'   => $CryptoGroup->getId(),
                                 'groupName' => $CryptoGroup->getAttribute('name'),
-                                'error'   => $Exception->getMessage()
+                                'error'     => $Exception->getMessage()
                             )
                         )
                     );
