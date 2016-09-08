@@ -18,7 +18,7 @@
     "quiqqer/quiqqer": "*@dev",
     "phpseclib/phpseclib": "2.0.0",
     "paragonie/halite": "1.5.0",
-    "tq/shamir": "dev-master"
+    "tq/shamir": "dev-master@dev"
   },
   "autoload": {
     "psr-0": {
