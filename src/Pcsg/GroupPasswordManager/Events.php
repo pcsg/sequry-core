@@ -78,7 +78,12 @@ class Events
             $groupsBefore = explode(',', $groupsBefore);
         }
 
-        $groupsNow   = $User->getGroups(false);
+        $groupsNow = $User->getGroups(false);
+
+        if (empty($groupsNow)) {
+            return;
+        }
+
         $groupsAdded = array_diff($groupsNow, $groupsBefore);
 
         // check groups that are to be removed
