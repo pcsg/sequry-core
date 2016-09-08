@@ -14,12 +14,6 @@
   "support": {
     "email": "support@pcsg.de"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/teqneers/shamir.git"
-    }
-  ],
   "require": {
     "quiqqer/quiqqer": "*@dev",
     "phpseclib/phpseclib": "2.0.0",
