@@ -8,35 +8,3 @@
 .products-categories-authpanel-container {
     padding: 20px;
 }
-
-/* Popups (add, delete, copy) */
-
-.quiqqer-productsimportexport-portallist-add-info {
-    margin-bottom: 15px;
-}
-
-.quiqqer-productsimportexport-portallist-add-info-data label {
-    float: left;
-    margin-bottom: 5px;
-    width: 100%;
-}
-
-#quiqqer-productsimportexport-portallist-add-name {
-    margin-bottom: 10px;
-    width: 100%;
-}
-
-.quiqqer-productsimportexport-portallist-copy-info {
-    margin-bottom: 15px;
-}
-
-.quiqqer-productsimportexport-portallist-copy-info-data label {
-    float: left;
-    margin-bottom: 5px;
-    width: 100%;
-}
-
-#quiqqer-productsimportexport-portallist-copy-name {
-    margin-bottom: 10px;
-    width: 100%;
-}
