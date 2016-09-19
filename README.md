@@ -30,6 +30,7 @@ Abhängigkeiten
 ------------
 
 * PHP >= 5.6
+* PHP-Modul `bcmath` -> `sudo apt-get install php-bcmath`
 * libsodium (**Reihenfolge beachten!**) [s. auch: https://paragonie.com/book/pecl-libsodium/read/00-intro.md#installing-libsodium]
   1. `sudo apt-get install php-dev`
   2. `sudo apt-get install libsodium-dev`

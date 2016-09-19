@@ -148,7 +148,7 @@ $html = '
     </p>
 </div>
 
-<table class="data-table data-table-flexbox product-data">
+<table class="data-table">
     <tbody>
     <tr>
         <td>

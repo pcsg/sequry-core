@@ -377,6 +377,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         onSuccess: function (SyncWindow) {
                             SyncWindow.close();
                             self.refresh();
+                        },
+                        onClose: function() {
+                            self.refresh();
                         }
                     }
                 }).open();

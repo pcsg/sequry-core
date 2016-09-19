@@ -593,7 +593,6 @@ class SecurityClass extends QUI\QDOM
                     break;
 
                 case 'newAuthPluginIds':
-                    \QUI\System\Log::writeRecursive($v);
                     foreach ($v as $authPluginId) {
                         try {
                             $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);

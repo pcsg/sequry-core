@@ -7,5 +7,6 @@
     <event on="onGroupDelete" fire="\Pcsg\GroupPasswordManager\Events::onGroupDelete" />
     <event on="onAdminLoad" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoad" />
     <event on="onAdminLoadFooter" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoadFooter" />
+    <event on="onAdminLoadFooter" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoadFooter" />
 
 </events>
