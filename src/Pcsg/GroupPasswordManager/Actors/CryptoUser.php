@@ -601,6 +601,12 @@ class CryptoUser extends QUI\Users\User
                 ));
             }
 
+            $AuthPlugin = $AuthKeyPair->getAuthPlugin();
+
+            if (!$AuthPlugin->isAuthenticated($this)) {
+                continue;
+            }
+
             try {
                 $accessKeyParts[] = AsymmetricCrypto::decrypt(
                     $row['groupKey'],
@@ -659,7 +665,7 @@ class CryptoUser extends QUI\Users\User
 
         try {
             $groupPrivateKeyDecrypted = SymmetricCrypto::decrypt(
-                $GroupKeyPair->getPrivateKey(),
+                $GroupKeyPair->getPrivateKey()->getValue(),
                 $GroupAccessKey
             );
 
@@ -667,7 +673,7 @@ class CryptoUser extends QUI\Users\User
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'Could not decrypt group key pair (group #' . $CryptoGroup->getId() . ' | security class #'
-                . $SecurityClass->getId() . ': ' . $Exception->getMessage()
+                . $SecurityClass->getId() . '): ' . $Exception->getMessage()
             );
 
             throw new QUI\Exception(array(
