@@ -255,7 +255,7 @@ class Password extends QUI\QDOM
         if (isset($passwordData['securityClassId'])
             && !empty($passwordData['securityClassId'])
         ) {
-            $SecurityClass = Authentication::getSecurityClass((int)$passwordData['securityClassId']);
+            $SecurityClass       = Authentication::getSecurityClass((int)$passwordData['securityClassId']);
             $this->SecurityClass = $SecurityClass;
         }
 
@@ -982,32 +982,19 @@ class Password extends QUI\QDOM
     /**
      * Checks if a user has access to this password
      *
-     * @param CryptoUser|CryptoGroup $CryptoActor
+     * @param CryptoUser $CryptoActor
      * @return bool
      */
     protected function hasPasswordAccess($CryptoActor)
     {
-        if ($CryptoActor instanceof CryptoUser) {
-            $result = QUI::getDataBase()->fetch(array(
-                'count' => 1,
-                'from'  => Tables::USER_TO_PASSWORDS,
-                'where' => array(
-                    'userId' => $CryptoActor->getId(),
-                    'dataId' => $this->id,
-                )
-            ));
-        } else {
-            $result = QUI::getDataBase()->fetch(array(
-                'count' => 1,
-                'from'  => Tables::GROUP_TO_PASSWORDS,
-                'where' => array(
-                    'groupId' => $CryptoActor->getId(),
-                    'dataId'  => $this->id,
-                )
-            ));
+        if (in_array($CryptoActor->getId(), $this->getAccessUserIds())) {
+            return true;
         }
 
-        return current(current($result)) > 0;
+        $userGroupIds     = $CryptoActor->getCryptoGroupIds();
+        $passwordGroupIds = $this->getAccessGroupsIds();
+
+        return !empty(array_intersect($passwordGroupIds, $userGroupIds));
     }
 
     /**
