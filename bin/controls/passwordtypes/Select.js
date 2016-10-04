@@ -7,8 +7,7 @@
  * @require qui/QUI
  * @require qui/controls/buttons/Select
  * @require qui/controls/loader/Loader
- * @requrie Ajax
- * @require Locale
+ * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select.css
  *
  * @event onLoaded [this] - fires when security classes are loaded
@@ -19,14 +18,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select', [
     'qui/controls/buttons/Select',
     'qui/controls/loader/Loader',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/classes/Passwords'
 
-    'Locale'
-
-], function (QUI, QUISelect, QUILoader, PasswordHandler, QUILocale) {
+], function (QUI, QUISelect, QUILoader, PasswordHandler) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager';
     var Passwords = new PasswordHandler();
 
     return new Class({
@@ -60,7 +56,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select', [
             this.$Content = this.parent();
 
             this.$Content.addClass('pcsg-gpm-securityclassselect');
-
             this.Loader.inject(this.$Content);
 
             return this.$Content;
@@ -81,13 +76,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select', [
                     var t = types[i];
 
                     self.appendChild(
-                        QUILocale.get(lg, 'passwordtypes.select.type.' + t),
-                        t,
+                        t.title,
+                        t.name,
                         'fa fa-file-text-o'
                     );
 
                     if (first === false) {
-                        first = t;
+                        first = t.name;
                     }
                 }
 

@@ -42,17 +42,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
         ],
 
         options: {
-            type    : false, // initial type
-            editable: false  // editable or show only
+            type: false // initial password type
         },
 
         initialize: function (options) {
             this.parent(options);
 
-            this.$TypeSelect     = null;
-            this.$ContentControl = null;
-            this.$ContentElm     = null;
-            this.$passwordType   = null;
+            this.$TypeSelect          = null;
+            this.$PasswordTypeControl = null;
+            this.$ContentElm          = null;
+            this.$passwordType        = null;
         },
 
         /**
@@ -80,11 +79,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
                 }
             }).inject(TypeSelectElm);
 
-            if (!this.getAttribute('editable')) {
-                TypeSelectElm.setStyle('display', 'none');
-                this.$TypeSelect.disable();
-            }
-
             return this.$Elm;
         },
 
@@ -99,11 +93,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             this.$ContentElm.set('html', '');
 
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/' + type
-            ], function (ContentControl) {
-                self.$ContentControl = new ContentControl().inject(self.$ContentElm);
-                self.$passwordType   = type;
-                self.fireEvent('loaded');
+                'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit'
+            ], function (PasswordTypeControl) {
+                self.$PasswordTypeControl = new PasswordTypeControl({
+                    type  : type,
+                    events: {
+                        onLoaded: function () {
+                            self.fireEvent('loaded');
+                        }
+                    }
+                }).inject(self.$ContentElm);
+
+                self.$passwordType = type;
             });
         },
 
@@ -113,11 +114,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
          * @param {Object} Content
          */
         setData: function (Content) {
-            if (!this.$ContentControl) {
+            if (!this.$PasswordTypeControl) {
                 return;
             }
 
-            this.$ContentControl.setData(Content);
+            this.$PasswordTypeControl.setData(Content);
         },
 
         /**
@@ -126,11 +127,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
          * @return {Object}
          */
         getData: function () {
-            if (!this.$ContentControl) {
+            if (!this.$PasswordTypeControl) {
                 return;
             }
 
-            return this.$ContentControl.getData();
+            return this.$PasswordTypeControl.getData();
         },
 
         /**
@@ -138,7 +139,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
          *
          * @returns {string}
          */
-        getPasswordType: function() {
+        getPasswordType: function () {
             return this.$passwordType;
         }
     });

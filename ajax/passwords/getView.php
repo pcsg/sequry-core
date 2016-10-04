@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 
 /**
@@ -23,7 +23,9 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $
         json_decode($authData, true) // @todo diese daten ggf. filtern
     );
 
-    return Passwords::get($passwordId)->getViewData();
+    $Password = Passwords::get($passwordId);
+
+    return Handler::getViewHtml($Password->getDataType(), $Password->getViewData());
 }
 
 \QUI::$Ajax->register(

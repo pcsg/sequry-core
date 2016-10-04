@@ -19,6 +19,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/controls/buttons/Button',
     'Locale',
 
     'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
@@ -27,7 +28,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
 
-], function (QUI, QUIControl, QUILocale, AuthenticationControl, PasswordHandler,
+], function (QUI, QUIControl, QUIButton, QUILocale, AuthenticationControl, PasswordHandler,
              PasswordContent) {
     "use strict";
 
@@ -83,42 +84,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
             var AuthControl = new AuthenticationControl({
                 passwordId: this.getAttribute('passwordId'),
-                events         : {
+                events    : {
                     onSubmit: function (AuthData) {
                         Passwords.getView(
                             self.getAttribute('passwordId'),
                             AuthData
                         ).then(
-                            function (PasswordData) {
+                            function (viewHtml) {
                                 AuthControl.destroy();
 
                                 self.$Elm.set(
                                     'html',
-                                    '<h1 class="pcsg-gpm-password-view-info-title">' +
-                                    PasswordData.title +
-                                    '</h1>' +
-                                    '<div class="pcsg-gpm-password-view-info">' +
-                                    '<p class="pcsg-gpm-password-view-info-datatype">' +
-                                    PasswordData.dataType +
-                                    '</p>' +
-                                    '<p class="pcsg-gpm-password-view-info-description">' +
-                                    PasswordData.description +
-                                    '</p>' +
-                                    '</div>' +
-                                    '<div class="pcsg-gpm-password-view-payload"></div>'
+                                    viewHtml
                                 );
 
-                                var PassContent = new PasswordContent({
-                                    type  : PasswordData.dataType,
-                                    events: {
-                                        onLoaded: function () {
-                                            PassContent.setData(PasswordData.payload);
-                                            self.fireEvent('loaded');
-                                        }
-                                    }
-                                }).inject(
-                                    self.$Elm.getElement('.pcsg-gpm-password-view-payload')
-                                );
+                                self.$parseView();
+
+                                self.fireEvent('loaded');
+
+                                //var PassContent = new PasswordContent({
+                                //    type  : PasswordData.dataType,
+                                //    mode  : 'view',
+                                //    events: {
+                                //        onLoaded: function () {
+                                //            self.fireEvent('loaded');
+                                //        }
+                                //    }
+                                //}).inject(
+                                //    self.$Elm.getElement('.pcsg-gpm-password-view-payload')
+                                //);
                             },
                             function () {
                                 // @todo
@@ -132,6 +126,89 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
             });
 
             AuthControl.open();
+        },
+
+        $parseView: function () {
+            // copy elements
+            var i, len, Elm, ValueInput;
+            var copyElms = this.$Elm.getElements('.pwm-passwordtypes-copy');
+
+            for (i = 0, len = copyElms.length; i < len; i++) {
+                Elm = copyElms[i];
+
+                ValueInput = new Element('input', {
+                    'type'  : 'text',
+                    'class' : 'pcsg-gpm-password-view-value',
+                    readonly: 'readonly',
+                    value   : Elm.innerHTML.trim()
+                });
+
+                new QUIButton({
+                    Elm   : ValueInput,
+                    icon  : 'fa fa-copy',
+                    events: {
+                        onClick: function (Btn) {
+                            var Elm = Btn.getAttribute('Elm');
+                            Elm.select();
+                        }
+                    }
+                }).inject(Elm.getParent(), 'after');
+
+                ValueInput.replaces(Elm);
+            }
+
+            // copy and hide elements
+            var copyHideElms = this.$Elm.getElements('.pwm-passwordtypes-copy-hide');
+
+            for (i = 0, len = copyHideElms.length; i < len; i++) {
+                Elm = copyHideElms[i];
+
+                ValueInput = new Element('input', {
+                    'type'  : 'password',
+                    'class' : 'pcsg-gpm-password-view-value',
+                    readonly: 'readonly',
+                    events: {
+                        blur: function(event) {
+                            // @todo input = password
+                        }
+                    },
+                    value   : Elm.innerHTML.trim()
+                });
+
+                new QUIButton({
+                    Elm   : ValueInput,
+                    icon  : 'fa fa-eye',
+                    action: 'show',
+                    events: {
+                        onClick: function (Btn) {
+                            var Elm = Btn.getAttribute('Elm');
+
+                            if (Btn.getAttribute('action') === 'show') {
+                                Btn.setAttributes({
+                                    icon  : 'fa fa-eye-slash',
+                                    action: 'hide'
+                                });
+
+                                Elm.setProperty('type', 'text');
+                                Elm.focus();
+                                Elm.select();
+
+                                return;
+                            }
+
+                            Btn.setAttributes({
+                                icon  : 'fa fa-eye',
+                                action: 'show'
+                            });
+
+                            Elm.setProperty('type', 'password');
+                            Elm.blur();
+                        }
+                    }
+                }).inject(Elm.getParent(), 'after');
+
+                ValueInput.replaces(Elm);
+            }
         }
     });
 });

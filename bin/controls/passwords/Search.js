@@ -117,11 +117,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Search', [
 
             Passwords.getTypes().then(function (types) {
                 for (var i = 0, len = types.length; i < len; i++) {
-                    var t = types[i];
+                    var Type = types[i];
 
                     new Element('option', {
-                        value: t,
-                        html : t
+                        value: Type.name,
+                        html : Type.title
                     }).inject(self.$TypeSelect);
                 }
 

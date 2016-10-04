@@ -112,7 +112,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
             var AuthControl = new AuthenticationControl({
                 passwordId: pwId,
-                events         : {
+                events    : {
                     onSubmit: function (AuthData) {
                         self.$AuthData = AuthData;
 
@@ -134,7 +134,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                             }
                         );
                     },
-                    onAbort: function() {
+                    onAbort : function () {
                         self.fireEvent('close');
                     },
                     onClose : function () {
@@ -191,7 +191,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             if (this.$PasswordData.ownerType == 2) {
                 new Element('div', {
                     'class': 'pcsg-gpm-password-warning',
-                    html: QUILocale.get(lg, 'password.edit.securityclass.change.warning')
+                    html   : QUILocale.get(lg, 'password.edit.securityclass.change.warning')
                 }).inject(SecurityClassElm, 'top');
             }
         },
@@ -233,9 +233,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             PayloadElm.set('html', '');
 
             this.$PassContent = new PasswordContent({
-                type    : this.$PasswordData.dataType,
-                editable: true,
-                events  : {
+                type  : self.$PasswordData.dataType,
+                events: {
                     onLoaded: function () {
                         self.$PassContent.setData(self.$PasswordData.payload);
                     }
