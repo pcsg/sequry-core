@@ -18,3 +18,49 @@
 .pcsg-gpm-password-view-info-description {
     float: left;
 }
+
+.pcsg-gpm-password-view {
+    width: 100%;
+}
+
+.pcsg-gpm-password-view-value {
+    border: 0;
+    cursor: default;
+    float: left;
+    width: 80%;
+    border-radius: 2px;
+    padding: 7px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+}
+
+.pcsg-gpm-password-view-label {
+    background-color: #fff;
+    border: 1px solid #dedede;
+    border-collapse: collapse;
+    clear: both;
+    float: left;
+    font-size: 12px;
+    margin-bottom: 2px;
+    position: relative;
+    text-align: left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 35%;
+}
+
+.pcsg-gpm-password-view-label-text {
+    background-color: rgba(147, 128, 108, 0.1);
+    border-right: 1px solid #DEDEDE;
+    color: #666666;
+    font-weight: normal;
+    float: left;
+    line-height: 31px;
+    padding: 0 0 0 5px;
+    width: 20%;
+}

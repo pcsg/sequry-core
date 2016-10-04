@@ -8,6 +8,7 @@ namespace Pcsg\GroupPasswordManager\Actors;
 
 use Pcsg\GroupPasswordManager\Events;
 use Pcsg\GroupPasswordManager\Password;
+use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
@@ -822,6 +823,8 @@ class CryptoUser extends QUI\Users\User
             } else {
                 $row['access'] = 'group';
             }
+
+            $row['dataType'] = Handler::getTypeTitle($row['dataType']);
 
             $passwords[] = $row;
         }

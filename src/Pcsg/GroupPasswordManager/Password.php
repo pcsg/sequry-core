@@ -591,6 +591,16 @@ class Password extends QUI\QDOM
     }
 
     /**
+     * Get data type of password payload (ftp, website, etc..)
+     *
+     * @return string
+     */
+    public function getDataType()
+    {
+        return $this->getAttribute('dataType');
+    }
+
+    /**
      * Changes password owner to user or group
      *
      * @param integer $id - user or group id

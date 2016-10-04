@@ -192,7 +192,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         getTypes: function () {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getTypes', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwordtypes_getList', resolve, {
                     'package': pkg,
                     onError  : reject
                 });

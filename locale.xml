@@ -445,6 +445,100 @@
             <de><![CDATA[Der Wiederherstellungs-Code ist nicht korrekt.]]></de>
         </locale>
 
+        <!-- PasswordTypes -->
+        <locale name="passwordtypes.Ftp.title">
+            <de><![CDATA[FTP-Server]]></de>
+        </locale>
+        <locale name="passwordtypes.Website.title">
+            <de><![CDATA[Website-Login]]></de>
+        </locale>
+        <locale name="passwordtypes.SecretKey.title">
+            <de><![CDATA[SSH-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.ApiKey.title">
+            <de><![CDATA[API-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.Credentials.title">
+            <de><![CDATA[Zugangsdaten]]></de>
+        </locale>
+
+        <!-- General password type locales -->
+        <locale name="passwordtypes.label.note">
+            <de><![CDATA[Notiz]]></de>
+        </locale>
+        <locale name="exception.passwordtypes.templateutils.template.file.not.found">
+            <de><![CDATA[Die Template-Datei wurde nicht gefunden.]]></de>
+        </locale>
+
+        <!-- ftp -->
+        <locale name="passwordtypes.ftp.label.title">
+            <de><![CDATA[FTP-Server]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.host">
+            <de><![CDATA[Host]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+
+        <!-- website -->
+        <locale name="passwordtypes.website.label.title">
+            <de><![CDATA[Website-Login]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+
+        <!-- secretkey -->
+        <locale name="passwordtypes.secretkey.label.title">
+            <de><![CDATA[SSH-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.host">
+            <de><![CDATA[Server]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.key">
+            <de><![CDATA[Schlüssel]]></de>
+        </locale>
+
+        <!-- apikey -->
+        <locale name="passwordtypes.apikey.label.title">
+            <de><![CDATA[API-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.apikey.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+        <locale name="passwordtypes.apikey.label.key">
+            <de><![CDATA[Schlüssel]]></de>
+        </locale>
+
+        <!-- credentials -->
+        <locale name="passwordtypes.credentials.label.title">
+            <de><![CDATA[Zugangsdaten]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
@@ -930,35 +1024,6 @@
         </locale>
         <locale name="passwordtypes.select.type.Textarea">
             <de><![CDATA[Geheimtext (Textfeld)]]></de>
-        </locale>
-
-        <!-- Control: passwordtypes/FTP -->
-        <locale name="password.types.ftp.template.title">
-            <de><![CDATA[FTP-Daten]]></de>
-        </locale>
-        <locale name="password.types.ftp.template.host">
-            <de><![CDATA[Host]]></de>
-        </locale>
-        <locale name="password.types.ftp.template.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="password.types.ftp.template.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="password.types.ftp.template.note">
-            <de><![CDATA[Notiz]]></de>
-        </locale>
-        <locale name="password.types.login.template.title">
-            <de><![CDATA[Login-Daten]]></de>
-        </locale>
-        <locale name="password.types.login.template.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="password.types.login.template.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="password.types.login.template.note">
-            <de><![CDATA[Notiz]]></de>
         </locale>
 
         <!-- Control: passwordtypes/Input -->

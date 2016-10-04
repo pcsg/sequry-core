@@ -119,7 +119,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
             // password types
             this.$PasswordTypes = new PasswordTypes({
-                editable: true
+                mode: 'edit'
             }).inject(
                 this.$Elm.getElement(
                     'div.pcsg-gpm-password-payload'
