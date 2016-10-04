@@ -65,10 +65,12 @@ class Type implements IPasswordType
         $lgPrefix = 'passwordtypes.secretkey.label.';
 
         return array(
-            'labelTitle' => $L->get($lg, $lgPrefix . 'title'),
-            'labelHost'  => $L->get($lg, $lgPrefix . 'host'),
-            'labelKey'   => $L->get($lg, $lgPrefix . 'key'),
-            'labelNote'  => $L->get($lg, 'passwordtypes.label.note')
+            'labelTitle'    => $L->get($lg, $lgPrefix . 'title'),
+            'labelHost'     => $L->get($lg, $lgPrefix . 'host'),
+            'labelUser'     => $L->get($lg, $lgPrefix . 'user'),
+            'labelPassword' => $L->get($lg, $lgPrefix . 'password'),
+            'labelKey'      => $L->get($lg, $lgPrefix . 'key'),
+            'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
         );
     }
 }
