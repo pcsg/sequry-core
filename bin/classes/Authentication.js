@@ -109,6 +109,27 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
+         * Get control to authenticate with authentication plugins of a specific
+         * security class
+         *
+         * @param {number} authPluginId - ID of authentication plugin that shall be synced
+         * @returns {Promise}
+         */
+        getAllowedSyncAuthPlugins: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins',
+                    resolve,
+                    {
+                        'package'   : pkg,
+                        onError     : reject,
+                        authPluginId: authPluginId
+                    }
+                );
+            });
+        },
+
+        /**
          * Get control to change authentication information for a specific plugin
          *
          * @param {number} authPluginId - ID of authentication plugin
@@ -288,9 +309,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @param {number} authPluginId - authentication plugin
          * @returns {Promise}
          */
-        getNonFullyAccessiblePasswordSecurityClassIds: function (authPluginId) {
+        getNonFullyAccessibleSecurityClassIds: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessiblePasswordSecurityClassIds', resolve, {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId

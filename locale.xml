@@ -383,6 +383,18 @@
         <locale name="success.password.delete">
             <de><![CDATA[Das Passwort (#[passwordId]) wurde erfolgreich gelöscht.]]></de>
         </locale>
+        <locale name="error.actors.adduserstogroup">
+            <de><![CDATA[Beim Hinzufügen der Benutzer zur Gruppe ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="success.actors.adduserstogroup">
+            <de><![CDATA[Die Benutzer wurden erfolgreich zur Gruppe "[groupName]" (#[groupId]) hinzugefügt.]]></de>
+        </locale>
+        <locale name="error.actors.addgroupstouser">
+            <de><![CDATA[Beim Zuweisung von Passwort-Gruppen zum Benutzer ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="success.actors.addgroupstouser">
+            <de><![CDATA[Die Passwort-Gruppen wurden erfolgreich dem Benutzer "[userName]" (#[userId]) zugewiesen.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -429,6 +441,12 @@
         </locale>
         <locale name="exception.events.group.delete.info">
             <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen der Gruppe.]]></de>
+        </locale>
+        <locale name="exception.events.add.users.to.group.infos">
+            <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Gruppe authentifizieren, bevor Sie dieser Gruppe Benutzer hinzufügen können.]]></de>
+        </locale>
+        <locale name="exception.events.add.groups.to.user.info">
+            <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Passwort-Gruppen authentifizieren, bevor sie diese Gruppen dem Benutzer zuweisen können.]]></de>
         </locale>
 
         <!-- Recovery -->
@@ -618,6 +636,11 @@
         </locale>
         <locale name="exception.events.group.delete.no.permission">
             <de><![CDATA[Die Gruppe kann nicht gelöscht werden. Gruppen können nur durch SuperUser gelöscht werden.]]></de>
+        </locale>
+
+        <!-- General messages -->
+        <locale name="error.authentication.incorrect.auth.data">
+            <de><![CDATA[Der Vorgang war nicht erfolgreich, da die übergebenen Authentifizierungs-Informationen nicht korrekt waren.]]></de>
         </locale>
 
         <!-- Permissions -->
@@ -1154,6 +1177,29 @@
         </locale>
         <locale name="auth.syncauthpluginwindow.authdata.incorrect">
             <de><![CDATA[Die Authentifizierungsinformationen sind nicht korrekt.]]></de>
+        </locale>
+
+
+        <locale name="auth.multisecurityclassauthwindow.title">
+            <de><![CDATA[Authentifizierung für Sicherheitsklassen]]></de>
+        </locale>
+        <locale name="auth.multisecurityclassauthwindow.btn.auth.text">
+            <de><![CDATA[Authentifizieren]]></de>
+        </locale>
+        <locale name="auth.multisecurityclassauthwindow.btn.auth">
+            <de><![CDATA[Hier klicken, um die Authentifizierung zu starten]]></de>
+        </locale>
+        <locale name="auth.multisecurityclassauthwindow.tableHeader">
+            <de><![CDATA[Sicherheitsklassen]]></de>
+        </locale>
+        <locale name="auth.multisecurityclassauthwindow.info">
+            <de><![CDATA[Um die gewünschte Operation auszuführen, müssen sie sich für jede der folgenden Sicherheitsklassen authentifizieren.]]></de>
+        </locale>
+        <locale name="auth.multisecurityclassauthwindow.btn.unlock.text">
+            <de><![CDATA[Authentifizierung]]></de>
+        </locale>
+        <locale name="auth.multisecurityclassauthwindow.authdata.incorrect">
+            <de><![CDATA[Die zur Authentifizierung übergebenen Daten für die Sicherheitsklasse #[securityClassId] waren nicht korrekt. Bitte versuchen Sie es erneut.]]></de>
         </locale>
     </groups>
 

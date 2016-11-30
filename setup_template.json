@@ -1,0 +1,28 @@
+{
+  "project": {
+    "name": "PasswordManager",
+    "languages": [
+      "de",
+      "en"
+    ]
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@dev.quiqqer.com:pcsg/grouppasswordmanager.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@dev.quiqqer.com:pcsg/gpmauthpassword.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@dev.quiqqer.com:pcsg/gpmauthsecondpassword.git"
+    }
+  ],
+  "packages": {
+    "pcsg/grouppasswordmanager": "dev-master",
+    "pcsg/gpmauthpassword": "dev-master",
+    "pcsg/gpmauthsecondpassword": "dev-master"
+  }
+}

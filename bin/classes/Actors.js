@@ -79,6 +79,48 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
                     securityClassId: securityClassId
                 });
             });
+        },
+
+        /**
+         * Add user(s) to a group
+         *
+         * @param {number} groupId - Group ID
+         * @param {array} userIds - IDs of users that shall be added to the group
+         * @param {object} AuthData - Authentifaction data for all relevant security classes
+         *
+         * @returns {Promise}
+         */
+        addUsersToGroup: function (groupId, userIds, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_addUsersToGroup', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    groupId  : groupId,
+                    userIds  : JSON.encode(userIds),
+                    authData : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
+         * Add group(s) to a user
+         *
+         * @param {number} userId - User ID
+         * @param {array} groupIds - IDs of groups that shall be added to the user
+         * @param {object} AuthData - Authentifaction data for all relevant security classes
+         *
+         * @returns {Promise}
+         */
+        addGroupsToUser: function (userId, groupIds, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_addGroupsToUser', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    userId   : userId,
+                    groupIds : JSON.encode(groupIds),
+                    authData : JSON.encode(AuthData)
+                });
+            });
         }
     });
 });

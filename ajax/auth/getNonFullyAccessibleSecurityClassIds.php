@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param integer $authPluginId - id of auth plugin
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessiblePasswordSecurityClassIds($authPluginId)
+function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds($authPluginId)
 {
     $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
     $CryptoUser = CryptoActors::getCryptoUser();
@@ -24,11 +24,19 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessiblePasswo
         $securityClassIds[$SecurityClass->getId()] = true;
     }
 
+    $limitedGroupAccessData = $CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin);
+
+    foreach ($limitedGroupAccessData as $groupId => $limitedSecurityClassIds) {
+        foreach ($limitedSecurityClassIds as $limitedSecurityClassId) {
+            $securityClassIds[$limitedSecurityClassId] = true;
+        }
+    }
+
     return array_keys($securityClassIds);
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessiblePasswordSecurityClassIds',
+    'package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds',
     array('authPluginId'),
     'Permission::checkAdminUser'
 );

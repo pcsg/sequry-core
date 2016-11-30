@@ -183,7 +183,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
                 AuthControl.open();
             };
 
-            Authentication.getNonFullyAccessiblePasswordSecurityClassIds(
+            Authentication.getNonFullyAccessibleSecurityClassIds(
                 this.getAttribute('authPluginId')
             ).then(function (securityClassIds) {
                 self.Loader.hide();

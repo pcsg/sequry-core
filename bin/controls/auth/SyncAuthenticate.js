@@ -13,11 +13,14 @@
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
 
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate.css'
 
-], function (AuthenticationControl) {
+], function (AuthenticationControl, AuthHandler) {
     "use strict";
+
+    var Authentication = new AuthHandler();
 
     return new Class({
 
@@ -49,18 +52,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
 
             var syncAuthPluginId = this.getAttribute('authPluginId');
 
-            for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
-                var authPluginId = this.$authPluginControls[i].getAttribute('authPluginId');
+            this.$AuthPopup.Loader.show();
 
-                if (authPluginId != syncAuthPluginId) {
-                    continue;
+            Authentication.getAllowedSyncAuthPlugins(syncAuthPluginId).then(function (allowedAuthPluginIds) {
+                for (var i = 0, len = self.$authPluginControls.length; i < len; i++) {
+                    var authPluginId = self.$authPluginControls[i].getAttribute('authPluginId');
+
+                    if (allowedAuthPluginIds.contains(authPluginId)) {
+                        continue;
+                    }
+
+                    var AuthPluginElm = self.$authPluginControls[i].getElm();
+
+                    AuthPluginElm.getParent().setStyle('display', 'none');
                 }
 
-                var AuthPluginElm = self.$authPluginControls[i].getElm();
-
-                AuthPluginElm.getParent().setStyle('display', 'none');
-                break;
-            }
+                self.$AuthPopup.Loader.hide();
+            });
         }
     });
 });

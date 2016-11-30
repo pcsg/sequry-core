@@ -35,9 +35,10 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
         }
     }
 
+    $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
+    $CryptoUser = CryptoActors::getCryptoUser();
+
     try {
-        $AuthPlugin  = Authentication::getAuthPlugin((int)$authPluginId);
-        $CryptoUser  = CryptoActors::getCryptoUser();
         $passwordIds = $CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin);
 
         foreach ($passwordIds as $passwordId) {
@@ -59,6 +60,21 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
         );
 
         return false;
+    }
+
+    try {
+        $limitedGroupAccessData = $CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin);
+
+        foreach ($limitedGroupAccessData as $groupId => $securityClassIds) {
+            $CryptoGroup = CryptoActors::getCryptoGroup($groupId);
+
+            foreach ($securityClassIds as $securityClassId) {
+                $SecurityClass = Authentication::getSecurityClass($securityClassId);
+                $CryptoUser->reEncryptGroupAccessKey($CryptoGroup, $SecurityClass);
+            }
+        }
+    } catch (\Exception $Exception) {
+        \QUI\System\Log::writeRecursive($Exception->getMessage());
     }
 
     QUI::getMessagesHandler()->addSuccess(

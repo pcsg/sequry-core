@@ -69,6 +69,7 @@ class Authentication
      * - description
      * - individual registration status for current session user
      *
+     * @return array
      */
     public static function getAuthPluginList()
     {
@@ -88,13 +89,18 @@ class Authentication
         foreach ($result as $row) {
             $AuthPlugin = self::getAuthPlugin($row['id']);
 
-
             $row['registered'] = self::isRegistered(
                 $CryptoUser,
                 $AuthPlugin
             );
 
-            $row['sync'] = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin)) > 0;
+            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin)) > 0;
+
+            if (!$sync) {
+                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin)) > 0;
+            }
+
+            $row['sync'] = $sync;
 
             $list[] = $row;
         }
@@ -158,7 +164,7 @@ class Authentication
             'select' => array(
                 'id'
             ),
-            'from' => Tables::AUTH_PLUGINS,
+            'from'   => Tables::AUTH_PLUGINS,
         ));
 
         foreach ($result as $row) {
@@ -326,7 +332,7 @@ class Authentication
 
         if (!isset($params['authPluginIds'])
             || empty($params['authPluginIds']
-            || !is_array($params['authPluginIds']))
+                     || !is_array($params['authPluginIds']))
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
