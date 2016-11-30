@@ -629,10 +629,10 @@ class CryptoUser extends QUI\Users\User
         try {
             return new Key(SecretSharing::recoverSecret($accessKeyParts));
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError(array(
+            QUI\System\Log::addError(
                 'Could not decrypt group key with user #' . $this->getId() . ' for group #' . $CryptoGroup->getId()
                 . ' for securityclass #' . $SecurityClass->getId()
-            ));
+            );
 
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -871,7 +871,7 @@ class CryptoUser extends QUI\Users\User
      * @param Plugin $AuthPlugin
      * @return array - password IDs
      */
-    public function getNonFullyAccessiblePasswordIds($AuthPlugin)
+    public function getNonFullyAccessiblePasswordIds(Plugin $AuthPlugin)
     {
         if (!$AuthPlugin->isRegistered($this)) {
             return array();
@@ -907,27 +907,27 @@ class CryptoUser extends QUI\Users\User
         }
 
         // group access
-        $authPluginAccessGroup = array();
+//        $authPluginAccessGroup = array();
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'groupId'
-            ),
-            'from'   => Tables::USER_TO_GROUPS,
-            'where'  => array(
-                'userId'        => $this->getId(),
-                'userKeyPairId' => $AuthKeyPair->getId()
-            )
-        ));
-
-        foreach ($result as $row) {
-            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId']);
-            $groupPasswordIds = $CryptoGroup->getPasswordIds();
-
-            foreach ($groupPasswordIds as $groupPasswordId) {
-                $authPluginAccessGroup[$groupPasswordId] = true;
-            }
-        }
+//        $result = QUI::getDataBase()->fetch(array(
+//            'select' => array(
+//                'groupId'
+//            ),
+//            'from'   => Tables::USER_TO_GROUPS,
+//            'where'  => array(
+//                'userId'        => $this->getId(),
+//                'userKeyPairId' => $AuthKeyPair->getId()
+//            )
+//        ));
+//
+//        foreach ($result as $row) {
+//            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId']);
+//            $groupPasswordIds = $CryptoGroup->getPasswordIds();
+//
+//            foreach ($groupPasswordIds as $groupPasswordId) {
+//                $authPluginAccessGroup[$groupPasswordId] = true;
+//            }
+//        }
 
         // check which password ids apply
         $accessPasswordIds       = $this->getPasswordIds();
@@ -946,12 +946,6 @@ class CryptoUser extends QUI\Users\User
                 if (!isset($authPluginAccessDirect[$passwordId])) {
                     $passwordIds[] = $passwordId;
                 }
-
-                continue;
-            }
-
-            if (!isset($authPluginAccessGroup[$passwordId])) {
-                $passwordIds[] = $passwordId;
             }
         }
 
@@ -960,6 +954,84 @@ class CryptoUser extends QUI\Users\User
         QUI\Cache\Manager::set($cname, $passwordIds);
 
         return $passwordIds;
+    }
+
+    /**
+     * Get IDs of groups and security classes that are NOT encrypted with a specific
+     * authentication plugin
+     *
+     * @param Plugin $AuthPlugin
+     * @return array
+     */
+    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin)
+    {
+        if (!$AuthPlugin->isRegistered($this)) {
+            return array();
+        }
+
+        $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblegroupandsecurityclassids/' . $AuthPlugin->getId();
+
+        try {
+            return QUI\Cache\Manager::get($cname);
+        } catch (\Exception $Exception) {
+            // nothing, determine ids
+        }
+
+        $AuthKeyPair = $this->getAuthKeyPair($AuthPlugin);
+
+        // group access
+        $groupAccess   = array();
+        $limitedAccess = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'groupId',
+                'securityClassId'
+            ),
+            'from'   => Tables::USER_TO_GROUPS,
+            'where'  => array(
+                'userId'        => $this->getId(),
+                'userKeyPairId' => $AuthKeyPair->getId()
+            )
+        ));
+
+        foreach ($result as $row) {
+            $groupId = $row['groupId'];
+
+            if (!isset($groupAccess[$groupId])) {
+                $groupAccess[$groupId] = array();
+            }
+
+            $groupAccess[$groupId][] = $row['securityClassId'];
+        }
+
+        $allAccessGroupIds = $this->getCryptoGroupIds();
+
+        foreach ($allAccessGroupIds as $groupId) {
+            $CryptoGroup          = CryptoActors::getCryptoGroup($groupId);
+            $groupSecurityClasses = $CryptoGroup->getSecurityClasses();
+
+            /** @var SecurityClass $SecurityClass */
+            foreach ($groupSecurityClasses as $SecurityClass) {
+                if (!in_array($AuthPlugin->getId(), $SecurityClass->getAuthPluginIds())) {
+                    continue;
+                }
+
+                if (!isset($groupAccess[$groupId])
+                    || !in_array($SecurityClass->getId(), $groupAccess[$groupId])
+                ) {
+                    if (!isset($limitedAccess[$groupId])) {
+                        $limitedAccess[$groupId] = array();
+                    }
+
+                    $limitedAccess[$groupId][] = $SecurityClass->getId();
+                }
+            }
+        }
+
+        QUI\Cache\Manager::set($cname, $limitedAccess);
+
+        return $limitedAccess;
     }
 
     /**
@@ -1058,6 +1130,114 @@ class CryptoUser extends QUI\Users\User
                 throw new QUI\Exception(array(
                     'pcsg/grouppasswordmanager',
                     'exception.crptouser.rencryptpasswordaccessKey.general.error'
+                ));
+            }
+        }
+    }
+
+    /**
+     * Takes a password access key and re-encrypts it with the current
+     * number of authentication key pairs the user has registered with, according to the respective
+     * security class of a password.
+     *
+     * @param integer $passwordId - password ID
+     * @return void
+     * @throws QUI\Exception
+     */
+    public function reEncryptGroupAccessKey(CryptoGroup $CryptoGroup, SecurityClass $SecurityClass)
+    {
+        if (!$CryptoGroup->hasCryptoUserAccess($this)) {
+            // @todo fehlermeldung
+            return;
+        }
+
+        if (!$CryptoGroup->hasSecurityClass($SecurityClass)) {
+            // @todo fehlermeldung
+            return;
+        }
+
+        if (!$SecurityClass->isUserEligible($this)) {
+            // @todo fehlermeldung
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptouser.rencryptpasswordaccessKey.securityclass.not.eligible',
+                array(
+                    'userId'             => $this->getId(),
+                    'userName'           => $this->getUsername(),
+                    'securityClassId'    => $SecurityClass->getId(),
+                    'securityClassTitle' => $SecurityClass->getAttribute('title')
+                )
+            ));
+        }
+
+        // split key
+        $GroupAccessKey = $this->getGroupAccessKey($CryptoGroup, $SecurityClass);
+
+        $groupAccessKeyParts = SecretSharing::splitSecret(
+            $GroupAccessKey->getValue(),
+            $SecurityClass->getAuthPluginCount(),
+            $SecurityClass->getRequiredFactors()
+        );
+
+        // encrypt key parts with user public keys
+        $i            = 0;
+        $authKeyPairs = $this->getAuthKeyPairsBySecurityClass($SecurityClass);
+        $DB           = QUI::getDataBase();
+
+        /** @var AuthKeyPair $UserAuthKeyPair */
+        foreach ($authKeyPairs as $UserAuthKeyPair) {
+            try {
+                // delete old access entry
+                $DB->delete(
+                    Tables::USER_TO_GROUPS,
+                    array(
+                        'userId'          => $this->getId(),
+                        'userKeyPairId'   => $UserAuthKeyPair->getId(),
+                        'groupId'         => $CryptoGroup->getId(),
+                        'securityClassId' => $SecurityClass->getId()
+                    )
+                );
+
+                $payloadKeyPart = $groupAccessKeyParts[$i++];
+
+                $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
+                    $payloadKeyPart,
+                    $UserAuthKeyPair
+                );
+
+                $data = array(
+                    'userId'          => $this->getId(),
+                    'userKeyPairId'   => $UserAuthKeyPair->getId(),
+                    'securityClassId' => $SecurityClass->getId(),
+                    'groupId'         => $CryptoGroup->getId(),
+                    'groupKey'        => $groupAccessKeyPartEncrypted
+                );
+
+                // calculate MAC
+                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+
+                $DB->insert(Tables::USER_TO_GROUPS, $data);
+            } catch (\Exception $Exception) {
+                QUI\System\Log::addError(
+                    'Error writing group key parts to database: ' . $Exception->getMessage()
+                );
+
+                QUI::getDataBase()->delete(
+                    Tables::USER_TO_GROUPS,
+                    array(
+                        'userId'          => $this->getId(),
+                        'groupId'         => $CryptoGroup->getId(),
+                        'securityClassId' => $SecurityClass->getId()
+                    )
+                );
+
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptogroup.add.user.general.error',
+                    array(
+                        'userId'  => $CryptoGroup->getId(),
+                        'groupId' => $this->getId()
+                    )
                 ));
             }
         }

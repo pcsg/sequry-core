@@ -7,6 +7,70 @@ require([
     var pkg = 'pcsg/grouppasswordmanager';
 
     QUIAjax.registerGlobalJavaScriptCallback(
+        'addUsersByGroup',
+        function (response, AuthInfo) {
+
+            console.log(arguments);
+
+            require([
+                'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
+                'package/pcsg/grouppasswordmanager/bin/classes/Actors'
+            ], function(MultiAuthWindow, ActorHandler) {
+                var Actors = new ActorHandler();
+
+                new MultiAuthWindow({
+                    securityClassIds: AuthInfo.securityClassIds,
+                    events: {
+                        onSubmit: function(AuthData, Popup) {
+                            Actors.addUsersToGroup(
+                                AuthInfo.groupId,
+                                AuthInfo.userIds,
+                                AuthData
+                            ).then(function(result) {
+                                console.log("erfolg");
+                            });
+
+                            Popup.close();
+                        }
+                    }
+                }).open();
+            });
+        }
+    );
+
+    QUIAjax.registerGlobalJavaScriptCallback(
+        'addGroupsToUser',
+        function (response, AuthInfo) {
+
+            console.log(AuthInfo);
+
+            require([
+                'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
+                'package/pcsg/grouppasswordmanager/bin/classes/Actors'
+            ], function(MultiAuthWindow, ActorHandler) {
+                var Actors = new ActorHandler();
+
+                new MultiAuthWindow({
+                    securityClassIds: AuthInfo.securityClassIds,
+                    events: {
+                        onSubmit: function(AuthData, Popup) {
+                            Actors.addGroupsToUser(
+                                AuthInfo.userId,
+                                AuthInfo.groupIds,
+                                AuthData
+                            ).then(function(result) {
+                                console.log("erfolg");
+                            });
+
+                            Popup.close();
+                        }
+                    }
+                }).open();
+            });
+        }
+    );
+
+    QUIAjax.registerGlobalJavaScriptCallback(
         'userDeleteConfirm',
         function (response, User) {
             var Confirm = new QUIConfirm({

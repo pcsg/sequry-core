@@ -337,6 +337,31 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
+     * Checks if a user meets the requirements to join this group
+     *
+     * @param CryptoUser $AddUser
+     * @return bool
+     */
+    public function canUserBeAdded(CryptoUser $AddUser)
+    {
+        if ($this->hasCryptoUserAccess($AddUser)) {
+            return false;
+        }
+
+        // check if user is eligible for all security classes
+        $securityClasses = $this->getSecurityClasses();
+
+        /** @var SecurityClass $SecurityClass */
+        foreach ($securityClasses as $SecurityClass) {
+            if (!$SecurityClass->isUserEligible($AddUser)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Adds a user to this group so he can access all passwords the group has access to
      *
      * @param CryptoUser $AddUser - The user that is added to the group

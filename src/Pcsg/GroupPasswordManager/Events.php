@@ -21,6 +21,14 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 class Events
 {
     /**
+     * Flag that indicates that users are added to a group via the Group GUI
+     * and not the User GUI
+     *
+     * @var bool
+     */
+    public static $addUsersViaGroup = false;
+
+    /**
      * If warning on user delete should be triggered or not
      *
      * @var bool
@@ -33,6 +41,15 @@ class Events
      * @var bool
      */
     public static $triggerGroupDeleteConfirm = true;
+
+    /**
+     * Flag that indicates if the user is authenticated for all
+     * relevant security classes that are necessary for adding
+     * a user to multiple groups.
+     *
+     * @var bool
+     */
+    public static $addGroupsToUserAuthentication = false;
 
     /**
      * on event : onPackageSetup
@@ -50,14 +67,62 @@ class Events
     }
 
     /**
+     * on event: onAjaxCallBefore
+     *
+     * @param string $function - ajax function that is called
+     * @param array $params - ajax parameters
+     *
+     * @throws QUI\Exception
+     */
+    public static function onAjaxCallBefore($function, $params)
+    {
+        if ($function !== 'ajax_groups_addUsers') {
+            return;
+        }
+
+        $CryptoGroup = CryptoActors::getCryptoGroup((int)$params['gid']);
+        $userIds     = json_decode($params['userIds'], true);
+        $users       = array();
+
+        foreach ($userIds as $userId) {
+            $CrpyotUser = CryptoActors::getCryptoUser((int)$userId);
+            $users[]    = array(
+                'userId'   => $CrpyotUser->getId(),
+                'userName' => $CrpyotUser->getUsername()
+            );
+        }
+
+        QUI::getAjax()->triggerGlobalJavaScriptCallback(
+            'addUsersByGroup',
+            array(
+                'groupId'          => $CryptoGroup->getId(),
+                'groupName'        => $CryptoGroup->getAttribute('name'),
+                'securityClassIds' => $CryptoGroup->getSecurityClassIds(),
+                'users'            => $users,
+                'userIds'          => $userIds
+            )
+        );
+
+        self::$addUsersViaGroup = true;
+    }
+
+    /**
      * on event: onUserSaveBegin
      *
      * Checks if user groups can be changed
      *
      * @param QUI\Users\User $User
+     * @throws QUI\Exception
      */
     public static function onUserSaveBegin($User)
     {
+        if (self::$addUsersViaGroup) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.events.add.users.to.group.info'
+            ));
+        }
+
         $CryptoUser = CryptoActors::getCryptoUser($User->getId());
 
         // get groups of user before edit
@@ -85,6 +150,84 @@ class Events
         }
 
         $groupsAdded = array_diff($groupsNow, $groupsBefore);
+
+        if (!empty($groupsAdded)) {
+            $securityClassIds = array();
+            $groupIds         = array();
+
+            // get all crypto groups of the QUIQQER groups that are to be added
+            $result = QUI::getDataBase()->fetch(array(
+                'select' => array(
+                    'groupId'
+                ),
+                'from'   => Tables::KEYPAIRS_GROUP,
+                'where'  => array(
+                    'groupId' => array(
+                        'type'  => 'IN',
+                        'value' => $groupsAdded
+                    )
+                )
+            ));
+
+            $groupsHandled = array();
+
+            foreach ($result as $row) {
+                if (isset($groupsHandled[$row['groupId']])) {
+                    continue;
+                }
+
+                $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
+                $groupsHandled[$row['groupId']] = true;
+
+                if (!self::$addGroupsToUserAuthentication) {
+                    $securityClassIds = array_merge(
+                        $securityClassIds,
+                        $CryptoGroup->getSecurityClassIds()
+                    );
+
+                    $groupIds[] = $CryptoGroup->getId();
+
+                    continue;
+                }
+
+                try {
+                    $CryptoGroup->addCryptoUser($CryptoUser);
+                } catch (\Exception $Exception) {
+                    QUI::getMessagesHandler()->addAttention(
+                        QUI::getLocale()->get(
+                            'pcsg/grouppasswordmanager',
+                            'attention.events.onusersavebegin.add.user.error',
+                            array(
+                                'userId'    => $User->getId(),
+                                'userName'  => $User->getUsername(),
+                                'groupId'   => $CryptoGroup->getId(),
+                                'groupName' => $CryptoGroup->getAttribute('name'),
+                                'error'     => $Exception->getMessage()
+                            )
+                        )
+                    );
+
+                    $groupKey = array_search($CryptoGroup->getId(), $groupsNow);
+                    unset($groupsNow[$groupKey]);
+                }
+            }
+
+            if (!self::$addGroupsToUserAuthentication) {
+                QUI::getAjax()->triggerGlobalJavaScriptCallback(
+                    'addGroupsToUser',
+                    array(
+                        'groupIds'         => $groupIds,
+                        'securityClassIds' => array_unique($securityClassIds),
+                        'userId'           => $User->getId()
+                    )
+                );
+
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.events.add.groups.to.user.info'
+                ));
+            }
+        }
 
         // check groups that are to be removed
         $groupsRemoved = array_diff($groupsBefore, $groupsNow);
@@ -132,54 +275,6 @@ class Events
                     );
 
                     $groupsNow[] = $CryptoGroup->getId();
-                }
-            }
-        }
-
-        if (!empty($groupsAdded)) {
-            // get all crypto groups of the QUIQQER groups that are to be added
-            $result = QUI::getDataBase()->fetch(array(
-                'select' => array(
-                    'groupId'
-                ),
-                'from'   => Tables::KEYPAIRS_GROUP,
-                'where'  => array(
-                    'groupId' => array(
-                        'type'  => 'IN',
-                        'value' => $groupsAdded
-                    )
-                )
-            ));
-
-            $groupsHandled = array();
-
-            foreach ($result as $row) {
-                if (isset($groupsHandled[$row['groupId']])) {
-                    continue;
-                }
-
-                $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
-                $groupsHandled[$row['groupId']] = true;
-
-                try {
-                    $CryptoGroup->addCryptoUser($CryptoUser);
-                } catch (\Exception $Exception) {
-                    QUI::getMessagesHandler()->addAttention(
-                        QUI::getLocale()->get(
-                            'pcsg/grouppasswordmanager',
-                            'attention.events.onusersavebegin.add.user.error',
-                            array(
-                                'userId'    => $User->getId(),
-                                'userName'  => $User->getUsername(),
-                                'groupId'   => $CryptoGroup->getId(),
-                                'groupName' => $CryptoGroup->getAttribute('name'),
-                                'error'     => $Exception->getMessage()
-                            )
-                        )
-                    );
-
-                    $groupKey = array_search($CryptoGroup->getId(), $groupsNow);
-                    unset($groupsNow[$groupKey]);
                 }
             }
         }
