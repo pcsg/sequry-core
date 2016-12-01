@@ -237,7 +237,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                     self.$insertData();
                 },
                 function () {
-                    console.log("error");
+                    // @todo Fehlermeldung
                 }
             );
         }

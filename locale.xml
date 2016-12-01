@@ -576,19 +576,7 @@
             <de><![CDATA[Anleitung für den QUIQQER PasswordManager]]></de>
         </locale>
         <locale name="actors.sendinstructions.instructions" html="true">
-            <de><![CDATA[Hallo [userName]!<br/><br/>
-
-Du bist herzlich eingeladen, den QUIQQER PasswordManager zu benutzen. Für dich wurde ein Benutzerkonto mit dem Benutzernamen <b>[userName]</b> angelegt. Das Passwort für den erstmaligen Login ist ebenfalls dein Benutzername. Folge bitte diesen Anweisungen:<br/><br/>
-
-1. Besuche <a href="[url]">[url]</a> und logge dich ein<br/>
-2. Ändere dein Passwort (und wähle ein sicheres!)<br/>
-3. Gehe im Menü auf <b>Verwaltung</b> -> <b>Passwort-Manager</b> -> <b>Authentifizierung</b><br/>
-4. Klicke dort alle verfügbaren Authentifizierungs-Methoden durch und registriere dich jeweils<br/>
-5. Drucke den jeweils angezeigten Recovery-Code aus oder speichere in an einem sicheren(!) Ort<br/>
-6. Gib peat Bescheid, wenn du alle Schritte erledigt hast!<br/>
-7. Freue dich.<br/><br/><br/>
-Viel Spaß mit dem neuem PasswordManager
-]]></de>
+            <de><![CDATA[Anleitungstext]]></de>
         </locale>
     </groups>
 
@@ -711,14 +699,15 @@ Viel Spaß mit dem neuem PasswordManager
         <locale name="permission.gpm.securityclass.edit">
             <de><![CDATA[Darf Sicherheitsklassen erstellen und bearbeiten]]></de>
         </locale>
+
+        <locale name="passwords.panel.title">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="js">
 
         <!-- Control: passwords/Panel -->
-        <locale name="passwords.panel.title">
-            <de><![CDATA[Passwort-Manager]]></de>
-        </locale>
         <locale name="controls.gpm.passwordlist.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
         </locale>

@@ -139,9 +139,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @returns {Promise}
          */
         changeAuthInformation: function (authPluginId, oldInfo, newInfo, recovery) {
-
-            console.log(recovery);
-
             return new Promise(function (resolve, reject) {
                 Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation', resolve, {
                     'package'   : pkg,
