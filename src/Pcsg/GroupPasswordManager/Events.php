@@ -92,6 +92,13 @@ class Events
             );
         }
 
+        $groupSecurityClassIds  = $CryptoGroup->getSecurityClassIds();
+        self::$addUsersViaGroup = true;
+
+        if (empty($groupSecurityClassIds)) {
+            return;
+        }
+
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'addUsersByGroup',
             array(
@@ -102,8 +109,6 @@ class Events
                 'userIds'          => $userIds
             )
         );
-
-        self::$addUsersViaGroup = true;
     }
 
     /**
