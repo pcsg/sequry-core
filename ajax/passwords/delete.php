@@ -41,7 +41,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
                 'error.password.delete',
                 array(
                     'passwordId' => $passwordId,
-                    'reason'     => $Exception->getMessage()
+                    'error'      => $Exception->getMessage()
                 )
             )
         );

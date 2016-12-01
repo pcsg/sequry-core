@@ -685,7 +685,7 @@
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) löschen]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata.share">
-            <de><![CDATA[Darf Passwörter mit anderen Benutzern und Gruppen teilen]]></de>
+            <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) mit anderen Benutzern und Gruppen teilen]]></de>
         </locale>
         <locale name="permission.gpm.cryptogroup._header">
             <de><![CDATA[Passwort-Gruppen]]></de>
