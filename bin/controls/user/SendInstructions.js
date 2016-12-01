@@ -67,9 +67,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions', [
                 textimage: 'fa fa-envelope',
                 events   : {
                     onClick: function () {
+                        self.$SendBtn.disable();
+
                         QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions', function (result) {
-                            if (result) {
-                                self.$SendBtn.disable();
+                            if (!result) {
+                                self.$SendBtn.enable();
                             }
                         }, {
                             'package': 'pcsg/grouppasswordmanager',

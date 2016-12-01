@@ -5,8 +5,6 @@
  *
  * @param integer $userId - ID of user
  * @return bool - success
- *
- * @throws QUI\Exception
  */
 function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
 {
@@ -15,17 +13,19 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
     $emailAddress = $User->getAttribute('email');
 
     if (empty($emailAddress)) {
-        throw new QUI\Exception(array(
-            'pcsg/grouppasswordmanager',
-            'exception.actors.sendinstructions.no.email.address',
-            array(
-                'userId'   => $User->getId(),
-                'userName' => $User->getUsername()
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'exception.actors.sendinstructions.no.email.address',
+                array(
+                    'userId'   => $User->getId(),
+                    'userName' => $User->getUsername()
+                )
             )
-        ));
-    }
+        );
 
-    \QUI\System\Log::writeRecursive($User->getAttribute('pcsg.gpm.instructions.sent'));
+        return false;
+    }
 
     $Mailer = new \QUI\Mail\Mailer();
 
@@ -58,6 +58,13 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
         $Mailer->send();
     } catch (\Exception $Exception) {
         QUI\System\Log::addError($Exception->getMessage());
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'error.actors.sendinstructions'
+            )
+        );
 
         return false;
     }
