@@ -1,32 +1,46 @@
 require([
     'Ajax',
     'qui/controls/windows/Confirm',
+    'utils/Panels',
     'Locale'
-], function (QUIAjax, QUIConfirm, QUILocale) {
+], function (QUIAjax, QUIConfirm, PanelUtils, QUILocale) {
     var lg  = 'pcsg/grouppasswordmanager';
     var pkg = 'pcsg/grouppasswordmanager';
+
+    //require([
+    //    'Menu',
+    //    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel'
+    //], function (Menu, PasswordManager) {
+    //    if (!Menu.isLoaded()) {
+    //        Menu.addEvent('onMenuLoaded', function () {
+    //            PanelUtils.openPanelInTasks(new PasswordManager());
+    //        });
+    //
+    //        return;
+    //    }
+    //
+    //    PanelUtils.openPanelInTasks(new PasswordManager());
+    //});
 
     QUIAjax.registerGlobalJavaScriptCallback(
         'addUsersByGroup',
         function (response, AuthInfo) {
 
-            console.log(arguments);
-
             require([
                 'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
                 'package/pcsg/grouppasswordmanager/bin/classes/Actors'
-            ], function(MultiAuthWindow, ActorHandler) {
+            ], function (MultiAuthWindow, ActorHandler) {
                 var Actors = new ActorHandler();
 
                 new MultiAuthWindow({
                     securityClassIds: AuthInfo.securityClassIds,
-                    events: {
-                        onSubmit: function(AuthData, Popup) {
+                    events          : {
+                        onSubmit: function (AuthData, Popup) {
                             Actors.addUsersToGroup(
                                 AuthInfo.groupId,
                                 AuthInfo.userIds,
                                 AuthData
-                            ).then(function(result) {
+                            ).then(function (result) {
                                 console.log("erfolg");
                             });
 
@@ -42,23 +56,21 @@ require([
         'addGroupsToUser',
         function (response, AuthInfo) {
 
-            console.log(AuthInfo);
-
             require([
                 'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
                 'package/pcsg/grouppasswordmanager/bin/classes/Actors'
-            ], function(MultiAuthWindow, ActorHandler) {
+            ], function (MultiAuthWindow, ActorHandler) {
                 var Actors = new ActorHandler();
 
                 new MultiAuthWindow({
                     securityClassIds: AuthInfo.securityClassIds,
-                    events: {
-                        onSubmit: function(AuthData, Popup) {
+                    events          : {
+                        onSubmit: function (AuthData, Popup) {
                             Actors.addGroupsToUser(
                                 AuthInfo.userId,
                                 AuthInfo.groupIds,
                                 AuthData
-                            ).then(function(result) {
+                            ).then(function (result) {
                                 console.log("erfolg");
                             });
 

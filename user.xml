@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<user>
+
+    <attributes>
+        <attribute>pcsg.gpm.instructions.sent</attribute>
+    </attributes>
+
+    <!-- User Profil Fenster erweitern -->
+    <window>
+        <tab name="pwm">
+            <text>
+                <locale group="pcsg/grouppasswordmanager" var="user.pwm.title"/>
+            </text>
+            <image>fa fa-diamond</image>
+            <template>OPT_DIR/pcsg/grouppasswordmanager/templates/pwm_user.html</template>
+        </tab>
+    </window>
+</user>
