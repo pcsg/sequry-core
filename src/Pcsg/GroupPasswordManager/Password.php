@@ -982,7 +982,7 @@ class Password extends QUI\QDOM
     /**
      * Checks if a user has access to this password
      *
-     * @param CryptoUser $CryptoActor
+     * @param CryptoUser|CryptoGroup $CryptoActor
      * @return bool
      */
     protected function hasPasswordAccess($CryptoActor)
@@ -991,10 +991,11 @@ class Password extends QUI\QDOM
             return true;
         }
 
-        $userGroupIds     = $CryptoActor->getCryptoGroupIds();
-        $passwordGroupIds = $this->getAccessGroupsIds();
+        if (in_array($CryptoActor->getId(), $this->getAccessGroupsIds())) {
+            return true;
+        }
 
-        return !empty(array_intersect($passwordGroupIds, $userGroupIds));
+        return false;
     }
 
     /**
