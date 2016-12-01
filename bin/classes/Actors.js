@@ -92,7 +92,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          */
         addUsersToGroup: function (groupId, userIds, AuthData) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_addUsersToGroup', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_actors_addUsersToGroup', resolve, {
                     'package': pkg,
                     onError  : reject,
                     groupId  : groupId,
@@ -113,7 +113,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          */
         addGroupsToUser: function (userId, groupIds, AuthData) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_addGroupsToUser', resolve, {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_actors_addGroupsToUser', resolve, {
                     'package': pkg,
                     onError  : reject,
                     userId   : userId,

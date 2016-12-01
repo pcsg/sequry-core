@@ -2,6 +2,7 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Events;
 
 /**
  * Add user(s) to a group
@@ -32,6 +33,8 @@ function package_pcsg_grouppasswordmanager_ajax_actors_addUsersToGroup($groupId,
     }
 
     $userIds = json_decode($userIds, true);
+
+    Events::$addUsersToGroupAuthentication = true;
 
     try {
         $CryptoGroup = CryptoActors::getCryptoGroup((int)$groupId);

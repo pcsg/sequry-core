@@ -52,6 +52,15 @@ class Events
     public static $addGroupsToUserAuthentication = false;
 
     /**
+     * Flag that indicates if the user is authenticated for all
+     * relevant security classes that are necessary for adding
+     * multiple users to a group.
+     *
+     * @var bool
+     */
+    public static $addUsersToGroupAuthentication = false;
+
+    /**
      * on event : onPackageSetup
      *
      * @param Package $Package
@@ -92,7 +101,7 @@ class Events
             );
         }
 
-        $groupSecurityClassIds  = $CryptoGroup->getSecurityClassIds();
+        $groupSecurityClassIds = $CryptoGroup->getSecurityClassIds();
 
         if (empty($groupSecurityClassIds)) {
             self::$addGroupsToUserAuthentication = true;
@@ -100,6 +109,7 @@ class Events
         }
 
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
+
             'addUsersByGroup',
             array(
                 'groupId'          => $CryptoGroup->getId(),
@@ -226,6 +236,7 @@ class Events
             }
 
             if (!self::$addGroupsToUserAuthentication
+                && !self::$addUsersToGroupAuthentication
                 && !empty($securityClassIds)
             ) {
                 QUI::getAjax()->triggerGlobalJavaScriptCallback(
