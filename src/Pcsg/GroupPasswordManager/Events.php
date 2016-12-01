@@ -93,9 +93,9 @@ class Events
         }
 
         $groupSecurityClassIds  = $CryptoGroup->getSecurityClassIds();
-        self::$addUsersViaGroup = true;
 
         if (empty($groupSecurityClassIds)) {
+            self::$addGroupsToUserAuthentication = true;
             return;
         }
 
@@ -109,6 +109,8 @@ class Events
                 'userIds'          => $userIds
             )
         );
+
+        self::$addUsersViaGroup = true;
     }
 
     /**
