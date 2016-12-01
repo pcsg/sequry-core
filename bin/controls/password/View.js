@@ -128,6 +128,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
             AuthControl.open();
         },
 
+        /**
+         * Parse DOM elements of the view and add specific controls (e.g. copy / show password buttons)
+         */
         $parseView: function () {
             // copy elements
             var i, len, Elm, ValueInput;

@@ -523,6 +523,10 @@
         <locale name="passwordtypes.secretkey.label.title">
             <de><![CDATA[SSH-Schlüssel]]></de>
         </locale>
+        <locale name="passwordtypes.credentials.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+
         <locale name="passwordtypes.secretkey.label.host">
             <de><![CDATA[Server]]></de>
         </locale>
@@ -557,9 +561,39 @@
         <locale name="passwordtypes.credentials.label.password">
             <de><![CDATA[Passwort]]></de>
         </locale>
+
+        <!-- Instructions -->
+        <locale name="exception.actors.sendinstructions.no.email.address">
+            <de><![CDATA[Die Anweisungen für den PasswortManager können nicht versendet werden, da der Benuzter "[userName]" (#[userId]) keine E-Mail-Addresse in seinem Benutzerprofil eingetragen hat.]]></de>
+        </locale>
+        <locale name="success.actors.sendinstructions">
+            <de><![CDATA[Die Anleitung wurde erfolgreich verschickt!]]></de>
+        </locale>
+        <locale name="actors.sendinstructions.subject">
+            <de><![CDATA[Anleitung für den QUIQQER PasswordManager]]></de>
+        </locale>
+        <locale name="actors.sendinstructions.instructions" html="true">
+            <de><![CDATA[Hallo [userName]!<br/><br/>
+
+Du bist herzlich eingeladen, den QUIQQER PasswordManager zu benutzen. Für dich wurde ein Benutzerkonto mit dem Benutzernamen <b>[userName]</b> angelegt. Das Passwort für den erstmaligen Login ist ebenfalls dein Benutzername. Folge bitte diesen Anweisungen:<br/><br/>
+
+1. Besuche <a href="[url]">[url]</a> und logge dich ein<br/>
+2. Ändere dein Passwort (und wähle ein sicheres!)<br/>
+3. Gehe im Menü auf <b>Verwaltung</b> -> <b>Passwort-Manager</b> -> <b>Authentifizierung</b><br/>
+4. Klicke dort alle verfügbaren Authentifizierungs-Methoden durch und registriere dich jeweils<br/>
+5. Drucke den jeweils angezeigten Recovery-Code aus oder speichere in an einem sicheren(!) Ort<br/>
+6. Gib peat Bescheid, wenn du alle Schritte erledigt hast!<br/>
+7. Freue dich.<br/><br/><br/>
+Viel Spaß mit dem neuem PasswordManager
+]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
+
+        <locale name="user.pwm.title">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
 
         <locale name="menu.apps.gpm.title">
             <de><![CDATA[Passwort-Manager]]></de>
@@ -788,6 +822,9 @@
         </locale>
 
         <!-- Control: auth/Panel -->
+        <locale name="gpm.auth.panel.register.title">
+            <de><![CDATA[Registrierung für eine Authentifizierungsmethode]]></de>
+        </locale>
         <locale name="auth.panel.btn.register">
             <de><![CDATA[Registrieren]]></de>
         </locale>
@@ -1179,6 +1216,13 @@
             <de><![CDATA[Die Authentifizierungsinformationen sind nicht korrekt.]]></de>
         </locale>
 
+        <!-- Control: passwordtypes/Edit -->
+        <locale name="controls.passwordtypes.edit.show.btn">
+            <de><![CDATA[Passwort im Klartext anzeigen]]></de>
+        </locale>
+        <locale name="controls.passwordtypes.edit.rnd.btn">
+            <de><![CDATA[Zufälliges Passwort erzeugen]]></de>
+        </locale>
 
         <locale name="auth.multisecurityclassauthwindow.title">
             <de><![CDATA[Authentifizierung für Sicherheitsklassen]]></de>
@@ -1200,6 +1244,14 @@
         </locale>
         <locale name="auth.multisecurityclassauthwindow.authdata.incorrect">
             <de><![CDATA[Die zur Authentifizierung übergebenen Daten für die Sicherheitsklasse #[securityClassId] waren nicht korrekt. Bitte versuchen Sie es erneut.]]></de>
+        </locale>
+
+        <!-- Control: user/SendInstructions -->
+        <locale name="control.user.sendinstructions.btn.text">
+            <de><![CDATA[Anleitung versenden]]></de>
+        </locale>
+        <locale name="control.user.sendinstructions.already.sent">
+            <de><![CDATA[Die Anleitung wurde bereits an diesen Benutzer versendet!]]></de>
         </locale>
     </groups>
 

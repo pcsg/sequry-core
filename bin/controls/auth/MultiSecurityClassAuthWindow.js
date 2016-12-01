@@ -122,8 +122,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
         $buildContent: function () {
             var self = this;
 
-            this.Loader.show();
-
             var FuncOnAuthBtnClick = function (Btn) {
                 var securityClassId = Btn.getAttribute('securityClassId');
 

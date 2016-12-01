@@ -19,17 +19,17 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
 
-    'qui/QUI',
     'qui/controls/Control',
+    'qui/controls/buttons/Button',
 
     'Ajax',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select'
+    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
 
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.css'
+    'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.css'
 
-], function (QUI, QUIControl, QUIAjax, QUILocale, TypeSelect) {
+], function (QUIControl, QUIButton, QUIAjax, QUILocale, TypeSelect) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -40,7 +40,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit',
 
         Binds: [
-            '$onInject'
+            '$onInject',
+            '$parseTemplate'
         ],
 
         options: {
@@ -107,7 +108,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                 'package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml',
                 function (templateHtml) {
                     self.$EditContent.set('html', templateHtml);
-                    self.fireEvent('loaded', [self]);
+                    self.$parseTemplate();
                 }, {
                     'package': 'pcsg/grouppasswordmanager',
                     type     : this.getAttribute('type')
@@ -120,6 +121,74 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
          */
         $getFields: function () {
             return this.$EditContent.getElements('.pcsg-gpm-password-edit-value');
+        },
+
+        /**
+         *
+         */
+        $parseTemplate: function () {
+            // show/hide elements
+            var Elm;
+            var showHideElms = this.$Elm.getElements('.pwm-passwordtypes-show');
+
+            for (var i = 0, len = showHideElms.length; i < len; i++) {
+                Elm = showHideElms[i];
+
+                new QUIButton({
+                    Elm   : Elm,
+                    icon  : 'fa fa-eye',
+                    alt   : QUILocale.get(lg, 'controls.passwordtypes.edit.show.btn'),
+                    title : QUILocale.get(lg, 'controls.passwordtypes.edit.show.btn'),
+                    action: 'show',
+                    events: {
+                        onClick: function (Btn) {
+                            var Elm = Btn.getAttribute('Elm');
+
+                            if (Btn.getAttribute('action') === 'show') {
+                                Btn.setAttributes({
+                                    icon  : 'fa fa-eye-slash',
+                                    action: 'hide'
+                                });
+
+                                Elm.setProperty('type', 'text');
+                                Elm.focus();
+                                Elm.select();
+
+                                return;
+                            }
+
+                            Btn.setAttributes({
+                                icon  : 'fa fa-eye',
+                                action: 'show'
+                            });
+
+                            Elm.setProperty('type', 'password');
+                            Elm.blur();
+                        }
+                    }
+                }).inject(Elm.getParent(), 'after');
+            }
+
+            var rndPassElms = this.$Elm.getElements('.pwm-passwordtypes-randompassword');
+
+            for (i = 0, len = rndPassElms.length; i < len; i++) {
+                Elm = rndPassElms[i];
+
+                new QUIButton({
+                    Elm   : Elm,
+                    alt   : QUILocale.get(lg, 'controls.passwordtypes.edit.rnd.btn'),
+                    title : QUILocale.get(lg, 'controls.passwordtypes.edit.rnd.btn'),
+                    icon  : 'fa fa-random',
+                    events: {
+                        onClick: function (Btn) {
+                            var Elm   = Btn.getAttribute('Elm');
+                            Elm.value = Math.random().toString(36).slice(-16);
+                        }
+                    }
+                }).inject(Elm.getParent(), 'after');
+            }
+
+            this.fireEvent('loaded', [this]);
         },
 
         /**
