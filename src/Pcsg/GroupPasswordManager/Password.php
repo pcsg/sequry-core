@@ -987,12 +987,19 @@ class Password extends QUI\QDOM
      */
     protected function hasPasswordAccess($CryptoActor)
     {
-        if (in_array($CryptoActor->getId(), $this->getAccessUserIds())) {
-            return true;
+        if ($CryptoActor instanceof CryptoUser) {
+            if (in_array($CryptoActor->getId(), $this->getAccessUserIds())) {
+                return true;
+            }
+
+            $userGroupIds     = $CryptoActor->getCryptoGroupIds();
+            $passwordGroupIds = $this->getAccessGroupsIds();
+
+            return !empty(array_intersect($passwordGroupIds, $userGroupIds));
         }
 
-        if (in_array($CryptoActor->getId(), $this->getAccessGroupsIds())) {
-            return true;
+        if ($CryptoActor instanceof CryptoGroup) {
+            return in_array($CryptoActor->getId(), $this->getAccessGroupsIds());
         }
 
         return false;
