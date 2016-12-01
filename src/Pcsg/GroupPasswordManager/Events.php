@@ -196,7 +196,9 @@ class Events
                 $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
                 $groupsHandled[$row['groupId']] = true;
 
-                if (!self::$addGroupsToUserAuthentication) {
+                if (!self::$addGroupsToUserAuthentication
+                    && !self::$addUsersToGroupAuthentication
+                ) {
                     $groupSecurityClassIds = $CryptoGroup->getSecurityClassIds();
 
                     if (empty($groupSecurityClassIds)) {

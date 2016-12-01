@@ -12,8 +12,6 @@ use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
  */
 function package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml($type)
 {
-    ini_set('display_errors', 1);
-
     return Handler::getEditTemplate($type);
 }
 

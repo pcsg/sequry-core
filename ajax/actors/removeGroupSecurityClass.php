@@ -13,8 +13,6 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  */
 function package_pcsg_grouppasswordmanager_ajax_actors_removeGroupSecurityClass($groupId, $securityClassId)
 {
-    ini_set('display_errors', 1);
-
     $Group         = QUI::getGroups()->get((int)$groupId);
     $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 

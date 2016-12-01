@@ -11,8 +11,6 @@ use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  */
 function package_pcsg_grouppasswordmanager_ajax_actors_delete($id, $type)
 {
-    ini_set('display_errors', 1);
-
     switch ($type) {
         case 'user':
             $Actor = CryptoActors::getCryptoUser((int)$id);
