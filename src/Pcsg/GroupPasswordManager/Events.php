@@ -180,9 +180,15 @@ class Events
                 $groupsHandled[$row['groupId']] = true;
 
                 if (!self::$addGroupsToUserAuthentication) {
+                    $groupSecurityClassIds = $CryptoGroup->getSecurityClassIds();
+
+                    if (empty($groupSecurityClassIds)) {
+                        continue;
+                    }
+
                     $securityClassIds = array_merge(
                         $securityClassIds,
-                        $CryptoGroup->getSecurityClassIds()
+                        $groupSecurityClassIds
                     );
 
                     $groupIds[] = $CryptoGroup->getId();
@@ -212,7 +218,9 @@ class Events
                 }
             }
 
-            if (!self::$addGroupsToUserAuthentication) {
+            if (!self::$addGroupsToUserAuthentication
+                && !empty($securityClassIds)
+            ) {
                 QUI::getAjax()->triggerGlobalJavaScriptCallback(
                     'addGroupsToUser',
                     array(
