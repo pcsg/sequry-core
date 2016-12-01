@@ -61,11 +61,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             '$addRemoveSearchBtn'
         ],
 
-        options: {
-            title: QUILocale.get(lg, 'passwords.panel.title')
-        },
-
         initialize: function (options) {
+            this.setAttribute('title', QUILocale.get(lg, 'passwords.panel.title'));
+
             this.parent(options);
 
             this.addEvents({

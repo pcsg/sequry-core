@@ -54,11 +54,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             'changeAuthInfo'
         ],
 
-        options: {
-            title: QUILocale.get(lg, 'auth.panel.title')
-        },
-
         initialize: function (options) {
+            this.setAttribute('title', QUILocale.get(lg, 'auth.panel.title'));
+
             this.parent(options);
 
             this.addEvents({

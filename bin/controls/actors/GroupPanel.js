@@ -48,11 +48,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel', [
             'refresh',
         ],
 
-        options: {
-            title: QUILocale.get(lg, 'actors.groups.panel.title')
-        },
-
         initialize: function (options) {
+            this.setAttribute('title', QUILocale.get(lg, 'actors.groups.panel.title'));
+
             this.parent(options);
 
             this.addEvents({

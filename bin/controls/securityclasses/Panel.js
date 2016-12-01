@@ -52,11 +52,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
             'deleteSecurityClass'
         ],
 
-        options: {
-            title: QUILocale.get(lg, 'securityclasses.panel.title')
-        },
-
         initialize: function (options) {
+            this.setAttribute('title', QUILocale.get(lg, 'securityclasses.panel.title'));
+
             this.parent(options);
 
             this.addEvents({

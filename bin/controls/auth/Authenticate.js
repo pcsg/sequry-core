@@ -210,8 +210,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         var controls     = arguments;
                         var FirstControl = false;
 
-                        console.log(controls);
-
                         for (var i = 0, len = controls.length; i < len; i++) {
                             var Control = new controls[i]({
                                 authPluginId: self.$authPluginIds[i]

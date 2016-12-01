@@ -1,25 +1,19 @@
 require([
     'Ajax',
     'qui/controls/windows/Confirm',
+    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
     'utils/Panels',
     'Locale'
-], function (QUIAjax, QUIConfirm, PanelUtils, QUILocale) {
+], function (QUIAjax, QUIConfirm, PasswordManager, PanelUtils, QUILocale) {
     var lg  = 'pcsg/grouppasswordmanager';
     var pkg = 'pcsg/grouppasswordmanager';
 
-    //require([
-    //    'Menu',
-    //    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel'
-    //], function (Menu, PasswordManager) {
-    //    if (!Menu.isLoaded()) {
-    //        Menu.addEvent('onMenuLoaded', function () {
-    //            PanelUtils.openPanelInTasks(new PasswordManager());
+    //QUI.addEvents({
+    //    onQuiqqerLoaded: function() {
+    //        PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
+    //            Panel.focus();
     //        });
-    //
-    //        return;
     //    }
-    //
-    //    PanelUtils.openPanelInTasks(new PasswordManager());
     //});
 
     QUIAjax.registerGlobalJavaScriptCallback(
@@ -40,9 +34,7 @@ require([
                                 AuthInfo.groupId,
                                 AuthInfo.userIds,
                                 AuthData
-                            ).then(function (result) {
-                                console.log("erfolg");
-                            });
+                            );
 
                             Popup.close();
                         }
@@ -70,9 +62,7 @@ require([
                                 AuthInfo.userId,
                                 AuthInfo.groupIds,
                                 AuthData
-                            ).then(function (result) {
-                                console.log("erfolg");
-                            });
+                            );
 
                             Popup.close();
                         }
