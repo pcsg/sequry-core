@@ -217,7 +217,7 @@ class Events
                     'addGroupsToUser',
                     array(
                         'groupIds'         => $groupIds,
-                        'securityClassIds' => array_unique($securityClassIds),
+                        'securityClassIds' => array_values(array_unique($securityClassIds)),
                         'userId'           => $User->getId()
                     )
                 );
