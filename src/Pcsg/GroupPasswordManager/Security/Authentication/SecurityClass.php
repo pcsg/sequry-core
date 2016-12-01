@@ -668,8 +668,17 @@ class SecurityClass extends QUI\QDOM
      */
     public function delete()
     {
+        if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.securityclass.create.no.permission'
+            ));
+        }
+
+        $DB = QUI::getDataBase();
+
         // check if any passwords exist with this security class
-        $count = QUI::getDataBase()->fetch(
+        $count = $DB->fetch(
             array(
                 'count' => 1,
                 'from'  => Tables::PASSWORDS,
@@ -686,8 +695,24 @@ class SecurityClass extends QUI\QDOM
             ));
         }
 
+        // delete group keys for security class
+        $DB->delete(
+            Tables::KEYPAIRS_GROUP,
+            array(
+                'securityClassId' => $this->getId()
+            )
+        );
+
+        // delete user group access for security class
+        $DB->delete(
+            Tables::USER_TO_GROUPS,
+            array(
+                'securityClassId' => $this->getId()
+            )
+        );
+
         // delete securityclass to auth entries
-        QUI::getDataBase()->delete(
+        $DB->delete(
             Tables::SECURITY_TO_AUTH,
             array(
                 'securityClassId' => $this->getId()
@@ -695,7 +720,7 @@ class SecurityClass extends QUI\QDOM
         );
 
         // delete security class entry
-        QUI::getDataBase()->delete(
+        $DB->delete(
             Tables::SECURITY_CLASSES,
             array(
                 'id' => $this->getId()
