@@ -25,7 +25,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions', [
 
     'Ajax',
 
-    'Locale'
+    'Locale',
+
+    'css!package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions.css'
 
 ], function (QUIControl, QUIButton, QUIAjax, QUILocale) {
     "use strict";
@@ -96,9 +98,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions', [
                 self.$User = self.getAttribute('Panel').getUser();
 
                 if (self.$User.getAttribute('pcsg.gpm.instructions.sent')) {
+                    var InfoElm = new Element('div', {
+                        'class': 'pcsg-gpm-instructions-info'
+                    }).inject(self.$Elm);
+
                     new Element('p', {
                         html: QUILocale.get(lg, 'control.user.sendinstructions.already.sent')
-                    }).inject(self.$Elm);
+                    }).inject(InfoElm);
+
+                    var Label = new Element('label', {
+                        html: QUILocale.get(lg, 'control.user.sendinstructions.force.sent')
+                    }).inject(InfoElm);
+
+                    new Element('input', {
+                        type: 'checkbox',
+                        events: {
+                            change: function(event) {
+                                if (event.target.checked) {
+                                    self.$SendBtn.enable();
+                                } else {
+                                    self.$SendBtn.disable();
+                                }
+                            }
+                        }
+                    }).inject(Label);
 
                     return;
                 }

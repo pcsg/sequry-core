@@ -1245,6 +1245,9 @@
         <locale name="control.user.sendinstructions.already.sent">
             <de><![CDATA[Die Anleitung wurde bereits an diesen Benutzer versendet!]]></de>
         </locale>
+        <locale name="control.user.sendinstructions.force.sent">
+            <de><![CDATA[Trotzdem versenden]]></de>
+        </locale>
     </groups>
 
 </locales>
