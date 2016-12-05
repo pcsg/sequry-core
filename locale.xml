@@ -962,7 +962,7 @@
         <locale name="gpm.securityclasses.panel.delete.popup.info.description" html="true">
             <de><![CDATA[Sind Sie sicher, dass Sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) unwiderruflich löschen wollen?<br/>Bitte beachten Sie, dass eine Löschung nur möglich ist, wenn aktuell keine Passwörter angelegt sind, der diese Sicherheitsklasse zugeordnet ist.]]></de>
         </locale>
-        <locale name="gpm.securityclasses.panel.delete.popup.info.title">
+        <locale name="gpm.securityclasses.panel.delete.popup.title">
             <de><![CDATA[Sicherheitsklasse löschen]]></de>
         </locale>
         <locale name="gpm.securityclasses.panel.delete.popup.btn.text">

@@ -8,13 +8,13 @@ require([
     var lg  = 'pcsg/grouppasswordmanager';
     var pkg = 'pcsg/grouppasswordmanager';
 
-    //QUI.addEvents({
-    //    onQuiqqerLoaded: function() {
-    //        PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
-    //            Panel.focus();
-    //        });
-    //    }
-    //});
+    QUI.addEvents({
+        onQuiqqerLoaded: function() {
+            PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
+                Panel.open();
+            });
+        }
+    });
 
     QUIAjax.registerGlobalJavaScriptCallback(
         'addUsersByGroup',
