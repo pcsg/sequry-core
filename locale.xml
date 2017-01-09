@@ -582,6 +582,23 @@
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
 
+        <!-- Settings -->
+        <locale name="settings.title">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
+        <locale name="settings.category.module_settings.title">
+            <de><![CDATA[Einstellungen]]></de>
+        </locale>
+        <locale name="settings.module_settings.title">
+            <de><![CDATA[Einstellungen]]></de>
+        </locale>
+        <locale name="settings.module_settings.auth_ttl.title">
+            <de><![CDATA[Lebensdauer v. Auth-Informationen (Sekunden)]]></de>
+        </locale>
+        <locale name="settings.module_settings.auth_ttl.description">
+            <de><![CDATA[Bestimmt, wie lange Authentifizierungs-Informationen in der Benutzer-Session zwischengespeichert werden, bevor der Benutzer erneut seine Authentifizierungs-Informationen zur Authentifizierung eingeben muss. Angabe in Sekunden.]]></de>
+        </locale>
+
         <locale name="user.pwm.title">
             <de><![CDATA[Passwort-Manager]]></de>
         </locale>

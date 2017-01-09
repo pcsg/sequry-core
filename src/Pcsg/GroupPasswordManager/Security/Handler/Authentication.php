@@ -514,9 +514,17 @@ class Authentication
         }
 
         if (isset($currentAuthKeyData['starttime'])) {
-            $start = $currentAuthKeyData['starttime'];
-            $now   = time();
-            $max   = '';
+            $start     = $currentAuthKeyData['starttime'];
+            $timeAlive = time() - $start;
+            $max       = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig()->get(
+                'settings',
+                'auth_ttl'
+            );
+
+            if ($timeAlive > $max) {
+                $Session->set('quiqqer_pwm_authkeys', false);
+                return false;
+            }
         }
 
         if (!isset($currentAuthKeyData[$authPluginId])) {
