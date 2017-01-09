@@ -915,7 +915,7 @@
             <de><![CDATA[Für diese Operation ist eine Authentifizierung erforderlich.<br/><br/><b>Sicherheitsklasse:</b> [securityClass]<br/><br/>Bitte authentifzieren Sie sich mit <b>mindestens [requiredFactors]</b> dafür nötigen Authentifizierungs-Faktoren.]]></de>
         </locale>
         <locale name="controls.authenticate.popup.label.save.authdata">
-            <de><![CDATA[Authentifizierungs-Informationen für diese Sicherheitsklasse merken]]></de>
+            <de><![CDATA[Authentifizierungs-Informationen merken]]></de>
         </locale>
         <locale name="controls.authenticate.popup.btn.text">
             <de><![CDATA[Authentifizieren]]></de>
