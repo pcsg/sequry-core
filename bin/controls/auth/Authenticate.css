@@ -22,3 +22,13 @@
     padding: 10px;
     width: 100%;
 }
+
+.pcsg-gpm-auth-authenticate-save-label {
+    float: left;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.pcsg-gpm-auth-authenticate-save-label input {
+    float: left;
+}

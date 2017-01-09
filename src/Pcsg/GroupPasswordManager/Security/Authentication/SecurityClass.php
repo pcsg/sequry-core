@@ -90,6 +90,28 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
+     * Checks if the authentication information for this security class
+     * is saved in the session
+     *
+     * @return bool
+     */
+    public function isAuthenticatedBySession()
+    {
+        $plugins   = $this->getAuthPlugins();
+        $authCount = 0;
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($plugins as $AuthPlugin) {
+            if ($AuthPlugin->isAuthenticated()) {
+                $authCount++;
+                continue;
+            }
+        }
+
+        return $authCount >= $this->requiredFactors;
+    }
+
+    /**
      * Authenticates current session user with all authentication plugins associated with this security class
      *
      * @param array $authData - authentication data
@@ -99,6 +121,10 @@ class SecurityClass extends QUI\QDOM
      */
     public function authenticate($authData, $CryptoUser = null)
     {
+        if ($this->isAuthenticatedBySession()) {
+            return true;
+        }
+
         if (empty($authData)
             || !is_array($authData)
         ) {
@@ -113,22 +139,22 @@ class SecurityClass extends QUI\QDOM
             $CryptoUser = CryptoActors::getCryptoUser();
         }
 
+        if (QUI::getUserBySession()->getId() === $CryptoUser->getId()
+            && isset($authData['sessioncache'])
+            && $authData['sessioncache']
+        ) {
+            Authentication::$sessionCache = true;
+        }
+
         $plugins                      = $this->getAuthPlugins();
         $succesfulAuthenticationCount = 0;
 
         /** @var Plugin $AuthPlugin */
         foreach ($plugins as $AuthPlugin) {
-//            if (!isset($authData[$AuthPlugin->getId()])) {
-//                // @todo eigenen 401 error code
-//                throw new QUI\Exception(array(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.securityclass.authenticate.missing.authdata',
-//                    array(
-//                        'authPluginId'    => $AuthPlugin->getId(),
-//                        'authPluginTitle' => $AuthPlugin->getAttribute('title')
-//                    )
-//                ));
-//            }
+            if ($AuthPlugin->isAuthenticated($CryptoUser)) {
+                $succesfulAuthenticationCount++;
+                continue;
+            }
 
             $pluginAuthData = $authData[$AuthPlugin->getId()];
 
@@ -158,7 +184,7 @@ class SecurityClass extends QUI\QDOM
                 'exception.securityclass.authenticate.insufficient.authentication.count',
                 array(
                     'securityClassId' => $this->id,
-                    'requiredFactors'  => $this->requiredFactors
+                    'requiredFactors' => $this->requiredFactors
                 )
             ));
         }

@@ -45,6 +45,15 @@ class Authentication
     protected static $authKeyPairs = array();
 
     /**
+     * Flag:
+     *
+     * If true, save all derived keys from authentication plugins in session data
+     *
+     * @var bool
+     */
+    public static $sessionCache = false;
+
+    /**
      * Return AuthKeyPair
      *
      * @param integer $id
@@ -457,5 +466,63 @@ class Authentication
         self::$securityClasses[$id] = new SecurityClass($id);
 
         return self::$securityClasses[$id];
+    }
+
+    /**
+     * Save derived key from authenticated plugin to user session
+     *
+     * @param int $authPluginId - Auth Plugin ID
+     * @param string $authKey - derived key
+     *
+     * @return void
+     */
+    public static function saveAuthKeyToSession($authPluginId, $authKey)
+    {
+        if (!self::$sessionCache) {
+            return;
+        }
+
+        $Session            = QUI::getSession();
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+
+        if (empty($currentAuthKeyData)) {
+            $currentAuthKeyData = array();
+        }
+
+        if (!isset($currentAuthKeyData['starttime'])) {
+            $currentAuthKeyData['starttime'] = time();
+        }
+
+        $currentAuthKeyData[$authPluginId] = $authKey;
+
+        $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+    }
+
+    /**
+     * Get derived key from authenticated plugin
+     *
+     * @param int $authPluginId - Auth Plugin ID
+     * @return false|string - false if no key set; key as string otherwise
+     */
+    public static function getAuthKeyFromSession($authPluginId)
+    {
+        $Session            = QUI::getSession();
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+
+        if (empty($currentAuthKeyData)) {
+            $currentAuthKeyData = array();
+        }
+
+        if (isset($currentAuthKeyData['starttime'])) {
+            $start = $currentAuthKeyData['starttime'];
+            $now   = time();
+            $max   = '';
+        }
+
+        if (!isset($currentAuthKeyData[$authPluginId])) {
+            return false;
+        }
+
+        return $currentAuthKeyData[$authPluginId];
     }
 }

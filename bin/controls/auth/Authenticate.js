@@ -45,7 +45,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             '$onInject',
             'submit',
             'open',
-            '$openPopup'
+            '$openPopup',
+            'getAuthData'
         ],
 
         options: {
@@ -70,7 +71,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            return this.parent();
+            this.$Elm = this.parent();
+
+            return this.$Elm;
         },
 
         /**
@@ -101,7 +104,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             }
 
             Prom.then(function () {
-                self.$openPopup();
+                var securityClassId = self.getAttribute('securityClassId');
+
+                Authentication.isAuthenticatedBySession(
+                    securityClassId
+                ).then(function(isAuth) {
+                    if (isAuth) {
+                        self.fireEvent('submit', [{}]);
+                    } else {
+                        self.$openPopup();
+                    }
+                });
             }).catch(function () {
                 self.destroy();
             });
@@ -131,7 +144,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             this.$AuthPopup = AuthPopup;
 
             var submitFunc = function () {
-                self.fireEvent('submit', [self.getAuthData()]);
+                var AuthData = self.getAuthData();
+
+                AuthData.sessioncache = AuthPopup.getContent().getElement(
+                    '.pcsg-gpm-auth-authenticate-save-authdata'
+                ).checked;
+
+                self.fireEvent('submit', [AuthData]);
             };
 
             AuthPopup.open();
@@ -185,7 +204,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         securityClass  : SecurityClassInfo.title,
                         requiredFactors: SecurityClassInfo.requiredFactors
                     }) +
-                    '</span>'
+                    '</span>' +
+                    '<label class="pcsg-gpm-auth-authenticate-save-label">' +
+                    '<span>' +
+                    QUILocale.get(lg, 'controls.authenticate.popup.label.save.authdata') +
+                    '</span>' +
+                    '<input type="checkbox" class="pcsg-gpm-auth-authenticate-save-authdata">' +
+                    '</label>'
                 );
 
                 var paths                 = [];

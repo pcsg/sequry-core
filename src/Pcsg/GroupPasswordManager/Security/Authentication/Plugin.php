@@ -5,6 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Authentication;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAuthPlugin;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
@@ -135,6 +136,12 @@ class Plugin extends QUI\QDOM
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
+        }
+
+        $keyData = Authentication::getAuthKeyFromSession($this->id);
+
+        if ($keyData) {
+            return true;
         }
 
         return $this->AuthClass->isAuthenticated($User);
@@ -309,8 +316,17 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
+        $keyData = Authentication::getAuthKeyFromSession($this->id);
+
+        if ($keyData) {
+            return new Key($keyData);
+        }
+
         try {
-            return $this->AuthClass->getDerivedKey($User);
+            $DerivedKey = $this->AuthClass->getDerivedKey($User);
+            Authentication::saveAuthKeyToSession($this->id, $DerivedKey->getValue());
+
+            return $DerivedKey;
         } catch (\Exception $Exception) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',

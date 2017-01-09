@@ -216,6 +216,22 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
+         * Checks if the current session user has already authenticated
+         * himself with a security class
+         *
+         * @returns {Promise}
+         */
+        isAuthenticatedBySession: function (securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_isAuthenticatedBySession', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    securityClassId: securityClassId
+                });
+            });
+        },
+
+        /**
          * Create new security class
          *
          * @param {Object} Data
