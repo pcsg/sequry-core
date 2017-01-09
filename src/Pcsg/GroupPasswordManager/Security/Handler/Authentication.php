@@ -533,4 +533,14 @@ class Authentication
 
         return $currentAuthKeyData[$authPluginId];
     }
+
+    /**
+     * Deletes all authentication keys from session
+     *
+     * @return void
+     */
+    public static function clearAuthInfoFromSession()
+    {
+        QUI::getSession()->set('quiqqer_pwm_authkeys', false);
+    }
 }

@@ -163,6 +163,8 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
+        Authentication::clearAuthInfoFromSession();
+        
         $this->authenticate($old, $User);
 
         $AuthKeyPair     = CryptoActors::getCryptoUser()->getAuthKeyPair($this);
