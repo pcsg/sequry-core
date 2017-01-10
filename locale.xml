@@ -740,6 +740,27 @@
         <locale name="controls.gpm.passwords.panel.tbl.header.accesstype">
             <de><![CDATA[Zugriff]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.shared">
+            <de><![CDATA[Geteilt]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.permissions">
+            <de><![CDATA[Rechte]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.shared.no">
+            <de><![CDATA[nein]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.shareinfo.title">
+            <de><![CDATA[Auflistung der Passwort-Empfänger]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.shareinfo.info">
+            <de><![CDATA[Liste aller Benutzer und Gruppen, die das Passwort "[passwordTitle]" (#[passwordId]) einsehen dürfen:]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.shareinfo.users.text">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.shareinfo.groups.text">
+            <de><![CDATA[Gruppen]]></de>
+        </locale>
         <locale name="gpm.passwords.panel.create.title">
             <de><![CDATA[Neues Passwort erstellen]]></de>
         </locale>
@@ -1268,6 +1289,15 @@
         <locale name="control.user.sendinstructions.force.sent">
             <de><![CDATA[Trotzdem versenden]]></de>
         </locale>
+
+        <!-- Control: user/AuthPluginSettings -->
+        <locale name="controls.user.authpluginsettings.label.autosave">
+            <de><![CDATA[Authentifizierungs-Informationen nach erstmaliger Anmeldung automatisch speichern]]></de>
+        </locale>
+        <locale name="controls.user.authpluginsettings.label.priority">
+            <de><![CDATA[Anzeige-Priorität im Authentifizierungsfenster (höhere Zahl = weiter oben)]]></de>
+        </locale>
+
     </groups>
 
 </locales>

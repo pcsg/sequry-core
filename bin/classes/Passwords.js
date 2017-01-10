@@ -78,11 +78,29 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
+         * Get all users and groups a password is shared with (authentication required!)
+         *
+         * @param {number} passwordId
+         * @param {object} AuthData
+         * @returns {Promise}
+         */
+        getShareUsersAndGroups: function (passwordId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId,
+                    authData  : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
          * Get share data of single password object (authentication required!)
          *
          * @param {number} passwordId
          * @param {object} AuthData
-         * @returns {*}
+         * @returns {Promise}
          */
         getShareData: function (passwordId, AuthData) {
             return new Promise(function (resolve, reject) {

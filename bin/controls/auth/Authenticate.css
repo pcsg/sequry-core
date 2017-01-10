@@ -32,3 +32,13 @@
 .pcsg-gpm-auth-authenticate-save-label input {
     float: left;
 }
+
+.pcsg-gpm-auth-authenticate-plugins-show:hover {
+    cursor: pointer;
+    color: #00A0B0;
+}
+
+.pcsg-gpm-auth-authenticate-plugins-show-title {
+    font-size: 12px;
+    margin-left: 5px;
+}

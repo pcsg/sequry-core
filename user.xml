@@ -3,6 +3,7 @@
 
     <attributes>
         <attribute>pcsg.gpm.instructions.sent</attribute>
+        <attribute>pcsg.gpm.settings.authplugins</attribute>
     </attributes>
 
     <!-- User Profil Fenster erweitern -->
@@ -15,4 +16,12 @@
             <template>OPT_DIR/pcsg/grouppasswordmanager/templates/pwm_user.html</template>
         </tab>
     </window>
+
+    <profile>
+        <tab name="pwm_user_profile">
+            <text>Produkte</text>
+            <image>fa fa-shopping-bag</image>
+            <template>OPT_DIR/pcsg/grouppasswordmanager/templates/user_profile.html</template>
+        </tab>
+    </profile>
 </user>

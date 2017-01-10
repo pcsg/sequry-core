@@ -164,6 +164,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                             function (ShareData) {
                                 AuthControl.destroy();
 
+                                console.log(ShareData);
+
                                 self.$Elm.getElement(
                                     '.gpm-password-share-info'
                                 ).set(

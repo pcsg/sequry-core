@@ -4,3 +4,48 @@
     height: 100%;
     width: 100%;
 }
+
+.pcsg-gpm-passwords-panel-grid-shared {
+    float: left;
+    height: 100%;
+    text-align: center;
+    width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-grid-shared:hover {
+    cursor: pointer;
+    color: #00A0B0;
+}
+
+.pcsg-gpm-passwords-panel-grid-shared-separator {
+    margin: 0 3px;
+}
+
+.pcsg-gpm-passwords-panel-share-info div.information {
+    margin: 0;
+}
+
+.pcsg-gpm-passwords-panel-share-info div.textbody h2 {
+    display: none;
+}
+
+.pcsg-gpm-passwords-panel-table-accesstype {
+    float: left;
+    text-align: center;
+    width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-table-accesstype span {
+    margin: 0 2px;
+}
+
+.pcsg-gpm-passwords-panel-table-permissions {
+    color: #0069b4;
+    float: left;
+    text-align: center;
+    width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-table-permissions span {
+    margin: 0 2px;
+}

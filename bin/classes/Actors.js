@@ -121,6 +121,20 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
                     authData : JSON.encode(AuthData)
                 });
             });
+        },
+
+        /**
+         * Get auth plugin settings for current session user
+         *
+         * @returns {Promise}
+         */
+        getAuthPluginSettings: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginSettings', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });

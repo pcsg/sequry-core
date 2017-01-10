@@ -6,15 +6,19 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
+use Composer\Cache;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAuthPlugin;
+use Pcsg\GroupPasswordManager\Security\KDF;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
-use Symfony\Component\Console\Helper\Table;
+use Pcsg\GroupPasswordManager\Security\Authentication\Cache as AuthCache;
 
 /**
  * Authentication Class for crypto data and crypto users
@@ -493,7 +497,12 @@ class Authentication
             $currentAuthKeyData['starttime'] = time();
         }
 
-        $currentAuthKeyData[$authPluginId] = $authKey;
+        $encryptedKey = SymmetricCrypto::encrypt(
+            $authKey,
+            self::getSessionEncryptionKey()
+        );
+
+        $currentAuthKeyData[$authPluginId] = base64_encode($encryptedKey);
 
         $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
     }
@@ -531,7 +540,39 @@ class Authentication
             return false;
         }
 
-        return $currentAuthKeyData[$authPluginId];
+        try {
+            $encryptedKey = base64_decode($currentAuthKeyData[$authPluginId]);
+
+            return SymmetricCrypto::decrypt(
+                $encryptedKey,
+                self::getSessionEncryptionKey()
+            );
+        } catch (\Exception $Exception) {
+            self::clearAuthInfoFromSession();
+            return false;
+        }
+    }
+
+    /**
+     * Get a (new) encryption key for sensitive session data
+     *
+     * @return Key - Symmetric encryption key
+     */
+    protected static function getSessionEncryptionKey()
+    {
+        $cacheName = 'pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId();
+
+        try {
+            $keyValue = AuthCache::get($cacheName);
+            return new Key($keyValue);
+        } catch (\Exception $Exception) {
+            // generate new key
+        }
+
+        $SessionKey = KDF::createKey(QUI::getSession()->getId());
+        AuthCache::set($cacheName, $SessionKey->getValue());
+
+        return $SessionKey;
     }
 
     /**
@@ -542,5 +583,6 @@ class Authentication
     public static function clearAuthInfoFromSession()
     {
         QUI::getSession()->set('quiqqer_pwm_authkeys', false);
+        AuthCache::clear('pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId());
     }
 }
