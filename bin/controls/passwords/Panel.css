@@ -20,3 +20,11 @@
 .pcsg-gpm-passwords-panel-grid-shared-separator {
     margin: 0 3px;
 }
+
+.pcsg-gpm-passwords-panel-share-info div.information {
+    margin: 0;
+}
+
+.pcsg-gpm-passwords-panel-share-info div.textbody h2 {
+    display: none;
+}

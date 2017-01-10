@@ -688,7 +688,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             // open popup
             var Popup = new QUIConfirm({
-                'maxHeight': 750,
+                'class': 'pcsg-gpm-passwords-panel-share-info',
+                'maxHeight': 700,
                 maxWidth   : 350,
                 'autoclose': true,
 
@@ -709,10 +710,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     onOpen  : function () {
                         var Content = Popup.getContent();
                         var SiteMap = new QUISiteMap({}).inject(Content);
-
-                        Content.getElement(
-                            '.textbody h2'
-                        ).setStyle('display', 'none');
 
                         var UsersItem = new QUISiteMapItem({
                             text       : QUILocale.get(lg, 'controls.gpm.passwords.panel.shareinfo.users.text'),
@@ -790,7 +787,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         );
                     },
                     onClose : function () {
-                        self.fireEvent('close');
+                        self.Loader.hide();
                     }
                 }
             });

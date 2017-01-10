@@ -740,6 +740,9 @@
         <locale name="controls.gpm.passwords.panel.tbl.header.accesstype">
             <de><![CDATA[Zugriff]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.shared">
+            <de><![CDATA[Geteilt]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.panel.shareinfo.title">
             <de><![CDATA[Auflistung der Passwort-Empfänger]]></de>
         </locale>
