@@ -835,7 +835,102 @@ class CryptoUser extends QUI\Users\User
             $passwords[] = $row;
         }
 
+        // check if passwords are shared
+        $passwordIdsSharedWithUsers  = $this->getOwnerPasswordIdsSharedWithUsers();
+        $passwordIdsSharedWithGroups = $this->getOwnerPasswordIdsSharedWithGroups();
+
+        // set results to password list
+        foreach ($passwords as $k => $row) {
+            $row['sharedWithUsers']  = false;
+            $row['sharedWithGroups'] = false;
+
+            if (in_array($row['id'], $passwordIdsSharedWithUsers)) {
+                $row['sharedWithUsers'] = true;
+            }
+
+            if (in_array($row['id'], $passwordIdsSharedWithGroups)) {
+                $row['sharedWithGroups'] = true;
+            }
+
+            $passwords[$k] = $row;
+        }
+
         return $passwords;
+    }
+
+    /**
+     * Get IDs of all passwords this user owns and that are shared with other users
+     *
+     * @return array
+     */
+    public function getOwnerPasswordIdsSharedWithUsers()
+    {
+        $passwordIds = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'dataId'
+            ),
+            'from'   => Tables::USER_TO_PASSWORDS,
+            'where'  => array(
+                'dataId' => array(
+                    'type'  => 'IN',
+                    'value' => $this->getPasswordIdsDirectAccess()
+                ),
+                'userId' => array(
+                    'type'  => 'NOT',
+                    'value' => $this->id
+                )
+            )
+        ));
+
+        foreach ($result as $row) {
+            $passwordIds[] = $row['dataId'];
+        }
+
+        return array_unique($passwordIds);
+    }
+
+    /**
+     * Get IDs of all passwords this user owns and that are shared with other users and groups
+     *
+     * @return array
+     */
+    public function getOwnerPasswordIdsShared()
+    {
+        return array_merge(
+            $this->getOwnerPasswordIdsSharedWithUsers(),
+            $this->getOwnerPasswordIdsSharedWithGroups()
+        );
+    }
+
+    /**
+     * Get IDs of all passwords this user owns and that are shared with other groups
+     *
+     * @return array
+     */
+    public function getOwnerPasswordIdsSharedWithGroups()
+    {
+        $passwordIds = array();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'dataId'
+            ),
+            'from'   => Tables::GROUP_TO_PASSWORDS,
+            'where'  => array(
+                'dataId' => array(
+                    'type'  => 'NOT IN',
+                    'value' => $this->getGroupOwnerPasswordIds()
+                )
+            )
+        ));
+
+        foreach ($result as $row) {
+            $passwordIds[] = $row['dataId'];
+        }
+
+        return $passwordIds;
     }
 
     /**

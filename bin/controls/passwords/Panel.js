@@ -20,6 +20,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'qui/controls/buttons/Button',
     'qui/controls/loader/Loader',
     'qui/controls/windows/Popup',
+    'qui/controls/windows/Confirm',
+
+    'qui/controls/sitemap/Map',
+    'qui/controls/sitemap/Item',
+
     'controls/grid/Grid',
 
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
@@ -29,15 +34,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
 
     'Ajax',
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
-], function (QUI, QUIPanel, QUISeparator, QUIButton, QUILoader, QUIPopup, Grid, PasswordHandler,
-             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
-             AuthenticationControl, Ajax, QUILocale) {
+], function (QUI, QUIPanel, QUISeparator, QUIButton, QUILoader, QUIPopup, QUIConfirm,
+             QUISiteMap, QUISiteMapItem, Grid, PasswordHandler, PasswordCreate,
+             PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
+             AuthenticationControl, PasswordAuthentication, Ajax, QUILocale) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager';
@@ -206,6 +213,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataType : 'node',
                     width    : 50
                 }, {
+                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.shared'),
+                    dataIndex: 'shared',
+                    dataType : 'node',
+                    width    : 75
+                }, {
                     dataIndex: 'securityClassId',
                     dataType : 'integer',
                     hidden   : true
@@ -286,8 +298,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.$Grid.refresh();
         },
 
+        /**
+         * Set password data to grid table
+         *
+         * @param {Object} GridData
+         */
         $setGridData: function (GridData) {
             var Row;
+            var self = this;
 
             this.getButtons('delete').disable();
             this.getButtons('view').disable();
@@ -321,6 +339,39 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                             }
                         });
                         break;
+                }
+
+                if (Data.sharedWithUsers || Data.sharedWithGroups) {
+                    Row.shared = new Element('div', {
+                        'class'   : 'pcsg-gpm-passwords-panel-grid-shared',
+                        'data-row': i,
+                        events    : {
+                            click: function (event) {
+                                self.$showSharedWithPopup(
+                                    this.getProperty('data-row')
+                                );
+                            }
+                        }
+                    });
+
+                    if (Data.sharedWithUsers) {
+                        new Element('span', {
+                            'class': 'fa fa-user'
+                        }).inject(Row.shared);
+                    }
+
+                    if (Data.sharedWithGroups) {
+                        if (Data.sharedWithUsers) {
+                            new Element('span', {
+                                'class': 'pcsg-gpm-passwords-panel-grid-shared-separator',
+                                html   : '&'
+                            }).inject(Row.shared);
+                        }
+
+                        new Element('span', {
+                            'class': 'fa fa-users'
+                        }).inject(Row.shared);
+                    }
                 }
             }
 
@@ -621,6 +672,130 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     }
                 }
             }).show();
+        },
+
+        /**
+         * Show users and groups a password is shared with
+         *
+         * @param {int} row - row in grid
+         */
+        $showSharedWithPopup: function (row) {
+            var self        = this;
+            var Password    = this.$Grid.getDataByRow(row);
+            var shareActors = [];
+
+            this.Loader.show();
+
+            // open popup
+            var Popup = new QUIConfirm({
+                'maxHeight': 750,
+                maxWidth   : 350,
+                'autoclose': true,
+
+                'information': QUILocale.get(lg, 'controls.gpm.passwords.panel.shareinfo.info', {
+                    passwordId   : Password.id,
+                    passwordTitle: Password.title
+                }),
+                'title'      : QUILocale.get(lg, 'controls.gpm.passwords.panel.shareinfo.title'),
+                'texticon'   : 'fa fa-share-alt',
+                'icon'       : 'fa fa-share-alt',
+
+                cancel_button: false,
+                ok_button    : {
+                    text     : false,
+                    textimage: 'fa fa-check'
+                },
+                events       : {
+                    onOpen  : function () {
+                        var Content = Popup.getContent();
+                        var SiteMap = new QUISiteMap({}).inject(Content);
+
+                        Content.getElement(
+                            '.textbody h2'
+                        ).setStyle('display', 'none');
+
+                        var UsersItem = new QUISiteMapItem({
+                            text       : QUILocale.get(lg, 'controls.gpm.passwords.panel.shareinfo.users.text'),
+                            icon       : 'fa fa-user',
+                            contextmenu: false,
+                            hasChildren: true,
+                            dragable   : false
+                        });
+
+                        SiteMap.appendChild(UsersItem);
+
+                        var GroupsItem = new QUISiteMapItem({
+                            text       : QUILocale.get(lg, 'controls.gpm.passwords.panel.shareinfo.groups.text'),
+                            icon       : 'fa fa-users',
+                            contextmenu: false,
+                            hasChildren: true,
+                            dragable   : false
+                        });
+
+                        SiteMap.appendChild(GroupsItem);
+
+                        var i, len;
+
+                        // users
+                        for (i = 0, len = shareActors.users.length; i < len; i++) {
+                            var ShareUser = shareActors.users[i];
+
+                            UsersItem.appendChild(new QUISiteMapItem({
+                                text       : ShareUser.name + ' (' + ShareUser.id + ')',
+                                icon       : 'fa fa-user',
+                                contextmenu: false,
+                                hasChildren: false,
+                                dragable   : false
+                            }));
+                        }
+
+                        // groups
+                        for (i = 0, len = shareActors.groups.length; i < len; i++) {
+                            var ShareGroup = shareActors.groups[i];
+
+                            GroupsItem.appendChild(new QUISiteMapItem({
+                                text       : ShareGroup.name + ' (' + ShareGroup.id + ')',
+                                icon       : 'fa fa-users',
+                                contextmenu: false,
+                                hasChildren: false,
+                                dragable   : false
+                            }));
+                        }
+
+                        SiteMap.openAll();
+                        self.Loader.hide();
+                    },
+                    onSubmit: function () {
+                        Popup.close();
+                    }
+                }
+            });
+
+            var AuthControl = new PasswordAuthentication({
+                passwordId: Password.id,
+                events    : {
+                    onSubmit: function (AuthData) {
+                        Passwords.getShareUsersAndGroups(
+                            Password.id,
+                            AuthData
+                        ).then(
+                            function (shareUsersGroups) {
+                                AuthControl.destroy();
+                                shareActors = shareUsersGroups;
+                                Popup.open();
+                            },
+                            function () {
+                                // @todo getShareData error
+                            }
+                        );
+                    },
+                    onClose : function () {
+                        self.fireEvent('close');
+                    }
+                }
+            });
+
+            AuthControl.open();
         },
 
         /**
