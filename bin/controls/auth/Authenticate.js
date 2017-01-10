@@ -139,7 +139,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     }
                 },
                 content    : '<div class="pcsg-gpm-auth-authenticate-info"></div>' +
-                '<div class="pcsg-gpm-auth-authenticate-plugins"></div>'
+                '<div class="pcsg-gpm-auth-authenticate-plugins"></div>' +
+                '<label class="pcsg-gpm-auth-authenticate-save-label">' +
+                '<span>' +
+                QUILocale.get(lg, 'controls.authenticate.popup.label.save.authdata') +
+                '</span>' +
+                '<input type="checkbox" class="pcsg-gpm-auth-authenticate-save-authdata">' +
+                '</label>'
             });
 
             this.$AuthPopup = AuthPopup;
@@ -209,18 +215,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         securityClass  : SecurityClassInfo.title,
                         requiredFactors: SecurityClassInfo.requiredFactors
                     }) +
-                    '</span>' +
-                    '<label class="pcsg-gpm-auth-authenticate-save-label">' +
-                    '<span>' +
-                    QUILocale.get(lg, 'controls.authenticate.popup.label.save.authdata') +
-                    '</span>' +
-                    '<input type="checkbox" class="pcsg-gpm-auth-authenticate-save-authdata">' +
-                    '</label>'
+                    '</span>'
                 );
 
                 var i, len;
                 var paths                 = [];
                 var AuthPluginsRegistered = {};
+                var autoSaveCount         = 0;
 
                 for (i = 0, len = authPluginControls.length; i < len; i++) {
                     var AuthPluginControl = authPluginControls[i];
@@ -228,6 +229,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     self.$authPluginIds.push(AuthPluginControl.authPluginId);
                     AuthPluginsRegistered[AuthPluginControl.authPluginId] = AuthPluginControl.registered;
                     paths.push(AuthPluginControl.control);
+
+                    if (AuthPluginControl.autosave) {
+                        autoSaveCount++;
+                    }
+                }
+
+                // auto-check autosave option
+                if (autoSaveCount >= self.$SecurityClass.requiredFactors) {
+                    AuthPopup.getContent().getElement(
+                        '.pcsg-gpm-auth-authenticate-save-authdata'
+                    ).checked = true;
                 }
 
                 // load auth plugins
@@ -260,7 +272,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                             if (!AuthPluginsRegistered[self.$authPluginIds[i]]) {
                                 new Element('div', {
                                     'class': 'pcsg-gpm-auth-authenticate-warning',
-                                    html   : '<span>' + QUILocale.get(lg, 'controls.auth.authenticate.warning.nonregistered') + '</span>'
+                                    html   : '<span>' +
+                                    QUILocale.get(
+                                        lg,
+                                        'controls.auth.authenticate.warning.nonregistered'
+                                    ) +
+                                    '</span>'
                                 }).inject(
                                     PluginElm,
                                     'top'

@@ -55,6 +55,19 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getControlsBySecurityClass(
         return $priorityA > $priorityB ? 0 : 1;
     });
 
+    foreach ($controls as $k => $control) {
+        $id = $control['authPluginId'];
+
+        foreach ($authPluginSettings as $authPlugin) {
+            if ($id == $authPlugin['id']) {
+                $control['autosave'] = $authPlugin['autosave'];
+                break;
+            }
+        }
+
+        $controls[$k] = $control;
+    }
+
     return $controls;
 }
 
