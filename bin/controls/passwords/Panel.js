@@ -218,6 +218,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataType : 'node',
                     width    : 75
                 }, {
+                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.permissions'),
+                    dataIndex: 'permissions',
+                    dataType : 'node',
+                    width    : 100
+                }, {
                     dataIndex: 'securityClassId',
                     dataType : 'integer',
                     hidden   : true
@@ -317,31 +322,49 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
                 Row = Data;
 
+                Row.accessType = new Element('div', {
+                    'class': 'pcsg-gpm-passwords-panel-table-accesstype'
+                });
+
                 switch (Data.access) {
                     case 'user':
-                        Row.accessType = new Element('span', {
-                            'class': 'fa fa-user',
-                            styles : {
-                                'text-align'   : 'center',
-                                'padding-right': 5,
-                                width          : '100%'
-                            }
-                        });
+                        new Element('span', {
+                            'class': 'fa fa-user'
+                        }).inject(Row.accessType);
                         break;
 
                     case 'group':
-                        Row.accessType = new Element('span', {
-                            'class': 'fa fa-users',
-                            styles : {
-                                'text-align'   : 'center',
-                                'padding-right': 5,
-                                width          : '100%'
-                            }
-                        });
+                        new Element('span', {
+                            'class': 'fa fa-users'
+                        }).inject(Row.accessType);
                         break;
                 }
 
-                if (Data.sharedWithUsers || Data.sharedWithGroups) {
+                // show permissions
+                Row.permissions = new Element('div', {
+                    'class': 'pcsg-gpm-passwords-panel-table-permissions'
+                });
+
+                new Element('span', {
+                    'class': 'fa fa-eye'
+                }).inject(Row.permissions);
+
+                if (Data.isOwner) {
+                    new Element('span', {
+                        'class': 'fa fa-share-alt'
+                    }).inject(Row.permissions);
+
+                    new Element('span', {
+                        'class': 'fa fa-edit'
+                    }).inject(Row.permissions);
+
+                    new Element('span', {
+                        'class': 'fa fa-trash'
+                    }).inject(Row.permissions);
+                }
+
+                // show share info
+                if (Data.isOwner) {
                     Row.shared = new Element('div', {
                         'class'   : 'pcsg-gpm-passwords-panel-grid-shared',
                         'data-row': i,
@@ -353,6 +376,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                             }
                         }
                     });
+
+                    if (!Data.sharedWithUsers && !Data.sharedWithGroups) {
+                        new Element('span', {
+                            html: QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.shared.no')
+                        }).inject(Row.shared);
+                    }
 
                     if (Data.sharedWithUsers) {
                         new Element('span', {
@@ -372,6 +401,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                             'class': 'fa fa-users'
                         }).inject(Row.shared);
                     }
+                } else {
+                    Row.shared = new Element('span', {
+                        html: '&nbsp;'
+                    });
                 }
             }
 

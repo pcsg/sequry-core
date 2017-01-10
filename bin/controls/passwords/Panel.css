@@ -28,3 +28,24 @@
 .pcsg-gpm-passwords-panel-share-info div.textbody h2 {
     display: none;
 }
+
+.pcsg-gpm-passwords-panel-table-accesstype {
+    float: left;
+    text-align: center;
+    width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-table-accesstype span {
+    margin: 0 2px;
+}
+
+.pcsg-gpm-passwords-panel-table-permissions {
+    color: #0069b4;
+    float: left;
+    text-align: center;
+    width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-table-permissions span {
+    margin: 0 2px;
+}

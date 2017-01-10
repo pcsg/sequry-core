@@ -743,6 +743,12 @@
         <locale name="controls.gpm.passwords.panel.tbl.header.shared">
             <de><![CDATA[Geteilt]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.permissions">
+            <de><![CDATA[Rechte]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.shared.no">
+            <de><![CDATA[nein]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.panel.shareinfo.title">
             <de><![CDATA[Auflistung der Passwort-Empfänger]]></de>
         </locale>
@@ -1283,6 +1289,15 @@
         <locale name="control.user.sendinstructions.force.sent">
             <de><![CDATA[Trotzdem versenden]]></de>
         </locale>
+
+        <!-- Control: user/AuthPluginSettings -->
+        <locale name="controls.user.authpluginsettings.label.autosave">
+            <de><![CDATA[Authentifizierungs-Informationen nach erstmaliger Anmeldung automatisch speichern]]></de>
+        </locale>
+        <locale name="controls.user.authpluginsettings.label.priority">
+            <de><![CDATA[Anzeige-Priorität im Authentifizierungsfenster (höhere Zahl = weiter oben)]]></de>
+        </locale>
+
     </groups>
 
 </locales>

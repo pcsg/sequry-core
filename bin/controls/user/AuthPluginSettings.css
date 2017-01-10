@@ -1,0 +1,35 @@
+.pcsg-gpm-user-authpluginsettings {
+    float: left;
+    width: 100%;
+}
+
+.pcsg-gpm-user-authpluginsettings-plugin {
+    background-color: #ededed;
+    float: left;
+    padding: 10px;
+    width: 100%;
+}
+
+.pcsg-gpm-user-authpluginsettings-plugin:not(:first-of-type) {
+    margin-top: 10px;
+}
+
+.pcsg-gpm-user-authpluginsettings-plugin-options {
+    float: left;
+    width: 100%;
+}
+
+.pcsg-gpm-user-authpluginsettings-plugin-options label {
+    float: left;
+    width: 100% !important;
+}
+
+.pcsg-gpm-user-authpluginsettings-plugin-options label:not(:first-of-type) {
+    margin-top: 5px;
+}
+
+.pcsg-gpm-user-authpluginsettings-plugin-options label span {
+    float: left;
+    margin-bottom: 5px;
+    width: 100%;
+}
