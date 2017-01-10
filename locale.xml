@@ -582,6 +582,14 @@
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
 
+        <!-- User profile -->
+        <locale name="user.profile.title">
+            <de><![CDATA[Passwort-Manager]]></de>
+        </locale>
+        <locale name="user.profile.authplugins.label">
+            <de><![CDATA[Auth.-Faktoren]]></de>
+        </locale>
+
         <!-- Settings -->
         <locale name="settings.title">
             <de><![CDATA[Passwort-Manager]]></de>
