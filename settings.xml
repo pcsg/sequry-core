@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiqqer>
+    <settings>
+
+        <config>
+            <section name="settings">
+                <conf name="auth_ttl">
+                    <type><![CDATA[integer]]></type>
+                    <defaultvalue>900</defaultvalue>
+                </conf>
+            </section>
+        </config>
+
+        <window>
+            <title>
+                <locale group="pcsg/grouppasswordmanager" var="settings.title" />
+            </title>
+            <params>
+                <icon>fa fa-diamond</icon>
+            </params>
+
+            <categories>
+                <category name="module_settings">
+                    <text>
+                        <locale group="pcsg/grouppasswordmanager" var="settings.category.module_settings.title" />
+                    </text>
+                    <icon>fa fa-cogs</icon>
+
+                    <settings title="module_settings" name="module_settings">
+                        <title>
+                            <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.title" />
+                        </title>
+
+                        <input conf="settings.auth_ttl" type="number">
+                            <text>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.title" />
+                            </text>
+                            <description>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.description" />
+                            </description>
+                        </input>
+                    </settings>
+
+                </category>
+            </categories>
+        </window>
+
+    </settings>
+</quiqqer>
