@@ -18,6 +18,10 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins($
     $allowedAuthPluginIdsPerGroup = array();
 
     foreach ($limitedGroupAccessData as $groupId => $limitedSecurityClassIds) {
+        if (empty($limitedSecurityClassIds)) {
+            continue;
+        }
+
         $CryptoGroup = CryptoActors::getCryptoGroup($groupId);
 
         $allowedAuthPluginIdsPerGroup[$CryptoGroup->getId()] = array();

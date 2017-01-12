@@ -585,10 +585,14 @@ class CryptoGroup extends QUI\Groups\Group
         );
 
         if (!is_null($SecurityClass)) {
-            $where['dataId'] = array(
-                'type'  => 'IN',
-                'value' => $SecurityClass->getPasswordIds()
-            );
+            $securityClassPasswordIds = $SecurityClass->getPasswordIds();
+
+            if (!empty($securityClassPasswordIds)) {
+                $where['dataId'] = array(
+                    'type'  => 'IN',
+                    'value' => $securityClassPasswordIds
+                );
+            }
         }
 
         $result = QUI::getDataBase()->fetch(array(
