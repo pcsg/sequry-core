@@ -96,6 +96,10 @@ class CryptoUser extends QUI\Users\User
         $keyPairs                   = array();
         $securityClassAuthPluginIds = $SecurityClass->getAuthPluginIds();
 
+        if (empty($securityClassAuthPluginIds)) {
+            return $keyPairs;
+        }
+
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'id'
@@ -867,21 +871,28 @@ class CryptoUser extends QUI\Users\User
     {
         $passwordIds = array();
 
+        $where = array(
+            'userId' => array(
+                'type'  => 'NOT',
+                'value' => $this->id
+            )
+        );
+
+        $passwordIdsDirectAccess = $this->getPasswordIdsDirectAccess();
+
+        if (!empty($passwordIdsDirectAccess)) {
+            $where['dataId'] = array(
+                'type'  => 'IN',
+                'value' => $passwordIdsDirectAccess
+            );
+        }
+
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'dataId'
             ),
             'from'   => Tables::USER_TO_PASSWORDS,
-            'where'  => array(
-                'dataId' => array(
-                    'type'  => 'IN',
-                    'value' => $this->getPasswordIdsDirectAccess()
-                ),
-                'userId' => array(
-                    'type'  => 'NOT',
-                    'value' => $this->id
-                )
-            )
+            'where'  => $where
         ));
 
         foreach ($result as $row) {
@@ -911,19 +922,23 @@ class CryptoUser extends QUI\Users\User
      */
     public function getOwnerPasswordIdsSharedWithGroups()
     {
-        $passwordIds = array();
+        $passwordIds           = array();
+        $where                 = array();
+        $groupOwnerPasswordIds = $this->getGroupOwnerPasswordIds();
+
+        if (!empty($groupOwnerPasswordIds)) {
+            $where['dataId'] = array(
+                'type'  => 'NOT IN',
+                'value' => $groupOwnerPasswordIds
+            );
+        }
 
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'dataId'
             ),
             'from'   => Tables::GROUP_TO_PASSWORDS,
-            'where'  => array(
-                'dataId' => array(
-                    'type'  => 'NOT IN',
-                    'value' => $this->getGroupOwnerPasswordIds()
-                )
-            )
+            'where'  => $where
         ));
 
         foreach ($result as $row) {
