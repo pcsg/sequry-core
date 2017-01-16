@@ -1134,7 +1134,7 @@ class Password extends QUI\QDOM
      */
     protected function hasPermission($permission)
     {
-        $ownerType = $this->getAttribute('ownerType');
+        $ownerType = (int)$this->getAttribute('ownerType');
 
         switch ($permission) {
             case self::PERMISSION_VIEW:
