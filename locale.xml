@@ -754,6 +754,9 @@
         <locale name="controls.gpm.passwords.panel.tbl.header.permissions">
             <de><![CDATA[Rechte]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.owner">
+            <de><![CDATA[Eigentümer]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.panel.tbl.shared.no">
             <de><![CDATA[nein]]></de>
         </locale>

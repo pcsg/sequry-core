@@ -719,7 +719,7 @@ class CryptoUser extends QUI\Users\User
         if ($countOnly) {
             $sql = "SELECT COUNT(*)";
         } else {
-            $sql = "SELECT id, title, description, securityClassId, dataType";
+            $sql = "SELECT id, title, description, securityClassId, dataType, ownerId, ownerType";
         }
 
         $sql .= " FROM " . Tables::PASSWORDS;
@@ -835,6 +835,16 @@ class CryptoUser extends QUI\Users\User
             }
 
             $row['dataType'] = Handler::getTypeTitle($row['dataType']);
+
+            switch ($row['ownerType']) {
+                case '1':
+                    $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getUsername();
+                    break;
+
+                case '2':
+                    $row['ownerName'] = QUI::getGroups()->get($row['ownerId'])->getName();
+                    break;
+            }
 
             $passwords[] = $row;
         }
