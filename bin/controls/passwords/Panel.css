@@ -12,7 +12,8 @@
     width: 90%;
 }
 
-.pcsg-gpm-passwords-panel-grid-shared:hover {
+.pcsg-gpm-passwords-panel-grid-shared:hover,
+.pcsg-gpm-passwords-panel-table-accesstype:hover {
     cursor: pointer;
     color: #00A0B0;
 }
@@ -48,4 +49,15 @@
 
 .pcsg-gpm-passwords-panel-table-permissions span {
     margin: 0 2px;
+}
+
+.pcsg-gpm-passwords-panel-access-info-owner div {
+    float: left;
+    margin-top: 7px;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-access-info-owner div span.fa {
+    font-size: 16px;
+    margin-right: 5px;
 }

@@ -105,7 +105,6 @@ class Password extends QUI\QDOM
     {
         $id = (int)$id;
 
-
         $result = QUI::getDataBase()->fetch(array(
             'from'  => Tables::PASSWORDS,
             'where' => array(
@@ -485,6 +484,59 @@ class Password extends QUI\QDOM
     }
 
     /**
+     * Get info about password access
+     *
+     * - Owner
+     * - How is the password accessed (which groups)
+     *
+     * @return array
+     */
+    public function getAccessInfo()
+    {
+        if (!$this->hasPermission(self::PERMISSION_VIEW)) {
+            $this->permissionDenied();
+        }
+
+        $accessGroups = array();
+
+        foreach ($this->getAccessGroupsIds() as $groupId) {
+            $accessGroups[] = array(
+                'id'   => $groupId,
+                'name' => QUI::getGroups()->get($groupId)->getName()
+            );
+        }
+
+        $ownerId   = $this->getAttribute('ownerId');
+        $ownerType = '';
+        $name      = '';
+
+        switch ($this->getAttribute('ownerType')) {
+            case $this::OWNER_TYPE_USER:
+                $ownerType = 'user';
+                $name      = CryptoActors::getCryptoUser($ownerId)->getUsername();
+                break;
+
+            case $this::OWNER_TYPE_GROUP:
+                $ownerType = 'group';
+                $name      = CryptoActors::getCryptoGroup($ownerId)->getName();
+                break;
+        }
+
+        return array(
+            'owner'       => array(
+                'id'   => $ownerId,
+                'name' => $name,
+                'type' => $ownerType
+            ),
+            'access'      => array(
+                'user'   => in_array($this->User->getId(), $this->getAccessUserIds()),
+                'groups' => $accessGroups
+            ),
+            'userIsOwner' => $ownerId == $this->User->getId()
+        );
+    }
+
+    /**
      * Save data to password object
      *
      * @return true - on success
@@ -619,8 +671,9 @@ class Password extends QUI\QDOM
             ));
         }
 
-        $currentOwnerId   = $this->getSecretAttribute('ownerId');
-        $currentOwnerType = $this->getSecretAttribute('ownerType');
+        $id               = (int)$id;
+        $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
+        $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
 
         // set access data for new owner(s)
         switch ($type) {
@@ -633,7 +686,7 @@ class Password extends QUI\QDOM
                     ));
                 }
 
-                if ((int)$currentOwnerId === (int)$id) {
+                if ($currentOwnerId === $id) {
                     return true;
                 }
 
@@ -662,7 +715,7 @@ class Password extends QUI\QDOM
 
             case self::OWNER_TYPE_GROUP:
             case 'group':
-                if ((int)$currentOwnerId === (int)$id
+                if ($currentOwnerId === $id
                     && $currentOwnerType === self::OWNER_TYPE_GROUP
                 ) {
                     return true;
@@ -1015,11 +1068,6 @@ class Password extends QUI\QDOM
      */
     protected function removeUserPasswordAccess($CryptoUser)
     {
-        // @todo experimental - check if possible
-        if ($this->isOwner($CryptoUser)) {
-            return false;
-        }
-
         QUI::getDataBase()->delete(
             Tables::USER_TO_PASSWORDS,
             array(
@@ -1041,11 +1089,6 @@ class Password extends QUI\QDOM
      */
     protected function removeGroupPasswordAccess($CryptoGroup)
     {
-        // @todo experimental - check if possible
-        if ($this->isOwner($CryptoGroup)) {
-            return false;
-        }
-
         QUI::getDataBase()->delete(
             Tables::GROUP_TO_PASSWORDS,
             array(

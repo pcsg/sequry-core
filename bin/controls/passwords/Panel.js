@@ -323,7 +323,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 Row = Data;
 
                 Row.accessType = new Element('div', {
-                    'class': 'pcsg-gpm-passwords-panel-table-accesstype'
+                    'class'   : 'pcsg-gpm-passwords-panel-table-accesstype',
+                    'data-row': i,
+                    events    : {
+                        click: function () {
+                            self.$showAccessInfoPopup(
+                                this.getProperty('data-row')
+                            );
+                        }
+                    }
                 });
 
                 switch (Data.access) {
@@ -708,6 +716,152 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         },
 
         /**
+         * Show password owner and how the user has access to the password
+         *
+         * @param {int} row - row in grid
+         */
+        $showAccessInfoPopup: function (row) {
+            var self       = this;
+            var Password   = this.$Grid.getDataByRow(row);
+            var AccessInfo = {};
+
+            this.Loader.show();
+
+            // open popup
+            var Popup = new QUIConfirm({
+                'class'    : 'pcsg-gpm-passwords-panel-access-info',
+                'maxHeight': 400,
+                maxWidth   : 500,
+                'autoclose': true,
+
+                'information': false,
+                'title'      : QUILocale.get(lg, 'controls.gpm.passwords.panel.accessinfo.title', {
+                    passwordId   : Password.id,
+                    passwordTitle: Password.title
+                }),
+                'texticon'   : 'fa fa-key',
+                'icon'       : 'fa fa-key',
+
+                cancel_button: false,
+                ok_button    : {
+                    text     : false,
+                    textimage: 'fa fa-check'
+                },
+                events       : {
+                    onOpen  : function () {
+                        var Content = Popup.getContent();
+
+                        Content.set(
+                            'html',
+                            '<div class="pcsg-gpm-passwords-panel-access-info-owner">' +
+                            '<span>' +
+                            QUILocale.get(lg, 'controls.gpm.passwords.panel.accessinfo.owner') +
+                            '</span>' +
+                            '</div>' +
+                            '<div class="pcsg-gpm-passwords-panel-access-info-access"></div>'
+                        );
+
+                        var OwnerInfoElm = new Element('div', {
+                            html: '<span>' + AccessInfo.owner.name + ' (' + AccessInfo.owner.id + ')</span>'
+                        }).inject(
+                            Content.getElement(
+                                '.pcsg-gpm-passwords-panel-access-info-owner'
+                            )
+                        );
+
+                        switch (AccessInfo.owner.type) {
+                            case 'user':
+                                new Element('span', {
+                                    'class': 'fa fa-user'
+                                }).inject(OwnerInfoElm, 'top');
+                                break;
+
+                            case 'group':
+                                new Element('span', {
+                                    'class': 'fa fa-users'
+                                }).inject(OwnerInfoElm, 'top');
+                                break;
+                        }
+
+                        var SiteMap = new QUISiteMap({}).inject(
+                            Content.getElement('.pcsg-gpm-passwords-panel-access-info-access')
+                        );
+
+                        var AccessItem = new QUISiteMapItem({
+                            text       : QUILocale.get(
+                                lg,
+                                'controls.gpm.passwords.panel.accessinfo.acess'
+                            ),
+                            icon       : 'fa fa-key',
+                            contextmenu: false,
+                            hasChildren: true,
+                            dragable   : false
+                        });
+
+                        SiteMap.appendChild(AccessItem);
+
+                        if (AccessInfo.access.user) {
+                            if (AccessInfo.userIsOwner) {
+                                AccessItem.appendChild(new QUISiteMapItem({
+                                    text       : QUILocale.get(
+                                        lg,
+                                        'controls.gpm.passwords.panel.accessinfo.personal.owner.access'
+                                    ),
+                                    icon       : 'fa fa-user',
+                                    contextmenu: false,
+                                    hasChildren: false,
+                                    dragable   : false
+                                }));
+                            } else {
+                                AccessItem.appendChild(new QUISiteMapItem({
+                                    text       : QUILocale.get(
+                                        lg,
+                                        'controls.gpm.passwords.panel.accessinfo.personal.access'
+                                    ),
+                                    icon       : 'fa fa-user',
+                                    contextmenu: false,
+                                    hasChildren: false,
+                                    dragable   : false
+                                }));
+                            }
+                        }
+
+                        for (var i = 0, len = AccessInfo.access.groups.length; i < len; i++) {
+                            var Group = AccessInfo.access.groups[i];
+
+                            AccessItem.appendChild(new QUISiteMapItem({
+                                text       : Group.name + ' (' + Group.id + ')',
+                                icon       : 'fa fa-users',
+                                contextmenu: false,
+                                hasChildren: false,
+                                dragable   : false
+                            }));
+                        }
+
+                        SiteMap.openAll();
+                        self.Loader.hide();
+                    },
+                    onSubmit: function () {
+                        Popup.close();
+                    }
+                }
+            });
+
+            Passwords.getAccessInfo(Password.id).then(
+                function (accessInfoResult) {
+                    AccessInfo = accessInfoResult;
+
+                    console.log(AccessInfo);
+
+                    Popup.open();
+                },
+                function () {
+                    // @todo error
+                }
+            );
+        },
+
+        /**
          * Show users and groups a password is shared with
          *
          * @param {int} row - row in grid
@@ -721,7 +875,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             // open popup
             var Popup = new QUIConfirm({
-                'class': 'pcsg-gpm-passwords-panel-share-info',
+                'class'    : 'pcsg-gpm-passwords-panel-share-info',
                 'maxHeight': 700,
                 maxWidth   : 350,
                 'autoclose': true,
