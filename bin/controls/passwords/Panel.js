@@ -213,6 +213,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataType : 'node',
                     width    : 50
                 }, {
+                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.owner'),
+                    dataIndex: 'owner',
+                    dataType : 'node',
+                    width    : 150
+                }, {
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.shared'),
                     dataIndex: 'shared',
                     dataType : 'node',
@@ -369,6 +374,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     new Element('span', {
                         'class': 'fa fa-trash'
                     }).inject(Row.permissions);
+                }
+
+                // show owner
+                switch (Data.ownerType) {
+                    case "1":
+                        if (Data.isOwner) {
+                            Row.owner = new Element('div', {
+                                'class': 'pcsg-gpm-passwords-panel-table-owner',
+                                html: '<span class="fa fa-user"></span>' +
+                                    '<span>' + 'Ich' + '</span>'
+                            });
+                        } else {
+                            Row.owner = new Element('div', {
+                                'class': 'pcsg-gpm-passwords-panel-table-owner',
+                                html: '<span class="fa fa-user"></span>' +
+                                '<span>' + Data.ownerName + '</span>'
+                            });
+                        }
+                        break;
+
+                    case "2":
+                        Row.owner = new Element('div', {
+                            'class': 'pcsg-gpm-passwords-panel-table-owner',
+                            html: '<span class="fa fa-users"></span>' +
+                            '<span>' + Data.ownerName + '</span>'
+                        });
+                        break;
                 }
 
                 // show share info
@@ -850,9 +882,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             Passwords.getAccessInfo(Password.id).then(
                 function (accessInfoResult) {
                     AccessInfo = accessInfoResult;
-
-                    console.log(AccessInfo);
-
                     Popup.open();
                 },
                 function () {
