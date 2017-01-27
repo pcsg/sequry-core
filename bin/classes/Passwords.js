@@ -137,11 +137,27 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get ID of current security class of a password
          *
          * @param {number} passwordId
-         * @returns {number}
+         * @returns {Promise}
          */
         getSecurityClassId: function (passwordId) {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassId', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId
+                });
+            });
+        },
+
+        /**
+         * Get access info of password
+         *
+         * @param {number} passwordId
+         * @returns {Promise}
+         */
+        getAccessInfo: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getAccessInfo', resolve, {
                     'package' : pkg,
                     onError   : reject,
                     passwordId: passwordId

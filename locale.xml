@@ -220,7 +220,7 @@
             <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptogroup.cannot.remove.last.user">
-            <de><![CDATA[Der Benutzer #[userId] kann nicht aus der Gruppe #[groupId] entfernt werden, da er der letzte Benutzer ist, der Zugriff auf diese Gruppe hat. Um den Benutzer aus der Gruppe zu entfernen, muss die Gruppe aus Sicherheitsklasse #[securityClassId] entfernt werden.]]></de>
+            <de><![CDATA[Der Benutzer #[userId] kann nicht aus der Gruppe #[groupId] entfernt werden, da er der letzte Benutzer ist, der Zugriff auf diese Gruppe hat. Um den Benutzer aus der Gruppe zu entfernen, müssen alle Sicherheitsklassen aus der Gruppe entfernt werden.]]></de>
         </locale>
         <locale name="exception.cryptogroup.add.user.not.eligible">
             <de><![CDATA[Der Benutzer #[userId] kann der Gruppe #[groupId] nicht hinzugefügt werden, da er nicht für die benötigte Mindestanzahl an Authentifizierungs-Faktoren der Sicherheitsklasse #[securityClassId] registriert ist.]]></de>
@@ -817,7 +817,21 @@
         <locale name="gpm.passwords.panel.search.title">
             <de><![CDATA[Passwort-Suche]]></de>
         </locale>
-
+        <locale name="controls.gpm.passwords.panel.accessinfo.owner">
+            <de><![CDATA[Eigentümer]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.accessinfo.personal.owner.access">
+            <de><![CDATA[Persönlich (Eigentümer)]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.accessinfo.personal.access">
+            <de><![CDATA[Persönlich]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.accessinfo.title">
+            <de><![CDATA[Zugriffs-Informationen für Passwort "[passwordTitle]" (#[passwordId])]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.accessinfo.acess">
+            <de><![CDATA[Zugriff über]]></de>
+        </locale>
 
         <!-- Control: password/Create -->
         <locale name="password.create.template.title">
