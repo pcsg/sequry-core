@@ -80,7 +80,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            var lg_prefix = 'create.template.';
+            var lg_prefix = 'password.create.template.';
 
             this.$Elm = this.parent();
 
