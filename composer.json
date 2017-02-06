@@ -19,7 +19,8 @@
     "phpseclib/phpseclib": "2.0.0",
     "paragonie/halite": "1.5.0",
     "ext-bcmath": "*",
-    "pcsg/gpmauthpassword": "dev-master"
+    "pcsg/gpmauthpassword": "dev-master",
+    "clipboard": "1.5.16"
   },
   "autoload": {
     "psr-0": {
