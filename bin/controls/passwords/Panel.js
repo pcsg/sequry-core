@@ -18,6 +18,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'qui/controls/desktop/Panel',
     'qui/controls/buttons/Seperator',
     'qui/controls/buttons/Button',
+    'qui/controls/buttons/Select',
     'qui/controls/loader/Loader',
     'qui/controls/windows/Popup',
     'qui/controls/windows/Confirm',
@@ -41,7 +42,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
-], function (QUI, QUIPanel, QUISeparator, QUIButton, QUILoader, QUIPopup, QUIConfirm,
+], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, PasswordHandler, PasswordCreate,
              PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
              AuthenticationControl, PasswordAuthentication, Ajax, QUILocale) {
@@ -80,11 +81,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 onResize : this.$onResize
             });
 
-            this.Loader         = new QUILoader();
-            this.$GridContainer = null;
-            this.$Grid          = null;
-            this.$SearchParams  = {};
-            this.$removeBtn     = false;
+            this.Loader          = new QUILoader();
+            this.$GridContainer  = null;
+            this.$Grid           = null;
+            this.$SearchParams   = {};
+            this.$removeBtn      = false;
+            this.$dblClickAction = 'view';
         },
 
         /**
@@ -97,6 +99,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             Content.setStyles({
                 padding: 0
             });
+
+            Content.set(
+                'html',
+                '<div class="pcsg-gpm-passwords-panel-table"></div>' +
+                '<div class="pcsg-gpm-passwords-panel-options"></div>'
+            );
 
             // buttons
             this.addButton({
@@ -174,10 +182,50 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
+            this.addButton(new QUISeparator());
+
+            // options
+            /*var OptionsElm = Content.getElement(
+                '.pcsg-gpm-passwords-panel-options'
+            );
+
+            var DblClickActionLabel = new Element('label', {
+                html: '<span>' +
+                QUILocale.get(lg, 'controls.gpm.passwords.panel.options.label.dblclick') +
+                '</span>'
+            }).inject(OptionsElm);*/
+
+            var DblClickActionSelect = new QUISelect({
+                placeholderText      : QUILocale.get(lg, 'controls.gpm.passwords.panel.options.label.dblclick'),
+                placeholderIcon      : false,
+                placeholderSelectable: false, // placeholder is standard selectable menu child
+                showIcons: false,
+                events: {
+                    onChange: function(value) {
+                        self.$dblClickAction = value;
+                    }
+                }
+            });
+
+            DblClickActionSelect.appendChild(
+                QUILocale.get(lg, 'controls.gpm.passwords.btn.view'),
+                'view'
+            ).appendChild(
+                QUILocale.get(lg, 'controls.gpm.passwords.btn.edit'),
+                'edit'
+            ).appendChild(
+                QUILocale.get(lg, 'controls.gpm.passwords.btn.share'),
+                'share'
+            );
+
+            this.addButton(DblClickActionSelect);
+
+            //DblClickActionSelect.setValue('view');
+
             // content
-            this.$GridContainer = new Element('div', {
-                'class': 'pcsg-gpm-panel-container'
-            }).inject(Content);
+            this.$GridContainer = Content.getElement(
+                '.pcsg-gpm-passwords-panel-table'
+            );
 
             this.$GridFX = moofx(this.$GridContainer);
 
@@ -240,10 +288,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.$Grid.addEvents({
                 onDblClick: function () {
-                    self.viewPassword(
-                        self.$Grid.getSelectedData()[0].id,
-                        self.$Grid.getSelectedData()[0].securityClassId
-                    );
+                    var pwId = self.$Grid.getSelectedData()[0].id;
+
+                    switch (self.$dblClickAction) {
+                        case 'edit':
+                            self.editPassword(pwId);
+                            break;
+
+                        case 'share':
+                            self.sharePassword(pwId);
+                            break;
+
+                        default:
+                            self.viewPassword(pwId);
+                    }
                 },
                 onClick   : function () {
                     var Data = self.$Grid.getSelectedData()[0];

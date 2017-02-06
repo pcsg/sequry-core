@@ -733,6 +733,9 @@
     <groups name="pcsg/grouppasswordmanager" datatype="js">
 
         <!-- Control: passwords/Panel -->
+        <locale name="controls.gpm.passwords.panel.options.label.dblclick">
+            <de><![CDATA[Doppelklick-Aktion]]></de>
+        </locale>
         <locale name="controls.gpm.passwordlist.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
         </locale>

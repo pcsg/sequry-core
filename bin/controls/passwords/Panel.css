@@ -1,5 +1,26 @@
-.pcsg-gpm-panel-container,
 .pcsg-gpm-panel-grid {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-options {
+    float: left;
+    padding: 10px;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-options label {
+    float: left;
+}
+
+.pcsg-gpm-passwords-panel-options label span {
+    float: left;
+    margin-right: 5px;
+    line-height: 29px;
+}
+
+.pcsg-gpm-passwords-panel-table {
     float: left;
     height: 100%;
     width: 100%;
