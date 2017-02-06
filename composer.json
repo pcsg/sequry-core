@@ -18,7 +18,8 @@
     "quiqqer/quiqqer": "*@dev",
     "phpseclib/phpseclib": "2.0.0",
     "paragonie/halite": "1.5.0",
-    "ext-bcmath": "*"
+    "ext-bcmath": "*",
+    "pcsg/gpmauthpassword": "dev-dev"
   },
   "autoload": {
     "psr-0": {
