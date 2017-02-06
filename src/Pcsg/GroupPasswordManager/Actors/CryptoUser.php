@@ -801,6 +801,8 @@ class CryptoUser extends QUI\Users\User
             }
         }
 
+        QUI\System\Log::writeRecursive($sql);
+
         $Stmt = $PDO->prepare($sql);
 
         // bind search values

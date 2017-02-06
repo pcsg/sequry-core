@@ -25,4 +25,12 @@ interface IPasswordType
      * @return string - HTML template
      */
     public static function getEditHtml();
+
+    /**
+     * Get content that is copied by a copy action
+     *
+     * @param array $payload - password payload
+     * @return string - copy content
+     */
+    public static function getCopyContent($payload);
 }

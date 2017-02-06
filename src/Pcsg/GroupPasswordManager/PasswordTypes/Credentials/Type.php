@@ -54,4 +54,19 @@ class Type implements IPasswordType
             'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
         );
     }
+
+    /**
+     * Get content that is copied by a copy action
+     *
+     * @param array $payload - password payload
+     * @return string - copy content
+     */
+    public static function getCopyContent($payload)
+    {
+        if (isset($payload['password'])) {
+            return $payload['password'];
+        }
+
+        return '';
+    }
 }

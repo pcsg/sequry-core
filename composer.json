@@ -20,7 +20,7 @@
     "paragonie/halite": "1.5.0",
     "ext-bcmath": "*",
     "pcsg/gpmauthpassword": "dev-master",
-    "bower-asset/clipboard": "1.5.5"
+    "bower-asset/clipboard": "1.5.16"
   },
   "autoload": {
     "psr-0": {

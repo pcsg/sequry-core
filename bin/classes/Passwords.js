@@ -78,6 +78,24 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
+         * Get copy content of a password
+         *
+         * @param {number} passwordId
+         * @param {object} AuthData
+         * @returns {Promise}
+         */
+        getCopyContent: function (passwordId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getCopyContent', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId,
+                    authData  : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
          * Get all users and groups a password is shared with (authentication required!)
          *
          * @param {number} passwordId

@@ -39,13 +39,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
     'Ajax',
     'Locale',
+    'ClipboardJS',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, PasswordHandler, PasswordCreate,
              PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
-             AuthenticationControl, PasswordAuthentication, Ajax, QUILocale) {
+             AuthenticationControl, PasswordAuthentication, Ajax, QUILocale, Clipboard) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager';
@@ -66,7 +67,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             'viewPassword',
             'showSearch',
             '$listRefresh',
-            '$addRemoveSearchBtn'
+            '$addRemoveSearchBtn',
+            '$copyPasswordContent'
         ],
 
         initialize: function (options) {
@@ -87,6 +89,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.$SearchParams   = {};
             this.$removeBtn      = false;
             this.$dblClickAction = 'view';
+            this.$CopyInput      = null;
         },
 
         /**
@@ -316,6 +319,78 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 },
                 onRefresh : this.$listRefresh
             });
+
+            // copy input
+            this.$Elm.addEvents({
+                keydown: function (event) {
+                    if (event.code === 67 && event.control) {
+                        self.$copyPasswordContent();
+                    }
+                }
+            });
+
+            var Btn = new Element('button', {
+                'data-clipboard-text': "Just because you can doesn't mean you should — clipboard.js",
+                events: {
+                    click: function() {
+                        console.info("click");
+                    }
+                }
+            }).inject(document.body, 'top');
+
+            console.log(Clipboard);
+
+            new Clipboard(Btn);
+
+            (function() {
+                //Btn.fireEvent('click', {currentTarget: Btn});
+                Btn.click();
+            }.delay(200));
+        },
+
+        /**
+         * Copy content of selected password
+         *
+         */
+        $copyPasswordContent: function()
+        {
+            var self         = this;
+            var selectedData = this.$Grid.getSelectedData();
+
+            if (!selectedData.length) {
+                return;
+            }
+
+            var pwId = selectedData[0].id;
+
+            this.Loader.show();
+
+            var AuthControl = new PasswordAuthentication({
+                passwordId: pwId,
+                events    : {
+                    onSubmit: function (AuthData) {
+                        Passwords.getCopyContent(
+                            pwId,
+                            AuthData
+                        ).then(
+                            function (copyContent) {
+                                AuthControl.destroy();
+                                self.Loader.hide();
+
+                                console.log(copyContent);
+                            },
+                            function () {
+                                self.Loader.hide();
+                            }
+                        );
+                    },
+                    onClose : function () {
+                        self.Loader.hide();
+                    }
+                }
+            });
+
+            AuthControl.open();
         },
 
         $onInject: function () {

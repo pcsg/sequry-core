@@ -1,3 +1,9 @@
+require.config({
+    paths  : {
+        "ClipboardJS": URL_OPT_DIR + 'bin/clipboard/dist/clipboard'
+    }
+});
+
 require([
     'Ajax',
     'qui/controls/windows/Confirm',

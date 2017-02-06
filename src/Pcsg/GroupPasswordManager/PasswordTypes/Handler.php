@@ -91,6 +91,19 @@ class Handler
     }
 
     /**
+     * Get content that is copied by a copy action
+     *
+     * @param string $type - password type
+     * @param array $payload - password payload
+     * @return string - copy content
+     */
+    public static function getCopyContent($type, $payload)
+    {
+        $TypeClass = self::getPasswordTypeClass($type);
+        return $TypeClass->getCopyContent($payload);
+    }
+
+    /**
      * Get class of password type
      *
      * @param $type

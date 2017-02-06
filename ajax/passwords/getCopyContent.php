@@ -1,16 +1,16 @@
 <?php
 
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Pcsg\GroupPasswordManager\PasswordTypes\Handler as TypesHandler;
 
 /**
- * Get a single password object
+ * Get copy content of a password
  *
- * @param integer $passwordId - the id of the password object
+ * @param integer $passwordId - ID of password
  * @param array $authData - authentication information
- * @return string - view html
+ * @return string - copied content
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $authData)
+function package_pcsg_grouppasswordmanager_ajax_passwords_getCopyContent($passwordId, $authData)
 {
     $passwordId = (int)$passwordId;
 
@@ -22,12 +22,13 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $
     );
 
     $Password = Passwords::get($passwordId);
+    $viewData = $Password->getViewData();
 
-    return Handler::getViewHtml($Password->getDataType(), $Password->getViewData());
+    return TypesHandler::getCopyContent($Password->getDataType(), $viewData['payload']);
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getView',
+    'package_pcsg_grouppasswordmanager_ajax_passwords_getCopyContent',
     array('passwordId', 'authData'),
     'Permission::checkAdminUser'
 );
