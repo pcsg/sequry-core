@@ -515,13 +515,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         if (Data.isOwner) {
                             Row.owner = new Element('div', {
                                 'class': 'pcsg-gpm-passwords-panel-table-owner',
-                                html: '<span class="fa fa-user"></span>' +
-                                    '<span>' + 'Ich' + '</span>'
+                                html   : '<span class="fa fa-user"></span>' +
+                                '<span>' +
+                                QUILocale.get(
+                                    lg,
+                                    'controls.gpm.passwords.panel.tbl.owner.myself'
+                                ) +
+                                '</span>'
                             });
                         } else {
                             Row.owner = new Element('div', {
                                 'class': 'pcsg-gpm-passwords-panel-table-owner',
-                                html: '<span class="fa fa-user"></span>' +
+                                html   : '<span class="fa fa-user"></span>' +
                                 '<span>' + Data.ownerName + '</span>'
                             });
                         }
@@ -530,7 +535,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     case "2":
                         Row.owner = new Element('div', {
                             'class': 'pcsg-gpm-passwords-panel-table-owner',
-                            html: '<span class="fa fa-users"></span>' +
+                            html   : '<span class="fa fa-users"></span>' +
                             '<span>' + Data.ownerName + '</span>'
                         });
                         break;
