@@ -4,10 +4,16 @@
     width: 100%;
 }
 
-.pcsg-gpm-passwords-panel-options {
+.pcsg-gpm-passwords-panel-info {
+    background-color: #dafada;
     float: left;
     padding: 10px;
     width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-category-close {
+    font-size: 15px;
+    margin-left: 10px;
 }
 
 .pcsg-gpm-passwords-panel-options label {
@@ -85,4 +91,14 @@
 
 .pcsg-gpm-passwords-panel-table-owner span.fa {
     margin-right: 5px;
+}
+
+.pcsg-gpm-passwords-panel-table-favorite {
+    color: #aa1317;
+}
+
+.pcsg-gpm-passwords-panel-table-favorite,
+.pcsg-gpm-passwords-panel-table-favorite span {
+    height: 100%;
+    width: 100%;
 }

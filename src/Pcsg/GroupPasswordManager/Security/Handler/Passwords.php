@@ -14,10 +14,12 @@ use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
+use Pcsg\GroupPasswordManager\Handler\Categories;
 use QUI;
 use QUI\Permissions\Permission;
 
@@ -202,13 +204,45 @@ class Passwords
             'title'           => $passwordData['title'],
             'description'     => $passwordData['description'],
             'dataType'        => $passwordData['dataType'],
-            'cryptoData'      => $passwordContentEncrypted
+            'cryptoData'      => $passwordContentEncrypted,
+            'categories'      => null,
+            'categoryIds'     => null
         );
 
-        $passwordEntry['MAC'] = MAC::create(
+        if (isset($passwordData['categoryIds'])
+            && !empty($passwordData['categoryIds']
+                      && is_array($passwordData['categoryIds']))
+        ) {
+            $family = array();
+
+            foreach ($passwordData['categoryIds'] as $catId) {
+                $family = array_merge(
+                    $family,
+                    Categories::getPublicCategoryFamilyList($catId)
+                );
+            }
+
+            if (!empty($family)) {
+                $passwordEntry['categories'] = ',' . implode(',', array_unique($family)) . ',';
+            }
+
+            $passwordEntry['categoryIds'] = ',' . implode(',', $passwordData['categoryIds']) . ',';
+        }
+
+        // save fields that have been used for MAC creation
+        $macFields = SymmetricCrypto::encrypt(
+            json_encode(array_keys($passwordEntry)),
+            new Key(Utils::getSystemPasswordAuthKey())
+        );
+
+        // calculate MAC
+        $mac = MAC::create(
             implode('', $passwordEntry),
             Utils::getSystemPasswordAuthKey()
         );
+
+        $passwordEntry['MAC']       = $mac;
+        $passwordEntry['MACFields'] = $macFields;
 
         // write to database
         $DB = QUI::getDataBase();
@@ -340,6 +374,21 @@ class Passwords
                 break;
         }
 
+        // set meta entries to all access users
+        $Password = self::get($passwordId);
+
+        foreach ($Password->getAccessUserIds() as $userId) {
+            $CryptoUser = CryptoActors::getCryptoUser($userId);
+            $Password->createMetaTableEntry($CryptoUser);
+        }
+
+        // if the creating user put the password in private categories -> add it to these categories
+        if (isset($passwordData['categoryIdsPrivate'])
+            && !empty($passwordData['categoryIdsPrivate'])
+        ) {
+            Categories::addPasswordToPrivateCategories($Password, $passwordData['categoryIdsPrivate']);
+        }
+
         return $passwordId;
     }
 
@@ -412,7 +461,7 @@ class Passwords
                 'pcsg/grouppasswordmanager',
                 'exception.password.not.found',
                 array(
-                    'id' => $passwordId
+                    'passwordId' => $passwordId
                 )
             ), 404);
         }

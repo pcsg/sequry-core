@@ -22,6 +22,7 @@ use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 use QUI\Permissions\Permission;
+use Pcsg\GroupPasswordManager\Handler\Categories;
 
 /**
  * Class Password
@@ -122,28 +123,36 @@ class Password extends QUI\QDOM
             ), 404);
         }
 
-        $this->User   = CryptoActors::getCryptoUser(); // session user
         $passwordData = current($result);
 
         // check integrity/authenticity of password data
-        $passwordDataMAC      = $passwordData['MAC'];
-        $passwordDataMACCheck = MAC::create(
-            implode(
-                '',
-                array(
-                    $passwordData['ownerId'],
-                    $passwordData['ownerType'],
-                    $passwordData['securityClassId'],
-                    $passwordData['title'],
-                    $passwordData['description'],
-                    $passwordData['dataType'],
-                    $passwordData['cryptoData']
-                )
-            ),
+        $passwordDataMAC = $passwordData['MAC'];
+
+        // (re)calculate MAC from actual data
+        $macFields = SymmetricCrypto::decrypt(
+            $passwordData['MACFields'],
+            new Key(Utils::getSystemPasswordAuthKey())
+        );
+
+        $macFields = json_decode($macFields, true);
+        $macData   = array();
+
+        foreach ($macFields as $field) {
+            if (isset($passwordData[$field])
+                && !empty($passwordData[$field])
+            ) {
+                $macData[] = $passwordData[$field];
+            } else {
+                $macData[] = null;
+            }
+        }
+
+        $passwordDataMACActual = MAC::create(
+            implode('', $macData),
             Utils::getSystemPasswordAuthKey()
         );
 
-        if (!MAC::compare($passwordDataMAC, $passwordDataMACCheck)) {
+        if (!MAC::compare($passwordDataMAC, $passwordDataMACActual)) {
             QUI\System\Log::addCritical(
                 'Password data #' . $id . ' is possibly altered! MAC mismatch!'
             );
@@ -166,7 +175,9 @@ class Password extends QUI\QDOM
             'description' => $passwordData['description'],
             'dataType'    => $passwordData['dataType'],
             'ownerId'     => $passwordData['ownerId'],
-            'ownerType'   => $passwordData['ownerType']
+            'ownerType'   => $passwordData['ownerType'],
+            'categoryIds' => explode(',', trim($passwordData['categoryIds'], ',')),
+            'viewCount'   => $passwordData['viewCount']
         ));
 
         // ownerId and ownerTye are additionally saved as secret attributes
@@ -179,6 +190,16 @@ class Password extends QUI\QDOM
         // set private attributes
         $this->cryptoDataEncrypted = $passwordData['cryptoData'];
         $this->SecurityClass       = Authentication::getSecurityClass($passwordData['securityClassId']);
+    }
+
+    /**
+     * Get Password ID
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -200,8 +221,14 @@ class Password extends QUI\QDOM
             'description'     => $this->getAttribute('description'),
             'payload'         => $this->getSecretAttribute('payload'),
             'dataType'        => $this->getAttribute('dataType'),
-            'securityClassId' => $this->SecurityClass->getId()
+            'securityClassId' => $this->SecurityClass->getId(),
+            'categoryIds'     => $this->getAttribute('categoryIds')
         );
+
+        // private category id
+        $metaData                       = $this->User->getPasswordMetaData($this->id);
+        $viewData['categoryIdsPrivate'] = explode(',', trim($metaData['categoryIds'], ','));
+        $viewData['favorite']           = $metaData['favorite'];
 
         return $viewData;
     }
@@ -227,7 +254,8 @@ class Password extends QUI\QDOM
             'ownerId'         => $this->getAttribute('ownerId'),
             'ownerType'       => $this->getAttribute('ownerType'),
             'dataType'        => $this->getAttribute('dataType'),
-            'securityClassId' => $this->SecurityClass->getId()
+            'securityClassId' => $this->SecurityClass->getId(),
+            'categoryIds'     => $this->getAttribute('categoryIds')
         );
 
         return $data;
@@ -318,6 +346,34 @@ class Password extends QUI\QDOM
 
                             $this->changeOwner($newOwnerId, $newOwnerType);
                         }
+                        break;
+
+                    case 'categoryIds':
+                        if (empty($v)) {
+                            $this->setAttribute('categories', null);
+                            $this->setAttribute('categoryIds', null);
+
+                            break;
+                        }
+
+                        if (!is_array($v)) {
+                            break;
+                        }
+
+                        $family = array();
+
+                        foreach ($v as $catId) {
+                            $family = array_merge(
+                                $family,
+                                Categories::getPublicCategoryFamilyList((int)$catId)
+                            );
+                        }
+
+                        if (!empty($family)) {
+                            $this->setAttribute('categories', ',' . implode(',', array_unique($family)) . ',');
+                        }
+
+                        $this->setAttribute('categoryIds', ',' . implode(',', $v) . ',');
                         break;
                 }
             }
@@ -529,10 +585,10 @@ class Password extends QUI\QDOM
                 'type' => $ownerType
             ),
             'access'      => array(
-                'user'   => in_array($this->User->getId(), $this->getAccessUserIds()),
+                'user'   => in_array($this->getUser()->getId(), $this->getDirectAccessUserIds()),
                 'groups' => $accessGroups
             ),
-            'userIsOwner' => $ownerId == $this->User->getId()
+            'userIsOwner' => $ownerId == $this->getUser()->getId()
         );
     }
 
@@ -557,7 +613,15 @@ class Password extends QUI\QDOM
             'title'           => $this->getAttribute('title'),
             'description'     => $this->getAttribute('description'),
             'dataType'        => $this->getAttribute('dataType'),
-            'cryptoData'      => $cryptoDataEncrypted
+            'cryptoData'      => $cryptoDataEncrypted,
+            'categories'      => $this->getAttribute('categories') ?: null,
+            'categoryIds'     => $this->getAttribute('categoryIds') ?: null
+        );
+
+        // encrypt fields used for MAC creation (MACFields)
+        $macFields = SymmetricCrypto::encrypt(
+            json_encode(array_keys($passwordData)),
+            new Key(Utils::getSystemPasswordAuthKey())
         );
 
         // calculate new MAC
@@ -566,7 +630,8 @@ class Password extends QUI\QDOM
             Utils::getSystemPasswordAuthKey()
         );
 
-        $passwordData['MAC'] = $newMAC;
+        $passwordData['MAC']       = $newMAC;
+        $passwordData['MACFields'] = $macFields;
 
         // update database entry
         $DB = QUI::getDataBase();
@@ -627,6 +692,14 @@ class Password extends QUI\QDOM
                     'id' => $this->id
                 )
             );
+
+            // delete meta data entries
+            $DB->delete(
+                QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+                array(
+                    'dataId' => $this->id
+                )
+            );
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'Password #' . $this->id . ' delete error: ' . $Exception->getMessage()
@@ -664,7 +737,7 @@ class Password extends QUI\QDOM
      */
     protected function changeOwner($id, $type)
     {
-        if (!$this->isOwner($this->User)) {
+        if (!$this->isOwner($this->getUser())) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.password.change.owner.no.permission'
@@ -978,7 +1051,7 @@ class Password extends QUI\QDOM
         $this->SecurityClass = $SecurityClass;
 
         // re-encrypt password key for all users
-        $userIds = $this->getAccessUserIds();
+        $userIds = $this->getDirectAccessUserIds();
 
         foreach ($userIds as $userId) {
             $CryptoUser = CryptoActors::getCryptoUser($userId);
@@ -1038,10 +1111,10 @@ class Password extends QUI\QDOM
      * @param CryptoUser|CryptoGroup $CryptoActor
      * @return bool
      */
-    protected function hasPasswordAccess($CryptoActor)
+    public function hasPasswordAccess($CryptoActor)
     {
         if ($CryptoActor instanceof CryptoUser) {
-            if (in_array($CryptoActor->getId(), $this->getAccessUserIds())) {
+            if (in_array($CryptoActor->getId(), $this->getDirectAccessUserIds())) {
                 return true;
             }
 
@@ -1101,11 +1174,50 @@ class Password extends QUI\QDOM
     }
 
     /**
-     * Get IDs of users that have access to this password
+     * Get IDs of users that can access this password
+     *
+     * Includes users with direct password access AND access via group
      *
      * @return array
      */
-    protected function getAccessUserIds()
+    public function getAccessUserIds()
+    {
+        $userIds = $this->getDirectAccessUserIds();
+
+        $accessGroupIds = $this->getAccessGroupsIds();
+        $Groups         = QUI::getGroups();
+
+        foreach ($accessGroupIds as $groupId) {
+            $Group   = $Groups->get($groupId);
+            $userIds = array_merge($userIds, $Group->getUserIds());
+        }
+
+        return array_unique($userIds);
+    }
+
+    /**
+     * Get IDs of users that have owner permissions for this password
+     *
+     * @return array
+     */
+    public function getOwnerUserIds()
+    {
+        $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
+        $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
+
+        if ($currentOwnerType === self::OWNER_TYPE_USER) {
+            return array($currentOwnerId);
+        }
+
+        return CryptoActors::getCryptoGroup($currentOwnerId)->getUserIds();
+    }
+
+    /**
+     * Get IDs of users that have (direct!) access to this password
+     *
+     * @return array
+     */
+    protected function getDirectAccessUserIds()
     {
         $userIds = array();
 
@@ -1153,6 +1265,68 @@ class Password extends QUI\QDOM
     }
 
     /**
+     * Create entry in meta data table for this password for a specific user
+     *
+     * @param CryptoUser $CryptoUser - User the entry is created for
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function createMetaTableEntry(CryptoUser $CryptoUser)
+    {
+        if (!$this->hasPasswordAccess($CryptoUser)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.meta.entry.user.has.no.access',
+                array(
+                    'userId'     => $CryptoUser->getId(),
+                    'userName'   => $CryptoUser->getUsername(),
+                    'passwordId' => $this->id
+                )
+            ));
+        }
+
+        QUI::getDataBase()->insert(
+            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            array(
+                'userId' => $CryptoUser->getId(),
+                'dataId' => $this->id
+            )
+        );
+    }
+
+    /**
+     * Remove entry in meta data table for this password for a specific user
+     *
+     * @param CryptoUser $CryptoUser
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function removeMetaTableEntry(CryptoUser $CryptoUser)
+    {
+        if ($this->hasPasswordAccess($CryptoUser)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.remove.meta.entry.user.has.access',
+                array(
+                    'userId'     => $CryptoUser->getId(),
+                    'userName'   => $CryptoUser->getUsername(),
+                    'passwordId' => $this->id
+                )
+            ));
+        }
+
+        QUI::getDataBase()->delete(
+            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            array(
+                'userId' => $CryptoUser->getId(),
+                'dataId' => $this->id
+            )
+        );
+    }
+
+    /**
      * Get password de/encryption key
      *
      * @return Key
@@ -1164,7 +1338,7 @@ class Password extends QUI\QDOM
             return $this->PasswordKey;
         }
 
-        $this->PasswordKey = $this->User->getPasswordAccessKey($this->id);
+        $this->PasswordKey = $this->getUser()->getPasswordAccessKey($this->id);
 
         return $this->PasswordKey;
     }
@@ -1181,37 +1355,37 @@ class Password extends QUI\QDOM
 
         switch ($permission) {
             case self::PERMISSION_VIEW:
-                return $this->hasPasswordAccess($this->User);
+                return $this->hasPasswordAccess($this->getUser());
                 break;
             case self::PERMISSION_EDIT:
-                return $this->isOwner($this->User);
+                return $this->isOwner($this->getUser());
                 break;
 
             case self::PERMISSION_DELETE:
-                if ($this->User->isSU()) {
+                if ($this->getUser()->isSU()) {
                     return true;
                 }
 
                 if ($ownerType === self::OWNER_TYPE_USER) {
-                    return $this->isOwner($this->User);
+                    return $this->isOwner($this->getUser());
                 }
 
                 if (!QUI\Permissions\Permission::hasPermission(Permissions::PASSWORDS_DELETE)) {
                     return false;
                 }
 
-                return $this->isOwner($this->User);
+                return $this->isOwner($this->getUser());
 
             case self::PERMISSION_SHARE:
                 if ($ownerType === self::OWNER_TYPE_USER) {
-                    return $this->isOwner($this->User);
+                    return $this->isOwner($this->getUser());
                 }
 
                 if (!QUI\Permissions\Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
                     return false;
                 }
 
-                return $this->isOwner($this->User);
+                return $this->isOwner($this->getUser());
                 break;
 
             default:
@@ -1339,7 +1513,7 @@ class Password extends QUI\QDOM
                 'exception.password.user.not.authenticated',
                 array(
                     'id'     => $this->id,
-                    'userId' => $this->User->getId()
+                    'userId' => $this->getUser()->getId()
                 )
             ));
         }
@@ -1376,5 +1550,51 @@ class Password extends QUI\QDOM
         ));
 
         $this->decrypted = true;
+    }
+
+    /**
+     * Get user that currently handles this password
+     *
+     * @return CryptoUser
+     */
+    protected function getUser()
+    {
+        if (!is_null($this->User)) {
+            return $this->User;
+        }
+
+        $this->User = CryptoActors::getCryptoUser();
+
+        return $this->User;
+    }
+
+    /**
+     * Increase view counter by 1
+     *
+     * @return void
+     */
+    public function increasePublicViewCount()
+    {
+        if (!$this->hasPermission(self::PERMISSION_VIEW)) {
+            $this->permissionDenied();
+        }
+
+        $currentViewCount = $this->getAttribute('viewCount');
+
+        if (empty($currentViewCount)) {
+            $currentViewCount = 0;
+        }
+
+        QUI::getDataBase()->update(
+            QUI::getDBTableName(Tables::PASSWORDS),
+            array(
+                'viewCount' => ++$currentViewCount
+            ),
+            array(
+                'id' => $this->id
+            )
+        );
+
+        $this->setAttribute('viewCount', $currentViewCount);
     }
 }

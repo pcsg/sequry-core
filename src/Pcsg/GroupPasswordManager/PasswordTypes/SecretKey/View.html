@@ -1,4 +1,4 @@
-<table class="pcsg-gpm-data-table pcsg-gpm-password-view">
+<table class="data-table data-table-flexbox">
     <thead>
     <tr>
         <th>
@@ -9,61 +9,55 @@
     <tbody>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelHost}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelHost}}">
                     {{labelHost}}
                 </span>
-                <span class="pcsg-gpm-password-view-value pwm-passwordtypes-copy">
-                    {{host}}
-                </span>
+                <input type="text" value="{{host}}" class="field-container-field pwm-passwordtypes-copy" readonly>
             </label>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelUser}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelUser}}">
                     {{labelUser}}
                 </span>
-                <span class="pcsg-gpm-password-view-value pwm-passwordtypes-copy">
-                    {{user}}
-                </span>
+                <input type="text" value="{{user}}" class="field-container-field pwm-passwordtypes-copy" readonly>
             </label>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelPassword}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelPassword}}">
                     {{labelPassword}}
                 </span>
-                <span class="pcsg-gpm-password-view-value pwm-passwordtypes-copy-hide">
-                    {{password}}
-                </span>
+                <input type="password" value="{{password}}" class="field-container-field pwm-passwordtypes-copy pwm-passwordtypes-show" readonly>
             </label>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelKey}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelKey}}">
                     {{labelKey}}
                 </span>
-                <span class="pcsg-gpm-password-view-value pwm-passwordtypes-copy">
+                <div class="field-container-field pwm-passwordtypes-textarea">
                     {{key}}
-                </span>
+                </div>
             </label>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelNote}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelNote}}">
                     {{labelNote}}
                 </span>
-                <span class="pcsg-gpm-password-view-value">
+                <div class="field-container-field">
                     {{note}}
-                </span>
+                </div>
             </label>
         </td>
     </tr>

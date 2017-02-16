@@ -2,7 +2,6 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 
 /**
  * Syncs an auth plugin with all passwords, so a user can access all (eligible) passwords with all

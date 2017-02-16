@@ -1,15 +1,13 @@
 <?php
 
 /**
- * This file contains \Pcsg\GroupPasswordManager\Password
+ * This file contains \Pcsg\GroupPasswordManager\Constants\Tables
  */
 
 namespace Pcsg\GroupPasswordManager\Constants;
 
-use QUI;
-
 /**
- * Authentication Class for crypto data and crypto users/groups
+ * Password Manager table constants
  *
  * @author www.pcsg.de (Patrick Müller)
  */
@@ -29,4 +27,6 @@ class Tables
     const GROUP_TO_PASSWORDS = 'pcsg_gpm_group_data_access';
 
     const RECOVERY = 'pcsg_gpm_recovery';
+
+    const USER_TO_PASSWORDS_META = 'pcsg_gpm_user_data_access_meta';
 }

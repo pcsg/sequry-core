@@ -26,6 +26,74 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
 
         /**
+         * Authentication for a specific security class
+         *
+         * @param {number} securityClassId
+         * @return {Promise}
+         */
+        securityClassAuth: function (securityClassId) {
+            return new Promise(function (resolve, reject) {
+                require([
+                    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate'
+                ], function (SecurityClassAuth) {
+                    var Popup = new SecurityClassAuth({
+                        securityClassId: securityClassId,
+                        events         : {
+                            onSubmit: function (AuthData) {
+                                resolve(AuthData);
+                                Popup.close();
+                            },
+                            onClose : function () {
+                                reject();
+                                Popup.close();
+                            },
+                            onAbort : function () {
+                                reject();
+                                Popup.close();
+                            }
+                        }
+                    });
+
+                    Popup.open();
+                });
+            });
+        },
+
+        /**
+         * Authentication for a specific password
+         *
+         * @param {number} passwordId
+         * @return {Promise}
+         */
+        passwordAuth: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                require([
+                    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate'
+                ], function (PasswordAuth) {
+                    var Popup = new PasswordAuth({
+                        passwordId: passwordId,
+                        events    : {
+                            onSubmit: function (AuthData) {
+                                resolve(AuthData);
+                                Popup.close();
+                            },
+                            onClose : function () {
+                                reject();
+                                Popup.close();
+                            },
+                            onAbort : function () {
+                                reject();
+                                Popup.close();
+                            }
+                        }
+                    });
+
+                    Popup.open();
+                });
+            });
+        },
+
+        /**
          * Get all authentication plugins currently installed in the system
          *
          * @returns {Promise}

@@ -265,6 +265,27 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                     passwordId: passwordId
                 });
             });
+        },
+
+        /**
+         * Set password favorite status
+         *
+         * @param {number} passwordId
+         * @param {bool} status
+         * @return {Promise}
+         */
+        setFavoriteStatus: function (passwordId, status) {
+            return new Promise(function (resolve, reject) {
+                Ajax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_passwords_setFavoriteStatus',
+                    resolve, {
+                        'package' : pkg,
+                        onError   : reject,
+                        passwordId: passwordId,
+                        status    : status ? 1 : 0
+                    }
+                );
+            });
         }
     });
 });

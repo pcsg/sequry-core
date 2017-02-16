@@ -1,7 +1,16 @@
 <h1 class="pcsg-gpm-password-view-info-title">
+    <span class="{{favoClass}}"></span>
     {{title}}
 </h1>
 <div class="pcsg-gpm-password-view-info">
+    <div class="pcsg-gpm-password-view-info-categories">
+        <div class="pcsg-gpm-password-view-info-categories-public" data-catids="{{categoryIds}}">
+            <span><b>{{categoryPublicLabel}}</b></span>
+        </div>
+        <div class="pcsg-gpm-password-view-info-categories-private" data-catids="{{categoryIdsPrivate}}">
+            <span><b>{{categoryPrivateLabel}}</b></span>
+        </div>
+    </div>
     <p class="pcsg-gpm-password-view-info-description">
         {{description}}
     </p>

@@ -1,0 +1,94 @@
+/**
+ * Select a private password category
+ *
+ * @module package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
+ * @author www.pcsg.de (Patrick Müller)
+ *
+ * @require qui/QUI
+ * @require qui/controls/buttons/Select
+ * @require qui/controls/loader/Loader
+ * @requrie Ajax
+ * @require Locale
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select.css
+ *
+ * @event onLoaded [this] - fires when security classes are loaded
+ * @event onCategorySelect [catId, this] - fires when user selects a category
+ */
+define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select', [
+
+    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
+    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
+    'package/pcsg/grouppasswordmanager/bin/Categories',
+
+    'Locale'
+
+], function (CategorySelect, CategoryMapPrivate, Categories, QUILocale) {
+    "use strict";
+
+    var lg = 'pcsg/grouppasswordmanager';
+
+    return new Class({
+
+        Extends: CategorySelect,
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
+
+        /**
+         * Refresh category label
+         */
+        $refresh: function () {
+            if (!this.$categoryIds.length) {
+                this.$TitleElm.set('html', QUILocale.get(lg, 'controls.categories.category.all'));
+                return;
+            }
+
+            var self = this;
+
+            this.Loader.show();
+
+            Categories.getPrivate(this.$categoryIds).then(function (categories) {
+                var titles = [];
+
+                for (var i = 0, len = categories.length; i < len; i++) {
+                    titles.push(categories[i].title);
+                }
+
+                self.$TitleElm.set('html', titles.join(', '));
+                self.Loader.hide();
+            });
+        },
+
+        /**
+         * Get category tree control
+         *
+         * @return {Object} - CategoryTree
+         */
+        $getCategoryTreeControl: function () {
+            return new CategoryMapPrivate({
+                editMode: false
+            });
+        },
+
+        /**
+         * Set category IDs
+         *
+         * @param {Array} catIds - categories to set as value
+         */
+        setValue: function (catIds) {
+            var self = this;
+
+            if (!catIds.length) {
+                self.$refresh();
+                return;
+            }
+
+            Categories.getPrivate(catIds).then(function (categories) {
+                for (var i = 0, len = categories.length; i < len; i++) {
+                    self.$categoryIds.push(categories[i].id);
+                }
+
+                self.$refresh();
+            });
+        }
+    });
+
+});

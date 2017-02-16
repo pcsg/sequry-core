@@ -26,22 +26,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'Locale',
     'Mustache',
 
+    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
+    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html'
     //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
-             AuthenticationControl, SecurityClassSelect, ActorSelect, PasswordContent, template) {
+], function (QUI, QUIControl, QUILocale, Mustache, AuthHandler, PasswordHandler,
+             SecurityClassSelect, ActorSelect, PasswordContent, CategorySelect, template) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager',
-        Passwords = new PasswordHandler();
+    var lg             = 'pcsg/grouppasswordmanager',
+        Passwords      = new PasswordHandler(),
+        Authentication = new AuthHandler();
 
     return new Class({
 
@@ -72,6 +74,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$PassContent     = null;
             this.$AuthData        = null;
             this.$securityClassId = false;
+            this.$CategorySelect  = null;
         },
 
         /**
@@ -92,6 +95,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                     securityClass      : QUILocale.get(lg, lg_prefix + 'securityClass'),
                     passwordTitle      : QUILocale.get(lg, lg_prefix + 'passwordTitle'),
                     passwordDescription: QUILocale.get(lg, lg_prefix + 'passwordDescription'),
+                    passwordCategory   : QUILocale.get(lg, lg_prefix + 'passwordCategory'),
                     payload            : QUILocale.get(lg, lg_prefix + 'payload'),
                     passwordPayload    : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
                     payloadWarning     : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
@@ -99,6 +103,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                     passwordOwner      : QUILocale.get(lg, lg_prefix + 'passwordOwner')
                 })
             });
+
+            this.$CategorySelect = new CategorySelect().inject(
+                this.$Elm.getElement(
+                    '.pcsg-gpm-password-edit-category'
+                )
+            );
 
             return this.$Elm;
         },
@@ -110,40 +120,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             var self = this;
             var pwId = this.getAttribute('passwordId');
 
-            var AuthControl = new AuthenticationControl({
-                passwordId: pwId,
-                events    : {
-                    onSubmit: function (AuthData) {
-                        self.$AuthData = AuthData;
+            Authentication.passwordAuth(pwId).then(function (AuthData) {
+                self.$AuthData = AuthData;
 
-                        Passwords.get(
-                            pwId,
-                            AuthData
-                        ).then(
-                            function (PasswordData) {
-                                AuthControl.destroy();
-
-                                self.$PasswordData    = PasswordData;
-                                self.$AuthData        = AuthData;
-                                self.$securityClassId = PasswordData.securityClassId;
-
-                                self.$onPasswordDataLoaded();
-                            },
-                            function () {
-                                // @todo
-                            }
-                        );
+                Passwords.get(
+                    pwId,
+                    AuthData
+                ).then(
+                    function (PasswordData) {
+                        self.$PasswordData    = PasswordData;
+                        self.$AuthData        = AuthData;
+                        self.$securityClassId = PasswordData.securityClassId;
+                        self.$onPasswordDataLoaded();
                     },
-                    onAbort : function () {
-                        self.fireEvent('close');
-                    },
-                    onClose : function () {
+                    function () {
                         self.fireEvent('close');
                     }
-                }
+                );
+            }, function () {
+                self.fireEvent('close');
             });
-
-            AuthControl.open();
         },
 
         /**
@@ -192,7 +188,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 new Element('div', {
                     'class': 'pcsg-gpm-password-warning',
                     html   : QUILocale.get(lg, 'password.edit.securityclass.change.warning')
-                }).inject(SecurityClassElm, 'top');
+                }).inject(OwnerSelectElm, 'top');
             }
         },
 
@@ -223,6 +219,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                         break;
                 }
             }
+
+            // set category
+            this.$CategorySelect.setValue(this.$PasswordData.categoryIds);
 
             // set form values
             this.$Elm.getElement('.pcsg-gpm-password-title').value       = self.$PasswordData.title;
@@ -263,7 +262,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 title          : this.$Elm.getElement('.pcsg-gpm-password-title').value,
                 description    : this.$Elm.getElement('.pcsg-gpm-password-description').value,
                 payload        : this.$PassContent.getData(),
-                dataType       : this.$PassContent.getPasswordType()
+                dataType       : this.$PassContent.getPasswordType(),
+                categoryIds    : this.$CategorySelect.getValue()
             };
 
             var actors = this.$OwnerSelect.getActors();

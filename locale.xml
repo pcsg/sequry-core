@@ -123,6 +123,12 @@
         <locale name="exception.password.setsecurityclass.owner.group.not.eligible">
             <de><![CDATA[Die aktuelle Eigentümer-Gruppe des Passworts ist für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) nicht geeignet.]]></de>
         </locale>
+        <locale name="exception.password.meta.entry.user.has.no.access">
+            <de><![CDATA[Es kann kein Meta-Tabellen-Eintrag für den Benutzer "[userName]" (#[userId]) für das Passwort #[passwordId] erstellt werden, da der Benutzer kein Zugriff auf das Passwort hat.]]></de>
+        </locale>
+        <locale name="exception.password.meta.entry.user.has.no.access">
+            <de><![CDATA[Der Meta-Tabellen-Eintrag für den Benutzer "[userName]" (#[userId]) für das Passwort #[passwordId] kann nicht gelöscht werden, da der Benutzer noch Zugriff auf das Passwort hat.]]></de>
+        </locale>
 
         <!-- Class: Handler/Passwords -->
         <locale name="exception.passwords.create.missing.data">
@@ -350,6 +356,9 @@
         </locale>
 
         <!-- Ajax -->
+        <locale name="message.general.error">
+            <de><![CDATA[Bei der Verarbeitung Ihrer Anfrage ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
         <locale name="success.auth.registeruser">
             <de><![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war erfolgreich. Sie können nun Passwörter erstellen und auf Passwörter zugreifen, die diese Authentifizierungs-Methode erfordern.]]></de>
         </locale>
@@ -395,6 +404,55 @@
         <locale name="success.actors.addgroupstouser">
             <de><![CDATA[Die Passwort-Gruppen wurden erfolgreich dem Benutzer "[userName]" (#[userId]) zugewiesen.]]></de>
         </locale>
+        <locale name="message.general.error">
+            <de><![CDATA[Bei der Verarbeitung Ihrer Anfrage ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.createPublic.error" html="true">
+            <de><![CDATA[Bei Erstellung der öffentlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.createPublic.success">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie "[title]" wurde erfolgreich erstellt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.deletePublic.error" html="true">
+            <de><![CDATA[Beim Löschen der öffentlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.deletePublic.success">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie wurde erfolgreich gelöscht.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.renamePublic.error" html="true">
+            <de><![CDATA[Beim Umbenennen der öffentlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.renamePublic.success">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie wurde erfolgreich umbenannt.]]></de>
+        </locale>
+        <locale name="mmessage.ajax.passwords.categories.private.create.error" html="true">
+            <de><![CDATA[Bei Erstellung der persönlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.create.success">
+            <de><![CDATA[Die persönliche Passwort-Kategorie "[title]" wurde erfolgreich erstellt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.delete.error" html="true">
+            <de><![CDATA[Beim Löschen der persönlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.delete.success">
+            <de><![CDATA[Die persönliche Passwort-Kategorie wurde erfolgreich gelöscht.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.rename.error" html="true">
+            <de><![CDATA[Beim Umbenennen der persönlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.rename.success">
+            <de><![CDATA[Die persönliche Passwort-Kategorie wurde erfolgreich umbenannt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.get.error" html="true">
+            <de><![CDATA[Beim Abruf des Passworts #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.setToPassword.error" html="true">
+            <de><![CDATA[Beim Setzen der persönliche(n) Passwort-Kategorie(n) für das Passwort #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.setToPassword.success">
+            <de><![CDATA[Die persönliche(n) Passwort-Kategorie(n) für das Passwort #[passwordId] wurden erfolgreich gesetzt.]]></de>
+        </locale>
+
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -578,9 +636,27 @@
         <locale name="actors.sendinstructions.instructions" html="true">
             <de><![CDATA[Anleitungstext]]></de>
         </locale>
+
+        <!-- Handler\Categories -->
+        <locale name="exception.handler.categories.category.not.found">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie #[id] wurde nicht gefunden.]]></de>
+        </locale>
+        <locale name="exception.handler.categories.no.private.permission">
+            <de><![CDATA[Sie haben nicht die benötigte Berechtigung, um private Passwort-Kategorien des Benutzers "[userName]" (#[userId]) zu bearbeiten.]]></de>
+        </locale>
+        <locale name="exception.handler.categories.add.private.category.no.access">
+            <de><![CDATA[Das Passwort #[passwordId] kann nicht zur persönlichen Passwort-Kategorie des Benutzers "[userName]" (#[userId]) zugeordnet werden, da der Benutzer keinen Zugriff auf dieses Passwort hat.]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
+
+        <locale name="password.create.template.passwordCategory">
+            <de><![CDATA[Kategorien]]></de>
+        </locale>
+        <locale name="password.create.template.passwordCategoryPrivate">
+            <de><![CDATA[Kategorien (persönlich)]]></de>
+        </locale>
 
         <!-- User profile -->
         <locale name="user.profile.title">
@@ -728,6 +804,14 @@
         <locale name="passwords.panel.title">
             <de><![CDATA[Passwort-Manager]]></de>
         </locale>
+
+        <!-- Categories Panel -->
+        <locale name="panels.categories.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="panels.categories.description">
+            <de><![CDATA[Kategorisierung und Filtern von Passwörtern]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="js">
@@ -785,16 +869,19 @@
             <de><![CDATA[Neues Passwort]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.view">
-            <de><![CDATA[Passwort ansehen]]></de>
+            <de><![CDATA[Ansehen]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.share">
-            <de><![CDATA[Passwort teilen]]></de>
+            <de><![CDATA[Teilen]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.edit">
-            <de><![CDATA[Passwort bearbeiten]]></de>
+            <de><![CDATA[Bearbeiten]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.delete">
-            <de><![CDATA[Passwort löschen]]></de>
+            <de><![CDATA[Löschen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.btn.categories">
+            <de><![CDATA[Kategoriezuweisung]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.searchremove">
             <de><![CDATA[Suchfilter entfernen]]></de>
@@ -841,6 +928,24 @@
         <locale name="controls.gpm.passwords.panel.accessinfo.acess">
             <de><![CDATA[Zugriff über]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.category.info" html="true">
+            <de><![CDATA[<b>Kategorien:</b> [category]]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.category.private.info" html="true">
+            <de><![CDATA[<b>Kategorien (persönlich):</b> [category]]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.favo.alt">
+            <de><![CDATA[Dieses Passwort als Favorit setzen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.categories.info">
+            <de><![CDATA[Bitte wählen Sie die Passwort-Kategorien, die den gewählten Passwörtern zugeordnet werden sollen.]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.categories.warning">
+            <de><![CDATA[Passwörter werden nur dann den öffentlichen Kategorien zugeordnet, wenn Sie die Berechtigung besitzen, diese Passwörter zu bearbeiten!]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.categories.warning">
+            <de><![CDATA[Passwörter werden nur dann den öffentlichen Kategorien zugeordnet, wenn Sie die Berechtigung besitzen, diese Passwörter zu bearbeiten!]]></de>
+        </locale>
 
         <!-- Control: password/Create -->
         <locale name="password.create.template.title">
@@ -880,6 +985,9 @@
         <!-- Control: password/Edit -->
         <locale name="edit.template.title">
             <de><![CDATA[Passwort bearbeiten]]></de>
+        </locale>
+        <locale name="password.edit.securityclass.change.warning">
+            <de><![CDATA[Der aktuelle Eigentümer des Passworts ist eine Passwort-Gruppe. Bitte beachten Sie, dass als zukünftiger Eigentümer ausschließlich eine (andere) Gruppe und kein einzelner Benutzer gesetzt werden darf.]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->
@@ -993,6 +1101,9 @@
         <!-- Control: passwords/View -->
         <locale name="controls.password.view.popup.title">
             <de><![CDATA[Passwort ansehen]]></de>
+        </locale>
+        <locale name="controls.password.view.categories.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
         </locale>
 
         <!-- Control: password/Panel -->
@@ -1327,6 +1438,85 @@
         </locale>
         <locale name="controls.user.authpluginsettings.label.priority">
             <de><![CDATA[Anzeige-Priorität im Authentifizierungsfenster (höhere Zahl = weiter oben)]]></de>
+        </locale>
+
+        <!-- Control: categories/private/Panel -->
+        <locale name="controls.categories.private.panel.title">
+            <de><![CDATA[Passwort-Kategorien (persönlich)]]></de>
+        </locale>
+
+        <!-- Control: categories/Map -->
+        <locale name="controls.categories.map.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="controls.categories.map.filter.new.text">
+            <de><![CDATA[Neue Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.title">
+            <de><![CDATA[Neue öffentliche Passwort-Kategorie]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.info">
+            <de><![CDATA[Neue Unter-Kategorie für die Kategorie "[catTitle]" (#[catId])]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.label">
+            <de><![CDATA[Bitte geben Sie einen Kategorie-Titel ein]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.btn.create.text">
+            <de><![CDATA[Neue Unter-Kategorie]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.btn.rename.text">
+            <de><![CDATA[Umbenennen]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.btn.delete.text">
+            <de><![CDATA[Löschen]]></de>
+        </locale>
+        <locale name="controls.categories.map.delete.title">
+            <de><![CDATA[Öffentliche Passwort-Kategorie löschen]]></de>
+        </locale>
+        <locale name="controls.categories.map.delete.info">
+            <de><![CDATA[Sind Sie sicher, dass Sie die öffentliche Passwort-Kategorie "[catTitle]" (#[catId]) löschen wollen? Alle dieser Kategorie zugeordneten Passwörter verlieren ihre Kategorie-Zuweisung und können nur noch über die Kategorie "Alle" gefunden werden.]]></de>
+        </locale>
+        <locale name="controls.categories.map.rename.title">
+            <de><![CDATA[Öffentliche Passwort-Kategorie umbenennen]]></de>
+        </locale>
+        <locale name="controls.categories.map.rename.label">
+            <de><![CDATA[Neuer Kategorie-Titel]]></de>
+        </locale>
+        <locale name="controls.categories.map.category.all">
+            <de><![CDATA[Alle Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.info.all">
+            <de><![CDATA[Neue Unter-Kategorie für die Kategorie "[catTitle]"]]></de>
+        </locale>
+
+        <!-- Control: categories/Panel -->
+        <locale name="controls.categories.panel.public.title">
+            <de><![CDATA[Kategorien]]></de>
+        </locale>
+        <locale name="controls.categories.panel.private.title">
+            <de><![CDATA[Kategorien (persönlich)]]></de>
+        </locale>
+        <locale name="controls.categories.panel.filter.title">
+            <de><![CDATA[Filter / Sortierung]]></de>
+        </locale>
+
+        <!-- Control: categories/Filters -->
+        <locale name="controls.categories.filters.new">
+            <de><![CDATA[Neue Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.filters.mostUsed">
+            <de><![CDATA[Meistgenutzte Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.filters.favorites">
+            <de><![CDATA[Favoriten]]></de>
+        </locale>
+
+        <!-- Control: categories/Select -->
+        <locale name="controls.categories.select.title">
+            <de><![CDATA[Passwort-Kategorie wählen]]></de>
+        </locale>
+        <locale name="controls.categories.select.info" html="true">
+            <de><![CDATA[Wählen Sie ein oder mehrere Kategorien, die sie dem Passwort zuordnen wollen.<br><i>(Mehrfachauswahl mit Strg+Klick)</i>]]></de>
         </locale>
 
     </groups>

@@ -15,6 +15,7 @@
  * @event onLoaded
  * @event onAbort - on AuthPopup user close
  * @event onClose - on AuthPopup close
+ * @event onSubmit [AuthData] - if the user submits the auth form
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
@@ -33,8 +34,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler(),
-        Actors         = new ActorHandler();
+        Authentication = new AuthHandler();
 
     return new Class({
 
@@ -45,6 +45,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             '$onInject',
             'submit',
             'open',
+            'close',
             '$openPopup',
             'getAuthData'
         ],
@@ -339,6 +340,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     }
                 );
             });
+        },
+
+        /**
+         * Close popup
+         */
+        close: function() {
+            if (this.$AuthPopup) {
+                this.$AuthPopup.close();
+            }
         },
 
         /**

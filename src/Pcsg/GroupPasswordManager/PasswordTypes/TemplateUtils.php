@@ -18,11 +18,12 @@ class TemplateUtils
      *
      * @param string $templateFile - path to template file
      * @param array $templateContent - placeholder replacement values
+     * @param bool $nl2br (optional) - apply nl2br to placeholder values
      * @return string - template HTML with replaced values
      *
      * @throws QUI\Exception
      */
-    public static function parseTemplate($templateFile, $templateContent)
+    public static function parseTemplate($templateFile, $templateContent, $nl2br = false)
     {
         if (!file_exists($templateFile)) {
             throw new QUI\Exception(array(
@@ -34,6 +35,10 @@ class TemplateUtils
         $templateHtml = file_get_contents($templateFile);
 
         foreach ($templateContent as $placeHolder => $value) {
+            if ($nl2br) {
+                $value = nl2br($value);
+            }
+
             $templateHtml = str_replace('{{' . $placeHolder . '}}', $value, $templateHtml);
         }
 

@@ -75,6 +75,34 @@ class Handler
         $TypeClass           = self::getPasswordTypeClass($type);
         $viewData['payload'] = $TypeClass->getViewHtml($payload);
 
+        // labels
+        $viewData['categoryPublicLabel'] = QUI::getLocale()->get(
+            'pcsg/grouppasswordmanager',
+            'password.create.template.passwordCategory'
+        );
+
+        $viewData['categoryPrivateLabel'] = QUI::getLocale()->get(
+            'pcsg/grouppasswordmanager',
+            'password.create.template.passwordCategoryPrivate'
+        );
+
+        // categories
+        if (empty($viewData['categoryIds'])) {
+            $viewData['categoryIds'] = '';
+        } else {
+            $viewData['categoryIds'] = implode(',', $viewData['categoryIds']);
+        }
+
+        if (empty($viewData['categoryIdsPrivate'])) {
+            $viewData['categoryIdsPrivate'] = '';
+        } else {
+            $viewData['categoryIdsPrivate'] = implode(',', $viewData['categoryIdsPrivate']);
+        }
+
+        if ($viewData['favorite']) {
+            $viewData['favoClass'] = 'fa fa-star';
+        }
+
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/ViewHeader.html', $viewData);
     }
 

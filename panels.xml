@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<quiqqer>
+    <panels>
+
+        <!-- Password categories -->
+        <panel require="package/pcsg/grouppasswordmanager/bin/controls/categories/Panel">
+            <image>fa fa-book</image>
+            <title>
+                <locale group="pcsg/grouppasswordmanager" var="panels.categories.title" />
+            </title>
+            <text>
+                <locale group="pcsg/grouppasswordmanager" var="panels.categories.text" />
+            </text>
+        </panel>
+
+    </panels>
+</quiqqer>

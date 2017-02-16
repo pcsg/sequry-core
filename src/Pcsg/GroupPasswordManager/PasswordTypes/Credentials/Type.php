@@ -22,7 +22,7 @@ class Type implements IPasswordType
     public static function getViewHtml($content = array())
     {
         $content = array_merge($content, self::getTemplateTranslations());
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content);
+        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
     }
 
     /**

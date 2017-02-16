@@ -1,0 +1,13 @@
+.pcsg-gpm-categories-select-edit {
+    font-size: 17px;
+}
+
+.pcsg-gpm-categories-select-edit:hover {
+    cursor: pointer;
+    color: #0D3349;
+}
+
+.pcsg-gpm-categories-select-title {
+    float: left;
+    margin-right: 5px;
+}

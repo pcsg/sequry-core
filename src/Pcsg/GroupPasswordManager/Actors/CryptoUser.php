@@ -7,6 +7,7 @@
 namespace Pcsg\GroupPasswordManager\Actors;
 
 use Pcsg\GroupPasswordManager\Events;
+use Pcsg\GroupPasswordManager\Handler\Categories;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
@@ -37,6 +38,13 @@ use Symfony\Component\Console\Helper\Table;
  */
 class CryptoUser extends QUI\Users\User
 {
+    /**
+     * Runtime cache for meta data of passwords
+     *
+     * @var array
+     */
+    protected $passwordMetaData = array();
+
     /**
      * CryptoUser constructor.
      *
@@ -711,6 +719,17 @@ class CryptoUser extends QUI\Users\User
         $Grid        = new \QUI\Utils\Grid($searchParams);
         $gridParams  = $Grid->parseDBParams($searchParams);
 
+        // private category filter
+        if (isset($searchParams['categoryIdPrivate']) &&
+            !empty($searchParams['categoryIdPrivate'])
+        ) {
+            $categoryPasswordIds = $this->getPrivatePasswordIdsByCategory(
+                $searchParams['categoryIdPrivate']
+            );
+
+            $passwordIds = array_intersect($passwordIds, $categoryPasswordIds);
+        }
+
         // check if passwords found for this user - if not return empty list
         if (empty($passwordIds)) {
             return array();
@@ -719,11 +738,26 @@ class CryptoUser extends QUI\Users\User
         if ($countOnly) {
             $sql = "SELECT COUNT(*)";
         } else {
-            $sql = "SELECT id, title, description, securityClassId, dataType, ownerId, ownerType";
+            $selectFields = array(
+                'data.`id`',
+                'data.`title`',
+                'data.`description`',
+                'data.`securityClassId`',
+                'data.`dataType`',
+                'data.`ownerId`',
+                'data.`ownerType`',
+                'meta.`favorite`'
+            );
+
+            $sql = "SELECT " . implode(',', $selectFields);
         }
 
-        $sql .= " FROM " . Tables::PASSWORDS;
-        $where[] = 'id IN (' . implode(',', $passwordIds) . ')';
+        // JOIN user access meta table with password data table
+        $sql .= " FROM `" . QUI::getDBTableName(Tables::PASSWORDS) . "` data, ";
+        $sql .= " `" . QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META) . "` meta";
+
+        $where[] = 'data.`id` = meta.`dataId`';
+        $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
         if (isset($searchParams['searchterm']) &&
             !empty($searchParams['searchterm'])
@@ -733,7 +767,7 @@ class CryptoUser extends QUI\Users\User
             if (isset($searchParams['title'])
                 && $searchParams['title']
             ) {
-                $whereOR[]      = '`title` LIKE :title';
+                $whereOR[]      = 'data.`title` LIKE :title';
                 $binds['title'] = array(
                     'value' => '%' . $searchParams['searchterm'] . '%',
                     'type'  => \PDO::PARAM_STR
@@ -743,7 +777,7 @@ class CryptoUser extends QUI\Users\User
             if (isset($searchParams['description'])
                 && $searchParams['description']
             ) {
-                $whereOR[]            = '`description` LIKE :description';
+                $whereOR[]            = 'data.`description` LIKE :description';
                 $binds['description'] = array(
                     'value' => '%' . $searchParams['searchterm'] . '%',
                     'type'  => \PDO::PARAM_STR
@@ -753,8 +787,8 @@ class CryptoUser extends QUI\Users\User
             if (!empty($whereOR)) {
                 $where[] = '(' . implode(' OR ', $whereOR) . ')';
             } else {
-                $where[]           = '`title` LIKE :title';
-                $binds['category'] = array(
+                $where[]        = 'data.`title` LIKE :title';
+                $binds['title'] = array(
                     'value' => '%' . $searchParams['searchterm'] . '%',
                     'type'  => \PDO::PARAM_STR
                 );
@@ -765,7 +799,30 @@ class CryptoUser extends QUI\Users\User
             && !empty($searchParams['passwordtypes'])
         ) {
             if (!in_array('all', $searchParams['passwordtypes'])) {
-                $where[] = '`dataType` IN (\'' . implode('\',\'', $searchParams['passwordtypes']) . '\')';
+                $where[] = 'data.`dataType` IN (\'' . implode('\',\'', $searchParams['passwordtypes']) . '\')';
+            }
+        }
+
+        if (isset($searchParams['categoryId'])
+            && !empty($searchParams['categoryId'])
+        ) {
+            $where[]             = 'data.`categories` LIKE :categoryId';
+            $binds['categoryId'] = array(
+                'value' => '%,' . (int)$searchParams['categoryId'] . ',%',
+                'type'  => \PDO::PARAM_STR
+            );
+        }
+
+        // WHERE filters
+        if (isset($searchParams['filters'])
+            && !empty($searchParams['filters'])
+        ) {
+            foreach ($searchParams['filters'] as $filter) {
+                switch ($filter) {
+                    case 'favorites':
+                        $where[] = 'meta.`favorite` = 1';
+                        break;
+                }
             }
         }
 
@@ -774,10 +831,30 @@ class CryptoUser extends QUI\Users\User
             $sql .= " WHERE " . implode(" AND ", $where);
         }
 
-        if (isset($searchParams['sortOn']) &&
-            !empty($searchParams['sortOn'])
+        $orderFields = array();
+
+        // ORDER BY filters
+        if (isset($searchParams['filters'])
+            && !empty($searchParams['filters'])
         ) {
-            $order = "ORDER BY " . Orthos::clear($searchParams['sortOn']);
+            foreach ($searchParams['filters'] as $filter) {
+                switch ($filter) {
+                    case 'new':
+                        // @todo
+                        break;
+
+                    case 'mostUsed':
+                        $orderFields[] = 'meta.`viewCount` DESC';
+                        break;
+                }
+            }
+        }
+
+        // Table column sort
+        if (isset($searchParams['sortOn'])
+            && !empty($searchParams['sortOn'])
+        ) {
+            $order = 'data.`' . Orthos::clear($searchParams['sortOn']) . '`';
 
             if (isset($searchParams['sortBy']) &&
                 !empty($searchParams['sortBy'])
@@ -787,7 +864,11 @@ class CryptoUser extends QUI\Users\User
                 $order .= " ASC";
             }
 
-            $sql .= " " . $order;
+            $orderFields[] = $order;
+        }
+
+        if (!empty($orderFields)) {
+            $sql .= " ORDER BY " . implode(',', $orderFields);
         }
 
         if (isset($gridParams['limit'])
@@ -800,8 +881,6 @@ class CryptoUser extends QUI\Users\User
                 $sql .= " LIMIT " . (int)20;
             }
         }
-
-        QUI\System\Log::writeRecursive($sql);
 
         $Stmt = $PDO->prepare($sql);
 
@@ -872,6 +951,38 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $passwords;
+    }
+
+    /**
+     * Get IDs of all passwords belonging to a private password category
+     *
+     * @param $categoryId
+     * @param QUI\Users\User $User (optional) - category owner (if omitted = session user)
+     * @return array
+     */
+    public function getPrivatePasswordIdsByCategory($categoryId, $User = null)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'dataId'
+            ),
+            'from'   => QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            'where'  => array(
+                'userId'     => $this->id,
+                'categories' => array(
+                    'type'  => '%LIKE%',
+                    'value' => ',' . (int)$categoryId . ','
+                )
+            )
+        ));
+
+        $passwordIds = array();
+
+        foreach ($result as $row) {
+            $passwordIds[] = $row['dataId'];
+        }
+
+        return $passwordIds;
     }
 
     /**
@@ -1383,6 +1494,90 @@ class CryptoUser extends QUI\Users\User
         foreach ($passwordIdsDirect as $passwordId) {
             $this->reEncryptPasswordAccessKey($passwordId);
         }
+    }
+
+    /**
+     * Increase personal view count for a password
+     *
+     * @param int $passwordId - Password ID
+     * @return void
+     */
+    public function increasePasswordViewCount($passwordId)
+    {
+        $passwordId = (int)$passwordId;
+        $metaData   = $this->getPasswordMetaData($passwordId);
+
+        if (!isset($metaData['viewCount'])) {
+            return;
+        }
+
+        $currentViewCount = $metaData['viewCount'];
+
+        QUI::getDataBase()->update(
+            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            array(
+                'viewCount' => ++$currentViewCount
+            ),
+            array(
+                'userId' => $this->id,
+                'dataId' => $passwordId
+            )
+        );
+
+        $this->passwordMetaData[$passwordId]['viewCount'] = $currentViewCount;
+    }
+
+    /**
+     * Get password metadata
+     *
+     * @param $passwordId
+     * @return array
+     */
+    public function getPasswordMetaData($passwordId)
+    {
+        if (isset($this->passwordMetaData[$passwordId])) {
+            return $this->passwordMetaData[$passwordId];
+        }
+
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            'where' => array(
+                'userId' => $this->id,
+                'dataId' => $passwordId
+            )
+        ));
+
+        if (empty($result)) {
+            return array();
+        }
+
+        $data = current($result);
+        unset($data['userId']);
+
+        $this->passwordMetaData[$passwordId] = $data;
+
+        return $data;
+    }
+
+    /**
+     * Set favorite status to password
+     *
+     * @param int $passwordId - Password ID
+     * @param bool $status - true = favorite; false = unfavorite
+     * @return void
+     */
+    public function setPasswordFavoriteStatus($passwordId, $status = true)
+    {
+        QUI::getDataBase()->update(
+            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            array(
+                'favorite' => $status ? 1 : 0
+            ),
+            array(
+                'userId' => $this->id,
+                'dataId' => (int)$passwordId
+            )
+        );
     }
 
     /**

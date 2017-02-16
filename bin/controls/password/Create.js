@@ -29,13 +29,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
+    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
+    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
-             SecurityClassSelect, ActorSelect, PasswordTypes, template) {
+             SecurityClassSelect, ActorSelect, PasswordTypes, CategorySelect,
+             CategorySelectPrivate, template) {
     "use strict";
 
     var lg        = 'pcsg/grouppasswordmanager',
@@ -57,8 +60,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 onInject: this.$onInject
             });
 
-            this.$PasswordData = null;
-            this.$owner        = false;
+            this.$PasswordData          = null;
+            this.$CategorySelect        = null;
+            this.$CategorySelectPrivate = null;
+            this.$owner                 = false;
         },
 
         /**
@@ -75,16 +80,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             this.$Elm.set({
                 'class': 'pcsg-gpm-password-create',
                 html   : Mustache.render(template, {
-                    title              : QUILocale.get(lg, lg_prefix + 'title'),
-                    basicData          : QUILocale.get(lg, lg_prefix + 'basicData'),
-                    securityClass      : QUILocale.get(lg, lg_prefix + 'securityClass'),
-                    passwordTitle      : QUILocale.get(lg, lg_prefix + 'passwordTitle'),
-                    passwordDescription: QUILocale.get(lg, lg_prefix + 'passwordDescription'),
-                    payload            : QUILocale.get(lg, lg_prefix + 'payload'),
-                    passwordPayload    : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
-                    payloadWarning     : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
-                    owner              : QUILocale.get(lg, lg_prefix + 'owner'),
-                    passwordOwner      : QUILocale.get(lg, lg_prefix + 'passwordOwner')
+                    title                  : QUILocale.get(lg, lg_prefix + 'title'),
+                    basicData              : QUILocale.get(lg, lg_prefix + 'basicData'),
+                    securityClass          : QUILocale.get(lg, lg_prefix + 'securityClass'),
+                    passwordTitle          : QUILocale.get(lg, lg_prefix + 'passwordTitle'),
+                    passwordCategory       : QUILocale.get(lg, lg_prefix + 'passwordCategory'),
+                    passwordCategoryPrivate: QUILocale.get(lg, lg_prefix + 'passwordCategoryPrivate'),
+                    passwordDescription    : QUILocale.get(lg, lg_prefix + 'passwordDescription'),
+                    payload                : QUILocale.get(lg, lg_prefix + 'payload'),
+                    passwordPayload        : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
+                    payloadWarning         : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
+                    owner                  : QUILocale.get(lg, lg_prefix + 'owner'),
+                    passwordOwner          : QUILocale.get(lg, lg_prefix + 'passwordOwner')
                 })
             });
 
@@ -126,6 +133,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 )
             );
 
+            this.$CategorySelect = new CategorySelect().inject(
+                this.$Elm.getElement(
+                    '.pcsg-gpm-password-create-category'
+                )
+            );
+
+            this.$CategorySelectPrivate = new CategorySelectPrivate().inject(
+                this.$Elm.getElement(
+                    '.pcsg-gpm-password-create-category-private'
+                )
+            );
+
             return this.$Elm;
         },
 
@@ -143,11 +162,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             var self = this;
 
             this.$PasswordData = {
-                securityClassId: this.$SecurityClassSelect.getValue(),
-                title          : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
-                description    : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
-                dataType       : this.$PasswordTypes.getPasswordType(),
-                payload        : this.$PasswordTypes.getData()
+                securityClassId  : this.$SecurityClassSelect.getValue(),
+                title            : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
+                description      : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
+                dataType         : this.$PasswordTypes.getPasswordType(),
+                payload          : this.$PasswordTypes.getData(),
+                categoryIds      : this.$CategorySelect.getValue(),
+                categoryIdPrivate: this.$CategorySelectPrivate.getValue()
             };
 
             var actors = this.$OwnerSelect.getActors();

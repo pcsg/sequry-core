@@ -1,4 +1,4 @@
-<table class="pcsg-gpm-data-table pcsg-gpm-password-view">
+<table class="data-table data-table-flexbox">
     <thead>
     <tr>
         <th>
@@ -9,35 +9,31 @@
     <tbody>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelUser}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelUser}}">
                     {{labelUser}}
                 </span>
-                <span class="pcsg-gpm-password-view-value pwm-passwordtypes-copy">
-                    {{user}}
-                </span>
+                <input value="{{user}}" type="text" class="pwm-passwordtypes-copy field-container-field" readonly>
             </label>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelPassword}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelPassword}}">
                     {{labelPassword}}
                 </span>
-                <span class="pcsg-gpm-password-view-value pwm-passwordtypes-copy-hide">
-                    {{password}}
-                </span>
+                <input value="{{password}}" type="password" class="pwm-passwordtypes-copy pwm-passwordtypes-show field-container-field" readonly>
             </label>
         </td>
     </tr>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelUrl}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelUrl}}">
                     {{labelUrl}}
                 </span>
-                <div class="pcsg-gpm-password-view-value">
+                <div class="field-container-field">
                     <a href="{{url}}" target="_blank">{{url}}</a>
                 </div>
             </label>
@@ -45,13 +41,13 @@
     </tr>
     <tr>
         <td>
-            <label class="pcsg-gpm-password-view-label">
-                <span class="pcsg-gpm-password-view-label-text" title="{{labelNote}}">
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelNote}}">
                     {{labelNote}}
                 </span>
-                <span class="pcsg-gpm-password-view-value">
+                <div class="field-container-field pwm-passwordtypes-textarea">
                     {{note}}
-                </span>
+                </div>
             </label>
         </td>
     </tr>
