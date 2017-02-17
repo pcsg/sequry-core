@@ -5,9 +5,10 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use QUI\Utils\Security\Orthos;
 
 /**
- * Get information of public category
+ * Set private categories to a password
  *
- * @param int $id - category ID
+ * @param int $passwordId
+ * @param array $categoryIds
  * @return bool - success
  */
 QUI::$Ajax->registerFunction(

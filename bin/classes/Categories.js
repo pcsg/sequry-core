@@ -58,25 +58,46 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
         },
 
         /**
-         * Set public password categories to multiple passwords at once (required edit permissions!)
+         * Set public password categories to multiple passwords at once (requires edit permissions!)
          *
-         * @param passwordIds
-         * @param categoryIds
+         * @param {Array} passwordIds
+         * @param {Array} categoryIds
+         * @param {Object} AuthData - Authentication data
          */
-        setPublicPasswordsCategories: function(passwordIds, categoryIds)
-        {
-
+        setPublicPasswordsCategories: function (passwordIds, categoryIds, AuthData) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_setToPasswords',
+                    resolve, {
+                        'package'  : pkg,
+                        onError    : reject,
+                        passwordIds: JSON.encode(passwordIds),
+                        categoryIds: JSON.encode(categoryIds),
+                        authData   : JSON.encode(AuthData)
+                    }
+                );
+            });
         },
 
         /**
          * Set private password categories to multiple passwords at once
          *
-         * @param passwordIds
-         * @param categoryIds
+         * @param {Array} passwordIds
+         * @param {Array} categoryIds
+         * @return {Promise}
          */
-        setPrivatePasswordsCategories: function(passwordIds, categoryIds)
-        {
-
+        setPrivatePasswordsCategories: function (passwordIds, categoryIds) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_setToPasswords',
+                    resolve, {
+                        'package'  : pkg,
+                        onError    : reject,
+                        passwordIds: JSON.encode(passwordIds),
+                        categoryIds: JSON.encode(categoryIds)
+                    }
+                );
+            });
         },
 
         /**
@@ -90,11 +111,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_setToPassword',
                     resolve, {
-                    'package'  : pkg,
-                    onError    : reject,
-                    passwordId : passwordId,
-                    categoryIds: JSON.encode(categoryIds)
-                });
+                        'package'  : pkg,
+                        onError    : reject,
+                        passwordId : passwordId,
+                        categoryIds: JSON.encode(categoryIds)
+                    });
             });
         }
     });

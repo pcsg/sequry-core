@@ -118,7 +118,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                 }
             };
 
-            return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve) {
                 if (self.$loaded) {
                     resolve(FuncGetCat());
                     return;
@@ -142,7 +142,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
 
             this.Loader.show();
 
-            return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve) {
                 self.$getCategories().then(function (categories) {
                     self.$CategoryMap = new QUISiteMap({
                         multible: !self.getAttribute('editMode')
@@ -205,6 +205,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         $buildCategoryTree: function (children, ParentItem) {
             var self = this;
 
+            var FuncItemOnClick = function (Item) {
+                self.fireEvent('categorySelect', [
+                    Item.getAttribute('id'),
+                    //Item.getAttribute('title'),
+                    self
+                ]);
+
+                self.$selectedCatId = Item.getAttribute('id');
+            };
+
             for (var i = 0, len = children.length; i < len; i++) {
                 var Child = children[i];
 
@@ -222,15 +232,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                     hasChildren: Child.children.length,
                     dragable   : false,
                     events     : {
-                        onClick      : function (Item) {
-                            self.fireEvent('categorySelect', [
-                                Item.getAttribute('id'),
-                                //Item.getAttribute('title'),
-                                self
-                            ]);
-
-                            self.$selectedCatId = Item.getAttribute('id');
-                        },
+                        onClick      : FuncItemOnClick,
                         onContextMenu: function (Item, event) {
                             event.stop();
 
@@ -339,7 +341,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                         'package': 'pcsg/grouppasswordmanager',
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -594,7 +596,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                         title    : title,
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -615,7 +617,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                         title    : title,
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -634,7 +636,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                         id       : id,
                         onError  : reject
                     }
-                )
+                );
             });
         },
 

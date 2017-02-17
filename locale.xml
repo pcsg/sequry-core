@@ -452,6 +452,12 @@
         <locale name="message.ajax.passwords.categories.private.setToPassword.success">
             <de><![CDATA[Die persönliche(n) Passwort-Kategorie(n) für das Passwort #[passwordId] wurden erfolgreich gesetzt.]]></de>
         </locale>
+        <locale name="message.ajax.passwords.categories.private.setToPasswords.success">
+            <de><![CDATA[Die persönliche(n) Passwort-Kategorie(n) für die gewählten Passwörter wurden erfolgreich gesetzt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.public.setToPasswords.success">
+            <de><![CDATA[Die Passwort-Kategorie(n) für die gewählten Passwörter wurden erfolgreich gesetzt.]]></de>
+        </locale>
 
 
         <!-- System -->
@@ -937,8 +943,11 @@
         <locale name="controls.gpm.passwords.panel.favo.alt">
             <de><![CDATA[Dieses Passwort als Favorit setzen]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.categories.title">
+            <de><![CDATA[Kategorie-Zuweisung für mehrere Passwörter]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.panel.categories.info">
-            <de><![CDATA[Bitte wählen Sie die Passwort-Kategorien, die den gewählten Passwörtern zugeordnet werden sollen.]]></de>
+            <de><![CDATA[Bitte wählen Sie die Passwort-Kategorien, die den gewählten Passwörtern zugeordnet werden sollen. Bereits vorhandene Passwort-Kategorien in den gewählten Passwörtern werden durch die hier gewählten überschrieben.]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.categories.warning">
             <de><![CDATA[Passwörter werden nur dann den öffentlichen Kategorien zugeordnet, wenn Sie die Berechtigung besitzen, diese Passwörter zu bearbeiten!]]></de>
@@ -1517,6 +1526,9 @@
         </locale>
         <locale name="controls.categories.select.info" html="true">
             <de><![CDATA[Wählen Sie ein oder mehrere Kategorien, die sie dem Passwort zuordnen wollen.<br><i>(Mehrfachauswahl mit Strg+Klick)</i>]]></de>
+        </locale>
+        <locale name="controls.categories.select.add.text">
+            <de><![CDATA[Hinzufügen]]></de>
         </locale>
 
     </groups>

@@ -102,3 +102,10 @@
     height: 100%;
     width: 100%;
 }
+
+.pcsg-gpm-passwords-panel-categories-public,
+.pcsg-gpm-passwords-panel-categories-private {
+    float: left;
+    margin-top: 10px;
+    width: 100%;
+}

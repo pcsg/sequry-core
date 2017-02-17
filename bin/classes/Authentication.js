@@ -60,6 +60,38 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
+         * Authenticate for multiple security classes
+         *
+         * @param {Array} securityClassIds
+         * @return {Promise}
+         */
+        multiSecurityClassAuth: function (securityClassIds) {
+            return new Promise(function (resolve, reject) {
+                require([
+                    'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
+                ], function (MultiAuthWindow) {
+                    new MultiAuthWindow({
+                        securityClassIds: securityClassIds,
+                        events          : {
+                            onSubmit: function (AuthData, Popup) {
+                                resolve(AuthData);
+                                Popup.close();
+                            },
+                            onClose: function(Popup) {
+                                reject();
+                                Popup.close();
+                            },
+                            onAbort: function(Popup) {
+                                reject();
+                                Popup.close();
+                            }
+                        }
+                    }).open();
+                });
+            });
+        },
+
+        /**
          * Authentication for a specific password
          *
          * @param {number} passwordId

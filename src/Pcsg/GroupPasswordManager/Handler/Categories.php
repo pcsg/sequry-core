@@ -691,4 +691,44 @@ class Categories
             )
         ));
     }
+
+    /**
+     * Check if a public category exists
+     *
+     * @param int $catId
+     * @return bool
+     */
+    public static function publicCategoryExists($catId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'count' => 1,
+            'from'  => self::getPublicTable(),
+            'where' => array(
+                'id' => (int)$catId
+            ),
+            'limit' => 1
+        ));
+
+        return current(current($result)) > 0;
+    }
+
+    /**
+     * Check if a public category exists
+     *
+     * @param int $catId
+     * @return bool
+     */
+    public static function privateCategoryExists($catId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'count' => 1,
+            'from'  => self::getPrivateTable(),
+            'where' => array(
+                'id' => (int)$catId
+            ),
+            'limit' => 1
+        ));
+
+        return current(current($result)) > 0;
+    }
 }

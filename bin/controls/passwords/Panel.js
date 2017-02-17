@@ -199,16 +199,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
-            this.addButton(new QUISeparator());
-
-            this.addButton({
-                name     : 'categories',
-                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.categories'),
-                textimage: 'fa fa-book',
-                events   : {
+            new QUIButton({
+                name  : 'categories',
+                alt   : QUILocale.get(lg, 'controls.gpm.passwords.btn.categories'),
+                title : QUILocale.get(lg, 'controls.gpm.passwords.btn.categories'),
+                icon  : 'fa fa-book',
+                events: {
                     onClick: this.$showPasswordsCategoryDialog
+                },
+                styles: {
+                    'border-left-width' : 1,
+                    'border-right-width': 1,
+                    'float'             : 'right',
+                    width               : 40
                 }
-            });
+            }).inject(this.getHeader());
 
             var DblClickActionSelect = new QUISelect({
                 placeholderText      : QUILocale.get(lg, 'controls.gpm.passwords.panel.options.label.dblclick'),
@@ -325,8 +330,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 },
                 onClick   : function () {
                     var data = self.$Grid.getSelectedData();
-
-                    self.getButtons('categories').enable();
 
                     if (data.length > 1) {
                         self.getButtons('view').disable();
@@ -639,17 +642,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         },
 
         /**
-         * Set password favorite status
-         *
-         * @param {number} passwordId
-         * @param {bool} status
-         * @return {Promise}
-         */
-        $setPasswordFavoriteStatus: function (passwordId, status) {
-            return setFavoriteStatus
-        },
-
-        /**
          * Opens the create password dialog
          */
         createPassword: function () {
@@ -748,7 +740,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                     DeletePopup.close();
                                 }
                             );
-                        }, function (E) {
+                        }, function () {
                             DeletePopup.close();
                         });
                     }
@@ -933,9 +925,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
          * Show dialog for setting categories to multiple passwords
          */
         $showPasswordsCategoryDialog: function () {
-            var CategorySelectCtrl, CategorySelectPrivateCtrl;
-            var rows  = this.$Grid.getSelectedData();
-            var pwIds = [];
+            var publicCatIds = [], privateCatIds = [];
+            var rows         = this.$Grid.getSelectedData();
+            var pwIds        = [];
+
+            if (!rows.length) {
+                return;
+            }
 
             for (var i = 0, len = rows.length; i < len; i++) {
                 pwIds.push(rows[i].id);
@@ -945,35 +941,50 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.Loader.show();
 
-            var FuncSubmit = function () {
-                var Input = Popup.getContent().getElement('input');
-                var title = Input.value.trim();
+            var FuncSetPublicCategories = function (AuthData) {
+                Popup.Loader.show();
 
-                if (title === '') {
-                    Input.value = '';
-                    Input.focus();
+                Categories.setPublicPasswordsCategories(
+                    pwIds,
+                    publicCatIds,
+                    AuthData
+                ).then(function () {
+                    Popup.Loader.hide();
+                    Popup.close();
+                });
+            };
+
+            var FuncSetPrivateCategories = function () {
+                Popup.Loader.show();
+
+                Categories.setPrivatePasswordsCategories(pwIds, privateCatIds).then(function () {
+                    Popup.Loader.hide();
+                    Popup.close();
+                });
+            };
+
+            var FuncSubmit = function () {
+                if (privateCatIds.length && !publicCatIds.length) {
+                    FuncSetPrivateCategories();
                     return;
                 }
 
-                Popup.Loader.show();
+                Passwords.getSecurityClassIds(pwIds).then(function (securityClassIds) {
+                    Authentication.multiSecurityClassAuth(securityClassIds).then(function (AuthData) {
+                        FuncSetPublicCategories(AuthData);
 
-                self.$addCategory(title, Item.getAttribute('id')).then(function (success) {
-                    Popup.Loader.hide();
-
-                    if (!success) {
-                        return;
-                    }
-
-                    Popup.close();
-                    self.refresh();
+                        if (privateCatIds.length) {
+                            FuncSetPrivateCategories();
+                        }
+                    });
                 });
             };
 
             // open popup
             var Popup = new QUIConfirm({
                 'class'    : 'pcsg-gpm-passwords-panel-categories',
-                'maxHeight': 400,
-                maxWidth   : 450,
+                'maxHeight': 275,
+                maxWidth   : 600,
                 'autoclose': true,
 
                 'title'   : QUILocale.get(lg, 'controls.gpm.passwords.panel.categories.title'),
@@ -987,26 +998,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         Content.set(
                             'html',
                             '<div class="pcsg-gpm-passwords-panel-categories-info">' +
-                                QUILocale.get(lg, 'controls.gpm.passwords.panel.categories.info') +
-                            '</div>' +
-                            '<div class="pcsg-gpm-password-warning">' +
-                                QUILocale.get(lg, 'controls.gpm.passwords.panel.categories.warning') +
+                            QUILocale.get(lg, 'controls.gpm.passwords.panel.categories.info') +
                             '</div>' +
                             '<div class="pcsg-gpm-passwords-panel-categories-public">' +
-                                '<span>' + QUILocale.get(lg, 'controls.categories.panel.public.title') + '</span>' +
+                            '<span><b>' + QUILocale.get(lg, 'controls.categories.panel.public.title') + '</b></span>' +
                             '</div>' +
                             '<div class="pcsg-gpm-passwords-panel-categories-private">' +
-                            '<span>' + QUILocale.get(lg, 'controls.categories.panel.private.title') + '</span>' +
+                            '<span><b>' + QUILocale.get(lg, 'controls.categories.panel.private.title') + '</b></span>' +
                             '</div>'
                         );
 
-                        CategorySelectCtrl = new CategorySelect().inject(
+                        new CategorySelect({
+                            events: {
+                                onChange: function (catIds) {
+                                    publicCatIds = catIds;
+                                }
+                            }
+                        }).inject(
                             Content.getElement(
                                 '.pcsg-gpm-passwords-panel-categories-public'
                             )
                         );
 
-                        CategorySelectPrivateCtrl = new CategorySelectPrivate().inject(
+                        new CategorySelectPrivate({
+                            events: {
+                                onChange: function (catIds) {
+                                    privateCatIds = catIds;
+                                }
+                            }
+                        }).inject(
                             Content.getElement(
                                 '.pcsg-gpm-passwords-panel-categories-private'
                             )

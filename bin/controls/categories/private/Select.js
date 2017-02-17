@@ -36,8 +36,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
          * Refresh category label
          */
         $refresh: function () {
+            this.$CatContainer.set('html', '');
+
             if (!this.$categoryIds.length) {
-                this.$TitleElm.set('html', QUILocale.get(lg, 'controls.categories.category.all'));
+                this.$CatContainer.set('html', QUILocale.get(lg, 'controls.categories.category.all'));
                 return;
             }
 
@@ -46,13 +48,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
             this.Loader.show();
 
             Categories.getPrivate(this.$categoryIds).then(function (categories) {
-                var titles = [];
-
                 for (var i = 0, len = categories.length; i < len; i++) {
-                    titles.push(categories[i].title);
+                    self.$getCatElm(
+                        categories[i].id,
+                        categories[i].title
+                    ).inject(self.$CatContainer);
                 }
 
-                self.$TitleElm.set('html', titles.join(', '));
                 self.Loader.hide();
             });
         },

@@ -16,7 +16,6 @@
 
 .pcsg-gpm-password-view-info-description {
     float: left;
-    margin-top: 30px;
 }
 
 .pcsg-gpm-password-view {
@@ -26,6 +25,10 @@
 .pcsg-gpm-password-view-info-categories {
     float: left;
     width: 100%;
+}
+
+.pcsg-gpm-password-view-info-categories-public {
+    margin-bottom: 5px;
 }
 
 .pcsg-gpm-password-view-info-categories-public,

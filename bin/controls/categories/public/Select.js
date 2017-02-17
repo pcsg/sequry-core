@@ -11,8 +11,8 @@
  * @require Locale
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select.css
  *
- * @event onLoaded [this] - fires when security classes are loaded
- * @event onCategoriesSelect [categoryIds, this] - fires if the user selects categories
+ * @event onChange [categoryIds, this] - fires if the user adds and/or deletes password categories
+ * @event onRemoveCategory [categoryId, this] - fires if the user deletes a password category
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select', [
 
@@ -44,19 +44,25 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
             'getValue',
             'setValue',
             '$refresh',
-            '$showCategoryTree'
+            '$showCategoryTree',
+            '$onRemoveCategory'
         ],
+
+        options: {
+            editMode: true  // lets the user add and remove categories
+        },
 
         initialize: function (options) {
             this.parent(options);
 
             this.addEvents({
-                onInject: this.$onInject
+                onInject        : this.$onInject,
+                onRemoveCategory: this.$onRemoveCategory
             });
 
-            this.Loader       = new QUILoader();
-            this.$categoryIds = [];
-            this.$TitleElm    = null;
+            this.Loader        = new QUILoader();
+            this.$categoryIds  = [];
+            this.$CatContainer = null;
         },
 
         /**
@@ -67,26 +73,37 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
 
             this.$Elm = new Element('div', {
                 'class': 'pcsg-gpm-categories-select',
-                html   : '<span class="pcsg-gpm-categories-select-title"></span>' +
-                '<span class="pcsg-gpm-categories-select-edit fa fa-edit"></span>'
+                html   : '<div class="pcsg-gpm-categories-select-container"></div>'
             });
 
-            var EditElm = this.$Elm.getElement(
-                '.pcsg-gpm-categories-select-edit'
+            this.$CatContainer = this.$Elm.getElement(
+                '.pcsg-gpm-categories-select-container'
             );
 
-            EditElm.addEvents({
-                click: self.$showCategoryTree
-            });
+            if (this.getAttribute('editMode')) {
+                new Element('div', {
+                    'class': 'pcsg-gpm-categories-select-edit',
+                    html   : '<span class="pcsg-gpm-categories-select-edit-icon fa fa-plus-circle"></span>' +
+                    '<span class="pcsg-gpm-categories-select-edit-text">' +
+                    QUILocale.get(lg, 'controls.categories.select.add.text') +
+                    '</span>'
+                }).inject(
+                    this.$Elm
+                );
 
-            EditElm.setProperties({
-                title: QUILocale.get(lg, 'controls.categories.select.title'),
-                alt  : QUILocale.get(lg, 'controls.categories.select.title')
-            });
+                var EditElm = this.$Elm.getElement(
+                    '.pcsg-gpm-categories-select-edit'
+                );
 
-            this.$TitleElm = this.$Elm.getElement(
-                '.pcsg-gpm-categories-select-title'
-            );
+                EditElm.addEvents({
+                    click: self.$showCategoryTree
+                });
+
+                EditElm.setProperties({
+                    title: QUILocale.get(lg, 'controls.categories.select.title'),
+                    alt  : QUILocale.get(lg, 'controls.categories.select.title')
+                });
+            }
 
             this.Loader.inject(this.$Elm);
 
@@ -104,8 +121,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
          * Refresh category label
          */
         $refresh: function () {
+            this.$CatContainer.set('html', '');
+
             if (!this.$categoryIds.length) {
-                this.$TitleElm.set('html', QUILocale.get(lg, 'controls.categories.category.all'));
+                this.$CatContainer.set('html', QUILocale.get(lg, 'controls.categories.category.all'));
                 return;
             }
 
@@ -114,13 +133,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
             this.Loader.show();
 
             Categories.getPublic(this.$categoryIds).then(function (categories) {
-                var titles = [];
-
                 for (var i = 0, len = categories.length; i < len; i++) {
-                    titles.push(categories[i].title);
+                    self.$getCatElm(
+                        categories[i].id,
+                        categories[i].title
+                    ).inject(self.$CatContainer);
                 }
 
-                self.$TitleElm.set('html', titles.join(', '));
                 self.Loader.hide();
             });
         },
@@ -157,8 +176,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
                         CategoryTreeCtrl = self.$getCategoryTreeControl().inject(Content);
                     },
                     onSubmit: function () {
-                        self.$categoryIds = CategoryTreeCtrl.getSelectedCategoryIds();
-                        self.fireEvent('categoriesSelect', [self.$categoryIds, self]);
+                        var newCatIds = CategoryTreeCtrl.getSelectedCategoryIds();
+                        self.$categoryIds.combine(newCatIds);
+                        self.fireEvent('change', [self.$categoryIds, self]);
                         self.$refresh();
 
                         Popup.close();
@@ -209,6 +229,55 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
          */
         getValue: function () {
             return this.$categoryIds;
+        },
+
+        /**
+         * Event: onRemoveCategory
+         *
+         * @param {Number} catId
+         */
+        $onRemoveCategory: function (catId) {
+            this.$categoryIds.erase(catId);
+            this.$refresh();
+            this.fireEvent('change', [this.$categoryIds, this]);
+        },
+
+        /**
+         * Get display element for a category
+         *
+         * @param {number} catId
+         * @param {string} catTitle
+         * @return {HTMLElement}
+         */
+        $getCatElm: function (catId, catTitle) {
+            var self = this;
+
+            var CatElm = new Element('div', {
+                'class'     : 'pcsg-gpm-passwords-categories-category',
+                'data-catid': catId,
+                html        : '<span class="pcsg-gpm-passwords-categories-category-title">' +
+                catTitle +
+                '</span>'
+            });
+
+            if (!this.getAttribute('editMode')) {
+                return CatElm;
+            }
+
+            new Element('span', {
+                'class': 'pcsg-gpm-passwords-categories-category-remove fa fa-remove'
+            }).inject(CatElm);
+
+            CatElm.getElement(
+                '.pcsg-gpm-passwords-categories-category-remove'
+            ).addEvents({
+                click: function (event) {
+                    var catId = event.target.getParent().getProperty('data-catid');
+                    self.fireEvent('removeCategory', [catId, self]);
+                }
+            });
+
+            return CatElm;
         }
     });
 

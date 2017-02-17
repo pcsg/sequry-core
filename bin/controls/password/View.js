@@ -26,6 +26,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
     'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
     'package/pcsg/grouppasswordmanager/bin/Categories',
 
@@ -34,7 +35,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
 
 ], function (QUI, QUIControl, QUIButton, QUILoader, QUILocale, AuthHandler,
-             PasswordHandler, CategorySelectPrivate, Categories, Clipboard) {
+             PasswordHandler, CategorySelect, CategorySelectPrivate, Categories, Clipboard) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager',
@@ -110,7 +111,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
                         var CategoryPrivate = new CategorySelectPrivate({
                             events: {
-                                onCategoriesSelect: self.$setPrivateCategories
+                                onChange: self.$setPrivateCategories
                             }
                         }).inject(CategoryPrivateElm);
 
@@ -128,28 +129,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                             '.pcsg-gpm-password-view-info-categories-public'
                         );
 
+                        var Categories = new CategorySelect({
+                            editMode: false
+                        }).inject(CategoriesPublicElm);
+
                         var catIdsPublic = CategoriesPublicElm.getProperty(
                             'data-catids'
                         );
 
                         if (catIdsPublic) {
                             catIdsPublic = catIdsPublic.split(',');
-
-                            Categories.getPublic(catIdsPublic).then(function(categories) {
-                                var titles = [];
-
-                                for (var i = 0, len = categories.length; i < len; i++) {
-                                    titles.push(categories[i].title);
-                                }
-
-                                new Element('span', {
-                                    html: titles.join(', ')
-                                }).inject(CategoriesPublicElm);
-                            });
-                        } else {
-                            new Element('span', {
-                                html: QUILocale.get(lg, 'controls.categories.map.category.all')
-                            }).inject(CategoriesPublicElm);
+                            Categories.setValue(catIdsPublic);
                         }
 
                         self.$parseView();
@@ -190,7 +180,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
          */
         $parseView: function () {
             // copy elements
-            var i, len, Elm, ValueInput, CopyBtn;
+            var i, len, Elm, CopyBtn;
             var copyElms = this.$Elm.getElements('.pwm-passwordtypes-copy');
 
             for (i = 0, len = copyElms.length; i < len; i++) {

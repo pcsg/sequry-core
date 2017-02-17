@@ -17,7 +17,7 @@
 
 .pcsg-gpm-passwords-categories-list-public,
 .pcsg-gpm-passwords-categories-list-private,
-.pcsg-gpm-passwords-categories-filter {
+.pcsg-gpm-passwords-categories-list-filters {
     background-color: #ededed;
     float: left;
     max-height: 300px;
@@ -43,4 +43,12 @@
 .pcsg-gpm-categories-panel .qui-sitemap-map {
     margin: 0;
     padding: 10px;
+}
+
+.pcsg-gpm-categories-panel-toggle {
+    float: right;
+}
+
+.pcsg-gpm-categories-panel-toggle:hover {
+    cursor: pointer;
 }

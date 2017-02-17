@@ -12,8 +12,9 @@
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.css
  *
- * @event onSuccess [this]
- * @event onFail [this]
+ * @event onSubmit [AuthData, this]
+ * @event onClose [this]
+ * @event onAbort [this]
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow', [
 
@@ -170,9 +171,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                         },
                         onAbort : function () {
                             self.Loader.hide();
+                            self.fireEvent('abort', [self]);
                         },
                         onClose : function () {
-                            self.fireEvent('close');
+                            self.fireEvent('close', [self]);
                         }
                     }
                 });

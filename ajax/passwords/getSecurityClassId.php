@@ -6,11 +6,17 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * Get security class id of password
  *
  * @param integer $passwordId - the id of the password object
- * @return array
+ * @return int
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassId($passwordId)
 {
-    return Passwords::getSecurityClass((int)$passwordId)->getId();
+    $securityClassIds = Passwords::getSecurityClassIds(array($passwordId));
+
+    if (empty($securityClassIds)) {
+        return false;
+    }
+
+    return current($securityClassIds);
 }
 
 \QUI::$Ajax->register(

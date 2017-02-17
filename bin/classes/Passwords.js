@@ -168,6 +168,22 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
+         * Get security class IDs of multiple passwords
+         *
+         * @param {Array} passwordIds
+         * @returns {Promise}
+         */
+        getSecurityClassIds: function (passwordIds) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassIds', resolve, {
+                    'package'  : pkg,
+                    onError    : reject,
+                    passwordIds: JSON.encode(passwordIds)
+                });
+            });
+        },
+
+        /**
          * Get access info of password
          *
          * @param {number} passwordId

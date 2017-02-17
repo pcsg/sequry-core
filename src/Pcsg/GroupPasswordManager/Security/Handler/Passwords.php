@@ -470,4 +470,42 @@ class Passwords
 
         return Authentication::getSecurityClass($data['securityClassId']);
     }
+
+    /**
+     * Get IDs of all SecurityClasses of multiple passwords
+     *
+     * @param array $passwordIds
+     * @return array - SecurityClass IDs
+     */
+    public static function getSecurityClassIds($passwordIds)
+    {
+        if (empty($passwordIds)) {
+            return array();
+        }
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'securityClassId'
+            ),
+            'from'   => Tables::PASSWORDS,
+            'where'  => array(
+                'id' => array(
+                    'type'  => 'IN',
+                    'value' => $passwordIds
+                )
+            )
+        ));
+
+        if (empty($result)) {
+            return array();
+        }
+
+        $ids = array();
+
+        foreach ($result as $row) {
+            $ids[] = $row['securityClassId'];
+        }
+
+        return array_unique($ids);
+    }
 }

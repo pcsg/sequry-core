@@ -251,8 +251,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
         /**
          * Edit the password
-         *
-         * @returns {Promise}
          */
         submit: function () {
             var self = this;
@@ -272,7 +270,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 QUI.getMessageHandler(function (MH) {
                     MH.addAttention(
                         QUILocale.get(lg, 'password.create.submit.no.owner.assigned')
-                    )
+                    );
                 });
 
                 return;
