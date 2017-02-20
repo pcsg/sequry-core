@@ -1,0 +1,18 @@
+
+
+<quiqqer>
+    <package>
+        <title>
+            <locale group="pcsg/grouppasswordmanager" var="package.title"/>
+        </title>
+
+        <description>
+            <locale group="pcsg/grouppasswordmanager" var="package.description"/>
+        </description>
+
+        <provider>
+            <desktopSearch src="\Pcsg\GroupPasswordManager\DesktopSearch" />
+        </provider>
+
+    </package>
+</quiqqer>

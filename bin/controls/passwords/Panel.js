@@ -5,8 +5,28 @@
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
- * @require qui/controls/Control
+ * @require qui/controls/desktop/Panel
+ * @require qui/controls/buttons/Seperator
  * @require qui/controls/buttons/Button
+ * @require qui/controls/buttons/Select
+ * @require qui/controls/loader/Loader
+ * @require qui/controls/windows/Popup
+ * @require qui/controls/windows/Confirm
+ * @require qui/controls/sitemap/Map
+ * @require qui/controls/sitemap/Item
+ * @require controls/grid/Grid
+ * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
+ * @require package/pcsg/grouppasswordmanager/bin/classes/Authentication
+ * @require package/pcsg/grouppasswordmanager/bin/Categories
+ * @require package/pcsg/grouppasswordmanager/bin/controls/password/Create
+ * @require package/pcsg/grouppasswordmanager/bin/controls/password/View
+ * @require package/pcsg/grouppasswordmanager/bin/controls/password/Share
+ * @require package/pcsg/grouppasswordmanager/bin/controls/password/Edit
+ * @require package/pcsg/grouppasswordmanager/bin/controls/passwords/Search
+ * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
+ * @require package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate
+ * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select
+ * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
  * @requrie Ajax
  * @require Locale
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css
@@ -62,6 +82,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         Extends: QUIPanel,
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
 
+        options: {
+            'passwordId': false // immediately open password on inject
+        },
+
         Binds: [
             '$onInject',
             '$onCreate',
@@ -89,7 +113,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 onInject : this.$onInject,
                 onRefresh: this.$onRefresh,
                 onCreate : this.$onCreate,
-                onResize : this.$onResize
+                onResize : this.$onResize,
+                onDestroy: this.$onDestroy
             });
 
             this.Loader          = new QUILoader();
@@ -99,7 +124,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.$removeBtn      = false;
             this.$dblClickAction = 'view';
             this.$InfoElm        = null;
-            this.$CopyInput      = null;
         },
 
         /**
@@ -357,8 +381,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
          * Event: onInject
          */
         $onInject: function () {
+            var self = this;
+
             this.resize();
-            this.refresh();
+            this.refresh().then(function() {
+                var pwId = self.getAttribute('passwordId');
+
+                if (pwId) {
+                    self.viewPassword.delay(200, self, pwId);
+                }
+            });
         },
 
         /**
@@ -403,10 +435,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         },
 
         /**
-         * refresh the password list
+         * Refresh the password list
+         *
+         * @return {Promise}
          */
         refresh: function () {
-            this.$Grid.refresh();
+            return this.$listRefresh(this.$Grid);
         },
 
         /**
@@ -983,7 +1017,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             // open popup
             var Popup = new QUIConfirm({
                 'class'    : 'pcsg-gpm-passwords-panel-categories',
-                'maxHeight': 275,
+                'maxHeight': 300,
                 maxWidth   : 600,
                 'autoclose': true,
 
@@ -1435,6 +1469,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     }
                 }
             });
+        },
+
+        /**
+         * Event: onDestroy
+         */
+        $onDestroy: function() {
+            window.PasswordList = null;
         }
     });
 });
