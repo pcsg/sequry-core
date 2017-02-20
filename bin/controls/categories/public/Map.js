@@ -12,6 +12,7 @@
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map.css
  *
  * @event onCategorySelect [catId, catTitle, this] - fires if the user selects a password category
+ * @event onLoaded [this] - fires if the map has finished loading
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
 
@@ -50,7 +51,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
             '$renameCategoryDialog',
             'getCategory',
             'refresh',
-            'deselectAll'
+            'deselectAll',
+            'select'
         ],
 
         options: {
@@ -98,7 +100,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
          * Event: onInject
          */
         $onInject: function () {
-            this.refresh();
+            var self = this;
+
+            this.refresh().then(function() {
+                self.fireEvent('loaded', [self]);
+            });
         },
 
         /**
@@ -663,9 +669,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         },
 
         /**
+         * Select specific category
+         *
+         * @param {Integer} categoryId - category ID
+         */
+        select: function(categoryId) {
+            var categories = this.$CategoryMap.getChildren();
+
+            for (var i = 0, len = categories.length; i < len; i++) {
+                var Item = categories[i];
+
+                var id = Item.getAttribute('id');
+
+                if (id == categoryId) {
+                    Item.click();
+                    break;
+                }
+            }
+        },
+
+        /**
          * Deselects all categories
          */
         deselectAll: function () {
+            if (!this.$CategoryMap) {
+                return;
+            }
+
             this.$CategoryMap.deselectAllChildren();
         }
     });

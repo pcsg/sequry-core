@@ -16,6 +16,10 @@ require([
 
     QUI.addEvents({
         onQuiqqerLoaded: function() {
+            if (window.PasswordList) {
+                return;
+            }
+
             PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
                 Panel.open();
             });

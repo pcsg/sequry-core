@@ -1,12 +1,19 @@
 /**
- * Password listing
+ * Panel that combines different password list filters
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/categories/Panel
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/buttons/Button
+ * @require qui/controls/desktop/Panel
+ * @require qui/controls/loader/Loader
+ * @require qui/controls/windows/Confirm
+ * @require qui/controls/sitemap/Map
+ * @require qui/controls/sitemap/Item
+ * @require qui/controls/contextmenu/Item
+ * @require qui/controls/contextmenu/Seperator
+ * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map
+ * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map
+ * @require package/pcsg/grouppasswordmanager/bin/controls/categories/Filters
  * @requrie Ajax
  * @require Locale
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/Panel.css
@@ -44,14 +51,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel',
 
         Binds: [
-            '$onInject',
-            '$onRefresh',
-            '$onCreate',
-            '$onResize',
-            '$buildCategoryTree',
-            '$addCategoryDialog',
-            '$deleteCategoryDialog',
-            'getCategory'
+            '$saveToggleStatus',
+            '$restoreToggleStatus',
+            '$search'
         ],
 
         options: {
@@ -64,7 +66,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             this.parent(options);
 
             this.addEvents({
-                onInject: this.$onInject,
                 onCreate: this.$onCreate
             });
 
@@ -92,21 +93,27 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
 
             Content.set(
                 'html',
+                '<div data-type="public"  data-open="1" class="pcsg-gpm-passwords-categories-list">' +
                 '<h1>' +
                 QUILocale.get(lg, 'controls.categories.panel.public.title') +
-                '<span data-type="public" class="pcsg-gpm-categories-panel-toggle fa fa-minus-square-o"></span>' +
+                '<span class="pcsg-gpm-categories-panel-toggle fa fa-minus-square-o"></span>' +
                 '</h1>' +
-                '<div class="pcsg-gpm-passwords-categories-list-public"></div>' +
+                '<div class="pcsg-gpm-passwords-categories-list-container"></div>' +
+                '</div>' +
+                '<div data-type="private" data-open="1" class="pcsg-gpm-passwords-categories-list">' +
                 '<h1>' +
                 QUILocale.get(lg, 'controls.categories.panel.private.title') +
-                '<span data-type="private" class="pcsg-gpm-categories-panel-toggle fa fa-minus-square-o"></span>' +
+                '<span class="pcsg-gpm-categories-panel-toggle fa fa-minus-square-o"></span>' +
                 '</h1>' +
-                '<div class="pcsg-gpm-passwords-categories-list-private"></div>' +
+                '<div class="pcsg-gpm-passwords-categories-list-container"></div>' +
+                '</div>' +
+                '<div data-type="filters" data-open="1" class="pcsg-gpm-passwords-categories-list">' +
                 '<h1>' +
                 QUILocale.get(lg, 'controls.categories.panel.filter.title') +
-                '<span data-type="filters" class="pcsg-gpm-categories-panel-toggle fa fa-minus-square-o"></span>' +
+                '<span class="pcsg-gpm-categories-panel-toggle fa fa-minus-square-o"></span>' +
                 '</h1>' +
-                '<div class="pcsg-gpm-passwords-categories-list-filters"></div>'
+                '<div class="pcsg-gpm-passwords-categories-list-container"></div>' +
+                '</div>'
             );
 
             this.Loader.inject(Content);
@@ -120,11 +127,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                         self.$selectedCatIdPrivate = false;
                         self.$CategoryMapPrivate.deselectAll();
                         self.$search();
+                    },
+                    onLoaded: function(Map) {
+                        Map.select(false);
                     }
                 }
             }).inject(
                 Content.getElement(
-                    '.pcsg-gpm-passwords-categories-list-public'
+                    '.pcsg-gpm-passwords-categories-list[data-type="public"] .pcsg-gpm-passwords-categories-list-container'
                 )
             );
 
@@ -141,7 +151,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                 }
             }).inject(
                 Content.getElement(
-                    '.pcsg-gpm-passwords-categories-list-private'
+                    '.pcsg-gpm-passwords-categories-list[data-type="private"] .pcsg-gpm-passwords-categories-list-container'
                 )
             );
 
@@ -150,7 +160,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                 return;
             }
 
-            this.$Filters = new Filters({
+            new Filters({
                 events: {
                     onChange: function (selectedFilters) {
                         self.$filters = selectedFilters;
@@ -158,7 +168,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                     }
                 }
             }).inject(Content.getElement(
-                '.pcsg-gpm-passwords-categories-list-filters'
+                '.pcsg-gpm-passwords-categories-list[data-type="filters"] .pcsg-gpm-passwords-categories-list-container'
             ));
 
             // category toggle
@@ -167,28 +177,80 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             ).each(function (ToggleElm) {
                 ToggleElm.addEvents({
                     click: function (event) {
-                        var type = event.target.getProperty('data-type');
-                        var Elm  = Content.getElement(
-                            '.pcsg-gpm-passwords-categories-list-' + type
-                        );
+                        var Elm       = event.target.getParent('.pcsg-gpm-passwords-categories-list');
+                        var Container = Elm.getElement('.pcsg-gpm-passwords-categories-list-container');
 
-                        var displayStatus = Elm.getStyle('display');
+                        var open = parseInt(Elm.getProperty('data-open'));
 
-                        if (displayStatus === 'none') {
-                            Elm.setStyle('display', '');
+                        if (!open) {
                             event.target.addClass('fa-minus-square-o');
                             event.target.removeClass('fa-plus-square-o');
+                            Container.setStyle('display', '');
+                            Elm.setProperty('data-open', '1');
                         } else {
                             event.target.removeClass('fa-minus-square-o');
                             event.target.addClass('fa-plus-square-o');
-                            Elm.setStyle('display', 'none');
+                            Container.setStyle('display', 'none');
+                            Elm.setProperty('data-open', '0');
                         }
+                        
+                        self.$saveToggleStatus();
                     }
                 });
             });
+
+            this.$restoreToggleStatus();
         },
 
-        $onInject: function () {
+        /**
+         * Saves status of which parts (category, private category, filters) the user toggled
+         */
+        $saveToggleStatus: function () {
+            var closedElms = this.$Elm.getElements(
+                '.pcsg-gpm-passwords-categories-list[data-open="0"]'
+            );
+
+            var closedTypes = [];
+
+            closedElms.each(function (Elm) {
+                closedTypes.push(Elm.getProperty('data-type'));
+            });
+
+            localStorage.setItem(
+                'pcsg-gpm-passwords-categories-toggleTypes',
+                JSON.encode(closedTypes)
+            );
+        },
+
+        /**
+         * Restore toggle status from localStorage
+         */
+        $restoreToggleStatus: function() {
+            var toggleTypes = localStorage.getItem(
+                'pcsg-gpm-passwords-categories-toggleTypes'
+            );
+
+            if (!toggleTypes) {
+                return;
+            }
+
+            toggleTypes = JSON.decode(toggleTypes);
+
+            for (var i = 0, len = toggleTypes.length; i < len; i++) {
+                var OpenElm = this.$Elm.getElement(
+                    '.pcsg-gpm-passwords-categories-list[data-type="' + toggleTypes[i] + '"]'
+                );
+
+                if (!OpenElm) {
+                    continue;
+                }
+
+                if (OpenElm.getProperty('data-open') == '1') {
+                    OpenElm.getElement(
+                        '.pcsg-gpm-categories-panel-toggle'
+                    ).click();
+                }
+            }
         },
 
         /**

@@ -7,7 +7,7 @@
 .pcsg-gpm-passwords-panel-info {
     background-color: #dafada;
     float: left;
-    padding: 10px;
+    padding: 5px 10px;
     width: 100%;
 }
 
@@ -108,4 +108,38 @@
     float: left;
     margin-top: 10px;
     width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-search {
+    float: right;
+    margin: 8px;
+    position: relative;
+    width: 300px;
+}
+
+.pcsg-gpm-passwords-panel-search input {
+    float: right;
+    height: 35px;
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    z-index: 5;
+}
+
+.pcsg-gpm-passwords-panel-search span {
+    color: #ddd;
+    transition: all 0.3s;
+    font-size: 23px;
+    position: absolute;
+    height: 100%;
+    padding-top: 5px;
+    width: 30px;
+    vertical-align: middle;
+    right: 0;
+    z-index: 10;
+}
+
+.pcsg-gpm-passwords-panel-search span:hover {
+    cursor: pointer;
+    color: #000000;
 }

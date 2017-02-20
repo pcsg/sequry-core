@@ -935,10 +935,10 @@
             <de><![CDATA[Zugriff über]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.category.info" html="true">
-            <de><![CDATA[<b>Kategorien:</b> [category]]]></de>
+            <de><![CDATA[<b>Kategorie:</b> [category]]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.category.private.info" html="true">
-            <de><![CDATA[<b>Kategorien (persönlich):</b> [category]]]></de>
+            <de><![CDATA[<b>Kategorie (persönlich):</b> [category]]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.favo.alt">
             <de><![CDATA[Dieses Passwort als Favorit setzen]]></de>
@@ -954,6 +954,9 @@
         </locale>
         <locale name="controls.gpm.passwords.panel.categories.warning">
             <de><![CDATA[Passwörter werden nur dann den öffentlichen Kategorien zugeordnet, wenn Sie die Berechtigung besitzen, diese Passwörter zu bearbeiten!]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.search.placeholder">
+            <de><![CDATA[Passwort-Suche]]></de>
         </locale>
 
         <!-- Control: password/Create -->
@@ -1462,7 +1465,7 @@
             <de><![CDATA[Neue Passwörter]]></de>
         </locale>
         <locale name="controls.categories.map.create.title">
-            <de><![CDATA[Neue öffentliche Passwort-Kategorie]]></de>
+            <de><![CDATA[Neue Passwort-Kategorie]]></de>
         </locale>
         <locale name="controls.categories.map.create.info">
             <de><![CDATA[Neue Unter-Kategorie für die Kategorie "[catTitle]" (#[catId])]]></de>
@@ -1480,13 +1483,13 @@
             <de><![CDATA[Löschen]]></de>
         </locale>
         <locale name="controls.categories.map.delete.title">
-            <de><![CDATA[Öffentliche Passwort-Kategorie löschen]]></de>
+            <de><![CDATA[Passwort-Kategorie löschen]]></de>
         </locale>
         <locale name="controls.categories.map.delete.info">
             <de><![CDATA[Sind Sie sicher, dass Sie die öffentliche Passwort-Kategorie "[catTitle]" (#[catId]) löschen wollen? Alle dieser Kategorie zugeordneten Passwörter verlieren ihre Kategorie-Zuweisung und können nur noch über die Kategorie "Alle" gefunden werden.]]></de>
         </locale>
         <locale name="controls.categories.map.rename.title">
-            <de><![CDATA[Öffentliche Passwort-Kategorie umbenennen]]></de>
+            <de><![CDATA[Passwort-Kategorie umbenennen]]></de>
         </locale>
         <locale name="controls.categories.map.rename.label">
             <de><![CDATA[Neuer Kategorie-Titel]]></de>
