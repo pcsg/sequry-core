@@ -102,6 +102,12 @@
         <locale name="exception.password.change.owner.group.error">
             <de><![CDATA[Der Eigentümer des Passworts #[passwordId] konnte nicht auf die Gruppe #[newOwnerId] geändert werden, da ein unerwarteter Fehler aufgetreten ist. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.password.change.owner.no.group.share.permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Passwörter, deren Eigentümer sie über eine Gruppe sind, anderen Benutzern oder Gruppen zugänglich zu machen.]]></de>
+        </locale>
+        <locale name="exception.password.no.share.permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, Passwörter anderen Benutzern oder Gruppen zugänglich zu machen. Das bedeutet, dass Sie Passwort-Eigentümer auch nicht ändern können.]]></de>
+        </locale>
         <locale name="error.password.create" html="true">
             <de><![CDATA[Das Passwort konnte nicht erstellt werden:<br/><br/>[error].]]></de>
         </locale>
@@ -801,6 +807,9 @@
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) löschen]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata.share">
+            <de><![CDATA[Darf eigene Passwärter mit anderen Benutzern und Gruppen teilen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptodata.share_group">
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) mit anderen Benutzern und Gruppen teilen]]></de>
         </locale>
         <locale name="permission.gpm.cryptogroup._header">

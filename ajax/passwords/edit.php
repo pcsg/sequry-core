@@ -48,7 +48,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
         } catch (\Exception $Exception) {
             return false;
         }
-    } catch (\Exception $Exception) {
+    } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
@@ -59,6 +59,22 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
                 )
             )
         );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_edit -> '
+            . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.general.error'
+            )
+        );
+
+        return false;
     }
 }
 

@@ -100,10 +100,12 @@ class Passwords
             ));
         }
 
-        $ownerId = (int)$owner['id'];
+        $ownerId   = (int)$owner['id'];
+        $ownerType = $owner['type'];
 
-        if (!Permission::hasPermission('pcsg.gpm.cryptodata.share')
-            && $ownerId !== (int)QUI::getUserBySession()->getId()
+        if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)
+            && ($ownerId !== (int)QUI::getUserBySession()->getId()
+                || $ownerType == 'group')
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',

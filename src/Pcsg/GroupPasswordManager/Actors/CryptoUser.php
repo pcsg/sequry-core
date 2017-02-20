@@ -757,6 +757,7 @@ class CryptoUser extends QUI\Users\User
         $sql .= " `" . QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META) . "` meta";
 
         $where[] = 'data.`id` = meta.`dataId`';
+        $where[] = 'meta.`userId` = ' . $this->id;
         $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
         if (isset($searchParams['searchterm']) &&

@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use ParagonIE\Halite\Asymmetric\Crypto;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
@@ -37,10 +38,11 @@ class Password extends QUI\QDOM
     /**
      * Permission constants
      */
-    const PERMISSION_VIEW   = 1;
-    const PERMISSION_EDIT   = 2;
-    const PERMISSION_DELETE = 3;
-    const PERMISSION_SHARE  = 4;
+    const PERMISSION_VIEW        = 1;
+    const PERMISSION_EDIT        = 2;
+    const PERMISSION_DELETE      = 3;
+    const PERMISSION_SHARE       = 4;
+    const PERMISSION_SHARE_GROUP = 5;
 
     const OWNER_TYPE_USER  = 1;
     const OWNER_TYPE_GROUP = 2;
@@ -302,106 +304,95 @@ class Password extends QUI\QDOM
             $this->SecurityClass = $SecurityClass;
         }
 
-        try {
-            foreach ($passwordData as $k => $v) {
-                switch ($k) {
-                    case 'title':
-                        if (is_string($v)
-                            && !empty($v)
-                        ) {
-                            $this->setAttribute('title', $v);
+        foreach ($passwordData as $k => $v) {
+            switch ($k) {
+                case 'title':
+                    if (is_string($v)
+                        && !empty($v)
+                    ) {
+                        $this->setAttribute('title', $v);
+                    }
+                    break;
+
+                case 'description':
+                    if (is_string($v)) {
+                        $this->setAttribute('description', $v);
+                    }
+                    break;
+
+                case 'payload':
+                    if (!empty($v)) {
+                        $oldPayload = $this->getSecretAttribute('payload');
+
+                        if ($oldPayload == $v) {
+                            continue;
                         }
+
+                        $this->setSecretAttribute('payload', $v);
+
+                        // write history entry if payload changes
+                        $history = $this->getSecretAttribute('history');
+
+                        $history[] = array(
+                            'timestamp' => time(),
+                            'value'     => $oldPayload
+                        );
+
+                        $this->setSecretAttribute('history', $history);
+                    }
+                    break;
+
+                case 'dataType':
+                    if (!empty($v)
+                        && is_string($v)
+                    ) {
+                        $this->setAttribute('dataType', $v);
+                    }
+                    break;
+
+                case 'owner':
+                    if (is_array($v)
+                        && isset($v['id'])
+                        && !empty($v['id'])
+                        && is_numeric($v['id'])
+                        && isset($v['type'])
+                        && !empty($v['type'])
+                    ) {
+                        $newOwnerId   = (int)$v['id'];
+                        $newOwnerType = $v['type'];
+
+                        $this->changeOwner($newOwnerId, $newOwnerType);
+                    }
+                    break;
+
+                case 'categoryIds':
+                    if (empty($v)) {
+                        $this->setAttribute('categories', null);
+                        $this->setAttribute('categoryIds', null);
+
                         break;
+                    }
 
-                    case 'description':
-                        if (is_string($v)) {
-                            $this->setAttribute('description', $v);
-                        }
+                    if (!is_array($v)) {
                         break;
+                    }
 
-                    case 'payload':
-                        if (!empty($v)) {
-                            $oldPayload = $this->getSecretAttribute('payload');
+                    $family = array();
 
-                            if ($oldPayload == $v) {
-                                continue;
-                            }
+                    foreach ($v as $catId) {
+                        $family = array_merge(
+                            $family,
+                            Categories::getPublicCategoryFamilyList((int)$catId)
+                        );
+                    }
 
-                            $this->setSecretAttribute('payload', $v);
+                    if (!empty($family)) {
+                        $this->setAttribute('categories', array_unique($family));
+                    }
 
-                            // write history entry if payload changes
-                            $history = $this->getSecretAttribute('history');
-
-                            $history[] = array(
-                                'timestamp' => time(),
-                                'value'     => $oldPayload
-                            );
-
-                            $this->setSecretAttribute('history', $history);
-                        }
-                        break;
-
-                    case 'dataType':
-                        if (!empty($v)
-                            && is_string($v)
-                        ) {
-                            $this->setAttribute('dataType', $v);
-                        }
-                        break;
-
-                    case 'owner':
-                        if (is_array($v)
-                            && isset($v['id'])
-                            && !empty($v['id'])
-                            && is_numeric($v['id'])
-                            && isset($v['type'])
-                            && !empty($v['type'])
-                        ) {
-                            $newOwnerId   = (int)$v['id'];
-                            $newOwnerType = $v['type'];
-
-                            $this->changeOwner($newOwnerId, $newOwnerType);
-                        }
-                        break;
-
-                    case 'categoryIds':
-                        if (empty($v)) {
-                            $this->setAttribute('categories', null);
-                            $this->setAttribute('categoryIds', null);
-
-                            break;
-                        }
-
-                        if (!is_array($v)) {
-                            break;
-                        }
-
-                        $family = array();
-
-                        foreach ($v as $catId) {
-                            $family = array_merge(
-                                $family,
-                                Categories::getPublicCategoryFamilyList((int)$catId)
-                            );
-                        }
-
-                        if (!empty($family)) {
-                            $this->setAttribute('categories', array_unique($family));
-                        }
-
-                        $this->setAttribute('categoryIds', $v);
-                        break;
-                }
+                    $this->setAttribute('categoryIds', $v);
+                    break;
             }
-        } catch (\Exception $Exception) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.setdata.error',
-                array(
-                    'passwordId' => $this->id,
-                    'error'      => $Exception->getMessage()
-                )
-            ));
         }
 
         if ($SecurityClass) {
@@ -636,6 +627,7 @@ class Password extends QUI\QDOM
         if ($this->getSecretAttribute('newOwnerId')) {
             $ownerId = $this->getSecretAttribute('newOwnerId');
             $this->setSecretAttribute('ownerId', $ownerId);
+            $this->setAttribute('ownerId', $ownerId);
         }
 
         $ownerType = $this->getSecretAttribute('ownerType');
@@ -643,6 +635,7 @@ class Password extends QUI\QDOM
         if ($this->getSecretAttribute('newOwnerType')) {
             $ownerType = $this->getSecretAttribute('newOwnerType');
             $this->setSecretAttribute('ownerType', $ownerType);
+            $this->setAttribute('ownerType', $ownerType);
         }
 
         // encrypt secret password data
@@ -795,7 +788,9 @@ class Password extends QUI\QDOM
         $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
         $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
 
-        // set access data for new owner(s)
+        $checkGroupSharePermission = $currentOwnerType === self::OWNER_TYPE_GROUP;
+
+        // check owner change pre-requisites
         switch ($type) {
             case self::OWNER_TYPE_USER:
             case 'user':
@@ -810,25 +805,12 @@ class Password extends QUI\QDOM
                     return true;
                 }
 
-                $User = CryptoActors::getCryptoUser($id);
-
-                try {
-                    $this->createUserPasswordAccess($User);
-                    $newOwnerId   = $User->getId();
-                    $newOwnerType = self::OWNER_TYPE_USER;
-                } catch (\Exception $Exception) {
-                    QUI\System\Log::addError(
-                        'Could not create access data for user #' . $User->getId() . ': '
-                        . $Exception->getMessage()
-                    );
-
+                if ($checkGroupSharePermission
+                    && !$this->hasPermission(self::PERMISSION_SHARE_GROUP)
+                ) {
                     throw new QUI\Exception(array(
                         'pcsg/grouppasswordmanager',
-                        'exception.password.change.owner.user.error',
-                        array(
-                            'passwordId' => $this->id,
-                            'newOwnerId' => $User->getId()
-                        )
+                        'exception.password.change.owner.no.group.share.permission'
                     ));
                 }
                 break;
@@ -841,28 +823,14 @@ class Password extends QUI\QDOM
                     return true;
                 }
 
-                $Group = CryptoActors::getCryptoGroup($id);
-
-                try {
-                    $this->createGroupPasswordAccess($Group);
-                    $newOwnerId   = $Group->getId();
-                    $newOwnerType = self::OWNER_TYPE_GROUP;
-                } catch (\Exception $Exception) {
-                    QUI\System\Log::addError(
-                        'Could not create access data for group #' . $Group->getId() . ': '
-                        . $Exception->getMessage()
-                    );
-
+                if ($checkGroupSharePermission
+                    && !$this->hasPermission(self::PERMISSION_SHARE_GROUP)
+                ) {
                     throw new QUI\Exception(array(
                         'pcsg/grouppasswordmanager',
-                        'exception.password.change.owner.group.error',
-                        array(
-                            'passwordId' => $this->id,
-                            'newOwnerId' => $Group->getId()
-                        )
+                        'exception.password.change.owner.no.group.share.permission'
                     ));
                 }
-
                 break;
 
             default:
@@ -871,12 +839,6 @@ class Password extends QUI\QDOM
                     'exception.password.change.owner.wrong.type'
                 ));
         }
-
-        // set new owner
-        $this->setSecretAttributes(array(
-            'newOwnerId'   => $newOwnerId,
-            'newOwnerType' => $newOwnerType
-        ));
 
         // delete access data for old owner(s)
         switch ($currentOwnerType) {
@@ -910,6 +872,61 @@ class Password extends QUI\QDOM
                 }
         }
 
+        // set access data for new owner(s)
+        switch ($type) {
+            case self::OWNER_TYPE_USER:
+            case 'user':
+                $User         = CryptoActors::getCryptoUser($id);
+                $newOwnerId   = $User->getId();
+                $newOwnerType = self::OWNER_TYPE_USER;
+
+                // remove user from shared users
+                $sharedWith = $this->getSecretAttribute('sharedWith');
+                $k          = array_search($newOwnerId, $sharedWith['users']);
+
+                if ($k !== false) {
+                    unset($sharedWith['users'][$k]);
+                    $this->setSecretAttribute('sharedWith', $sharedWith);
+                }
+
+                $this->createUserPasswordAccess($User);
+                break;
+
+            case self::OWNER_TYPE_GROUP:
+            case 'group':
+                $Group        = CryptoActors::getCryptoGroup($id);
+                $newOwnerId   = $Group->getId();
+                $newOwnerType = self::OWNER_TYPE_GROUP;
+
+                // remove group from share groups
+                $sharedWith = $this->getSecretAttribute('sharedWith');
+                $k          = array_search($newOwnerId, $sharedWith['groups']);
+
+                if ($k !== false) {
+                    unset($sharedWith['groups'][$k]);
+                    $this->setSecretAttribute('sharedWith', $sharedWith);
+
+                    // remove group access first, so it can bet given again
+                    // for all current users
+                    $this->removeGroupPasswordAccess($Group);
+                }
+
+                $this->createGroupPasswordAccess($Group);
+                break;
+
+            default:
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.password.change.owner.wrong.type'
+                ));
+        }
+
+        // set new owner
+        $this->setSecretAttributes(array(
+            'newOwnerId'   => $newOwnerId,
+            'newOwnerType' => $newOwnerType
+        ));
+
         return true;
     }
 
@@ -924,7 +941,10 @@ class Password extends QUI\QDOM
     public function createUserPasswordAccess($User)
     {
         if (!$this->hasPermission(self::PERMISSION_SHARE)) {
-            $this->permissionDenied();
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.permission'
+            ));
         }
 
         // skip if user already has password access
@@ -1000,7 +1020,10 @@ class Password extends QUI\QDOM
     public function createGroupPasswordAccess($Group)
     {
         if (!$this->hasPermission(self::PERMISSION_SHARE)) {
-            $this->permissionDenied();
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.permission'
+            ));
         }
 
         // skip if group already has password access
@@ -1230,6 +1253,11 @@ class Password extends QUI\QDOM
             )
         );
 
+        /** @var CryptoUser $CryptoUser */
+        foreach ($CryptoGroup->getCryptoUsers() as $CryptoUser) {
+            $this->removeMetaTableEntry($CryptoUser);
+        }
+
         return true;
     }
 
@@ -1334,18 +1362,10 @@ class Password extends QUI\QDOM
      */
     public function createMetaTableEntry(CryptoUser $CryptoUser)
     {
-        // skip if user already has password access
-        if ($this->hasPasswordAccess($CryptoUser)) {
+        $metaData = $CryptoUser->getPasswordMetaData($this->id);
+
+        if (!empty($metaData)) {
             return;
-//            throw new QUI\Exception(array(
-//                'pcsg/grouppasswordmanager',
-//                'exception.password.meta.entry.user.has.no.access',
-//                array(
-//                    'userId'     => $CryptoUser->getId(),
-//                    'userName'   => $CryptoUser->getUsername(),
-//                    'passwordId' => $this->id
-//                )
-//            ));
         }
 
         QUI::getDataBase()->insert(
@@ -1433,18 +1453,22 @@ class Password extends QUI\QDOM
                     return $this->isOwner($this->getUser());
                 }
 
-                if (!QUI\Permissions\Permission::hasPermission(Permissions::PASSWORDS_DELETE)) {
+                if (!Permission::hasPermission(Permissions::PASSWORDS_DELETE)) {
                     return false;
                 }
 
                 return $this->isOwner($this->getUser());
 
             case self::PERMISSION_SHARE:
-                if ($ownerType === self::OWNER_TYPE_USER) {
-                    return $this->isOwner($this->getUser());
+                if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
+                    return false;
                 }
 
-                if (!QUI\Permissions\Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
+                return $this->isOwner($this->getUser());
+                break;
+
+            case self::PERMISSION_SHARE_GROUP:
+                if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE_GROUP)) {
                     return false;
                 }
 
