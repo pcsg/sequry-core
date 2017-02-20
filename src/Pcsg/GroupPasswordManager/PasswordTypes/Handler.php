@@ -103,6 +103,30 @@ class Handler
             $viewData['favoClass'] = 'fa fa-star';
         }
 
+        // create and edit info
+        $Users      = QUI::getUsers();
+        $CreateUser = $Users->get($viewData['createUserId']);
+        $EditUser   = $Users->get($viewData['editUserId']);
+
+        $viewData['created']  = QUI::getLocale()->get(
+            'pcsg/grouppasswordmanager',
+            'passwordtypes.handler.view.template.created',
+            array(
+                'date'     => date('Y-m-d H:i:s', $viewData['createDate']),
+                'userName' => $CreateUser->getUsername(),
+                'userId'   => $CreateUser->getId()
+            )
+        );
+        $viewData['lastEdit'] = QUI::getLocale()->get(
+            'pcsg/grouppasswordmanager',
+            'passwordtypes.handler.view.template.lastEdit',
+            array(
+                'date'     => date('Y-m-d H:i:s', $viewData['editDate']),
+                'userName' => $EditUser->getUsername(),
+                'userId'   => $EditUser->getId()
+            )
+        );
+
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/ViewHeader.html', $viewData);
     }
 

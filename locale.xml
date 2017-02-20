@@ -653,6 +653,15 @@
         <locale name="exception.handler.categories.add.private.category.no.access">
             <de><![CDATA[Das Passwort #[passwordId] kann nicht zur persönlichen Passwort-Kategorie des Benutzers "[userName]" (#[userId]) zugeordnet werden, da der Benutzer keinen Zugriff auf dieses Passwort hat.]]></de>
         </locale>
+
+        <!-- Class: PasswordTypes\Handler -->
+        <locale name="passwordtypes.handler.view.template.created">
+            <de><![CDATA[Erstellt: [date] von [userName] (#[userId])]]></de>
+        </locale>
+        <locale name="passwordtypes.handler.view.template.lastEdit">
+            <de><![CDATA[Zuletzt bearbeitet: [date] von [userName] (#[userId])]]></de>
+        </locale>
+
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">

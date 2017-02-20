@@ -123,7 +123,7 @@
     display: inline-block;
     position: relative;
     width: 100%;
-    z-index: 5;
+    z-index: 3;
 }
 
 .pcsg-gpm-passwords-panel-search span {
@@ -136,7 +136,7 @@
     width: 30px;
     vertical-align: middle;
     right: 0;
-    z-index: 10;
+    z-index: 4;
 }
 
 .pcsg-gpm-passwords-panel-search span:hover {

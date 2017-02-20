@@ -36,6 +36,7 @@
             <field type="MEDIUMTEXT NULL">categories</field> <!-- all categories -->
             <field type="MEDIUMTEXT NULL">categoryIds</field> <!-- specific category ids -->
             <field type="TINYINT(1) UNSIGNED NOT NULL DEFAULT 0">favorite</field>
+            <field type="VARCHAR(10) NOT NULL DEFAULT 0">accessDate</field>
             <primary>userId,dataId</primary>
         </table>
 
@@ -58,6 +59,10 @@
             <field type="MEDIUMTEXT NULL">categoryIds
             </field> <!-- specific category ids -->
             <field type="INTEGER UNSIGNED NOT NULL DEFAULT 0">viewCount</field>
+            <field type="VARCHAR(10) NOT NULL DEFAULT 0">createDate</field>
+            <field type="BIGINT(20) NOT NULL DEFAULT 0">createUserId</field>
+            <field type="VARCHAR(10) NOT NULL DEFAULT 0">editDate</field>
+            <field type="BIGINT(20) NOT NULL DEFAULT 0">editUserId</field>
             <primary>id</primary>
         </table>
 

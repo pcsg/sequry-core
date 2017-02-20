@@ -206,7 +206,11 @@ class Passwords
             'dataType'        => $passwordData['dataType'],
             'cryptoData'      => $passwordContentEncrypted,
             'categories'      => null,
-            'categoryIds'     => null
+            'categoryIds'     => null,
+            'createUserId'    => QUI::getUserBySession()->getId(),
+            'createDate'      => time(),
+            'editUserId'      => QUI::getUserBySession()->getId(),
+            'editDate'        => time()
         );
 
         if (isset($passwordData['categoryIds'])

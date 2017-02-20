@@ -10,7 +10,7 @@ use Pcsg\GroupPasswordManager\Password;
  * @param integer $passwordId - ID of password
  * @param array $shareData - share users and groups
  * @param array $authData - authentication information
- * @return array - password data
+ * @return array|false - password data or false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($passwordId, $shareData, $authData)
 {
@@ -52,7 +52,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
                 )
             )
         );
-    } catch (\Exception $Exception) {
+    } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
@@ -63,6 +63,22 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
                 )
             )
         );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_setShareData -> '
+            . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.general.error'
+            )
+        );
+
+        return false;
     }
 
     // get password data

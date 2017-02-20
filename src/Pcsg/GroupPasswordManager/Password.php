@@ -171,14 +171,26 @@ class Password extends QUI\QDOM
 
         // set public attributes
         $this->setAttributes(array(
-            'title'       => $passwordData['title'],
-            'description' => $passwordData['description'],
-            'dataType'    => $passwordData['dataType'],
-            'ownerId'     => $passwordData['ownerId'],
-            'ownerType'   => $passwordData['ownerType'],
-            'categoryIds' => explode(',', trim($passwordData['categoryIds'], ',')),
-            'viewCount'   => $passwordData['viewCount']
+            'title'        => $passwordData['title'],
+            'description'  => $passwordData['description'],
+            'dataType'     => $passwordData['dataType'],
+            'ownerId'      => $passwordData['ownerId'],
+            'ownerType'    => $passwordData['ownerType'],
+            'viewCount'    => $passwordData['viewCount'],
+            'createUserId' => $passwordData['createUserId'],
+            'createDate'   => $passwordData['createDate'],
+            'editUserId'   => $passwordData['editUserId'],
+            'editDate'     => $passwordData['editDate']
         ));
+
+        // set categories
+        if (!empty($passwordData['categoryIds'])) {
+            $this->setAttribute('categoryIds', explode(',', trim($passwordData['categoryIds'], ',')));
+        }
+
+        if (!empty($passwordData['categories'])) {
+            $this->setAttribute('categories', explode(',', trim($passwordData['categories'], ',')));
+        }
 
         // ownerId and ownerTye are additionally saved as secret attributes
         // because they may not be altered via public "setAttribute()"-method
@@ -222,7 +234,11 @@ class Password extends QUI\QDOM
             'payload'         => $this->getSecretAttribute('payload'),
             'dataType'        => $this->getAttribute('dataType'),
             'securityClassId' => $this->SecurityClass->getId(),
-            'categoryIds'     => $this->getAttribute('categoryIds')
+            'categoryIds'     => $this->getAttribute('categoryIds'),
+            'createUserId'    => $this->getAttribute('createUserId'),
+            'createDate'      => $this->getAttribute('createDate'),
+            'editUserId'      => $this->getAttribute('editUserId'),
+            'editDate'        => $this->getAttribute('editDate')
         );
 
         // private category id
@@ -370,10 +386,10 @@ class Password extends QUI\QDOM
                         }
 
                         if (!empty($family)) {
-                            $this->setAttribute('categories', ',' . implode(',', array_unique($family)) . ',');
+                            $this->setAttribute('categories', array_unique($family));
                         }
 
-                        $this->setAttribute('categoryIds', ',' . implode(',', $v) . ',');
+                        $this->setAttribute('categoryIds', $v);
                         break;
                 }
             }
@@ -599,23 +615,54 @@ class Password extends QUI\QDOM
      */
     protected function save()
     {
-        $cryptoData = $this->getSecretAttributes();
+        // categories
+        $categories      = $this->getAttribute('categories');
+        $categoriesEntry = null;
 
+        if (!empty($categories)) {
+            $categoriesEntry = ',' . implode(',', $categories) . ',';
+        }
+
+        $assignedCategoryIds     = $this->getAttribute('categoryIds');
+        $categoriesAssignedEntry = null;
+
+        if (!empty($assignedCategoryIds)) {
+            $categoriesAssignedEntry = ',' . implode(',', $assignedCategoryIds) . ',';
+        }
+
+        // owner
+        $ownerId = $this->getSecretAttribute('ownerId');
+
+        if ($this->getSecretAttribute('newOwnerId')) {
+            $ownerId = $this->getSecretAttribute('newOwnerId');
+            $this->setSecretAttribute('ownerId', $ownerId);
+        }
+
+        $ownerType = $this->getSecretAttribute('ownerType');
+
+        if ($this->getSecretAttribute('newOwnerType')) {
+            $ownerType = $this->getSecretAttribute('newOwnerType');
+            $this->setSecretAttribute('ownerType', $ownerType);
+        }
+
+        // encrypt secret password data
         $cryptoDataEncrypted = SymmetricCrypto::encrypt(
-            json_encode($cryptoData),
+            json_encode($this->getSecretAttributes()),
             $this->getPasswordKey()
         );
 
         $passwordData = array(
-            'ownerId'         => $this->getSecretAttribute('ownerId'),
-            'ownerType'       => $this->getSecretAttribute('ownerType'),
+            'ownerId'         => $ownerId,
+            'ownerType'       => $ownerType,
             'securityClassId' => $this->SecurityClass->getId(),
             'title'           => $this->getAttribute('title'),
             'description'     => $this->getAttribute('description'),
             'dataType'        => $this->getAttribute('dataType'),
             'cryptoData'      => $cryptoDataEncrypted,
-            'categories'      => $this->getAttribute('categories') ?: null,
-            'categoryIds'     => $this->getAttribute('categoryIds') ?: null
+            'categories'      => $categoriesEntry,
+            'categoryIds'     => $categoriesAssignedEntry,
+            'editDate'        => time(),
+            'editUserId'      => $this->User->getId()
         );
 
         // encrypt fields used for MAC creation (MACFields)
@@ -827,8 +874,8 @@ class Password extends QUI\QDOM
 
         // set new owner
         $this->setSecretAttributes(array(
-            'ownerId'   => $newOwnerId,
-            'ownerType' => $newOwnerType
+            'newOwnerId'   => $newOwnerId,
+            'newOwnerType' => $newOwnerType
         ));
 
         // delete access data for old owner(s)
@@ -899,6 +946,7 @@ class Password extends QUI\QDOM
         }
 
         $this->decrypt();
+        $this->createMetaTableEntry($User);
 
         // split key
         $payloadKeyParts = SecretSharing::splitSecret(
@@ -975,6 +1023,12 @@ class Password extends QUI\QDOM
 
         $this->decrypt();
 
+        // create meta table entries
+        /** @var CryptoUser $CryptoUser */
+        foreach ($Group->getCryptoUsers() as $CryptoUser) {
+            $this->createMetaTableEntry($CryptoUser);
+        }
+
         $GroupKeyPair = $Group->getKeyPair($this->SecurityClass);
 
         // encrypt password payload key with group public key
@@ -1012,6 +1066,10 @@ class Password extends QUI\QDOM
     {
         if (!$this->hasPermission(self::PERMISSION_EDIT)) {
             $this->permissionDenied();
+        }
+
+        if ($this->SecurityClass->getId() == $SecurityClass->getId()) {
+            return;
         }
 
         $ownerId = $this->getSecretAttribute('ownerId');
@@ -1149,6 +1207,8 @@ class Password extends QUI\QDOM
             )
         );
 
+        $this->removeMetaTableEntry($CryptoUser);
+
         return true;
     }
 
@@ -1274,23 +1334,26 @@ class Password extends QUI\QDOM
      */
     public function createMetaTableEntry(CryptoUser $CryptoUser)
     {
-        if (!$this->hasPasswordAccess($CryptoUser)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.meta.entry.user.has.no.access',
-                array(
-                    'userId'     => $CryptoUser->getId(),
-                    'userName'   => $CryptoUser->getUsername(),
-                    'passwordId' => $this->id
-                )
-            ));
+        // skip if user already has password access
+        if ($this->hasPasswordAccess($CryptoUser)) {
+            return;
+//            throw new QUI\Exception(array(
+//                'pcsg/grouppasswordmanager',
+//                'exception.password.meta.entry.user.has.no.access',
+//                array(
+//                    'userId'     => $CryptoUser->getId(),
+//                    'userName'   => $CryptoUser->getUsername(),
+//                    'passwordId' => $this->id
+//                )
+//            ));
         }
 
         QUI::getDataBase()->insert(
             QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
             array(
-                'userId' => $CryptoUser->getId(),
-                'dataId' => $this->id
+                'userId'     => $CryptoUser->getId(),
+                'dataId'     => $this->id,
+                'accessDate' => time()
             )
         );
     }
@@ -1303,19 +1366,19 @@ class Password extends QUI\QDOM
      *
      * @throws QUI\Exception
      */
-    public function removeMetaTableEntry(CryptoUser $CryptoUser)
+    protected function removeMetaTableEntry(CryptoUser $CryptoUser)
     {
-        if ($this->hasPasswordAccess($CryptoUser)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.remove.meta.entry.user.has.access',
-                array(
-                    'userId'     => $CryptoUser->getId(),
-                    'userName'   => $CryptoUser->getUsername(),
-                    'passwordId' => $this->id
-                )
-            ));
-        }
+//        if ($this->hasPasswordAccess($CryptoUser)) {
+//            throw new QUI\Exception(array(
+//                'pcsg/grouppasswordmanager',
+//                'exception.password.remove.meta.entry.user.has.access',
+//                array(
+//                    'userId'     => $CryptoUser->getId(),
+//                    'userName'   => $CryptoUser->getUsername(),
+//                    'passwordId' => $this->id
+//                )
+//            ));
+//        }
 
         QUI::getDataBase()->delete(
             QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),

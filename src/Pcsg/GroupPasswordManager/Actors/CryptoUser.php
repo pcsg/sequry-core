@@ -840,7 +840,7 @@ class CryptoUser extends QUI\Users\User
             foreach ($searchParams['filters'] as $filter) {
                 switch ($filter) {
                     case 'new':
-                        // @todo
+                        $orderFields[] = 'meta.`accessDate` DESC';
                         break;
 
                     case 'mostUsed':

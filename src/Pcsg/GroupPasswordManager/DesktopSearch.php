@@ -57,7 +57,7 @@ class DesktopSearch implements ProviderInterface
     {
         return array(
             'searchdata' => json_encode(array(
-                'require' => 'package/pcsg/grouppasswordmanager/bin/controls/passwords/SearchResultDisplay',
+                'require' => 'package/pcsg/grouppasswordmanager/bin/controls/passwords/DesktopSearchResult',
                 'params'  => array(
                     'passwordId' => (int)$id
                 )
