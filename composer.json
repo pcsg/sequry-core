@@ -16,7 +16,7 @@
   },
   "require": {
     "quiqqer/quiqqer": "*@dev",
-    "phpseclib/phpseclib": "2.0.0",
+    "phpseclib/phpseclib": "2.2.0",
     "paragonie/halite": "2.0.1",
     "ext-bcmath": "*",
     "pcsg/gpmauthpassword": "dev-master",
