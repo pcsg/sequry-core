@@ -6,8 +6,8 @@
 
 namespace Pcsg\GroupPasswordManager\Actors;
 
+use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Events;
-use Pcsg\GroupPasswordManager\Handler\Categories;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
@@ -26,7 +26,7 @@ use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use QUI\Utils\Security\Orthos;
-use Symfony\Component\Console\Helper\Table;
+use QUI\Permissions\Permission;
 
 /**
  * User Class
@@ -855,7 +855,17 @@ class CryptoUser extends QUI\Users\User
         if (isset($searchParams['sortOn'])
             && !empty($searchParams['sortOn'])
         ) {
-            $order = 'data.`' . Orthos::clear($searchParams['sortOn']) . '`';
+            $orderPrefix = 'data.`';
+
+            switch ($searchParams['sortOn']) {
+                case 'favorite':
+                    $orderPrefix = 'meta.`';
+                    break;
+
+                default:
+            }
+
+            $order = $orderPrefix . Orthos::clear($searchParams['sortOn']) . '`';
 
             if (isset($searchParams['sortBy']) &&
                 !empty($searchParams['sortBy'])
@@ -907,13 +917,29 @@ class CryptoUser extends QUI\Users\User
         $ownerPasswordIds        = $this->getOwnerPasswordIds();
         $directAccessPasswordIds = $this->getPasswordIdsDirectAccess();
 
+        $canShareOwn = Permission::hasPermission(
+            Permissions::PASSWORDS_SHARE, $this
+        );
+
+        $canShareGroup = Permission::hasPermission(
+            Permissions::PASSWORDS_SHARE_GROUP, $this
+        );
+
+        $canDeleteGroup = Permission::hasPermission(
+            Permissions::PASSWORDS_DELETE_GROUP, $this
+        );
+
         foreach ($result as $row) {
             $row['isOwner'] = in_array($row['id'], $ownerPasswordIds);
 
             if (in_array($row['id'], $directAccessPasswordIds)) {
-                $row['access'] = 'user';
+                $row['access']    = 'user';
+                $row['canShare']  = $canShareOwn;
+                $row['canDelete'] = true;
             } else {
-                $row['access'] = 'group';
+                $row['access']    = 'group';
+                $row['canShare']  = $canShareGroup;
+                $row['canDelete'] = $canDeleteGroup;
             }
 
             $row['dataType'] = Handler::getTypeTitle($row['dataType']);
@@ -936,6 +962,8 @@ class CryptoUser extends QUI\Users\User
         $passwordIdsSharedWithGroups = $this->getOwnerPasswordIdsSharedWithGroups();
 
         // set results to password list
+        $securityClassIds = array();
+
         foreach ($passwords as $k => $row) {
             $row['sharedWithUsers']  = false;
             $row['sharedWithGroups'] = false;
@@ -948,7 +976,32 @@ class CryptoUser extends QUI\Users\User
                 $row['sharedWithGroups'] = true;
             }
 
-            $passwords[$k] = $row;
+            $passwords[$k]      = $row;
+            $securityClassIds[] = $row['securityClassId'];
+        }
+
+        // get titles of all security classes
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id',
+                'title'
+            ),
+            'from'   => QUI::getDBTableName(Tables::SECURITY_CLASSES),
+            'where'  => array(
+                'id' => array(
+                    'type'  => 'IN',
+                    'value' => $securityClassIds
+                )
+            )
+        ));
+
+        foreach ($passwords as $k => $data) {
+            foreach ($result as $row) {
+                if ($data['securityClassId'] == $row['id']) {
+                    $passwords[$k]['securityClassTitle'] = $row['title'];
+                    continue 2;
+                }
+            }
         }
 
         return $passwords;

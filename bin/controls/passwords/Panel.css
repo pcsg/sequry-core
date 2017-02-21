@@ -67,15 +67,28 @@
     margin: 0 2px;
 }
 
-.pcsg-gpm-passwords-panel-table-permissions {
+.pcsg-gpm-passwords-panel-table-actions {
     color: #0069b4;
     float: left;
     text-align: center;
     width: 90%;
 }
 
-.pcsg-gpm-passwords-panel-table-permissions span {
-    margin: 0 2px;
+.pcsg-gpm-passwords-panel-table-actions span {
+    margin: 0 3px;
+}
+
+.pcsg-gpm-passwords-panel-table-actions span:hover {
+    color: #00A0B0;
+}
+
+.pcsg-gpm-passwords-panel-table-action-disabled {
+    color: #ccc;
+}
+
+.pcsg-gpm-passwords-panel-table-action-disabled:hover {
+    cursor: default;
+    color: #ccc !important;
 }
 
 .pcsg-gpm-passwords-panel-access-info-owner div {

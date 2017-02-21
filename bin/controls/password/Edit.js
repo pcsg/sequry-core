@@ -128,6 +128,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                     AuthData
                 ).then(
                     function (PasswordData) {
+                        if (!PasswordData) {
+                            self.fireEvent('close');
+                        }
+
                         self.$PasswordData    = PasswordData;
                         self.$AuthData        = AuthData;
                         self.$securityClassId = PasswordData.securityClassId;

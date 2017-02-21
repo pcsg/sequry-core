@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  *
  * @param integer $passwordId - ID of password
  * @param array $authData - authentication information
- * @return true - on success
+ * @return bool - success
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $authData)
 {
@@ -34,7 +34,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
                 )
             )
         );
-    } catch (\Exception $Exception) {
+    } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
@@ -45,6 +45,22 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
                 )
             )
         );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_delete -> '
+            . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.general.error'
+            )
+        );
+
+        return false;
     }
 
     return true;

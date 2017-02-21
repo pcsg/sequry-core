@@ -160,60 +160,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.addButton(new QUISeparator());
 
-            this.addButton({
-                name     : 'view',
-                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.view'),
-                textimage: 'fa fa-eye',
-                events   : {
-                    onClick: function () {
-                        self.viewPassword(
-                            self.$Grid.getSelectedData()[0].id
-                        );
-                    }
-                }
-            });
-
-            this.addButton(new QUISeparator());
-
-            this.addButton({
-                name     : 'share',
-                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.share'),
-                textimage: 'fa fa-share-alt',
-                events   : {
-                    onClick: function () {
-                        self.sharePassword(
-                            self.$Grid.getSelectedData()[0].id
-                        );
-                    }
-                }
-            });
-
-            this.addButton({
-                name     : 'edit',
-                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.edit'),
-                textimage: 'fa fa-edit',
-                events   : {
-                    onClick: function () {
-                        self.editPassword(
-                            self.$Grid.getSelectedData()[0].id
-                        );
-                    }
-                }
-            });
-
-            this.addButton({
-                name     : 'delete',
-                text     : QUILocale.get(lg, 'controls.gpm.passwords.btn.delete'),
-                textimage: 'fa fa-trash',
-                events   : {
-                    onClick: function () {
-                        self.deletePassword(
-                            self.$Grid.getSelectedData()[0]
-                        );
-                    }
-                }
-            });
-
             new QUIButton({
                 name  : 'categories',
                 alt   : QUILocale.get(lg, 'controls.gpm.passwords.btn.categories'),
@@ -231,7 +177,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             }).inject(this.getHeader());
 
             var DblClickActionSelect = new QUISelect({
-                placeholderText      : QUILocale.get(lg, 'controls.gpm.passwords.panel.options.label.dblclick'),
+                placeholderText      : false,
                 placeholderIcon      : false,
                 placeholderSelectable: false, // placeholder is standard selectable menu child
                 showIcons            : false,
@@ -243,19 +189,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             });
 
             DblClickActionSelect.appendChild(
-                QUILocale.get(lg, 'controls.gpm.passwords.btn.view'),
+                QUILocale.get(lg, 'controls.gpm.passwords.dblclickaction.view'),
                 'view'
             ).appendChild(
-                QUILocale.get(lg, 'controls.gpm.passwords.btn.edit'),
+                QUILocale.get(lg, 'controls.gpm.passwords.dblclickaction.edit'),
                 'edit'
             ).appendChild(
-                QUILocale.get(lg, 'controls.gpm.passwords.btn.share'),
+                QUILocale.get(lg, 'controls.gpm.passwords.dblclickaction.share'),
                 'share'
             );
 
             this.addButton(DblClickActionSelect);
 
-            //DblClickActionSelect.setValue('view');
+            DblClickActionSelect.setValue('view');
 
             // content
             this.$GridContainer = Content.getElement(
@@ -269,12 +215,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.$Grid = new Grid(GridContainer, {
                 pagination       : true,
                 selectable       : true,
+                serverSort       : true,
                 multipleSelection: true,
                 columnModel      : [{
                     header   : '&nbsp;',
                     dataIndex: 'favorite',
                     dataType : 'node',
                     width    : 30
+                }, {
+                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.actions'),
+                    dataIndex: 'permissions',
+                    dataType : 'node',
+                    width    : 100
                 }, {
                     header   : QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
@@ -301,6 +253,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataType : 'node',
                     width    : 50
                 }, {
+                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.securityClass'),
+                    dataIndex: 'securityClass',
+                    dataType : 'string',
+                    width    : 125
+                }, {
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.owner'),
                     dataIndex: 'owner',
                     dataType : 'node',
@@ -310,11 +267,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     dataIndex: 'shared',
                     dataType : 'node',
                     width    : 75
-                }, {
-                    header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.permissions'),
-                    dataIndex: 'permissions',
-                    dataType : 'node',
-                    width    : 100
                 }, {
                     dataIndex: 'securityClassId',
                     dataType : 'integer',
@@ -341,25 +293,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
                         default:
                             self.viewPassword(pwId);
-                    }
-                },
-                onClick   : function () {
-                    var data = self.$Grid.getSelectedData();
-
-                    if (data.length > 1) {
-                        self.getButtons('view').disable();
-                        self.getButtons('delete').disable();
-                        self.getButtons('edit').disable();
-                        self.getButtons('share').disable();
-                        return;
-                    }
-
-                    self.getButtons('view').enable();
-
-                    if (data[0].isOwner) {
-                        self.getButtons('delete').enable();
-                        self.getButtons('edit').enable();
-                        self.getButtons('share').enable();
                     }
                 },
                 onRefresh : this.$listRefresh
@@ -461,6 +394,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.Loader.show();
 
+            switch (Grid.getAttribute('sortOn')) {
+                case 'permissions':
+                case 'accessType':
+                case 'shared':
+                    Grid.setAttribute('sortOn', false);
+                    break;
+
+                case 'owner':
+                    Grid.setAttribute('sortOn', 'ownerId');
+                    break;
+
+                case 'securityClass':
+                    Grid.setAttribute('sortOn', 'securityClassId');
+                    break;
+            }
+
             var GridParams = {
                 sortOn : Grid.getAttribute('sortOn'),
                 sortBy : Grid.getAttribute('sortBy'),
@@ -508,11 +457,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         $setGridData: function (GridData) {
             var Row;
             var self = this;
-
-            this.getButtons('delete').disable();
-            this.getButtons('view').disable();
-            this.getButtons('edit').disable();
-            this.getButtons('share').disable();
 
             var FuncAccessInfoClick = function () {
                 self.$showAccessInfoPopup(
@@ -580,11 +524,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 });
             };
 
+            var FuncActionView = function (event) {
+                self.viewPassword(event.target.getProperty('data-pwid'));
+            };
+
+            var FuncActionEdit = function (event) {
+                self.editPassword(event.target.getProperty('data-pwid'));
+            };
+
+            var FuncActionShare = function (event) {
+                self.sharePassword(event.target.getProperty('data-pwid'));
+            };
+
+            var FuncActionDelete = function (event) {
+                self.deletePassword(event.target.getProperty('data-pwid'));
+            };
+
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 var Data = GridData.data[i];
 
                 Row = Object.clone(Data);
 
+                // access type
                 Row.accessType = new Element('div', {
                     'class'   : 'pcsg-gpm-passwords-panel-table-accesstype',
                     'data-row': i,
@@ -606,6 +567,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         }).inject(Row.accessType);
                         break;
                 }
+
+                // security class
+                Row.securityClass = Data.securityClassTitle;
 
                 // favorite
                 Row.favorite = new Element('div', {
@@ -631,27 +595,60 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     FavoElm.setProperty('data-favo', 0);
                 }
 
-                // show permissions
+                // show actions (permissions)
                 Row.permissions = new Element('div', {
-                    'class': 'pcsg-gpm-passwords-panel-table-permissions'
+                    'class': 'pcsg-gpm-passwords-panel-table-actions'
                 });
 
                 new Element('span', {
-                    'class': 'fa fa-eye'
+                    'class'    : 'fa fa-eye',
+                    'data-pwid': Data.id,
+                    alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.view'),
+                    title      : QUILocale.get(lg, 'controls.gpm.passwords.action.view'),
+                    events     : {
+                        click: FuncActionView
+                    }
+                }).inject(Row.permissions);
+
+                var Share = new Element('span', {
+                    'class'    : 'fa fa-share-alt',
+                    'data-pwid': Data.id,
+                    alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.share'),
+                    title      : QUILocale.get(lg, 'controls.gpm.passwords.action.share')
+                }).inject(Row.permissions);
+
+                var Edit = new Element('span', {
+                    'class'    : 'fa fa-edit',
+                    'data-pwid': Data.id,
+                    alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.edit'),
+                    title      : QUILocale.get(lg, 'controls.gpm.passwords.action.edit')
+                }).inject(Row.permissions);
+
+                var Delete = new Element('span', {
+                    'class'    : 'fa fa-trash',
+                    'data-pwid': Data.id,
+                    alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.delete'),
+                    title      : QUILocale.get(lg, 'controls.gpm.passwords.action.delete')
                 }).inject(Row.permissions);
 
                 if (Data.isOwner) {
-                    new Element('span', {
-                        'class': 'fa fa-share-alt'
-                    }).inject(Row.permissions);
+                    if (Data.canShare) {
+                        Share.addEvent('click', FuncActionShare);
+                    } else {
+                        Share.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                    }
 
-                    new Element('span', {
-                        'class': 'fa fa-edit'
-                    }).inject(Row.permissions);
+                    if (Data.canDelete) {
+                        Delete.addEvent('click', FuncActionDelete);
+                    } else {
+                        Delete.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                    }
 
-                    new Element('span', {
-                        'class': 'fa fa-trash'
-                    }).inject(Row.permissions);
+                    Edit.addEvent('click', FuncActionEdit);
+                } else {
+                    Share.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                    Edit.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                    Delete.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
                 }
 
                 // show owner

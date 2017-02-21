@@ -1453,7 +1453,7 @@ class Password extends QUI\QDOM
                     return $this->isOwner($this->getUser());
                 }
 
-                if (!Permission::hasPermission(Permissions::PASSWORDS_DELETE)) {
+                if (!Permission::hasPermission(Permissions::PASSWORDS_DELETE_GROUP)) {
                     return false;
                 }
 

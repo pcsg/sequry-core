@@ -114,6 +114,9 @@
         <locale name="success.password.create">
             <de><![CDATA[Das Passwort wurde erfolgreich erstellt.]]></de>
         </locale>
+        <locale name="exception.passwords.create.missing.title">
+            <de><![CDATA[Das Passwort muss einen Titel haben.]]></de>
+        </locale>
         <locale name="exception.password.setdata.error" html="true">
             <de><![CDATA[Beim Ändern der Daten des Passworts #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error].]]></de>
         </locale>
@@ -463,6 +466,9 @@
         </locale>
         <locale name="message.ajax.passwords.categories.public.setToPasswords.success">
             <de><![CDATA[Die Passwort-Kategorie(n) für die gewählten Passwörter wurden erfolgreich gesetzt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.getList.error" html="true">
+            <de><![CDATA[Beim Abruf der Passwort-Liste ist ein Fehler aufgetreten:<br><br>]]></de>
         </locale>
 
 
@@ -862,11 +868,14 @@
         <locale name="controls.gpm.passwords.panel.tbl.header.shared">
             <de><![CDATA[Geteilt]]></de>
         </locale>
-        <locale name="controls.gpm.passwords.panel.tbl.header.permissions">
-            <de><![CDATA[Rechte]]></de>
+        <locale name="controls.gpm.passwords.panel.tbl.header.actions">
+            <de><![CDATA[Aktionen]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.tbl.header.owner">
             <de><![CDATA[Eigentümer]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.securityClass">
+            <de><![CDATA[Sicherheitskl.]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.tbl.owner.myself">
             <de><![CDATA[Ich]]></de>
@@ -895,11 +904,26 @@
         <locale name="controls.gpm.passwords.btn.view">
             <de><![CDATA[Ansehen]]></de>
         </locale>
-        <locale name="controls.gpm.passwords.btn.share">
-            <de><![CDATA[Teilen]]></de>
+        <locale name="controls.gpm.passwords.action.view">
+            <de><![CDATA[Passwort ansehen]]></de>
         </locale>
-        <locale name="controls.gpm.passwords.btn.edit">
-            <de><![CDATA[Bearbeiten]]></de>
+        <locale name="controls.gpm.passwords.action.edit">
+            <de><![CDATA[Passwort bearbeiten]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.action.share">
+            <de><![CDATA[Passwort teilen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.action.delete">
+            <de><![CDATA[Passwort löschen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.dblclickaction.view">
+            <de><![CDATA[Bei Doppelklick: Ansehen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.dblclickaction.share">
+            <de><![CDATA[Bei Doppelklick: Teilen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.dblclickaction.edit">
+            <de><![CDATA[Bei Doppelklick: Bearbeiten]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.delete">
             <de><![CDATA[Löschen]]></de>

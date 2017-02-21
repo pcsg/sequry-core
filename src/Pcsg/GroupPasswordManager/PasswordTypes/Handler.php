@@ -28,6 +28,14 @@ class Handler
         foreach ($files as $fileName) {
             $file = $dir . '/' . $fileName;
 
+            // skip certain types, because they are no longer available
+            // but have to be kept for legacy reasons
+            switch ($fileName) {
+                case 'Credentials': // removed: 2017-21-02
+                    continue 2;
+                    break;
+            }
+
             if (is_dir($file)) {
                 $types[] = array(
                     'name'  => $fileName,
@@ -38,6 +46,25 @@ class Handler
                 );
             }
         }
+
+        usort($types, function($a, $b) {
+            $name1 = $a['name'];
+            $name2 = $b['name'];
+
+            if ($name1 == 'Website') {
+                return -1;
+            }
+
+            if ($name2 == 'Website') {
+                return 1;
+            }
+
+            if ($name1 === $name2) {
+                return 0;
+            }
+
+            return $name1 < $name2 ? -1 : 1;
+        });
 
         return $types;
     }
