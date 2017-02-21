@@ -5,6 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Modules\AsymmetricCrypto;
 use ParagonIE\Halite\Asymmetric\Crypto;
 use ParagonIE\Halite\Asymmetric\EncryptionPublicKey;
 use ParagonIE\Halite\Asymmetric\EncryptionSecretKey;
+use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
@@ -27,8 +28,10 @@ class ECC implements IAsymmetricCrypto
     public static function encrypt($plainText, $publicKey)
     {
         try {
-            $PublicKey = new EncryptionPublicKey($publicKey);
-            $cipherText = Crypto::seal($plainText, $PublicKey, true);
+            $HiddenPlainText = new HiddenString($plainText);
+            $HiddenPublicKey = new HiddenString($publicKey);
+            $PublicKey       = new EncryptionPublicKey($HiddenPublicKey);
+            $cipherText      = Crypto::seal($HiddenPlainText, $PublicKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Plaintext encryption with publiy key failed: '
@@ -50,8 +53,10 @@ class ECC implements IAsymmetricCrypto
     public static function decrypt($cipherText, $privateKey)
     {
         try {
-            $PrivateKey = new EncryptionSecretKey($privateKey);
-            $plainText = Crypto::unseal($cipherText, $PrivateKey, true);
+            $HiddenCypherText = new HiddenString($cipherText);
+            $HiddenPrivateKey = new HiddenString($privateKey);
+            $PrivateKey       = new EncryptionSecretKey($HiddenPrivateKey);
+            $plainText        = Crypto::unseal($HiddenCypherText, $PrivateKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Ciphertext decryption with private key failed: '
@@ -74,8 +79,8 @@ class ECC implements IAsymmetricCrypto
             $KeyPair = KeyFactory::generateEncryptionKeyPair();
 
             $keys = array(
-                'publicKey' => $KeyPair->getPublicKey()->get(),
-                'privateKey' => $KeyPair->getSecretKey()->get()
+                'publicKey'  => $KeyPair->getPublicKey()->getRawKeyMaterial(),
+                'privateKey' => $KeyPair->getSecretKey()->getRawKeyMaterial()
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(

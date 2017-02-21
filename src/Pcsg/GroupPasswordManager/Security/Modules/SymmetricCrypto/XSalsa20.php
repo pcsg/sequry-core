@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto;
 
+use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use QUI;
 use ParagonIE\Halite\Symmetric\Crypto;
@@ -26,8 +27,10 @@ class XSalsa20 implements ISymmetricCrypto
     public static function encrypt($plainText, $key)
     {
         try {
-            $SecretKey = new EncryptionKey($key);
-            $cipherText = Crypto::encrypt($plainText, $SecretKey, true);
+            $HiddenPlainText = new HiddenString($plainText);
+            $HiddenKey       = new HiddenString($key);
+            $SecretKey       = new EncryptionKey($HiddenKey);
+            $cipherText      = Crypto::encrypt($HiddenPlainText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'XSalsa20 :: Plaintext encryption failed: '
@@ -48,7 +51,7 @@ class XSalsa20 implements ISymmetricCrypto
     {
         try {
             $SecretKey = KeyFactory::generateEncryptionKey();
-            $secretKey = $SecretKey->get();
+            $secretKey = $SecretKey->getRawKeyMaterial();
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'XSalsa20 :: Random key generation failed: '
@@ -70,8 +73,10 @@ class XSalsa20 implements ISymmetricCrypto
     public static function decrypt($cipherText, $key)
     {
         try {
-            $SecretKey = new EncryptionKey($key);
-            $plainText = Crypto::decrypt($cipherText, $SecretKey, true);
+            $HiddenCipherText = new HiddenString($cipherText);
+            $HiddenKey        = new HiddenString($key);
+            $SecretKey        = new EncryptionKey($HiddenKey);
+            $plainText        = Crypto::decrypt($HiddenCipherText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'XSalsa20 :: Ciphertext decryption failed: '
