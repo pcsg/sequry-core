@@ -17,7 +17,7 @@
   "require": {
     "quiqqer/quiqqer": "*@dev",
     "phpseclib/phpseclib": "2.0.0",
-    "paragonie/halite": "1^",
+    "paragonie/halite": "^v1",
     "ext-bcmath": "*",
     "pcsg/gpmauthpassword": "dev-master",
     "npm-asset/clipboard": "1.5.16"
