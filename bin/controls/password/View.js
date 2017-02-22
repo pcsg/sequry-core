@@ -186,6 +186,32 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
             var i, len, Elm, CopyBtn;
             var copyElms = this.$Elm.getElements('.pwm-passwordtypes-copy');
 
+            var FuncCopyBtnClick = function (Btn) {
+                var Elm = Btn.getAttribute('Elm');
+
+                if (Elm.nodeName === 'INPUT') {
+                    Elm.select();
+                }
+
+                var ToolTip = new Element('div', {
+                    'class': 'pcsg-gpm-password-view-copy-tooltip',
+                    html   : '<span>' +
+                    QUILocale.get(lg, 'controls.password.view.tooltip.copy') +
+                    '</span>'
+                }).inject(Btn.getElm(), 'after');
+
+                (function() {
+                    moofx(ToolTip).animate({
+                        opacity: 0
+                    }, {
+                        duration: 1000,
+                        callback: function () {
+                            ToolTip.destroy();
+                        }
+                    });
+                }.delay(750));
+            };
+
             for (i = 0, len = copyElms.length; i < len; i++) {
                 Elm = copyElms[i];
 
@@ -193,31 +219,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                     Elm   : Elm,
                     icon  : 'fa fa-copy',
                     events: {
-                        onClick: function (Btn) {
-                            var Elm = Btn.getAttribute('Elm');
-
-                            if (Elm.nodeName === 'INPUT') {
-                                Elm.select();
-                            }
-
-                            var ToolTip = new Element('div', {
-                                'class': 'pcsg-gpm-password-view-copy-tooltip',
-                                html   : '<span>' +
-                                    QUILocale.get(lg, 'controls.password.view.tooltip.copy') +
-                                '</span>'
-                            }).inject(Btn.getElm(), 'after');
-
-                            (function() {
-                                moofx(ToolTip).animate({
-                                    opacity: 0
-                                }, {
-                                    duration: 1000,
-                                    callback: function () {
-                                        ToolTip.destroy();
-                                    }
-                                });
-                            }.delay(750));
-                        }
+                        onClick: FuncCopyBtnClick
                     }
                 }).inject(Elm, 'after');
 
