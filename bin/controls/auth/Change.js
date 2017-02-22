@@ -12,7 +12,8 @@
  * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css
  *
- * @event onFinish
+ * @event onLoaded [this] - fires when control has finished loading
+ * @event onFinish [this] - fires if the user successfully committed new auth information
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
 
@@ -23,7 +24,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
 
     'Ajax',
 
@@ -31,11 +33,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css'
 
 ], function (QUI, QUIControl, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             AuthHandler, Ajax, template) {
+             Authentication, RecoveryCodeWindow, Ajax, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -122,7 +123,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                         AuthPluginControlElm
                     );
 
-                    self.fireEvent('finish');
+                    self.fireEvent('loaded', [self]);
                 });
             });
 
@@ -137,7 +138,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
 
             Authentication.getRecoveryCodeId(
                 this.getAttribute('authPluginId')
-            ).then(function(recoveryCodeId) {
+            ).then(function (recoveryCodeId) {
                 if (!recoveryCodeId) {
                     return;
                 }
@@ -152,9 +153,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                     'html',
                     '<span class="pcsg-gpm-auth-change-recovery-info">' + QUILocale.get(lg, 'auth.recovery.information') + '</span>' +
                     '<span class="pcsg-gpm-auth-change-recovery-code">' +
-                        QUILocale.get(lg, 'auth.recovery.code', {
-                            recoveryCodeId: recoveryCodeId
-                        }) +
+                    QUILocale.get(lg, 'auth.recovery.code', {
+                        recoveryCodeId: recoveryCodeId
+                    }) +
                     '</span>' +
                     '<div class="pcsg-gpm-auth-change-recovery-inputs"></div>'
                 );
@@ -234,23 +235,45 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
         },
 
         /**
-         * Change current user with plugin
-         *
-         * @returns {Promise}
+         * Submit new authentication information
          */
         submit: function () {
-            var OldAuthData = this.$AuthPluginControl.getOldAuthData();
+            var self         = this;
+            var authPluginId = this.getAttribute('authPluginId');
+            var OldAuthData  = this.$AuthPluginControl.getOldAuthData();
 
             if (this.$recoveryMode) {
                 OldAuthData = this.$getRecoveryCode();
             }
 
-            return Authentication.changeAuthInformation(
-                this.getAttribute('authPluginId'),
-                OldAuthData,
-                this.$AuthPluginControl.getNewAuthData(),
-                this.$recoveryMode
-            );
+            Promise.all([
+                Authentication.changeAuthInformation(
+                    authPluginId,
+                    OldAuthData,
+                    self.$AuthPluginControl.getNewAuthData(),
+                    self.$recoveryMode
+                ),
+                Authentication.getAuthPluginInfo(authPluginId)
+            ]).then(function (result) {
+                var RecoveryCodeData = result[0];
+                var AuthPluginData   = result[1];
+
+                if (!RecoveryCodeData) {
+                    return;
+                }
+
+                new RecoveryCodeWindow({
+                    authPluginId    : AuthPluginData.id,
+                    authPluginTitle : AuthPluginData.title,
+                    RecoveryCodeData: RecoveryCodeData,
+                    events          : {
+                        onClose: function () {
+                            RecoveryCodeData = null;
+                            self.fireEvent('finish', [self]);
+                        }
+                    }
+                }).open();
+            });
         }
     });
 });

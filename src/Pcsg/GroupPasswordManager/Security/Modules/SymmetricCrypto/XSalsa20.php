@@ -27,10 +27,10 @@ class XSalsa20 implements ISymmetricCrypto
     public static function encrypt($plainText, $key)
     {
         try {
-            $HiddenPlainText = new HiddenString($plainText);
-            $HiddenKey       = new HiddenString($key);
-            $SecretKey       = new EncryptionKey($HiddenKey);
-            $cipherText      = Crypto::encrypt($HiddenPlainText, $SecretKey, true);
+//            $HiddenPlainText = new HiddenString($plainText);
+//            $HiddenKey       = new HiddenString($key);
+            $SecretKey  = new EncryptionKey($key);
+            $cipherText = Crypto::encrypt($plainText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'XSalsa20 :: Plaintext encryption failed: '
@@ -73,10 +73,10 @@ class XSalsa20 implements ISymmetricCrypto
     public static function decrypt($cipherText, $key)
     {
         try {
-            $HiddenCipherText = new HiddenString($cipherText);
-            $HiddenKey        = new HiddenString($key);
-            $SecretKey        = new EncryptionKey($HiddenKey);
-            $plainText        = Crypto::decrypt($HiddenCipherText, $SecretKey, true);
+//            $HiddenCipherText = new HiddenString($cipherText);
+//            $HiddenKey        = new HiddenString($key);
+            $SecretKey = new EncryptionKey($key);
+            $plainText = Crypto::decrypt($cipherText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'XSalsa20 :: Ciphertext decryption failed: '

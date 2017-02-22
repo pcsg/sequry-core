@@ -1,6 +1,6 @@
 <?php
 
-namespace Pcsg\GroupPasswordManager;
+namespace Pcsg\GroupPasswordManager\Console;
 
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;

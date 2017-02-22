@@ -135,7 +135,7 @@ class CryptoUser extends QUI\Users\User
      *
      * @return array
      */
-    protected function getAuthKeyPairIds()
+    public function getAuthKeyPairIds()
     {
         $ids = array();
 
@@ -681,7 +681,7 @@ class CryptoUser extends QUI\Users\User
                 $GroupAccessKey
             );
 
-            return new KeyPair($GroupKeyPair->getPublicKey(), $groupPrivateKeyDecrypted);
+            return new KeyPair($GroupKeyPair->getPublicKey()->getValue(), $groupPrivateKeyDecrypted);
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'Could not decrypt group key pair (group #' . $CryptoGroup->getId() . ' | security class #'
@@ -1427,7 +1427,8 @@ class CryptoUser extends QUI\Users\User
      * number of authentication key pairs the user has registered with, according to the respective
      * security class of a password.
      *
-     * @param integer $passwordId - password ID
+     * @param CryptoGroup $CryptoGroup
+     * @param SecurityClass $SecurityClass
      * @return void
      * @throws QUI\Exception
      */
@@ -1547,6 +1548,173 @@ class CryptoUser extends QUI\Users\User
 
         foreach ($passwordIdsDirect as $passwordId) {
             $this->reEncryptPasswordAccessKey($passwordId);
+        }
+    }
+
+    /**
+     * Re-encrypts all cryptographic data the user has access to:
+     *
+     * - User private keys
+     * - User password access keys
+     * - User group access keys
+     * - Group private keys
+     * - Group password access keys
+     *
+     * @return void
+     * @throws QUI\Exception
+     */
+    public function reEncryptAllKeys()
+    {
+        $authKeyPairIds = $this->getAuthKeyPairIds();
+
+        // user keys
+        /** @var AuthKeyPair $AuthKeyPair */
+        foreach ($authKeyPairIds as $authKeyPairId) {
+            $AuthKeyPair = Authentication::getAuthKeyPair($authKeyPairId);
+            $AuthPlugin  = $AuthKeyPair->getAuthPlugin();
+            $DerivedKey  = $AuthPlugin->getDerivedKey($this);
+            $privateKey  = $AuthKeyPair->getPrivateKey()->getValue();
+
+            $privateKeyEncrypted = SymmetricCrypto::encrypt(
+                $privateKey,
+                $DerivedKey
+            );
+
+            $macValue = MAC::create(
+                $AuthKeyPair->getPublicKey()->getValue() . $privateKeyEncrypted,
+                Utils::getSystemKeyPairAuthKey()
+            );
+
+            QUI::getDataBase()->update(
+                QUI::getDBTableName(Tables::KEYPAIRS_USER),
+                array(
+                    'privateKey' => $privateKeyEncrypted,
+                    'MAC'        => $macValue
+                ),
+                array(
+                    'id' => $AuthKeyPair->getId()
+                )
+            );
+        }
+
+        // group keys
+        $cryptoGroups = $this->getCryptoGroups();
+
+        /** @var CryptoGroup $CryptoGroup */
+        foreach ($cryptoGroups as $CryptoGroup) {
+            $groupSecurityClasses = $CryptoGroup->getSecurityClasses();
+
+            /** @var SecurityClass $SecurityClass */
+            foreach ($groupSecurityClasses as $SecurityClass) {
+                $this->reEncryptGroupAccessKey($CryptoGroup, $SecurityClass);
+
+                $GroupKeyPair   = $this->getGroupKeyPairDecrypted($CryptoGroup, $SecurityClass);
+                $GroupAccessKey = $this->getGroupAccessKey($CryptoGroup, $SecurityClass);
+
+                $groupPrivateKeyEncrypted = SymmetricCrypto::encrypt(
+                    $GroupKeyPair->getPrivateKey()->getValue(),
+                    $GroupAccessKey
+                );
+
+                $data = array(
+                    'groupId'         => $CryptoGroup->getId(),
+                    'securityClassId' => $SecurityClass->getId(),
+                    'publicKey'       => $GroupKeyPair->getPublicKey()->getValue(),
+                    'privateKey'      => $groupPrivateKeyEncrypted
+                );
+
+                // calculate group key MAC
+                $mac = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+
+                QUI::getDataBase()->update(
+                    QUI::getDBTableName(Tables::KEYPAIRS_GROUP),
+                    array(
+                        'privateKey' => $groupPrivateKeyEncrypted,
+                        'MAC'        => $mac
+                    ),
+                    array(
+                        'groupId'         => $CryptoGroup->getId(),
+                        'securityClassId' => $SecurityClass->getId()
+                    )
+                );
+            }
+
+            // re-encrypt group password access keys!
+            $groupPasswordIds = $CryptoGroup->getPasswordIds();
+
+            foreach ($groupPasswordIds as $groupPasswordId) {
+                $CryptoGroup->reEncryptPasswordAccessKey($groupPasswordId);
+            }
+        }
+
+        // password access keys
+        $this->reEncryptAllPasswordAccessKeys();
+
+        // password keys
+        $passwordIds = $this->getPasswordIds();
+
+        foreach ($passwordIds as $passwordId) {
+            $PasswordAccessKey = $this->getPasswordAccessKey($passwordId);
+
+            $result = QUI::getDataBase()->fetch(array(
+                'from'  => QUI::getDBTableName(Tables::PASSWORDS),
+                'where' => array(
+                    'id' => $passwordId
+                )
+            ));
+
+            $pw = current($result);
+
+            $pwContent = SymmetricCrypto::decrypt(
+                $pw['cryptoData'],
+                $PasswordAccessKey
+            );
+
+            $pwContentEncrypted = SymmetricCrypto::encrypt(
+                $pwContent,
+                $PasswordAccessKey
+            );
+
+            $pw['cryptoData'] = $pwContentEncrypted;
+
+            $macFields = SymmetricCrypto::decrypt(
+                $pw['MACFields'],
+                new Key(Utils::getSystemPasswordAuthKey())
+            );
+
+            $macFieldsEncrypted = SymmetricCrypto::encrypt(
+                $macFields,
+                new Key(Utils::getSystemPasswordAuthKey())
+            );
+
+            $macFields = json_decode($macFields, true);
+
+            $macData = array();
+
+            foreach ($macFields as $field) {
+                if (isset($pw[$field])) {
+                    $macData[] = $pw[$field];
+                } else {
+                    $macData[] = null;
+                }
+            }
+
+            $newMac = MAC::create(
+                implode('', $macData),
+                Utils::getSystemPasswordAuthKey()
+            );
+
+            QUI::getDataBase()->update(
+                QUI::getDBTableName(Tables::PASSWORDS),
+                array(
+                    'cryptoData' => $pwContentEncrypted,
+                    'MAC'        => $newMac,
+                    'MACFields'  => $macFieldsEncrypted
+                ),
+                array(
+                    'id' => $passwordId
+                )
+            );
         }
     }
 

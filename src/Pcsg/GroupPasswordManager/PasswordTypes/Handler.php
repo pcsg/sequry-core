@@ -30,11 +30,11 @@ class Handler
 
             // skip certain types, because they are no longer available
             // but have to be kept for legacy reasons
-            switch ($fileName) {
-                case 'Credentials': // removed: 2017-21-02
-                    continue 2;
-                    break;
-            }
+//            switch ($fileName) {
+//                case 'Credentials': // removed: 2017-21-02
+//                    continue 2;
+//                    break;
+//            }
 
             if (is_dir($file)) {
                 $types[] = array(

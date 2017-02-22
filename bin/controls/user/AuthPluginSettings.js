@@ -55,7 +55,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/user/AuthPluginSettings',
          */
         create: function () {
             this.$Elm = new Element('div', {
-                'class': 'pcsg-gpm-user-authpluginsettings',
+                'class': 'pcsg-gpm-user-authpluginsettings field-container-field',
                 html   : ''
             });
 

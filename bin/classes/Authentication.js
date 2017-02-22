@@ -77,16 +77,48 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 resolve(AuthData);
                                 Popup.close();
                             },
-                            onClose: function(Popup) {
+                            onClose : function (Popup) {
                                 reject();
                                 Popup.close();
                             },
-                            onAbort: function(Popup) {
+                            onAbort : function (Popup) {
                                 reject();
                                 Popup.close();
                             }
                         }
                     }).open();
+                });
+            });
+        },
+
+        /**
+         * Authenticate for all available plugins
+         *
+         * @return Promise
+         */
+        authAll: function () {
+            return new Promise(function (resolve, reject) {
+                require([
+                    'package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll'
+                ], function (AllAuth) {
+                    var Popup = new AllAuth({
+                        events: {
+                            onSubmit: function (AuthData) {
+                                resolve(AuthData);
+                                Popup.close();
+                            },
+                            onClose : function () {
+                                reject();
+                                Popup.close();
+                            },
+                            onAbort : function () {
+                                reject();
+                                Popup.close();
+                            }
+                        }
+                    });
+
+                    Popup.open();
                 });
             });
         },
@@ -203,6 +235,24 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         'package'      : pkg,
                         onError        : reject,
                         securityClassId: securityClassId
+                    }
+                );
+            });
+        },
+
+        /**
+         * Get all authentication controls a user has access to
+         *
+         * @return {Promise}
+         */
+        getControlsByUser: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_getControlsByUser',
+                    resolve,
+                    {
+                        'package': pkg,
+                        onError  : reject
                     }
                 );
             });

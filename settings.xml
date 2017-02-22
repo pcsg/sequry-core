@@ -8,6 +8,9 @@
                     <type><![CDATA[integer]]></type>
                     <defaultvalue>900</defaultvalue>
                 </conf>
+                <conf name="reEncryptEnabled">
+                    <type><![CDATA[bool]]></type>
+                </conf>
             </section>
         </config>
 
@@ -37,6 +40,15 @@
                             </text>
                             <description>
                                 <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.description" />
+                            </description>
+                        </input>
+
+                        <input conf="settings.reEncryptEnabled" type="checkbox">
+                            <text>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.reEncryptEnabled.title" />
+                            </text>
+                            <description>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.reEncryptEnabled.description" />
                             </description>
                         </input>
                     </settings>

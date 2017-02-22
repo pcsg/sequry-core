@@ -28,10 +28,10 @@ class ECC implements IAsymmetricCrypto
     public static function encrypt($plainText, $publicKey)
     {
         try {
-            $HiddenPlainText = new HiddenString($plainText);
-            $HiddenPublicKey = new HiddenString($publicKey);
-            $PublicKey       = new EncryptionPublicKey($HiddenPublicKey);
-            $cipherText      = Crypto::seal($HiddenPlainText, $PublicKey, true);
+//            $HiddenPlainText = new HiddenString($plainText);
+//            $HiddenPublicKey = new HiddenString($publicKey);
+            $PublicKey       = new EncryptionPublicKey($publicKey);
+            $cipherText      = Crypto::seal($plainText, $PublicKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Plaintext encryption with publiy key failed: '
@@ -53,10 +53,10 @@ class ECC implements IAsymmetricCrypto
     public static function decrypt($cipherText, $privateKey)
     {
         try {
-            $HiddenCypherText = new HiddenString($cipherText);
-            $HiddenPrivateKey = new HiddenString($privateKey);
-            $PrivateKey       = new EncryptionSecretKey($HiddenPrivateKey);
-            $plainText        = Crypto::unseal($HiddenCypherText, $PrivateKey, true);
+//            $HiddenCypherText = new HiddenString($cipherText);
+//            $HiddenPrivateKey = new HiddenString($privateKey);
+            $PrivateKey       = new EncryptionSecretKey($privateKey);
+            $plainText        = Crypto::unseal($cipherText, $PrivateKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 'ECC :: Ciphertext decryption with private key failed: '

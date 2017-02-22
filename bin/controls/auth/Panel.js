@@ -376,7 +376,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                             SyncWindow.close();
                             self.refresh();
                         },
-                        onClose: function() {
+                        onClose  : function () {
                             self.refresh();
                         }
                     }
@@ -405,8 +405,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         var Change = new AuthChange({
                             authPluginId: AuthPluginData.id,
                             events      : {
-                                onFinish: function () {
+                                onLoaded: function () {
                                     self.Loader.hide();
+                                },
+                                onFinish: function() {
+                                    Sheet.destroy();
                                 }
                             }
                         }).inject(Sheet.getContent());
@@ -421,31 +424,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                             return;
                                         }
 
-                                        self.Loader.show();
-
-                                        Change.submit().then(function (RecoveryCodeData) {
-                                            self.Loader.hide();
-
-                                            if (!RecoveryCodeData) {
-                                                return;
-                                            }
-
-                                            Sheet.hide().then(function () {
-                                                Sheet.destroy();
-
-                                                new RecoveryCodeWindow({
-                                                    authPluginId    : AuthPluginData.id,
-                                                    authPluginTitle : AuthPluginData.title,
-                                                    RecoveryCodeData: RecoveryCodeData,
-                                                    events          : {
-                                                        onClose: function () {
-                                                            RecoveryCodeData = null;
-                                                            self.refresh();
-                                                        }
-                                                    }
-                                                }).open();
-                                            });
-                                        });
+                                        Change.submit();
                                     }
                                 }
                             })

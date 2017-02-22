@@ -165,6 +165,18 @@ $html = '
     <tr>
         <td>
             <label class="field-container">
+                <span class="field-container-item" title="Host">
+                    Host
+                </span>
+                <span class="field-container-field">
+                    ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '
+                </span>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
                 <span class="field-container-item" title="' . $L->get($lg, 'auth.recoverycodewindow.username') . '">
                     ' . $L->get($lg, 'auth.recoverycodewindow.username') . '
                 </span>
