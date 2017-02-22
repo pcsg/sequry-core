@@ -1,28 +1,69 @@
 require.config({
-    paths  : {
+    paths: {
         "ClipboardJS": URL_OPT_DIR + 'bin/clipboard/dist/clipboard'
     }
 });
 
 require([
+    'qui/QUI',
     'Ajax',
     'qui/controls/windows/Confirm',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
     'utils/Panels',
     'Locale'
-], function (QUIAjax, QUIConfirm, PasswordManager, PanelUtils, QUILocale) {
+], function (QUI, QUIAjax, QUIConfirm, PasswordManager, PanelUtils, QUILocale) {
+    "use strict";
+
     var lg  = 'pcsg/grouppasswordmanager';
     var pkg = 'pcsg/grouppasswordmanager';
 
-    QUI.addEvents({
-        onQuiqqerLoaded: function() {
-            if (window.PasswordList) {
-                return;
+    var loadExecute = 0;
+
+    var loadPasswordCategoryPanel = function () {
+        loadExecute++;
+
+        if (loadExecute == 10) {
+            return;
+        }
+
+        var ColumnElm = document.getElement('.qui-column'),
+            Column    = QUI.Controls.getById(ColumnElm.get('data-quiid'));
+
+        var panels = Column.getChildren(),
+            length = Object.getLength(panels);
+
+        if (length === 0) {
+            loadPasswordCategoryPanel();
+            return;
+        }
+
+        for (var i in panels) {
+            if (!panels.hasOwnProperty(i)) {
+                continue;
             }
 
-            PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
-                Panel.open();
-            });
+            if (panels[i].getType() === 'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel') {
+                return;
+            }
+        }
+
+        require([
+            'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel'
+        ], function(CategoryPanel) {
+            Column.appendChild(new CategoryPanel());
+        });
+    };
+
+    QUI.addEvents({
+        onQuiqqerLoaded: function () {
+            // If password list is not open -> open it
+            if (!window.PasswordList) {
+                PanelUtils.openPanelInTasks(new PasswordManager()).then(function (Panel) {
+                    Panel.open();
+                });
+            }
+
+            loadPasswordCategoryPanel();
         }
     });
 

@@ -827,11 +827,11 @@
         <locale name="permission.gpm.cryptodata.edit">
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) bearbeiten]]></de>
         </locale>
-        <locale name="permission.gpm.cryptodata.delete">
+        <locale name="permission.gpm.cryptodata.delete_group">
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) löschen]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata.share">
-            <de><![CDATA[Darf eigene Passwärter mit anderen Benutzern und Gruppen teilen]]></de>
+            <de><![CDATA[Darf eigene Passwörter mit anderen Benutzern und Gruppen teilen]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata.share_group">
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) mit anderen Benutzern und Gruppen teilen]]></de>
@@ -847,6 +847,12 @@
         </locale>
         <locale name="permission.gpm.securityclass.edit">
             <de><![CDATA[Darf Sicherheitsklassen erstellen und bearbeiten]]></de>
+        </locale>
+        <locale name="permission.gpm.categories._header">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="permission.gpm.categories.edit">
+            <de><![CDATA[Darf öffentliche Passwort-Kategorien erstellen, umbenennen und löschen]]></de>
         </locale>
 
         <locale name="passwords.panel.title">
