@@ -568,6 +568,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         break;
                 }
 
+                if (!Data.isOwner) {
+                    new Element('span', {
+                        'class': 'fa fa-share-alt'
+                    }).inject(Row.accessType);
+                }
+
                 // security class
                 Row.securityClass = Data.securityClassTitle;
 
