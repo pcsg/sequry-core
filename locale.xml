@@ -468,7 +468,7 @@
             <de><![CDATA[Die Passwort-Kategorie(n) für die gewählten Passwörter wurden erfolgreich gesetzt.]]></de>
         </locale>
         <locale name="message.ajax.passwords.getList.error" html="true">
-            <de><![CDATA[Beim Abruf der Passwort-Liste ist ein Fehler aufgetreten:<br><br>]]></de>
+            <de><![CDATA[Beim Abruf der Passwort-Liste ist ein Fehler aufgetreten:<br><br>[error]]]></de>
         </locale>
         <locale name="exception.ajax.reEncryptAll.missing.auth.info" html="true">
             <de><![CDATA[Bitte geben Sie die Authentifizierungs-Informationen für <b>alle</b> Authentifizierungs-Module an!]]></de>
@@ -1546,7 +1546,7 @@
             <de><![CDATA[Passwort-Kategorie löschen]]></de>
         </locale>
         <locale name="controls.categories.map.delete.info">
-            <de><![CDATA[Sind Sie sicher, dass Sie die öffentliche Passwort-Kategorie "[catTitle]" (#[catId]) löschen wollen? Alle dieser Kategorie zugeordneten Passwörter verlieren ihre Kategorie-Zuweisung und können nur noch über die Kategorie "Alle" gefunden werden.]]></de>
+            <de><![CDATA[Sind Sie sicher, dass Sie die öffentliche Passwort-Kategorie "[catTitle]" (#[catId]) und alle Kind-Kategorien löschen wollen? Alle dieser Kategorie zugeordneten Passwörter verlieren dann ihre Kategorie-Zuweisung für diese und alle Kind-Kategorien.]]></de>
         </locale>
         <locale name="controls.categories.map.rename.title">
             <de><![CDATA[Passwort-Kategorie umbenennen]]></de>

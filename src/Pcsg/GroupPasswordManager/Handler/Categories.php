@@ -80,10 +80,10 @@ class Categories
      * Delete public category
      *
      * @param int $id - category id
-     * @param bool $deleteChildren (optional) - also delete child categories
+     * @param bool $deleteChildren (optional) - also delete child categories [default: true]
      * @return void
      */
-    public static function deletePublic($id, $deleteChildren = false)
+    public static function deletePublic($id, $deleteChildren = true)
     {
         self::checkPublicPermissions();
 
@@ -325,11 +325,11 @@ class Categories
      * Delete public category
      *
      * @param int $id - category id
-     * @param bool $deleteChildren (optional) - also delete child categories
+     * @param bool $deleteChildren (optional) - also delete child categories [default: true]
      * @param QUI\Users\User $User (optional) - category owner (if omitted = session user)
      * @return void
      */
-    public static function deletePrivate($id, $deleteChildren = false, $User = null)
+    public static function deletePrivate($id, $deleteChildren = true, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();

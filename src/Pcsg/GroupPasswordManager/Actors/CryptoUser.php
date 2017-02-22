@@ -980,6 +980,10 @@ class CryptoUser extends QUI\Users\User
             $securityClassIds[] = $row['securityClassId'];
         }
 
+        if (empty($passwords)) {
+            return array();
+        }
+
         // get titles of all security classes
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
@@ -1884,6 +1888,14 @@ class CryptoUser extends QUI\Users\User
         // delete recovery data
         $DB->delete(
             Tables::RECOVERY,
+            array(
+                'userId' => $this->getId()
+            )
+        );
+
+        // delete password meta data
+        $DB->delete(
+            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
             array(
                 'userId' => $this->getId()
             )

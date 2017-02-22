@@ -342,6 +342,11 @@ class Events
             ));
         }
 
+        if (QUI::isSystem()) {
+            CryptoActors::getCryptoUser($User->getId())->delete();
+            return;
+        }
+
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'userDeleteConfirm',
             array(

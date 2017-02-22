@@ -26,7 +26,10 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'message.ajax.passwords.getList.error'
+                'message.ajax.passwords.getList.error',
+                array(
+                    'error' => $Exception->getMessage()
+                )
             )
         );
 
