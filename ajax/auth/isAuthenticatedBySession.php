@@ -11,6 +11,8 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_isAuthenticatedBySession($securityClassId)
 {
+    ini_set('display_errors', 1);
+
     return Authentication::getSecurityClass($securityClassId)->isAuthenticatedBySession();
 }
 

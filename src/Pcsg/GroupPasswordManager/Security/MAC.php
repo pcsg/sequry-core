@@ -27,7 +27,8 @@ class MAC
      */
     public static function create($str, $key)
     {
-        return self::getMACModule()->create($str, $key);
+        $mac = self::getMACModule()->create($str, $key);
+        return $mac . Utils::getCryptoModuleVersionString(self::MAC_MODULE);
     }
 
     /**
@@ -39,6 +40,9 @@ class MAC
      */
     public static function compare($actual, $expected)
     {
+        $actual   = Utils::stripModuleVersionString($actual);
+        $expected = Utils::stripModuleVersionString($expected);
+
         return self::getMACModule()->compare($actual, $expected);
     }
 

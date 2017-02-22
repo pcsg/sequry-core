@@ -12,9 +12,9 @@ use Pcsg\GroupPasswordManager\Security\Interfaces\ISymmetricCrypto;
 /**
  * This class provides an ecnryption API for the pcsg/grouppasswordmanager module
  *
- * XSalsa20 stream cipher
+ * Uses symmetric encryption from paragonie/halite 3.*
  */
-class XSalsa20 implements ISymmetricCrypto
+class Halite3 implements ISymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
@@ -33,7 +33,7 @@ class XSalsa20 implements ISymmetricCrypto
             $cipherText      = Crypto::encrypt($HiddenPlainText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'XSalsa20 :: Plaintext encryption failed: '
+                self::class . ' :: Plaintext encryption failed: '
                 . $Exception->getMessage()
             );
         }
@@ -54,7 +54,7 @@ class XSalsa20 implements ISymmetricCrypto
             $secretKey = $SecretKey->getRawKeyMaterial();
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'XSalsa20 :: Random key generation failed: '
+                self::class . ' :: Random key generation failed: '
                 . $Exception->getMessage()
             );
         }
@@ -76,14 +76,14 @@ class XSalsa20 implements ISymmetricCrypto
             $HiddenCipherText = new HiddenString($cipherText);
             $HiddenKey        = new HiddenString($key);
             $SecretKey        = new EncryptionKey($HiddenKey);
-            $plainText        = Crypto::decrypt($HiddenCipherText, $SecretKey, true);
+            $HiddenPlainText  = Crypto::decrypt($HiddenCipherText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'XSalsa20 :: Ciphertext decryption failed: '
+                self::class . ' :: Ciphertext decryption failed: '
                 . $Exception->getMessage()
             );
         }
 
-        return $plainText;
+        return $HiddenPlainText->getString();
     }
 }

@@ -13,9 +13,9 @@ use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
  *
- * ECC - Ellicptic Curce Cryptography (Curve25519)
+ * Uses asymmetric encryption from paragonie/halite 3.*
  */
-class ECC implements IAsymmetricCrypto
+class Halite3 implements IAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
@@ -34,7 +34,7 @@ class ECC implements IAsymmetricCrypto
             $cipherText      = Crypto::seal($HiddenPlainText, $PublicKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'ECC :: Plaintext encryption with publiy key failed: '
+                self::class . ' :: Plaintext encryption with publiy key failed: '
                 . $Exception->getMessage()
             );
         }
@@ -56,15 +56,15 @@ class ECC implements IAsymmetricCrypto
             $HiddenCypherText = new HiddenString($cipherText);
             $HiddenPrivateKey = new HiddenString($privateKey);
             $PrivateKey       = new EncryptionSecretKey($HiddenPrivateKey);
-            $plainText        = Crypto::unseal($HiddenCypherText, $PrivateKey, true);
+            $HiddenPlainText  = Crypto::unseal($HiddenCypherText, $PrivateKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'ECC :: Ciphertext decryption with private key failed: '
+                self::class . ' :: Ciphertext decryption with private key failed: '
                 . $Exception->getMessage()
             );
         }
 
-        return $plainText;
+        return $HiddenPlainText->getString();
     }
 
     /**
@@ -84,7 +84,7 @@ class ECC implements IAsymmetricCrypto
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'ECC :: Key pair creation failed: ' . $Exception->getMessage()
+                self::class . ' :: Key pair creation failed: ' . $Exception->getMessage()
             );
         }
 

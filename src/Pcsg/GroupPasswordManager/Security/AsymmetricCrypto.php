@@ -11,20 +11,7 @@ use QUI;
  */
 class AsymmetricCrypto
 {
-    const CRYPTO_MODULE = 'ECC'; // @todo in config auslagern
-
-
-    // @todo diese konstanten entfernen, da sich das baustein-modul darum kümmert
-
-    /**
-     * Key size of public/private key used for en/decryption [bits]
-     */
-    const KEY_SIZE_ENCRYPTION = 4096;
-
-    /**
-     * Key size of public/private key used for authentification [bits]
-     */
-    const KEY_SIZE_AUTHENTIFICATION = 4096;
+    const CRYPTO_MODULE = 'Halite3'; // @todo in config auslagern
 
     /**
      * HashWrapper Class Object for the configured hash module
@@ -42,10 +29,10 @@ class AsymmetricCrypto
      */
     public static function encrypt($plainText, $KeyPair)
     {
-        return self::getCryptoModule()->encrypt(
-            $plainText,
-            $KeyPair->getPublicKey()->getValue()
-        );
+        $publicKey  = Utils::stripModuleVersionString($KeyPair->getPublicKey()->getValue());
+        $cipherText = self::getCryptoModule()->encrypt($plainText, $publicKey);
+
+        return $cipherText . Utils::getCryptoModuleVersionString(self::CRYPTO_MODULE);
     }
 
     /**
@@ -57,10 +44,10 @@ class AsymmetricCrypto
      */
     public static function decrypt($cipherText, $KeyPair)
     {
-        return self::getCryptoModule()->decrypt(
-            $cipherText,
-            $KeyPair->getPrivateKey()->getValue()
-        );
+        $cipherText = Utils::stripModuleVersionString($cipherText);
+        $privateKey = Utils::stripModuleVersionString($KeyPair->getPrivateKey()->getValue());
+
+        return self::getCryptoModule()->decrypt($cipherText, $privateKey);
     }
 
     /**
@@ -76,14 +63,16 @@ class AsymmetricCrypto
             $keyPair = self::getCryptoModule()->generateKeyPair();
 
             if (!isset($keyPair['publicKey'])
-                || empty($keyPair['publicKey'])) {
+                || empty($keyPair['publicKey'])
+            ) {
                 throw new QUI\Exception(
                     'Public key was not generated or empty.'
                 );
             }
 
             if (!isset($keyPair['privateKey'])
-                || empty($keyPair['privateKey'])) {
+                || empty($keyPair['privateKey'])
+            ) {
                 throw new QUI\Exception(
                     'Private key was not generated or empty.'
                 );
@@ -94,7 +83,10 @@ class AsymmetricCrypto
             );
         }
 
-        $KeyPair = new KeyPair($keyPair['publicKey'], $keyPair['privateKey']);
+        $publicKey  = $keyPair['publicKey'] . Utils::getCryptoModuleVersionString(self::CRYPTO_MODULE);
+        $privateKey = $keyPair['privateKey'] . Utils::getCryptoModuleVersionString(self::CRYPTO_MODULE);
+
+        $KeyPair = new KeyPair($publicKey, $privateKey);
 
         // Test validity of key pair
         if (!self::testKeyPair($KeyPair)) {
@@ -117,7 +109,7 @@ class AsymmetricCrypto
         $rnd = uniqid('', true);
 
         $cipherText = self::encrypt($rnd, $KeyPair);
-        $plainText = self::decrypt($cipherText, $KeyPair);
+        $plainText  = self::decrypt($cipherText, $KeyPair);
 
         return MAC::compare($rnd, $plainText);
     }

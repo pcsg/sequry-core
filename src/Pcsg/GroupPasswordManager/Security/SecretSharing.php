@@ -19,8 +19,6 @@ class SecretSharing
     protected static $SecretModule = null;
 
     /**
-     * @todo Secret Sharing nach Shamir einführen
-     *
      * Splits a secret into multiple parts
      *
      * @param string $secret
@@ -30,7 +28,13 @@ class SecretSharing
      */
     public static function splitSecret($secret, $parts, $required)
     {
-        return self::getSecretModule()->splitSecret($secret, $parts, $required);
+        $parts = self::getSecretModule()->splitSecret($secret, $parts, $required);
+
+        foreach ($parts as $k => $part) {
+            $parts[$k] = $part . Utils::getCryptoModuleVersionString(self::SECRET_MODULE);
+        }
+
+        return $parts;
     }
 
     /**
@@ -41,6 +45,10 @@ class SecretSharing
      */
     public static function recoverSecret($parts)
     {
+        foreach ($parts as $k => $part) {
+            $parts[$k] = Utils::stripModuleVersionString($part);
+        }
+
         return self::getSecretModule()->recoverSecret($parts);
     }
 
