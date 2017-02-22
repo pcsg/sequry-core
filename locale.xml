@@ -1183,6 +1183,9 @@
         <locale name="controls.password.view.categories.title">
             <de><![CDATA[Passwort-Kategorien]]></de>
         </locale>
+        <locale name="controls.password.view.tooltip.copy">
+            <de><![CDATA[Kopiert!]]></de>
+        </locale>
 
         <!-- Control: password/Panel -->
         <locale name="gpm.password.btn.save.text">

@@ -1,15 +1,19 @@
 /**
- * Control for creating a new password
+ * Control for viewing password content
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/View
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
  * @require qui/controls/Control
+ * @require qui/controls/buttons/Button
+ * @require qui/controls/loader/Loader
  * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/passwords/SecurityClassSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/View.html
+ * @require package/pcsg/grouppasswordmanager/bin/classes/Authentication
+ * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
+ * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select
+ * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
+ * @require package/pcsg/grouppasswordmanager/bin/Categories
+ * @require ClipboardJS
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css
  *
  * @event onLoaded
@@ -17,7 +21,6 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
     'qui/controls/loader/Loader',
@@ -34,7 +37,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
 
-], function (QUI, QUIControl, QUIButton, QUILoader, QUILocale, AuthHandler,
+], function (QUIControl, QUIButton, QUILoader, QUILocale, AuthHandler,
              PasswordHandler, CategorySelect, CategorySelectPrivate, Categories, Clipboard) {
     "use strict";
 
@@ -159,16 +162,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
          *
          * @return {Promise}
          */
-        $setPrivateCategories: function(categoryIds) {
+        $setPrivateCategories: function (categoryIds) {
             var self = this;
 
             this.Loader.show();
 
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 Categories.setPrivatePasswordCategories(
                     self.getAttribute('passwordId'),
                     categoryIds
-                ).then(function() {
+                ).then(function () {
                     self.Loader.hide();
                     resolve();
                 }, reject);
@@ -192,14 +195,41 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                     events: {
                         onClick: function (Btn) {
                             var Elm = Btn.getAttribute('Elm');
-                            Elm.select();
+
+                            if (Elm.nodeName === 'INPUT') {
+                                Elm.select();
+                            }
+
+                            var ToolTip = new Element('div', {
+                                'class': 'pcsg-gpm-password-view-copy-tooltip',
+                                html   : '<span>' +
+                                    QUILocale.get(lg, 'controls.password.view.tooltip.copy') +
+                                '</span>'
+                            }).inject(Btn.getElm(), 'after');
+
+                            (function() {
+                                moofx(ToolTip).animate({
+                                    opacity: 0
+                                }, {
+                                    duration: 1000,
+                                    callback: function () {
+                                        ToolTip.destroy();
+                                    }
+                                });
+                            }.delay(750));
                         }
                     }
                 }).inject(Elm, 'after');
 
                 new Clipboard(CopyBtn.getElm(), {
-                    text: function() {
-                        return this.getAttribute('Elm').value;
+                    text: function () {
+                        var Elm = this.getAttribute('Elm');
+
+                        if (Elm.nodeName === 'INPUT') {
+                            return Elm.value;
+                        }
+
+                        return Elm.innerHTML.trim();
                     }.bind(CopyBtn)
                 });
             }
