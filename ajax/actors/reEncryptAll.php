@@ -26,10 +26,10 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
                 $pluginAuthData = $authData[$AuthPlugin->getId()];
 
                 if (empty($pluginAuthData)) {
-                    throw new QUI\Exception(array(
-                        'pcsg/grouppasswordmanager',
-                        'exception.ajax.reEncryptAll.missing.auth.info'
-                    ));
+//                    throw new QUI\Exception(array(
+//                        'pcsg/grouppasswordmanager',
+//                        'exception.ajax.reEncryptAll.missing.auth.info'
+//                    ));
                     continue;
                 }
 
@@ -76,7 +76,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
             return false;
         }
 
-        QUI::getMessagesHandler()->addError(
+        QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
                 'message.ajax.reEncryptAll.success'
