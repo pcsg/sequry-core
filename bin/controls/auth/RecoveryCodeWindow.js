@@ -132,7 +132,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
                     dateValue          : RecoveryCodeData.date,
                     recoveryCode       : recoveryCodeReadable,
                     recoveryCodeId     : QUILocale.get(lg, lg_prefix + 'recoveryCodeId'),
-                    recoveryCodeIdValue: RecoveryCodeData.recoveryCodeId
+                    recoveryCodeIdValue: RecoveryCodeData.recoveryCodeId,
+                    hostValue          : window.location.origin
                 })
             );
         },
