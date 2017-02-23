@@ -156,3 +156,11 @@
     cursor: pointer;
     color: #000000;
 }
+
+.pcsg-gpm-passwords-panel-table-accesstype-share-indicator {
+    font-size: 10px !important;
+    position: relative;
+    bottom: 6px;
+    margin: 0 !important;
+    color: #0069b4;
+}

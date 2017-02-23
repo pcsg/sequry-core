@@ -570,7 +570,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
                 if (!Data.isOwner) {
                     new Element('span', {
-                        'class': 'fa fa-share-alt'
+                        'class': 'fa fa-share-alt pcsg-gpm-passwords-panel-table-accesstype-share-indicator'
                     }).inject(Row.accessType);
                 }
 
