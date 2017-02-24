@@ -24,11 +24,11 @@ class Halite3 implements IKDF
     public static function createKey($str, $salt = null)
     {
         if (is_null($salt)) {
-            $salt = \Sodium\randombytes_buf(KDF::SALT_LENGTH);
+            $salt = \Sodium\randombytes_buf(\Sodium\CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
-            if (Util::safeStrlen($salt) > KDF::SALT_LENGTH) {
-                $salt = Util::safeSubstr($salt, 0, KDF::SALT_LENGTH);
+            if (Util::safeStrlen($salt) > \Sodium\CRYPTO_PWHASH_SALTBYTES) {
+                $salt = Util::safeSubstr($salt, 0, \Sodium\CRYPTO_PWHASH_SALTBYTES);
             }
         }
 
