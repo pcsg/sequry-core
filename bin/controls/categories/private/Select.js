@@ -39,7 +39,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
             this.$CatContainer.set('html', '');
 
             if (!this.$categoryIds.length) {
-                this.$CatContainer.set('html', QUILocale.get(lg, 'controls.categories.category.all'));
+                this.$CatContainer.set('html', QUILocale.get(lg, 'controls.categories.select.all'));
                 return;
             }
 

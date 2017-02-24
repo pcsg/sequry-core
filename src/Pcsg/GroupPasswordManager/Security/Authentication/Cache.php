@@ -37,6 +37,7 @@ class Cache extends QUI\QDOM
 
         $Item->set($data);
         $Item->setTTL($time);
+        $Item->save();
 
         return $Item;
     }
@@ -151,7 +152,7 @@ class Cache extends QUI\QDOM
      */
     protected static function getCacheDir()
     {
-        $cacheDir = QUI::getPackage('pcsg/grouppasswordmanager')->getVarDir() . 'cache/products/search/';
+        $cacheDir = QUI::getPackage('pcsg/grouppasswordmanager')->getVarDir() . 'cache/authentication/';
 
         if (!file_exists($cacheDir)
             || !is_dir($cacheDir)
