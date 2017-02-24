@@ -1569,6 +1569,8 @@ class CryptoUser extends QUI\Users\User
      */
     public function reEncryptAllKeys()
     {
+        set_time_limit(0); // disable php timeout
+
         $authKeyPairIds = $this->getAuthKeyPairIds();
 
         // user keys

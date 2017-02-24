@@ -189,8 +189,8 @@ $html = '
     <tr>
         <td>
             <label class="field-container">
-                <span class="field-container-item" title="' . $L->get($lg, 'auth.auth.recoverycodewindow.authplugin') . '">
-                    ' . $L->get($lg, 'auth.auth.recoverycodewindow.authplugin') . '
+                <span class="field-container-item" title="' . $L->get($lg, 'auth.recoverycodewindow.authplugin') . '">
+                    ' . $L->get($lg, 'auth.recoverycodewindow.authplugin') . '
                 </span>
                 <span class="field-container-field">
                     ' . $AuthPlugin->getAttribute('title') . ' (ID:' . $AuthPlugin->getId() . ')
