@@ -3,7 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Modules\KDF;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\IKDF;
-use Pcsg\GroupPasswordManager\Security\KDF;
+use ParagonIE\Halite\HiddenString;
 use QUI;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Util;
@@ -33,7 +33,8 @@ class Halite3 implements IKDF
         }
 
         try {
-            $DerivedKey = KeyFactory::deriveEncryptionKey($str, $salt);
+            $HiddenString = new HiddenString($str);
+            $DerivedKey = KeyFactory::deriveEncryptionKey($HiddenString, $salt);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 self::class . ' :: key derivation operation failed: ' . $Exception->getMessage()
