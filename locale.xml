@@ -1602,6 +1602,9 @@
         <locale name="controls.categories.select.add.text">
             <de><![CDATA[Hinzufügen]]></de>
         </locale>
+        <locale name="controls.categories.select.all">
+            <de><![CDATA[Alle Passwörter]]></de>
+        </locale>
 
         <!-- Control: user/ReEncryptKeys -->
         <locale name="controls.user.ReEncryptKeys.info">
@@ -1612,6 +1615,20 @@
         </locale>
         <locale name="controls.user.ReEncryptKeys.btn.title">
             <de><![CDATA[Jetzt neu verschlüsseln]]></de>
+        </locale>
+
+        <!-- Control: actors/SelectWindow -->
+        <locale name="controls.actors.selectwindow.title">
+            <de><![CDATA[Passwort-Benutzer und -Gruppen Auswahl]]></de>
+        </locale>
+        <locale name="controls.actors.selectwindow.tbl.header.id">
+            <de><![CDATA[ID]]></de>
+        </locale>
+        <locale name="controls.actors.selectwindow.tbl.header.name">
+            <de><![CDATA[Name]]></de>
+        </locale>
+        <locale name="controls.actors.selectwindow.tbl.header.notice">
+            <de><![CDATA[Bemerkung]]></de>
         </locale>
 
     </groups>
