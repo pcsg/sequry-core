@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GpmAuthPassword\AuthPlugin;
 use QUI\Package\Package;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
@@ -73,6 +74,7 @@ class Events
         }
 
         Authentication::loadAuthPlugins();
+        self::initialSystemSetup();
     }
 
     /**
@@ -404,6 +406,8 @@ class Events
      * event: onAdminLoad
      *
      * Load css files into admin header
+     *
+     * @return void
      */
     public static function onAdminLoad()
     {
@@ -415,10 +419,53 @@ class Events
      * event: onAdminLoadFooter
      *
      * Load javascript code into admin footer
+     *
+     * @return void
      */
     public static function onAdminLoadFooter()
     {
         $jsFile = URL_OPT_DIR . 'pcsg/grouppasswordmanager/bin/onAdminLoadFooter.js';
         echo '<script src="' . $jsFile . '"></script>';
+    }
+
+    /**
+     * Performs an initial system setup for first time use of the
+     * password manager
+     *
+     * @return void
+     */
+    public static function initialSystemSetup()
+    {
+        // Basic security class
+        $securityClasses = Authentication::getSecurityClassesList();
+
+        if (!empty($securityClasses)) {
+            return;
+        }
+
+        // get ID of basic quiqqer auth plugin
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from' => QUI::getDBTableName(Tables::AUTH_PLUGINS),
+            'where' => array(
+                'path' => '\\' . AuthPlugin::class
+            )
+        ));
+
+        if (empty($result)) {
+            return;
+        }
+
+        $L  = QUI::getLocale();
+        $lg = 'pcsg/grouppasswordmanager';
+
+        Authentication::createSecurityClass(array(
+            'title'           => $L->get($lg, 'setup.securityclass.title'),
+            'description'     => $L->get($lg, 'setup.securityclass.description'),
+            'authPluginIds'   => array($result[0]['id']),
+            'requiredFactors' => 1
+        ));
     }
 }
