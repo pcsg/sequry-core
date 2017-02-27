@@ -181,19 +181,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
          */
         $print: function () {
             var url = window.location.protocol + '//' +
-                window.location.host + URL_OPT_DIR + 'pcsg/grouppasswordmanager/bin/recoverycode.php?';
+                window.location.host + URL_OPT_DIR + 'pcsg/grouppasswordmanager/bin/recoverycode.php';
 
-            url += 'code=' + this.$RecoveryData.recoveryCode;
-            url += '&id=' + this.$RecoveryData.recoveryCodeId;
-            url += '&lang=' + USER.lang;
-
-            var Link = new Element('a', {
-                href  : url,
+            var Form = new Element('form', {
+                action: url,
+                method: 'post',
                 target: '_blank'
             }).inject(document.body);
 
-            Link.click();
-            Link.destroy();
+            new Element('input', {
+                name : 'code',
+                type : 'hidden',
+                value: this.$RecoveryData.recoveryCode
+            }).inject(Form);
+
+            new Element('input', {
+                name : 'id',
+                type : 'hidden',
+                value: this.$RecoveryData.recoveryCodeId
+            }).inject(Form);
+
+            new Element('input', {
+                name : 'lang',
+                type : 'hidden',
+                value: USER.lang
+            }).inject(Form);
+
+            Form.submit();
+            Form.destroy();
         }
     });
 });

@@ -427,22 +427,22 @@ class SecurityClass extends QUI\QDOM
      * @param integer $limit
      * @return array
      */
-    public function searchEligibleActors($search, $type, $limit)
+    public function suggestSearchEligibleActors($search, $type, $limit)
     {
         switch ($type) {
             case 'users':
-                $actors = $this->searchEligibleUsers($search);
+                $actors = $this->suggestSearchEligibleUsers($search);
                 break;
 
             case 'groups':
-                $actors = $this->searchEligibleGroups($search);
+                $actors = $this->suggestSearchEligibleGroups($search);
                 break;
 
             default:
-                $actors = $this->searchEligibleUsers($search);
+                $actors = $this->suggestSearchEligibleUsers($search);
                 $actors = array_merge(
                     $actors,
-                    $this->searchEligibleGroups($search)
+                    $this->suggestSearchEligibleGroups($search)
                 );
         }
 
@@ -455,7 +455,7 @@ class SecurityClass extends QUI\QDOM
      * @param string $search
      * @return array
      */
-    protected function searchEligibleUsers($search)
+    protected function suggestSearchEligibleUsers($search)
     {
         $actors  = array();
         $userIds = $this->getEligibleUserIds();
@@ -499,7 +499,7 @@ class SecurityClass extends QUI\QDOM
      * @param string $search
      * @return array
      */
-    protected function searchEligibleGroups($search)
+    protected function suggestSearchEligibleGroups($search)
     {
         $actors   = array();
         $groupIds = $this->getGroupIds();

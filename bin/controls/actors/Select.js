@@ -80,7 +80,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             var self = this;
 
             return new Promise(function (resolve) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_search', resolve, {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch', resolve, {
                     'package'      : 'pcsg/grouppasswordmanager',
                     type           : self.getAttribute('actorType'),
                     search         : value,
