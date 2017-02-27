@@ -108,6 +108,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                 'package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml',
                 function (templateHtml) {
                     self.$EditContent.set('html', templateHtml);
+                    //self.$EditContent.getElement('table').addClass(
+                    //    'pcsg-gpm-password-payload-table'
+                    //);
                     self.$parseTemplate();
                 }, {
                     'package': 'pcsg/grouppasswordmanager',

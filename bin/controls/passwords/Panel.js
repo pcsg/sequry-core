@@ -1,5 +1,5 @@
 /**
- * Password listing
+ * Password listing and CRUD operations
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel
  * @author www.pcsg.de (Patrick Müller)
@@ -15,8 +15,9 @@
  * @require qui/controls/sitemap/Map
  * @require qui/controls/sitemap/Item
  * @require controls/grid/Grid
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/classes/Authentication
+ * @require package/pcsg/grouppasswordmanager/bin/Passwords
+ * @require package/pcsg/grouppasswordmanager/bin/Authentication
+ * @require package/pcsg/grouppasswordmanager/bin/Actors
  * @require package/pcsg/grouppasswordmanager/bin/Categories
  * @require package/pcsg/grouppasswordmanager/bin/controls/password/Create
  * @require package/pcsg/grouppasswordmanager/bin/controls/password/View
@@ -48,8 +49,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
     'controls/grid/Grid',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Actors',
     'package/pcsg/grouppasswordmanager/bin/Categories',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
@@ -58,6 +60,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
 
@@ -67,15 +70,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
-             QUISiteMap, QUISiteMapItem, Grid, PasswordHandler, AuthHandler, Categories,
+             QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
              PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
-             AuthenticationControl, PasswordAuthentication,
+             AuthenticationControl, PasswordAuthentication, RecoveryCodeWindow,
              CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager';
-    var Passwords      = new PasswordHandler();
-    var Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -104,7 +105,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             'setSearchFilters',
             'removeSearchFilters',
             '$showCategoryInfo',
-            '$showPasswordsCategoryDialog'
+            '$showPasswordsCategoryDialog',
+            '$getRowDataByPasswordId'
         ],
 
         initialize: function (options) {
@@ -362,6 +364,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
 
                 self.fireEvent('loaded', [self]);
+                self.$initialRegistration();
             });
         },
 
@@ -850,7 +853,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
          * @param {number} passwordId
          */
         viewPassword: function (passwordId) {
-            var self = this;
+            var self    = this;
+            var RowData = this.$getRowDataByPasswordId(passwordId);
+            var canEdit = false;
+
+            if (RowData) {
+                canEdit = RowData.isOwner;
+            }
 
             this.Loader.show();
 
@@ -873,6 +882,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 }
                             }
                         }).inject(Sheet.getContent());
+
+                        if (!canEdit) {
+                            return;
+                        }
+
+                        // edit btn
+                        new QUIButton({
+                            text     : QUILocale.get(lg,
+                                'controls.gpm.passwords.panel.view.button.edit'
+                            ),
+                            textimage: 'fa fa-edit',
+                            styles   : {
+                                float : 'none',
+                                margin: '12px 5px'
+                            },
+                            events   : {
+                                onClick: function () {
+                                    Sheet.destroy();
+                                    self.editPassword(passwordId);
+                                }
+                            }
+                        }).inject(
+                            Sheet.getButtons().getElement('.qui-panel-sheet-buttons'),
+                            'top'
+                        );
                     },
                     onClose: function (Sheet) {
                         Sheet.destroy();
@@ -1524,11 +1558,147 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             AuthControl.open();
         },
 
-        ///**
-        // * Event: onDestroy
-        // */
-        //$onDestroy: function () {
-        //    window.PasswordList = null;
-        //}
+        /**
+         * Initiates registration for first-time users
+         */
+        $initialRegistration: function () {
+            var self = this;
+
+            Promise.all([
+                Actors.canUsePasswordManager(),
+                Authentication.getDefaultAuthPluginId()
+            ]).then(function (result) {
+                var canUse              = result[0];
+                var defaultAuthPluginId = result[1];
+
+                if (canUse) {
+                    return;
+                }
+
+                self.getButtons('add').disable();
+
+                var FuncSubmit = function () {
+                    var Content       = Popup.getContent();
+                    var PasswordInput = Content.getElement('input');
+
+                    var password = PasswordInput.value.trim();
+
+                    if (password === '') {
+                        PasswordInput.value = '';
+                        PasswordInput.focus();
+                        return;
+                    }
+
+                    Popup.Loader.show();
+
+                    Authentication.registerUser(
+                        defaultAuthPluginId, password
+                    ).then(function (RecoveryData) {
+                        if (!RecoveryData) {
+                            Popup.Loader.hide();
+                            PasswordInput.value = '';
+                            PasswordInput.focus();
+
+                            return;
+                        }
+
+                        new RecoveryCodeWindow({
+                            RecoveryCodeData: RecoveryData,
+                            events          : {
+                                onClose: function () {
+                                    RecoveryData = null;
+                                    Popup.close();
+                                    self.getButtons('add').enable();
+                                }
+                            }
+                        }).open();
+
+                        Popup.Loader.hide();
+                    });
+                };
+
+                // open popup
+                var Popup = new QUIPopup({
+                    title             : QUILocale.get(
+                        lg, 'controls.gpm.passwords.panel.initialRegistration.title'
+                    ),
+                    'class'           : 'pcsg-passwords-panel-initialRegistration',
+                    maxHeight         : 375,
+                    maxWidth          : 600,
+                    closeButton       : false,
+                    backgroundClosable: false,
+                    titleCloseButton  : false,
+                    events            : {
+                        onOpen: function () {
+                            var Content = Popup.getContent();
+
+                            Content.set(
+                                'html',
+                                '<h1>' +
+                                QUILocale.get(lg,
+                                    'controls.gpm.passwords.panel.initialRegistration.header'
+                                ) +
+                                '</h1>' +
+                                '<p>' +
+                                QUILocale.get(lg,
+                                    'controls.gpm.passwords.panel.initialRegistration.info'
+                                ) +
+                                '</p>' +
+                                '<label>' +
+                                '<span>' +
+                                QUILocale.get(lg,
+                                    'controls.gpm.passwords.panel.initialRegistration.label'
+                                ) +
+                                '</span>' +
+                                '<input type="password">' +
+                                '</label>'
+                            );
+
+                            var Input = Content.getElement('input');
+
+                            Input.addEvents({
+                                keyup: function (event) {
+                                    if (event.code === 13) {
+                                        FuncSubmit();
+                                        this.blur();
+                                    }
+                                }
+                            });
+
+                            Input.focus();
+                        }
+                    }
+                });
+
+                Popup.open();
+
+                Popup.addButton(new QUIButton({
+                    text  : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                    alt   : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                    title : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                    events: {
+                        onClick: FuncSubmit
+                    }
+                }));
+            });
+        },
+
+        /**
+         * Get password grid data by password ID
+         *
+         * @param {number} passwordId
+         * @return {false|Object}
+         */
+        $getRowDataByPasswordId: function (passwordId) {
+            var data = this.$Grid.getData();
+
+            for (var i = 0, len = data.length; i < len; i++) {
+                if (data[i].id === passwordId) {
+                    return data[i];
+                }
+            }
+
+            return false;
+        }
     });
 });

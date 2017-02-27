@@ -164,3 +164,13 @@
     margin: 0 !important;
     color: #0069b4;
 }
+
+.pcsg-passwords-panel-initialRegistration label {
+    float: left;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.pcsg-passwords-panel-initialRegistration input {
+    width: 100%;
+}

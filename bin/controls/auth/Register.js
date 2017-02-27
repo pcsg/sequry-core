@@ -22,19 +22,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
 
     'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css'
 
-], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, AuthHandler,
+], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, Authentication,
              Ajax, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -111,16 +110,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
          * @returns {Promise}
          */
         submit: function () {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
-                    'package'       : 'pcsg/grouppasswordmanager',
-                    onError         : reject,
-                    authPluginId    : self.getAttribute('authPluginId'),
-                    registrationData: JSON.encode(self.$AuthPluginControl.getRegistrationData())
-                });
-            });
+            return Authentication.registerUser(
+                this.getAttribute('authPluginId'),
+                this.$AuthPluginControl.getRegistrationData()
+            );
         }
     });
 });

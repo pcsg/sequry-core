@@ -152,7 +152,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
          * event : on inject
          */
         $onInject: function () {
-            // @todo
+            this.$Elm.getElement('input.pcsg-gpm-password-title').focus();
         },
 
         /**

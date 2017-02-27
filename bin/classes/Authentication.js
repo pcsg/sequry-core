@@ -496,6 +496,38 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     authPluginId: authPluginId
                 });
             });
+        },
+
+        /**
+         * Register a user with an authentication plugin
+         *
+         * @param {Integer} authPluginId
+         * @param {Object} RegistrationData
+         * @return {Promise}
+         */
+        registerUser: function (authPluginId, RegistrationData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
+                    'package'       : 'pcsg/grouppasswordmanager',
+                    onError         : reject,
+                    authPluginId    : authPluginId,
+                    registrationData: JSON.encode(RegistrationData)
+                });
+            });
+        },
+
+        /**
+         * Get ID of default authentication plugin
+         *
+         * @return {Promise}
+         */
+        getDefaultAuthPluginId: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultPluginId', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });

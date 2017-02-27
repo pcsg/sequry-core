@@ -156,7 +156,13 @@ class Passwords
                 } catch (QUI\Exception $Exception) {
                     throw new QUI\Exception(array(
                         'pcsg/grouppasswordmanager',
-                        'exception.passwords.create.owner.user.incorrect.data'
+                        'exception.passwords.create.owner.user.incorrect.data',
+                        array(
+//                            'userId'             => $OwnerActor->getId(),
+//                            'userName'           => $OwnerActor->getUsername(),
+                            'securityClassId'    => $SecurityClass->getId(),
+                            'securityClassTitle' => $SecurityClass->getAttribute('title')
+                        )
                     ));
                 }
                 break;

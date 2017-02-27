@@ -918,15 +918,18 @@ class CryptoUser extends QUI\Users\User
         $directAccessPasswordIds = $this->getPasswordIdsDirectAccess();
 
         $canShareOwn = Permission::hasPermission(
-            Permissions::PASSWORDS_SHARE, $this
+            Permissions::PASSWORDS_SHARE,
+            $this
         );
 
         $canShareGroup = Permission::hasPermission(
-            Permissions::PASSWORDS_SHARE_GROUP, $this
+            Permissions::PASSWORDS_SHARE_GROUP,
+            $this
         );
 
         $canDeleteGroup = Permission::hasPermission(
-            Permissions::PASSWORDS_DELETE_GROUP, $this
+            Permissions::PASSWORDS_DELETE_GROUP,
+            $this
         );
 
         foreach ($result as $row) {
@@ -1906,5 +1909,30 @@ class CryptoUser extends QUI\Users\User
         Events::$triggerUserDeleteConfirm = false;
 
         parent::delete();
+    }
+
+    /**
+     * Checks if all pre-requisites are met for this user for basic
+     * password manager usage.
+     *
+     * @return bool
+     */
+    public function canUsePasswordManager()
+    {
+        // check if at least one security class is set up
+//        $securityClasses = Authentication::getSecurityClassesList();
+//
+//        if (empty($securityClasses)) {
+//            return false;
+//        }
+
+        // check if the user has at least registered with one authentication method
+        $authKeyPairIds = $this->getAuthKeyPairIds();
+
+        if (empty($authKeyPairIds)) {
+            return false;
+        }
+
+        return true;
     }
 }

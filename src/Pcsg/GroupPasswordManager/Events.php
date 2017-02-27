@@ -444,17 +444,9 @@ class Events
         }
 
         // get ID of basic quiqqer auth plugin
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'id'
-            ),
-            'from' => QUI::getDBTableName(Tables::AUTH_PLUGINS),
-            'where' => array(
-                'path' => '\\' . AuthPlugin::class
-            )
-        ));
+        $defaultPluginId = Authentication::getDefaultAuthPluginId();
 
-        if (empty($result)) {
+        if (empty($defaultPluginId)) {
             return;
         }
 
@@ -464,7 +456,7 @@ class Events
         Authentication::createSecurityClass(array(
             'title'           => $L->get($lg, 'setup.securityclass.title'),
             'description'     => $L->get($lg, 'setup.securityclass.description'),
-            'authPluginIds'   => array($result[0]['id']),
+            'authPluginIds'   => array($defaultPluginId),
             'requiredFactors' => 1
         ));
     }
