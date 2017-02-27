@@ -84,7 +84,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
         options: {
             passwordId: false, // immediately open password on inject
-            icon      : 'fa fa-diamond'
+            icon      : 'fa fa-diamond',
+            '#id'     : 'pcsg-gpm-list'
         },
 
         Binds: [
@@ -115,8 +116,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 onInject : this.$onInject,
                 onRefresh: this.$onRefresh,
                 onCreate : this.$onCreate,
-                onResize : this.$onResize,
-                onDestroy: this.$onDestroy
+                onResize : this.$onResize
             });
 
             this.Loader          = new QUILoader();
@@ -360,6 +360,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 if (pwId) {
                     self.viewPassword.delay(200, self, pwId);
                 }
+
+                self.fireEvent('loaded', [self]);
             });
         },
 
@@ -1058,13 +1060,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             };
 
             var FuncSubmit = function () {
+                if (!privateCatIds.length && !publicCatIds.length) {
+                    Popup.close();
+                    return;
+                }
+
                 if (privateCatIds.length && !publicCatIds.length) {
                     FuncSetPrivateCategories();
                     return;
                 }
 
                 Passwords.getSecurityClassIds(pwIds).then(function (securityClassIds) {
-                    Authentication.multiSecurityClassAuth(securityClassIds).then(function (AuthData) {
+                    if (securityClassIds.length === 1) {
+                        Authentication.securityClassAuth(
+                            securityClassIds[0]
+                        ).then(function (AuthData) {
+                            FuncSetPublicCategories(AuthData);
+
+                            if (privateCatIds.length) {
+                                FuncSetPrivateCategories();
+                            }
+                        });
+
+                        return;
+                    }
+
+                    Authentication.multiSecurityClassAuth(
+                        securityClassIds
+                    ).then(function (AuthData) {
                         FuncSetPublicCategories(AuthData);
 
                         if (privateCatIds.length) {
@@ -1501,11 +1524,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             AuthControl.open();
         },
 
-        /**
-         * Event: onDestroy
-         */
-        $onDestroy: function () {
-            window.PasswordList = null;
-        }
+        ///**
+        // * Event: onDestroy
+        // */
+        //$onDestroy: function () {
+        //    window.PasswordList = null;
+        //}
     });
 });

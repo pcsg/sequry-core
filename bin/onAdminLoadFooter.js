@@ -8,10 +8,9 @@ require([
     'qui/QUI',
     'Ajax',
     'qui/controls/windows/Confirm',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
-    'utils/Panels',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
     'Locale'
-], function (QUI, QUIAjax, QUIConfirm, PasswordManager, PanelUtils, QUILocale) {
+], function (QUI, QUIAjax, QUIConfirm, Passwords, QUILocale) {
     "use strict";
 
     var lg  = 'pcsg/grouppasswordmanager';
@@ -49,20 +48,34 @@ require([
 
         require([
             'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel'
-        ], function(CategoryPanel) {
+        ], function (CategoryPanel) {
             Column.appendChild(new CategoryPanel());
         });
     };
 
     QUI.addEvents({
         onQuiqqerLoaded: function () {
-            // If password list is not open -> open it
-            if (!window.PasswordList) {
-                PanelUtils.openPanelInTasks(new PasswordManager()).then(function (Panel) {
-                    Panel.open();
+            var panels = QUI.Controls.getByType(
+                'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel'
+            );
+
+            if (!panels.length) {
+                Passwords.openPasswordListPanel().then(function () {
+                    loadPasswordCategoryPanel();
                 });
+
+                return;
             }
 
+            var PasswordPanel = panels[0];
+
+            PasswordPanel.addEvents({
+                onDestroy: function () {
+                    window.PasswordList = null;
+                }
+            });
+
+            window.PasswordList = PasswordPanel;
             loadPasswordCategoryPanel();
         }
     });

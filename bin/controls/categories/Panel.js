@@ -14,6 +14,7 @@
  * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map
  * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map
  * @require package/pcsg/grouppasswordmanager/bin/controls/categories/Filters
+ * @require package/pcsg/grouppasswordmanager/bin/Passwords
  * @requrie Ajax
  * @require Locale
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/Panel.css
@@ -32,6 +33,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/Filters',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
 
     'Ajax',
     'Locale',
@@ -40,7 +42,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
 
 ], function (QUIPanel, QUILoader, QUIConfirm, QUISiteMap, QUISiteMapItem,
              QUIContextMenuItem, QUIContextMenuSeparator, CategoryMap,
-             CategoryMapPrivate, Filters, QUIAjax, QUILocale) {
+             CategoryMapPrivate, Filters, Passwords, QUIAjax, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -128,7 +130,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                         self.$CategoryMapPrivate.deselectAll();
                         self.$search();
                     },
-                    onLoaded: function(Map) {
+                    onLoaded        : function (Map) {
                         Map.select(false);
                     }
                 }
@@ -193,7 +195,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                             Container.setStyle('display', 'none');
                             Elm.setProperty('data-open', '0');
                         }
-                        
+
                         self.$saveToggleStatus();
                     }
                 });
@@ -225,7 +227,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
         /**
          * Restore toggle status from localStorage
          */
-        $restoreToggleStatus: function() {
+        $restoreToggleStatus: function () {
             var toggleTypes = localStorage.getItem(
                 'pcsg-gpm-passwords-categories-toggleTypes'
             );
@@ -257,23 +259,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
          * Start password search based on selected category and filters
          */
         $search: function () {
-            if (!window.PasswordList) {
-                return;
-            }
+            var self = this;
 
-            if (this.$selectedCatIdPrivate) {
-                window.PasswordList.setSearchCategoryPrivate(this.$selectedCatIdPrivate);
-            } else {
-                window.PasswordList.setSearchCategory(this.$selectedCatId);
-            }
+            Passwords.openPasswordListPanel().then(function (PasswordList) {
+                if (self.$selectedCatIdPrivate) {
+                    PasswordList.setSearchCategoryPrivate(self.$selectedCatIdPrivate);
+                } else {
+                    PasswordList.setSearchCategory(self.$selectedCatId);
+                }
 
-            if (this.$filters.length) {
-                window.PasswordList.setSearchFilters(this.$filters);
-            } else {
-                window.PasswordList.removeSearchFilters();
-            }
+                if (self.$filters.length) {
+                    PasswordList.setSearchFilters(self.$filters);
+                } else {
+                    PasswordList.removeSearchFilters();
+                }
 
-            window.PasswordList.refresh();
+                PasswordList.refresh();
+            });
         }
     });
 });
