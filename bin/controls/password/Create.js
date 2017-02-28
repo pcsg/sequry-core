@@ -90,8 +90,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                     payload                : QUILocale.get(lg, lg_prefix + 'payload'),
                     passwordPayload        : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
                     payloadWarning         : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
-                    owner                  : QUILocale.get(lg, lg_prefix + 'owner'),
-                    passwordOwner          : QUILocale.get(lg, lg_prefix + 'passwordOwner')
+                    extra                  : QUILocale.get(lg, lg_prefix + 'extra'),
+                    passwordOwner          : QUILocale.get(lg, lg_prefix + 'passwordOwner'),
                 })
             });
 

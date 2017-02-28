@@ -788,10 +788,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         /**+
          * Deletes a password
          *
-         * @param {Object} PasswordInfo
+         * @param {number} passwordId
          */
-        deletePassword: function (PasswordInfo) {
-            var self = this;
+        deletePassword: function (passwordId) {
+            var self    = this;
+            var RowData = this.$getRowDataByPasswordId(passwordId);
 
             // open popup
             var DeletePopup = new QUIPopup({
@@ -807,8 +808,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 '</h1>' +
                 '<span class="pcsg-gpm-passwords-delete-info-description">' +
                 QUILocale.get(lg, 'gpm.passwords.panel.delete.popup.info.description', {
-                    passwordId   : PasswordInfo.id,
-                    passwordTitle: PasswordInfo.title
+                    passwordId   : RowData.id,
+                    passwordTitle: RowData.title
                 }) +
                 '</span>' +
                 '</div>'
@@ -823,12 +824,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 events: {
                     onClick: function () {
                         Authentication.securityClassAuth(
-                            PasswordInfo.securityClassId
+                            RowData.securityClassId
                         ).then(function (AuthData) {
                             DeletePopup.Loader.show();
 
                             Passwords.deletePassword(
-                                PasswordInfo.id,
+                                RowData.id,
                                 AuthData
                             ).then(
                                 function () {

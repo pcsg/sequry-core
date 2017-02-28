@@ -1082,11 +1082,11 @@
         <locale name="password.create.template.payloadWarning">
             <de><![CDATA[Achtung! Dies sind die Daten, die verschlüsselt werden und auf die nach der Erstellung ausschließlich Berechtigte zugreifen können!]]></de>
         </locale>
-        <locale name="password.create.template.owner">
-            <de><![CDATA[Eigentümer]]></de>
+        <locale name="password.create.template.extra">
+            <de><![CDATA[Erweiterte Daten]]></de>
         </locale>
-        <locale name="password.create.template.passwordOwner">
-            <de><![CDATA[Benutzer / Gruppe]]></de>
+        <locale name="password.create.template.passwordOwner" html="true">
+            <de><![CDATA[Eigentümer<br>(Benutzer / Gruppe)]]></de>
         </locale>
         <locale name="password.create.submit.no.owner.assigned">
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>

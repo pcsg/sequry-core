@@ -38,7 +38,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
 
         Binds: [
-            '$loadContent'
+            '$loadContent',
+            '$onDestroy'
         ],
 
         options: {
@@ -54,6 +55,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             this.$passwordType        = null;
             this.$CurrentData         = {};
             this.$loaded              = false;
+
+            this.addEvents({
+                onDestroy: this.$onDestroy
+            });
         },
 
         /**
@@ -151,6 +156,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
          */
         getPasswordType: function () {
             return this.$passwordType;
+        },
+
+        /**
+         * Event: onDestroy
+         */
+        $onDestroy: function() {
+            this.$CurrentData = null;
         }
     });
 });

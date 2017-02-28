@@ -243,7 +243,7 @@ class Password extends QUI\QDOM
             'editDate'        => $this->getAttribute('editDate')
         );
 
-        // private category id
+        // private category ids
         $metaData                       = $this->User->getPasswordMetaData($this->id);
         $viewData['categoryIdsPrivate'] = explode(',', trim($metaData['categoryIds'], ','));
         $viewData['favorite']           = $metaData['favorite'];
@@ -275,6 +275,10 @@ class Password extends QUI\QDOM
             'securityClassId' => $this->SecurityClass->getId(),
             'categoryIds'     => $this->getAttribute('categoryIds')
         );
+
+        // private category ids
+        $metaData                   = $this->User->getPasswordMetaData($this->id);
+        $data['categoryIdsPrivate'] = explode(',', trim($metaData['categoryIds'], ','));
 
         return $data;
     }
