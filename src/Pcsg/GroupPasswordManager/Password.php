@@ -1255,7 +1255,9 @@ class Password extends QUI\QDOM
 
         /** @var CryptoUser $CryptoUser */
         foreach ($CryptoGroup->getCryptoUsers() as $CryptoUser) {
-            $this->removeMetaTableEntry($CryptoUser);
+            if (!$this->hasPasswordAccess($CryptoUser)) {
+                $this->removeMetaTableEntry($CryptoUser);
+            }
         }
 
         return true;
