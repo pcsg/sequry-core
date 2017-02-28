@@ -52,6 +52,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             this.$PasswordTypeControl = null;
             this.$ContentElm          = null;
             this.$passwordType        = null;
+            this.$CurrentData         = {};
+            this.$loaded              = false;
         },
 
         /**
@@ -91,6 +93,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             var self = this;
 
             this.$ContentElm.set('html', '');
+            this.$CurrentData = Object.merge(this.$CurrentData, this.getData());
 
             require([
                 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit'
@@ -99,7 +102,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
                     type  : type,
                     events: {
                         onLoaded: function () {
-                            self.fireEvent('loaded');
+                            if (!self.$loaded) {
+                                self.fireEvent('loaded');
+                                self.$loaded = true;
+                            }
+
+                            if (Object.getLength(self.$CurrentData)) {
+                                self.setData(self.$CurrentData);
+                            }
                         }
                     }
                 }).inject(self.$ContentElm);

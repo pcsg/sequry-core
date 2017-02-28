@@ -26,8 +26,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
@@ -37,13 +37,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html'
     //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, AuthHandler, PasswordHandler,
+], function (QUI, QUIControl, QUILocale, Mustache, Authentication, Passwords,
              SecurityClassSelect, ActorSelect, PasswordContent, CategorySelect, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Passwords      = new PasswordHandler(),
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
