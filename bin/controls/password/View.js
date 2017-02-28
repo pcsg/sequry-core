@@ -103,6 +103,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                     AuthData
                 ).then(
                     function (viewHtml) {
+                        if (!viewHtml) {
+                            return;
+                        }
+
                         self.$Elm.set(
                             'html',
                             viewHtml

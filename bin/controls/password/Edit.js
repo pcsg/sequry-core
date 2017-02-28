@@ -129,7 +129,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 ).then(
                     function (PasswordData) {
                         if (!PasswordData) {
-                            self.fireEvent('close');
+                            return;
                         }
 
                         self.$PasswordData    = PasswordData;

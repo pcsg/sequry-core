@@ -243,7 +243,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.description'),
                     dataIndex: 'description',
                     dataType : 'text',
-                    width    : 500
+                    width    : 400
                 }, {
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.datatype'),
                     dataIndex: 'dataType',

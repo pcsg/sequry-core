@@ -8,22 +8,50 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  *
  * @param integer $passwordId - the id of the password object
  * @param array $authData - authentication information
- * @return string - view html
+ * @return string|false - view html; false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $authData)
 {
     $passwordId = (int)$passwordId;
 
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
+    try {
+        // authenticate
+        Passwords::getSecurityClass(
+            $passwordId
+        )->authenticate(
+            json_decode($authData, true) // @todo diese daten ggf. filtern
+        );
 
-    $Password = Passwords::get($passwordId);
+        $Password = Passwords::get($passwordId);
 
-    return Handler::getViewHtml($Password->getDataType(), $Password->getViewData());
+        return Handler::getViewHtml($Password->getDataType(), $Password->getViewData());
+    } catch (QUI\Exception $Exception) {
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.ajax.passwords.getView.error',
+                array(
+                    'error'      => $Exception->getMessage(),
+                    'passwordId' => $passwordId
+                )
+            )
+        );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_getView -> ' . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.general.error'
+            )
+        );
+
+        return false;
+    }
 }
 
 \QUI::$Ajax->register(

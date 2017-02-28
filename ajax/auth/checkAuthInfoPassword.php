@@ -1,18 +1,18 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 
 /**
- * Checks if authentication information for a specific security class is correct
+ * Checks if authentication information for a specific password is correct
  *
- * @param integer $securityClassId - security class ID
+ * @param int $passwordId - password ID
  * @param array $authData - authentication information
  * @return bool - true if correct, false if not correct
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfo($securityClassId, $authData)
+function package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfoPassword($passwordId, $authData)
 {
     try {
-        $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
+        $SecurityClass = Passwords::getSecurityClass($passwordId);
         $authData      = json_decode($authData, true);
 
         // no session cache on check
@@ -29,7 +29,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfo($securityClas
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfo',
-    array('securityClassId', 'authData'),
+    'package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfoPassword',
+    array('passwordId', 'authData'),
     'Permission::checkAdminUser'
 );

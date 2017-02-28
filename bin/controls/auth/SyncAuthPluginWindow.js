@@ -24,7 +24,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate',
 
     'Ajax',
@@ -33,11 +33,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow.css'
 
 ], function (QUI, QUIPopup, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             AuthHandler, AuthenticationControl, Ajax, template) {
+             Authentication, AuthenticationControl, Ajax, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -175,6 +174,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
                             self.Loader.hide();
                         },
                         onClose : function () {
+                            self.Loader.hide();
                             self.fireEvent('close');
                         }
                     }

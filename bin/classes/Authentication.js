@@ -32,6 +32,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @return {Promise}
          */
         securityClassAuth: function (securityClassId) {
+            var self = this;
+
             return new Promise(function (resolve, reject) {
                 require([
                     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate'
@@ -40,8 +42,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         securityClassId: securityClassId,
                         events         : {
                             onSubmit: function (AuthData) {
-                                resolve(AuthData);
-                                Popup.close();
+                                self.checkAuthInfo(
+                                    securityClassId,
+                                    AuthData
+                                ).then(function(correct) {
+                                    resolve(AuthData);
+
+                                    if (correct) {
+                                        Popup.close();
+                                    }
+                                });
                             },
                             onClose : function () {
                                 reject();
@@ -130,6 +140,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @return {Promise}
          */
         passwordAuth: function (passwordId) {
+            var self = this;
+
             return new Promise(function (resolve, reject) {
                 require([
                     'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate'
@@ -138,8 +150,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         passwordId: passwordId,
                         events    : {
                             onSubmit: function (AuthData) {
-                                resolve(AuthData);
-                                Popup.close();
+                                self.checkAuthInfoPassword(
+                                    passwordId,
+                                    AuthData
+                                ).then(function(correct) {
+                                    resolve(AuthData);
+
+                                    if (correct) {
+                                        Popup.close();
+                                    }
+                                });
                             },
                             onClose : function () {
                                 reject();
@@ -318,7 +338,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Get id, title and description of an authentication plugin
+         * Check if authentication information for a specific security class is correct
          *
          * @param {number} securityClassId - id of security class
          * @param {Object} AuthData - authentication information
@@ -331,6 +351,24 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     onError        : reject,
                     securityClassId: securityClassId,
                     authData       : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
+         * Check if authentication information for a specific password is correct
+         *
+         * @param {number} passwordId - Password ID
+         * @param {Object} AuthData - authentication information
+         * @returns {Promise}
+         */
+        checkAuthInfoPassword: function (passwordId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfoPassword', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId,
+                    authData  : JSON.encode(AuthData)
                 });
             });
         },

@@ -46,6 +46,8 @@ Abhängigkeiten
         * `sudo ln -s /usr/local/lib/libsodium.so libsodium.so`
         * `sudo ln -s /usr/local/lib/libsodium.so libsodium.so.18`
         * `sudo pecl install libsodium`
+    * Alternativ können für die Installation von `libsodium-dev` für Ubuntu `16.04` zwei `.deb`-Pakete <a href="#">heruntergeladen werden</a>
+       * Nach dem Download: `sudo dpkg -i libsodium18-1.0.11.deb libsodium-dev-1.0.11.deb`
 
 Mitwirken
 ----------

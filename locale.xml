@@ -458,6 +458,9 @@
         <locale name="message.ajax.passwords.get.error" html="true">
             <de><![CDATA[Beim Abruf des Passworts #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
         </locale>
+        <locale name="message.ajax.passwords.getView.error" html="true">
+            <de><![CDATA[Beim Abruf des Passworts #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
         <locale name="message.ajax.passwords.categories.private.setToPassword.error" html="true">
             <de><![CDATA[Beim Setzen der persönliche(n) Passwort-Kategorie(n) für das Passwort #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
         </locale>
