@@ -3,6 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security;
 
 use Pcsg\GroupPasswordManager\Constants\Crypto;
+use QUI\Utils\Security\Orthos;
 use QUI;
 
 /**
@@ -18,7 +19,7 @@ class Utils
      */
     public static function stripModuleVersionString($str)
     {
-        if (mb_substr($str, -3) === '$$$') {
+        if (mb_substr($str, -3, null, '8bit') === '$$$') {
             $str = mb_substr($str, 0, -Crypto::VERSION_LENGTH, '8bit');
         }
 
@@ -54,7 +55,7 @@ class Utils
      * @param null $encoding
      * @return string
      */
-    function mb_str_pad($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT, $encoding = null)
+    public static function mb_str_pad($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT, $encoding = null)
     {
         $encoding = $encoding === null ? mb_internal_encoding() : $encoding;
 
@@ -139,5 +140,48 @@ class Utils
         }
 
         return file_get_contents($keyFile);
+    }
+
+    /**
+     * Clear array of potentially unsafe code
+     *
+     * @param array $data
+     * @return array - cleared data
+     */
+    public static function clearArray($data)
+    {
+        if (!is_array($data)) {
+            return array();
+        }
+
+        $cleanData = array();
+
+        foreach ($data as $key => $str) {
+            if (is_array($data[$key])) {
+                $cleanData[$key] = self::clearArray($data[$key]);
+                continue;
+            }
+
+            $cleanData[$key] = self::clear($str);
+        }
+
+        return $cleanData;
+    }
+
+    /**
+     * Clear string
+     *
+     * @param string $str
+     * @return string - cleared string
+     */
+    public static function clear($str)
+    {
+        $str = Orthos::removeHTML($str);
+        $str = Orthos::clearPath($str);
+//        $str = Orthos::clearFormRequest($str);
+
+        $str = htmlspecialchars($str);
+
+        return $str;
     }
 }

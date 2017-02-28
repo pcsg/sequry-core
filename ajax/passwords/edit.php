@@ -1,6 +1,6 @@
 <?php
 
-use QUI\Utils\Security\Orthos;
+use Pcsg\GroupPasswordManager\Security\Utils;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 
 /**
@@ -29,7 +29,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
         $Password = Passwords::get($passwordId);
 
         $Password->setData(
-            Orthos::clearArray(json_decode($passwordData, true))
+            Utils::clearArray(json_decode($passwordData, true))
         );
 
         QUI::getMessagesHandler()->addSuccess(
