@@ -103,6 +103,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
                     title: QUILocale.get(lg, 'controls.categories.select.title'),
                     alt  : QUILocale.get(lg, 'controls.categories.select.title')
                 });
+            } else {
+                this.$Elm.getElement(
+                    '.pcsg-gpm-categories-select-container'
+                ).addEvents({
+                    mouseenter: function (event) {
+                        self.$CategoriesToolTip = new Element('div', {
+                            'class': 'pcsg-gpm-tooltip',
+                            styles : {
+                                top  : -7,
+                                left : 5,
+                                float: 'left',
+                                width: 400
+                            },
+                            html   : '<span>' +
+                            QUILocale.get(lg, 'controls.password.view.categories.tooltip') +
+                            '</span>'
+                        }).inject(event.target, 'after');
+                    },
+                    mouseleave: function () {
+                        if (self.$CategoriesToolTip) {
+                            self.$CategoriesToolTip.destroy();
+                        }
+                    }
+                });
             }
 
             this.Loader.inject(this.$Elm);

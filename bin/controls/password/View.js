@@ -56,7 +56,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
         ],
 
         options: {
-            'passwordId': false   // id of the password
+            'passwordId'          : false,   // id of the password
+            'editPublicCategories': false // can edit public categories
         },
 
         initialize: function (options) {
@@ -66,7 +67,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                 onInject: this.$onInject
             });
 
-            this.Loader = new QUILoader();
+            this.Loader             = new QUILoader();
+            this.$CategoriesToolTip = null;
         },
 
         /**
@@ -131,13 +133,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                             CategoryPrivate.setValue(catIdsPrivate);
                         }
 
-                        // public categories (show only!)
+                        // public categories
                         var CategoriesPublicElm = self.$Elm.getElement(
                             '.pcsg-gpm-password-view-info-categories-public'
                         );
 
                         var Categories = new CategorySelect({
-                            editMode: false
+                            editMode: self.getAttribute('editPublicCategories')
                         }).inject(CategoriesPublicElm);
 
                         var catIdsPublic = CategoriesPublicElm.getProperty(
@@ -204,7 +206,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                     '</span>'
                 }).inject(Btn.getElm(), 'after');
 
-                (function() {
+                (function () {
                     moofx(ToolTip).animate({
                         opacity: 0
                     }, {

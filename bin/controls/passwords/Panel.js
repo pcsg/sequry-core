@@ -871,8 +871,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         Sheet.getContent().setStyle('padding', 20);
 
                         var View = new PasswordView({
-                            passwordId: passwordId,
-                            events    : {
+                            passwordId          : passwordId,
+                            //editPublicCategories: canEdit,
+                            events              : {
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
