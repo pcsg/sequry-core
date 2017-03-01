@@ -1652,6 +1652,12 @@
         <locale name="controls.categories.select.all">
             <de><![CDATA[Alle Passwörter]]></de>
         </locale>
+        <locale name="controls.categories.delete.confirm.title">
+            <de><![CDATA[Kategorie aus Passwort entfernen]]></de>
+        </locale>
+        <locale name="controls.categories.delete.confirm.text">
+            <de><![CDATA[Sind Sie sicher, dass Sie die Kategorie "[category]" aus diesem Passwort entfernen möchten?]]></de>
+        </locale>
 
         <!-- Control: user/ReEncryptKeys -->
         <locale name="controls.user.ReEncryptKeys.info">

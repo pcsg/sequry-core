@@ -62,6 +62,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
 
             this.Loader        = new QUILoader();
             this.$categoryIds  = [];
+            this.$Categories   = {};
             this.$CatContainer = null;
         },
 
@@ -158,10 +159,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
 
             Categories.getPublic(this.$categoryIds).then(function (categories) {
                 for (var i = 0, len = categories.length; i < len; i++) {
+                    var Cat = categories[i];
+
                     self.$getCatElm(
-                        categories[i].id,
-                        categories[i].title
+                        Cat.id,
+                        Cat.title
                     ).inject(self.$CatContainer);
+
+                    self.$Categories[Cat.id] = Cat;
                 }
 
                 self.Loader.hide();
@@ -261,9 +266,39 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
          * @param {Number} catId
          */
         $onRemoveCategory: function (catId) {
-            this.$categoryIds.erase(catId);
-            this.$refresh();
-            this.fireEvent('change', [this.$categoryIds, this]);
+            var self = this;
+
+            // open popup
+            var Popup = new QUIConfirm({
+                title      : QUILocale.get(
+                    lg, 'controls.categories.delete.confirm.title'
+                ),
+                maxHeight  : 200,
+                maxWidth   : 400,
+                closeButton: true,
+                content    : '',
+                icon       : 'fa fa-trash',
+                events     : {
+                    onOpen  : function () {
+                        Popup.getContent().set(
+                            'html',
+                            QUILocale.get(
+                                lg, 'controls.categories.delete.confirm.text', {
+                                    category: self.$Categories[catId].title
+                                }
+                            )
+                        );
+                    },
+                    onSubmit: function () {
+                        self.$categoryIds.erase(catId);
+                        self.$refresh();
+                        self.fireEvent('change', [this.$categoryIds, this]);
+                        Popup.close();
+                    }
+                }
+            });
+
+            Popup.open();
         },
 
         /**

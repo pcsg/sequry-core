@@ -63,8 +63,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
         },
 
         initialize: function (options) {
-            this.setAttribute('title', QUILocale.get(lg, 'controls.categories.panel.title'));
-
             this.parent(options);
 
             this.addEvents({
@@ -87,6 +85,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             var self    = this;
             var Content = this.getContent();
 
+            this.setAttribute('title', QUILocale.get(lg, 'controls.categories.panel.title'));
             this.getElm().addClass('pcsg-gpm-categories-panel');
 
             Content.setStyles({

@@ -16,13 +16,15 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select', [
 
+    'qui/controls/windows/Confirm',
+
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
     'package/pcsg/grouppasswordmanager/bin/Categories',
 
     'Locale'
 
-], function (CategorySelect, CategoryMapPrivate, Categories, QUILocale) {
+], function (QUIConfirm, CategorySelect, CategoryMapPrivate, Categories, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -49,10 +51,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
 
             Categories.getPrivate(this.$categoryIds).then(function (categories) {
                 for (var i = 0, len = categories.length; i < len; i++) {
+                    var Cat = categories[i];
+
                     self.$getCatElm(
-                        categories[i].id,
-                        categories[i].title
+                        Cat.id,
+                        Cat.title
                     ).inject(self.$CatContainer);
+
+                    self.$Categories[Cat.id] = Cat;
                 }
 
                 self.Loader.hide();
@@ -92,5 +98,4 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
             });
         }
     });
-
 });
