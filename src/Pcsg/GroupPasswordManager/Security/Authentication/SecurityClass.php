@@ -464,28 +464,72 @@ class SecurityClass extends QUI\QDOM
             return $actors;
         }
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'id',
-                'username'
-            ),
-            'from'   => 'users',
-            'where'  => array(
-                'id'       => array(
-                    'type'  => 'IN',
-                    'value' => $userIds
-                ),
-                'username' => array(
-                    'type'  => '%LIKE%',
-                    'value' => $search
-                )
-            )
-        ));
+        $sql = "SELECT id, username, firstname, lastname";
+        $sql .= " FROM " . QUI::getDBTableName('users');
+        $where = array();
+        $binds = array();
+
+        $where[] = '`id` IN (' . implode(',', $userIds) . ')';
+
+        $whereOr = array();
+
+        $whereOr[]         = 'username LIKE :username';
+        $binds['username'] = array(
+            'value' => '%' . $search . '%',
+            'type'  => \PDO::PARAM_STR
+        );
+
+        $whereOr[]          = 'firstname LIKE :firstname';
+        $binds['firstname'] = array(
+            'value' => '%' . $search . '%',
+            'type'  => \PDO::PARAM_STR
+        );
+
+        $whereOr[]         = 'lastname LIKE :lastname';
+        $binds['lastname'] = array(
+            'value' => '%' . $search . '%',
+            'type'  => \PDO::PARAM_STR
+        );
+
+        $where[] = '(' . implode(' OR ', $whereOr) . ')';
+
+        $sql .= " WHERE " . implode(" AND ", $where);
+
+        $PDO  = QUI::getDataBase()->getPDO();
+        $Stmt = $PDO->prepare($sql);
+
+        // bind search values
+        foreach ($binds as $var => $bind) {
+            $Stmt->bindValue(':' . $var, $bind['value'], $bind['type']);
+        }
+
+        // fetch information for all corresponding passwords
+        try {
+            $Stmt->execute();
+            $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError(
+                self::class . ' :: suggestSearchEligibleUsers -> '
+                . $Exception->getMessage()
+            );
+
+            return array();
+        }
 
         foreach ($result as $row) {
+            $userNameParts = array();
+
+            if (!empty($row['firstname'])) {
+                $userNameParts[] = $row['firstname'];
+            }
+
+            if (!empty($row['lastname'])) {
+                $userNameParts[] = $row['lastname'];
+            }
+
             $actors[] = array(
                 'id'   => $row['id'],
-                'name' => $row['username'],
+                'name' => implode(' ', $userNameParts) . ' (' . $row['username'] . ')',
                 'type' => 'user'
             );
         }
