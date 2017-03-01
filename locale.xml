@@ -1098,7 +1098,7 @@
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
         </locale>
         <locale name="password.create.set.owner.info">
-            <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest. Passwort-Eigentümer können Passwörter bearbeiten, teilen und löschen.]]></de>
+            <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
         </locale>
         <locale name="password.create.set.owner.not.eligible">
             <de><![CDATA[Der aktuell gewählte Passwort-Eigentümer ist nicht für die gewählten Authentifizierungs-Faktoren geeignet. Bitte wählen Sie einen anderen Benutzer oder eine andere Gruppe als Passwort-Eigentümer.]]></de>
@@ -1673,6 +1673,11 @@
         </locale>
         <locale name="controls.actors.selectwindow.tbl.header.notice">
             <de><![CDATA[Bemerkung]]></de>
+        </locale>
+
+        <!-- Control: securityclasses/SelectSlider -->
+        <locale name="controls.securityclasses.selectslider.authfactors">
+            <de><![CDATA[[requiredFactors]-Faktor Authentifizierung]]></de>
         </locale>
 
     </groups>

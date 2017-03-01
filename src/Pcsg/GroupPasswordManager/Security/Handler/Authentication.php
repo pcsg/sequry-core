@@ -435,9 +435,11 @@ class Authentication
             $id = (int)$row['id'];
 
             $list[$id] = array(
-                'title'       => $row['title'],
-                'description' => $row['description'],
-                'authPlugins' => array()
+                'id'              => $id,
+                'title'           => $row['title'],
+                'description'     => $row['description'],
+                'authPlugins'     => array(),
+                'requiredFactors' => $row['requiredFactors']
             );
 
             $authPlugins = self::getAuthPluginsBySecurityClass($id);
@@ -451,6 +453,17 @@ class Authentication
                 );
             }
         }
+
+        uasort($list, function ($a, $b) {
+            $authPluginsA = count($a['authPlugins']);
+            $authPluginsB = count($b['authPlugins']);
+
+            if ($authPluginsA === $authPluginsB) {
+                return 0;
+            }
+
+            return $authPluginsA < $authPluginsB ? -1 : 1;
+        });
 
         return $list;
     }
@@ -599,8 +612,8 @@ class Authentication
             'select' => array(
                 'id'
             ),
-            'from' => QUI::getDBTableName(Tables::AUTH_PLUGINS),
-            'where' => array(
+            'from'   => QUI::getDBTableName(Tables::AUTH_PLUGINS),
+            'where'  => array(
                 'path' => '\\' . AuthPlugin::class
             )
         ));

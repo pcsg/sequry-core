@@ -16,6 +16,7 @@
   },
   "require": {
     "quiqqer\/quiqqer": "*@dev",
+    "quiqqer/tooltips": "1.0.0",
     "phpseclib\/phpseclib": "2.0.0",
     "paragonie\/halite": "3.2.0",
     "ext-bcmath": "*",

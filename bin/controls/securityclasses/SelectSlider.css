@@ -1,0 +1,25 @@
+.pcsg-gpm-securityclasses-selectslider {
+    float: left;
+    padding: 15px 20px 30px 20px;
+    width: 100%;
+}
+
+.pcsg-gpm-securityclasses-selectslider .noUi-marker-horizontal {
+    display: none;
+}
+
+.pcsg-gpm-securityclasses-selectslider .noUi-value-horizontal {
+    color: #454545;
+    font-size: 14px;
+    top: 0;
+}
+
+.pcsg-gpm-securityclasses-selectslider-slider {
+    float: left;
+    min-width: 200px;
+}
+
+.pcsg-gpm-securityclasses-selectslider-info {
+    float: left;
+    margin-left: 30px;
+}
