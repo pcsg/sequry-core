@@ -73,6 +73,10 @@
     float: left;
 }
 
+div.field-container-field {
+    overflow-x: auto;
+}
+
 /*.pcsg-gpm-password-view-copy-tooltip:hover span {*/
 /*visibility: visible;*/
 /*opacity: 0.8;*/
