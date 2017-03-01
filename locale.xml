@@ -1101,7 +1101,7 @@
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
         </locale>
         <locale name="password.create.set.owner.not.eligible">
-            <de><![CDATA[Der aktuell gewählte Passwort-Eigentümer ist nicht für die gewählten Authentifizierungs-Faktoren geeignet. Bitte wählen Sie einen anderen Benutzer oder eine andere Gruppe als Passwort-Eigentümer.]]></de>
+            <de><![CDATA[Der aktuell gewählte Passwort-Eigentümer ist nicht für die gewählte Authentifizierungs-Stufe geeignet. Bitte wählen Sie einen anderen Benutzer oder eine andere Gruppe als Passwort-Eigentümer.]]></de>
         </locale>
 
         <!-- Control: password/Edit -->
