@@ -25,7 +25,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
@@ -36,13 +37,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, PasswordHandler,
+], function (QUI, QUIControl, QUILocale, Mustache, Passwords, Authentication,
              SecurityClassSelect, ActorSelect, PasswordTypes, CategorySelect,
              CategorySelectPrivate, template) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager',
-        Passwords = new PasswordHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -50,7 +50,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
 
         Binds: [
-            '$onInject'
+            '$onInject',
+            '$onSecurityClassChange',
+            '$onSecurityClassSelectLoaded',
+            '$onOwnerChange'
         ],
 
         initialize: function (options) {
@@ -64,6 +67,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             this.$CategorySelect        = null;
             this.$CategorySelectPrivate = null;
             this.$owner                 = false;
+            this.$OwnerSelect           = null;
+            this.$OwnerSelectElm        = null;
+            this.$OwnerInfoElm          = null;
+            this.$loaded                = false;
+            this.$CurrentOwner          = null;
         },
 
         /**
@@ -72,8 +80,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            var self      = this,
-                lg_prefix = 'password.create.template.';
+            var lg_prefix = 'password.create.template.';
 
             this.$Elm = this.parent();
 
@@ -100,25 +107,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 'span.pcsg-gpm-security-classes'
             );
 
-            var OwnerSelectElm = this.$Elm.getElement(
-                'span.pcsg-gpm-password-owner'
+            this.$OwnerSelectElm = this.$Elm.getElement(
+                'div.pcsg-gpm-password-owner'
             );
 
             this.$SecurityClassSelect = new SecurityClassSelect({
                 events: {
-                    onLoaded: function () {
-                        self.fireEvent('loaded');
-                    },
-                    onChange: function (value) {
-                        OwnerSelectElm.set('html', '');
-
-                        self.$OwnerSelect = new ActorSelect({
-                            max            : 1,
-                            securityClassId: value
-                        }).inject(OwnerSelectElm);
-
-                        self.$OwnerSelect.addItem('u' + USER.id);
-                    }
+                    onLoaded: this.$onSecurityClassSelectLoaded
                 }
             }).inject(
                 SecurityClassElm
@@ -146,6 +141,151 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             );
 
             return this.$Elm;
+        },
+
+        /**
+         * Execute if the security class select has loaded
+         */
+        $onSecurityClassSelectLoaded: function () {
+            var self = this;
+
+            // set default security class for new passwords
+            Authentication.getDefaultSecurityClassId().then(
+                function (securityClassId) {
+                    self.$SecurityClassSelect.addEvents({
+                        onChange: self.$onSecurityClassChange
+                    });
+
+                    if (securityClassId) {
+                        self.$SecurityClassSelect.setValue(
+                            securityClassId
+                        );
+                    } else {
+                        securityClassId = self.$SecurityClassSelect
+                            .firstChild()
+                            .getAttribute('value');
+                        self.$SecurityClassSelect.setValue(securityClassId);
+                    }
+
+                    self.fireEvent('loaded');
+                }
+            );
+        },
+
+        /**
+         * Perform certain actions if the selected security class changes:
+         *
+         * - Check if the currently selected owner is eligible for security class
+         *
+         * @param {number} securityClassId - security class ID
+         */
+        $onSecurityClassChange: function (securityClassId) {
+            var self = this;
+
+            this.$OwnerSelectElm.set('html', '');
+
+            this.$OwnerSelect = new ActorSelect({
+                max            : 1,
+                securityClassId: securityClassId,
+                events         : {
+                    onChange: this.$onOwnerChange
+                }
+            }).inject(this.$OwnerSelectElm);
+
+            if (!this.$loaded) {
+                Authentication.isActorEligibleForSecurityClass(
+                    USER.id,
+                    'user',
+                    securityClassId
+                ).then(
+                    function (isEligible) {
+                        if (isEligible) {
+                            self.$OwnerSelect.addItem('u' + USER.id);
+                        } else {
+                            self.$showSetOwnerInformation();
+                        }
+
+                        self.$loaded = true;
+                    }
+                );
+
+                return;
+            }
+
+            if (!this.$CurrentOwner) {
+                this.$showSetOwnerInformation();
+                return;
+            }
+
+            var ownerValue = this.$CurrentOwner.id;
+
+            if (this.$CurrentOwner.type === 'user') {
+                ownerValue = 'u' + ownerValue;
+            } else {
+                ownerValue = 'g' + ownerValue;
+            }
+
+            this.$OwnerSelect.addItem(ownerValue);
+
+            Authentication.isActorEligibleForSecurityClass(
+                this.$CurrentOwner.id,
+                this.$CurrentOwner.type,
+                securityClassId
+            ).then(
+                function (isEligible) {
+                    if (isEligible) {
+                        return;
+                    }
+
+                    if (self.$OwnerInfoElm) {
+                        self.$OwnerInfoElm.destroy();
+                    }
+
+                    self.$OwnerInfoElm = new Element('div', {
+                        'class': 'pcsg-gpm-password-warning',
+                        styles : {
+                            marginTop: 10
+                        },
+                        html   : QUILocale.get(lg, 'password.create.set.owner.not.eligible')
+                    }).inject(self.$OwnerSelectElm);
+                }
+            );
+        },
+
+        /**
+         * On owner change
+         */
+        $onOwnerChange: function () {
+            var actors = this.$OwnerSelect.getActors();
+
+            if (!actors.length) {
+                this.$showSetOwnerInformation();
+                this.$CurrentOwner = null;
+                return;
+            }
+
+            this.$CurrentOwner = actors[0];
+
+            if (this.$OwnerInfoElm) {
+                this.$OwnerInfoElm.destroy();
+            }
+        },
+
+        /**
+         * Show info about owner
+         */
+        $showSetOwnerInformation: function () {
+            if (this.$OwnerInfoElm) {
+                this.$OwnerInfoElm.destroy();
+            }
+
+            this.$OwnerInfoElm = new Element('div', {
+                'class': 'pcsg-gpm-password-hint',
+                styles : {
+                    marginTop: 10
+                },
+                html   : QUILocale.get(lg, 'password.create.set.owner.info')
+            }).inject(this.$OwnerSelectElm);
         },
 
         /**
@@ -177,7 +317,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                 QUI.getMessageHandler(function (MH) {
                     MH.addAttention(
                         QUILocale.get(lg, 'password.create.submit.no.owner.assigned')
-                    )
+                    );
                 });
 
                 return;

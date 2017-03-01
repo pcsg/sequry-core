@@ -3,7 +3,7 @@
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
 /**
- * Get a list of all installed authentication plugins
+ * Get ID of the default authentication plugin (QUIQQER Password auth)
  *
  * @return array
  */

@@ -45,7 +45,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 self.checkAuthInfo(
                                     securityClassId,
                                     AuthData
-                                ).then(function(correct) {
+                                ).then(function (correct) {
                                     resolve(AuthData);
 
                                     if (correct) {
@@ -153,7 +153,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 self.checkAuthInfoPassword(
                                     passwordId,
                                     AuthData
-                                ).then(function(correct) {
+                                ).then(function (correct) {
                                     resolve(AuthData);
 
                                     if (correct) {
@@ -562,6 +562,40 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         getDefaultAuthPluginId: function () {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultPluginId', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Checks if the given user is eligible for a security class
+         *
+         * @param {number} actorId - user or group ID
+         * @param {string} actorType - "user" / "group"
+         * @param {number} securityClassId
+         * @return {Promise}
+         */
+        isActorEligibleForSecurityClass: function (actorId, actorType, securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_isActorEligibleForSecurityClass', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    actorId        : actorId,
+                    actorType      : actorType,
+                    securityClassId: securityClassId
+                });
+            });
+        },
+
+        /**
+         * Get ID of the default security class (if set)
+         *
+         * @return {Promise}
+         */
+        getDefaultSecurityClassId: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultSecurityClassId', resolve, {
                     'package': pkg,
                     onError  : reject
                 });

@@ -741,6 +741,12 @@
         <locale name="settings.module_settings.reEncryptEnabled.description">
             <de><![CDATA[Benutzer haben in ihrem Profil die Option, alle kryptografisch gesicherten Daten neu zu verschlüsseln. Sollte nur bei Notwendigkeit (z.B. Versionssprung der Verschlüsselungs-Bibliothek) erlaubt werden.]]></de>
         </locale>
+        <locale name="settings.module_settings.defaultSecurityClassId.title">
+            <de><![CDATA[Standard Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="settings.module_settings.defaultSecurityClassId.description">
+            <de><![CDATA[Legen Sie fest, welche Sicherheitsklasse beim "Neues Passwort erstellen"-Dialog vorausgewählt ist.]]></de>
+        </locale>
 
         <locale name="user.pwm.title">
             <de><![CDATA[Passwort-Manager]]></de>
@@ -1090,6 +1096,12 @@
         </locale>
         <locale name="password.create.submit.no.owner.assigned">
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
+        </locale>
+        <locale name="password.create.set.owner.info">
+            <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest. Passwort-Eigentümer können Passwörter bearbeiten, teilen und löschen.]]></de>
+        </locale>
+        <locale name="password.create.set.owner.not.eligible">
+            <de><![CDATA[Der aktuell gewählte Passwort-Eigentümer ist nicht für die gewählten Authentifizierungs-Faktoren geeignet. Bitte wählen Sie einen anderen Benutzer oder eine andere Gruppe als Passwort-Eigentümer.]]></de>
         </locale>
 
         <!-- Control: password/Edit -->

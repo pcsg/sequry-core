@@ -8,6 +8,9 @@
                     <type><![CDATA[integer]]></type>
                     <defaultvalue>900</defaultvalue>
                 </conf>
+                <conf name="defaultSecurityClassId">
+                    <type><![CDATA[integer]]></type>
+                </conf>
                 <conf name="reEncryptEnabled">
                     <type><![CDATA[bool]]></type>
                 </conf>
@@ -40,6 +43,15 @@
                             </text>
                             <description>
                                 <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.description" />
+                            </description>
+                        </input>
+
+                        <input conf="settings.defaultSecurityClassId" type="number" data-qui="package/pcsg/grouppasswordmanager/bin/controls/settings/DefaultSecurityClass">
+                            <text>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.defaultSecurityClassId.title" />
+                            </text>
+                            <description>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.defaultSecurityClassId.description" />
                             </description>
                         </input>
 
