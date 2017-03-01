@@ -22,17 +22,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
 
     'qui/controls/Control',
     'qui/controls/loader/Loader',
-    'qui/controls/input/Range',
 
-    URL_OPT_DIR + 'bin/nouislider/distribute/nouislider.min.js',
+    'html5tooltips',
+    URL_OPT_DIR + 'bin/nouislider/distribute/nouislider.js',
 
     'package/pcsg/grouppasswordmanager/bin/Authentication',
 
     'Locale',
 
+    'css!' + URL_OPT_DIR + 'bin/nouislider/distribute/nouislider.css',
     'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider.css'
 
-], function (QUIControl, QUILoader, QUIRange, noUiSlider, Authentication, QUILocale) {
+], function (QUIControl, QUILoader, html5tooltips, noUiSlider, Authentication, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -61,6 +62,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
             this.$RequiredFactorsElm    = null;
             this.$InfoElm               = null;
             this.$securityClassId       = null; // currently selected security class id
+            this.$sliderNumber          = null;
+            this.$dragging              = false;
+            this.$CurrentToolTip        = null;
         },
 
         /**
@@ -115,21 +119,73 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
                     }
                 });
 
-                var i = 1;
+                var i                = 1;
+                var sliderNumberElms = SliderContainer.getElements('.noUi-value');
+                var toolTips         = [];
+
+                var FuncSliderNumberClick = function (event) {
+                    self.setValue(
+                        event.target.getProperty('data-securityclassid')
+                    );
+                };
 
                 for (var id in SecurityClasses) {
                     if (!SecurityClasses.hasOwnProperty(id)) {
                         continue;
                     }
 
-                    self.$SecurityClasses[i++] = SecurityClasses[id];
+                    var SecurityClass   = SecurityClasses[id];
+                    var sliderNumberId  = 'pcsg-gpm-securityclasses-selectslider-number-' + i;
+                    var SliderNumberElm = sliderNumberElms[i - 1];
+
+                    SliderNumberElm.addEvents({
+                        click: FuncSliderNumberClick
+                    });
+
+                    SliderNumberElm.setProperty('id', sliderNumberId);
+                    SliderNumberElm.setProperty('data-securityclassid', SecurityClass.id);
+
+                    self.$SecurityClasses[i++] = SecurityClass;
+
+                    toolTips.push({
+                        animateFunction: "slidein",
+                        delay          : 0,
+                        color          : "tangerine",
+                        stickTo        : "bottom",
+                        contentText    : '<b>' + SecurityClass.title + '</b><br>' +
+                        SecurityClass.description,
+                        targetSelector : '#' + sliderNumberId
+                    });
                 }
+
+                html5tooltips(toolTips);
 
                 self.$Slider.on('update', function (values) {
                     self.$onChangeValue(parseInt(values[0]));
+                    self.$sliderNumber = parseInt(values[0]);
                 });
 
-                //self.$onChangeValue(1);
+                self.$Slider.on('start', function () {
+                    self.$dragging    = true;
+                    var SliderHandle  = SliderContainer.getElement('.noUi-handle');
+                    var sliderValue   = parseInt(self.$Slider.get());
+                    var SecurityClass = self.$SecurityClasses[sliderValue];
+
+                    self.$CurrentToolTip = new Element('div', {
+                        'class': 'pcsg-gpm-tooltip-top',
+                        html   : '<span><b>' + SecurityClass.title + '</b><br>' +
+                        SecurityClass.description + '</span>'
+                    }).inject(SliderHandle);
+                });
+
+                self.$Slider.on('end', function () {
+                    if (self.$CurrentToolTip) {
+                        self.$CurrentToolTip.destroy();
+                    }
+
+                    self.$dragging = false;
+                });
+
                 self.Loader.hide();
                 self.fireEvent('loaded', [self]);
             });
@@ -146,10 +202,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
                 })
             );
 
-            //new Element('div', {
-            //    'class': 'pcsg-gpm-password-help-bubble',
-            //
-            //});
+            if (this.$dragging) {
+                this.$CurrentToolTip.set(
+                    'html',
+                    '<span><b>' + SecurityClass.title + '</b><br>' +
+                    SecurityClass.description + '</span>'
+                );
+            }
 
             this.$securityClassId = SecurityClass.id;
             this.fireEvent('change', [this.$securityClassId, this]);

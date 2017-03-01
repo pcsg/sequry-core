@@ -27,7 +27,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
     'package/pcsg/grouppasswordmanager/bin/Passwords',
     'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
@@ -39,7 +38,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, Passwords, Authentication,
-             SecurityClassSelect, SecurityClassSelectSlider, ActorSelect,
+             SecurityClassSelectSlider, ActorSelect,
              PasswordTypes, CategorySelect, CategorySelectPrivate, template) {
     "use strict";
 
@@ -119,14 +118,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             }).inject(
                 SecurityClassElm
             );
-
-            //this.$SecurityClassSelect = new SecurityClassSelect({
-            //    events: {
-            //        onLoaded: this.$onSecurityClassSelectLoaded
-            //    }
-            //}).inject(
-            //    SecurityClassElm
-            //);
 
             // password types
             this.$PasswordTypes = new PasswordTypes({

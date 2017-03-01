@@ -1,6 +1,7 @@
 require.config({
     paths: {
-        "ClipboardJS": URL_OPT_DIR + 'bin/clipboard/dist/clipboard'
+        "ClipboardJS"  : URL_OPT_DIR + 'bin/clipboard/dist/clipboard',
+        "html5tooltips": URL_OPT_DIR + 'quiqqer/tooltips/bin/html5tooltips'
     }
 });
 

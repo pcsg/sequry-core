@@ -4,14 +4,34 @@
     width: 100%;
 }
 
+.html5tooltip-bottom {
+    z-index: 1001;
+}
+
+.html5tooltip-box {
+    background-color: #333 !important;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .15), 0 0 10px rgba(255, 255, 255, .15);
+    color: #F7F7F7;
+    font-family: arial, sans-serif;
+    font-size: 12px;
+    /*font-weight: bold;*/
+    padding: 10px;
+}
+
 .pcsg-gpm-securityclasses-selectslider .noUi-marker-horizontal {
     display: none;
 }
 
 .pcsg-gpm-securityclasses-selectslider .noUi-value-horizontal {
     color: #454545;
+    cursor: pointer;
     font-size: 14px;
     top: 0;
+}
+
+.pcsg-gpm-securityclasses-selectslider .noUi-pips-horizontal {
+    height: initial;
 }
 
 .pcsg-gpm-securityclasses-selectslider-slider {

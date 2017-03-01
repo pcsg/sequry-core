@@ -1071,7 +1071,7 @@
             <de><![CDATA[Stammdaten]]></de>
         </locale>
         <locale name="password.create.template.securityClass">
-            <de><![CDATA[Sicherheitsklasse]]></de>
+            <de><![CDATA[Authentifizierungs-Stufe]]></de>
         </locale>
         <locale name="password.create.template.passwordTitle">
             <de><![CDATA[Titel]]></de>

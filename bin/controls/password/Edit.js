@@ -30,7 +30,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/Passwords',
     'package/pcsg/grouppasswordmanager/bin/Categories',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
+    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',

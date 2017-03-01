@@ -198,7 +198,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                 }
 
                 var ToolTip = new Element('div', {
-                    'class': 'pcsg-gpm-password-view-copy-tooltip',
+                    'class': 'pcsg-gpm-tooltip',
                     html   : '<span>' +
                     QUILocale.get(lg, 'controls.password.view.tooltip.copy') +
                     '</span>'
