@@ -805,6 +805,21 @@ class Password extends QUI\QDOM
                     ));
                 }
 
+                $CryptoUser = CryptoActors::getCryptoUser($id);
+
+                if (!$this->SecurityClass->isUserEligible($CryptoUser)) {
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.create.access.user.not.eligible',
+                        array(
+                            'userId'             => $CryptoUser->getId(),
+                            'userName'           => $CryptoUser->getName(),
+                            'securityClassId'    => $this->SecurityClass->getId(),
+                            'securityClassTitle' => $this->SecurityClass->getAttribute('title')
+                        )
+                    ));
+                }
+
                 if ($currentOwnerId === $id) {
                     return true;
                 }
@@ -821,6 +836,21 @@ class Password extends QUI\QDOM
 
             case self::OWNER_TYPE_GROUP:
             case 'group':
+                $CryptoGroup = CryptoActors::getCryptoGroup($id);
+
+                if (!$this->SecurityClass->isGroupEligible($CryptoGroup)) {
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.create.access.group.not.eligible',
+                        array(
+                            'groupId'            => $CryptoGroup->getId(),
+                            'groupName'          => $CryptoGroup->getAttribute('name'),
+                            'securityClassId'    => $this->SecurityClass->getId(),
+                            'securityClassTitle' => $this->SecurityClass->getAttribute('title')
+                        )
+                    ));
+                }
+
                 if ($currentOwnerId === $id
                     && $currentOwnerType === self::OWNER_TYPE_GROUP
                 ) {
