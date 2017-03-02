@@ -106,10 +106,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                     new Element('label', {
                         'class': 'pcsg-gpm-securityclasses-label',
                         html   : '<div class="pcsg-gpm-securityclasses-authplugin">' +
-                        '<span class="pcsg-gpm-securityclasses-title">' +
+                        '<span class="pcsg-gpm-securityclasses-authplugin-title">' +
                         Plugin.title +
                         '</span>' +
-                        '<span class="pcsg-gpm-securityclasses-description">' +
+                        '<span class="pcsg-gpm-securityclasses-authplugin-description">' +
                         Plugin.description +
                         '</span>' +
                         '</div>'
@@ -151,10 +151,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                     var Label = new Element('label', {
                         'class': 'pcsg-gpm-securityclasses-label',
                         html   : '<div class="pcsg-gpm-securityclasses-authplugin">' +
-                        '<span class="pcsg-gpm-securityclasses-create-title">' +
+                        '<span class="pcsg-gpm-securityclasses-authplugin-title">' +
                         Plugin.title +
                         '</span>' +
-                        '<span class="pcsg-gpm-securityclasses-create-description">' +
+                        '<span class="pcsg-gpm-securityclasses-authplugin-description">' +
                         Plugin.description +
                         '</span>' +
                         '</div>'

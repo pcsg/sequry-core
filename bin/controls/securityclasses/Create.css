@@ -1,6 +1,7 @@
 .pcsg-gpm-securityclasses-authplugins-create-label {
     background-color: #EDEDED;
     border-radius: 5px;
+    line-height: 15px;
     float: left;
     padding: 10px;
     width: 100% !important;

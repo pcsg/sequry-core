@@ -6,6 +6,7 @@
     background-color: #EDEDED;
     border-radius: 5px;
     float: left;
+    line-height: 15px;
     padding: 10px;
     width: 100% !important;
 }
@@ -44,4 +45,14 @@
 
 .pcsg-gpm-securityclass-edit-group:hover {
     background-color: #DEDEDD;
+}
+
+.pcsg-gpm-securityclasses-authplugin-title {
+    float: left;
+    font-weight: 900;
+}
+
+.pcsg-gpm-securityclasses-authplugin-description {
+    clear: both;
+    float: left;
 }
