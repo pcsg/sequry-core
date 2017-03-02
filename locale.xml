@@ -1618,6 +1618,9 @@
         </locale>
 
         <!-- Control: categories/Panel -->
+        <locale name="controls.categories.panel.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
         <locale name="controls.categories.panel.public.title">
             <de><![CDATA[Kategorien]]></de>
         </locale>
