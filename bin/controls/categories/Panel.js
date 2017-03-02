@@ -208,7 +208,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
          * Event: onInject
          */
         $onInject: function() {
-            this.setAttribute('title', QUILocale.get(lg, 'controls.categories.panel.title'));
+            // @todo
         },
 
         /**
@@ -260,6 +260,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                     ).click();
                 }
             }
+
+            this.setAttribute('title', QUILocale.get(lg, 'controls.categories.panel.title'));
         },
 
         /**
