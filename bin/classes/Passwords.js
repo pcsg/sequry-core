@@ -321,7 +321,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                 ], function (PasswordManager, PanelUtils) {
                     var PasswordManagerPanel = new PasswordManager({
                         events: {
-                            onLoaded : function (Panel) {
+                            onLoaded: function (Panel) {
                                 resolve(Panel);
                                 window.PasswordList = Panel;
                             }
@@ -336,6 +336,20 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                             }
                         });
                     });
+                });
+            });
+        },
+
+        /**
+         * Generate a random password
+         *
+         * @returns {Promise}
+         */
+        generateRandomPassword: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_generateRandom', resolve, {
+                    'package': pkg,
+                    onError  : reject
                 });
             });
         }

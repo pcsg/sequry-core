@@ -21,15 +21,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
+    'qui/controls/loader/Loader',
 
     'Ajax',
     'Locale',
 
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.css'
 
-], function (QUIControl, QUIButton, QUIAjax, QUILocale, TypeSelect) {
+], function (QUIControl, QUIButton, QUILoader, QUIAjax, QUILocale, TypeSelect, Passwords) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -53,6 +55,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
             this.parent(options);
             this.$TypeSelect = null;
 
+            this.Loader = new QUILoader();
+
             this.addEvents({
                 onInject: this.$onInject
             });
@@ -71,6 +75,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                 html   : '<div class="pcsg-gpm-password-types-edit-select"></div>' +
                 '<div class="pcsg-gpm-password-types-edit-content"></div>'
             });
+
+            this.Loader.inject(this.$Elm);
 
             this.$EditContent = this.$Elm.getElement('.pcsg-gpm-password-types-edit-content');
 
@@ -131,6 +137,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
          */
         $parseTemplate: function () {
             // show/hide elements
+            var self         = this;
             var Elm;
             var showHideElms = this.$Elm.getElements('.pwm-passwordtypes-show');
 
@@ -177,8 +184,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
             var rndPassElms = this.$Elm.getElements('.pwm-passwordtypes-randompassword');
 
             var FuncOnRndBtnClick = function (Btn) {
-                var Elm   = Btn.getAttribute('Elm');
-                Elm.value = Math.random().toString(36).slice(-16);
+                var Elm = Btn.getAttribute('Elm');
+
+                self.Loader.show();
+
+                Passwords.generateRandomPassword().then(function (rndPassword) {
+                    Elm.value = rndPassword;
+                    self.Loader.hide();
+                });
             };
 
             for (i = 0, len = rndPassElms.length; i < len; i++) {

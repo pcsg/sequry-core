@@ -184,4 +184,50 @@ class Utils
 
         return $str;
     }
+
+    /**
+     * Generate a random password
+     *
+     * @return string
+     */
+    public static function generatePassword()
+    {
+        $letters = array(
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+            'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+            'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        );
+        $numbers = array(1,2,3,4,5,6,7,8,9,0);
+        $special = array('-', '_', '$');
+
+        $all = array_merge($letters, $numbers, $special);
+
+        $password = '';
+        $len      = random_int(10, 20);
+
+        for ($i = 0; $i < $len; $i++) {
+            $password .= $all[random_int(0, (count($all)-1))];
+        }
+
+        // at least one uppercase letter
+        $rndLetter = random_int(0, (mb_strlen($password)));
+        $password[$rndLetter] = strtoupper($letters[random_int(0, (count($letters)-1))]);
+
+        // at least one special character
+        do {
+            $rndLetter2 = random_int(0, (mb_strlen($password)));
+        } while ($rndLetter == $rndLetter2);
+
+        $password[$rndLetter2] = $special[random_int(0, (count($special)-1))];
+
+        // at least one number
+        do {
+            $rndLetter3 = random_int(0, (mb_strlen($password)));
+        } while ($rndLetter == $rndLetter3 || $rndLetter2 == $rndLetter3);
+
+        $password[$rndLetter3] = random_int(0,9);
+
+        return $password;
+    }
 }
