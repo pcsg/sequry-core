@@ -50,7 +50,7 @@ require([
         require([
             'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel'
         ], function (CategoryPanel) {
-            Column.appendChild(new CategoryPanel());
+            Column.appendChild(new CategoryPanel(), 0);
         });
     };
 
