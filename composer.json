@@ -22,7 +22,7 @@
     "ext-bcmath": "*",
     "pcsg\/gpmauthpassword": "dev-master",
     "npm-asset\/clipboard": "1.5.16",
-    "npm-asset\/sjcl": "1.6.0"
+    "npm-asset\/sjcl": "1.0.6"
   },
   "autoload": {
     "psr-0": {
