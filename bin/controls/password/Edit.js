@@ -366,6 +366,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                     categoryIds
                 ).then(function () {
                     self.Loader.hide();
+
+                    if (window.PasswordCategories) {
+                        window.PasswordCategories.refreshCategories();
+                    }
+
                     resolve();
                 }, reject);
             });
@@ -413,6 +418,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
                     self.$PasswordData = PasswordData;
                     self.$insertData();
+
+                    if (window.PasswordCategories) {
+                        window.PasswordCategories.refreshCategories();
+                    }
                 },
                 function () {
                     self.fireEvent('close', [self]);

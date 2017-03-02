@@ -75,6 +75,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
             this.$CategoryMap      = null;
             this.$FlatCategoryTree = {};
             this.$loaded           = false;
+            this.$showEmpty        = false;
         },
 
         /**
@@ -102,7 +103,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         $onInject: function () {
             var self = this;
 
-            this.refresh().then(function() {
+            if (!this.getAttribute('editMode')) {
+                this.$showEmpty = true;
+            } else {
+                this.$showEmpty = localStorage.getItem(
+                    'pcsg-gpm-passwords-categories-showEmpty'
+                );
+            }
+
+            this.refresh().then(function () {
                 self.fireEvent('loaded', [self]);
             });
         },
@@ -209,7 +218,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
          * @param {Object} ParentItem - qui/controls/sitemap/Item
          */
         $buildCategoryTree: function (children, ParentItem) {
-            var self = this;
+            var self     = this;
+            var editMode = this.getAttribute('editMode');
 
             var FuncItemOnClick = function (Item) {
                 self.fireEvent('categorySelect', [
@@ -224,6 +234,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
             for (var i = 0, len = children.length; i < len; i++) {
                 var Child = children[i];
 
+                if (!Child.hasPasswords && !this.$showEmpty) {
+                    continue;
+                }
+
                 this.$FlatCategoryTree[Child.id] = {
                     id   : Child.id,
                     title: Child.title
@@ -234,7 +248,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                     title      : Child.title,
                     text       : Child.title,
                     icon       : 'fa fa-book',
-                    contextmenu: this.getAttribute('editMode'),
+                    contextmenu: editMode,
                     hasChildren: Child.children.length,
                     dragable   : false,
                     events     : {
@@ -253,13 +267,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                     }
                 });
 
+                if (!Child.hasPasswords && editMode) {
+                    MapItem.getElm().addClass('pcsg-gpm-categories-map-empty');
+                }
+
                 if (!ParentItem) {
                     self.$CategoryMap.appendChild(MapItem);
                 } else {
                     ParentItem.appendChild(MapItem);
                 }
 
-                if (this.getAttribute('editMode')) {
+                if (editMode) {
                     this.$addCategoryItemContextMenu(MapItem);
                 }
 
@@ -313,6 +331,49 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                         events: {
                             onClick: function () {
                                 self.$deleteCategoryDialog(Item);
+                            }
+                        }
+                    })
+                );
+            } else {
+                // Option for showing or hiding empty categories (only in "All Passwords")
+                ContextMenu.appendChild(
+                    new QUIContextMenuSeparator()
+                ).appendChild(
+                    new QUIContextMenuItem({
+                        name  : 'show-hidden',
+                        text  : self.$showEmpty ?
+                            QUILocale.get(lg, 'controls.categories.map.btn.hideempty.text') :
+                            QUILocale.get(lg, 'controls.categories.map.btn.showempty.text'),
+                        icon  : self.$showEmpty ? 'fa fa-eye-slash' : 'fa fa-eye',
+                        events: {
+                            onClick: function (MenuItem) {
+                                if (self.$showEmpty) {
+                                    MenuItem.setAttribute('icon', 'fa fa-eye');
+                                    MenuItem.setAttribute(
+                                        'text',
+                                        QUILocale.get(lg,
+                                            'controls.categories.map.btn.showempty.text'
+                                        )
+                                    );
+                                    self.$showEmpty = false;
+                                } else {
+                                    MenuItem.setAttribute('icon', 'fa fa-eye-slash');
+                                    MenuItem.setAttribute(
+                                        'text',
+                                        QUILocale.get(lg,
+                                            'controls.categories.map.btn.hideempty.text'
+                                        )
+                                    );
+                                    self.$showEmpty = true;
+                                }
+
+                                localStorage.setItem(
+                                    'pcsg-gpm-passwords-categories-showEmpty',
+                                    self.$showEmpty
+                                );
+
+                                self.refresh();
                             }
                         }
                     })
@@ -673,7 +734,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
          *
          * @param {Integer} categoryId - category ID
          */
-        select: function(categoryId) {
+        select: function (categoryId) {
             var categories = this.$CategoryMap.getChildren();
 
             for (var i = 0, len = categories.length; i < len; i++) {

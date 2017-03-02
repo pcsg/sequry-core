@@ -527,9 +527,15 @@ class SecurityClass extends QUI\QDOM
                 $userNameParts[] = $row['lastname'];
             }
 
+            if (empty($userNameParts)) {
+                $userName = $row['username'];
+            } else {
+                $userName = implode(' ', $userNameParts) . ' (' . $row['username'] . ')';
+            }
+
             $actors[] = array(
                 'id'   => $row['id'],
-                'name' => implode(' ', $userNameParts) . ' (' . $row['username'] . ')',
+                'name' => $userName,
                 'type' => 'user'
             );
         }

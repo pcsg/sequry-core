@@ -179,6 +179,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                     categoryIds
                 ).then(function () {
                     self.Loader.hide();
+
+                    if (window.PasswordCategories) {
+                        window.PasswordCategories.refreshCategories();
+                    }
+
                     resolve();
                 }, reject);
             });

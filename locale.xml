@@ -1616,6 +1616,12 @@
         <locale name="controls.categories.map.create.info.all">
             <de><![CDATA[Neue Unter-Kategorie für die Kategorie "[catTitle]"]]></de>
         </locale>
+        <locale name="controls.categories.map.btn.hideempty.text">
+            <de><![CDATA[Leere Kategorien ausblenden]]></de>
+        </locale>
+        <locale name="controls.categories.map.btn.showempty.text">
+            <de><![CDATA[Leere Kategorien anzeigen]]></de>
+        </locale>
 
         <!-- Control: categories/Panel -->
         <locale name="controls.categories.panel.title">

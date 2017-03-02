@@ -34,7 +34,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         'package': 'pcsg/grouppasswordmanager',
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -55,7 +55,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         title    : title,
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -76,7 +76,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         title    : title,
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -95,7 +95,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         id       : id,
                         onError  : reject
                     }
-                )
+                );
             });
         }
     });

@@ -27,6 +27,7 @@ use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use QUI\Utils\Security\Orthos;
 use QUI\Permissions\Permission;
+use QUI\Cache\Manager as CacheManager;
 
 /**
  * User Class
@@ -1934,5 +1935,67 @@ class CryptoUser extends QUI\Users\User
         }
 
         return true;
+    }
+
+    /**
+     * Determine if this user has access to (any) passwords in a given public
+     * password category
+     *
+     * @param int $categoryId
+     * @return bool
+     */
+    public function hasAccessToPasswordsInPublicCategory($categoryId)
+    {
+        $cacheName = 'pcsg/grouppasswordmanager/publiccategoryaccess/' . $this->id . '/' . $categoryId;
+
+        try {
+            return CacheManager::get($cacheName);
+        } catch (QUI\Cache\Exception $Exception) {
+            // nothing, retrieve fresh information
+        }
+
+        $results = $this->getPasswordList(array(
+            'categoryId' => $categoryId
+        ), true);
+
+        CacheManager::set($cacheName, !empty($results));
+
+        return !empty($results);
+    }
+
+    /**
+     * Determine if this user has access to (any) passwords in a given public
+     * password category
+     *
+     * @param int $categoryId
+     * @return bool
+     */
+    public function hasAccessToPasswordsInPrivateCategory($categoryId)
+    {
+        $cacheName = 'pcsg/grouppasswordmanager/privatecategoryaccess/' . $this->id . '/' . $categoryId;
+
+        try {
+            return CacheManager::get($cacheName);
+        } catch (QUI\Cache\Exception $Exception) {
+            // nothing, retrieve fresh information
+        }
+
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            'where' => array(
+                'userId'     => $this->id,
+                'categories' => array(
+                    'type'  => '%LIKE%',
+                    'value' => ',' . $categoryId . ','
+                )
+            ),
+            'count' => 1
+        ));
+
+        $count = current(current($result));
+
+        CacheManager::set($cacheName, !empty($count));
+
+        return !empty($count);
     }
 }

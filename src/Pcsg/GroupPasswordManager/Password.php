@@ -6,7 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
-use ParagonIE\Halite\Asymmetric\Crypto;
+use QUI\Cache\Manager as CacheManager;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
@@ -370,6 +370,8 @@ class Password extends QUI\QDOM
                     break;
 
                 case 'categoryIds':
+                    CacheManager::clear('pcsg/grouppasswordmanager/publiccategoryaccess/');
+
                     if (empty($v)) {
                         $this->setAttribute('categories', null);
                         $this->setAttribute('categoryIds', null);
