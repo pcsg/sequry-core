@@ -55,7 +55,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
         Binds: [
             '$saveToggleStatus',
             '$restoreToggleStatus',
-            '$search'
+            '$search',
+            '$onInject'
         ],
 
         options: {
@@ -66,7 +67,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             this.parent(options);
 
             this.addEvents({
-                onCreate: this.$onCreate
+                onCreate: this.$onCreate,
+                onInject: this.$onInject
             });
 
             this.Loader                = new QUILoader();
@@ -85,7 +87,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             var self    = this;
             var Content = this.getContent();
 
-            this.setAttribute('title', QUILocale.get(lg, 'controls.categories.panel.title'));
             this.getElm().addClass('pcsg-gpm-categories-panel');
 
             Content.setStyles({
@@ -201,6 +202,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             });
 
             this.$restoreToggleStatus();
+        },
+
+        /**
+         * Event: onInject
+         */
+        $onInject: function() {
+            this.setAttribute('title', QUILocale.get(lg, 'controls.categories.panel.title'));
         },
 
         /**

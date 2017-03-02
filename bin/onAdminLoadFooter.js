@@ -61,9 +61,8 @@ require([
             );
 
             if (!panels.length) {
-                Passwords.openPasswordListPanel().then(function () {
-                    loadPasswordCategoryPanel();
-                });
+                Passwords.openPasswordListPanel();
+                loadPasswordCategoryPanel();
 
                 return;
             }
