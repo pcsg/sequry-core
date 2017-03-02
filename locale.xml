@@ -1091,8 +1091,8 @@
         <locale name="password.create.template.extra">
             <de><![CDATA[Erweiterte Daten]]></de>
         </locale>
-        <locale name="password.create.template.passwordOwner" html="true">
-            <de><![CDATA[Eigentümer<br>(Benutzer / Gruppe)]]></de>
+        <locale name="password.create.template.passwordOwner">
+            <de><![CDATA[Eigentümer]]></de>
         </locale>
         <locale name="password.create.submit.no.owner.assigned">
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
