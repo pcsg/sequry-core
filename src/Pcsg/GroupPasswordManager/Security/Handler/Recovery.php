@@ -104,7 +104,7 @@ class Recovery
 
         $recoveryCodeData = array(
             'userId'          => $CryptoUser->getId(),
-            'userName'        => $CryptoUser->getUsername(),
+            'userName'        => $CryptoUser->getName(),
             'authPluginId'    => $AuthPlugin->getId(),
             'authPluginTitle' => $AuthPlugin->getAttribute('title'),
             'recoveryCodeId'  => QUI::getDataBase()->getPDO()->lastInsertId(),

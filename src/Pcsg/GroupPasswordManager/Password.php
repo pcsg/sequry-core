@@ -580,7 +580,7 @@ class Password extends QUI\QDOM
         switch ($this->getAttribute('ownerType')) {
             case $this::OWNER_TYPE_USER:
                 $ownerType = 'user';
-                $name      = CryptoActors::getCryptoUser($ownerId)->getUsername();
+                $name      = CryptoActors::getCryptoUser($ownerId)->getName();
                 break;
 
             case $this::OWNER_TYPE_GROUP:
@@ -992,7 +992,7 @@ class Password extends QUI\QDOM
                 'exception.password.create.access.user.not.eligible',
                 array(
                     'userId'             => $User->getId(),
-                    'userName'           => $User->getUsername(),
+                    'userName'           => $User->getName(),
                     'securityClassId'    => $this->SecurityClass->getId(),
                     'securityClassTitle' => $this->SecurityClass->getAttribute('title')
                 )

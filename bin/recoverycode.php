@@ -181,7 +181,7 @@ $html = '
                     ' . $L->get($lg, 'auth.recoverycodewindow.username') . '
                 </span>
                 <span class="field-container-field">
-                    ' . $User->getUsername() . ' (ID: ' . $User->getId() . ')
+                    ' . $User->getName() . ' (ID: ' . $User->getId() . ')
                 </span>
             </label>
         </td>

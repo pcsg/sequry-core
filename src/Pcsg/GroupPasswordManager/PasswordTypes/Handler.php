@@ -148,7 +148,7 @@ class Handler
             'passwordtypes.handler.view.template.created',
             array(
                 'date'     => date('Y-m-d H:i:s', $viewData['createDate']),
-                'userName' => $CreateUser->getUsername(),
+                'userName' => $CreateUser->getName(),
                 'userId'   => $CreateUser->getId()
             )
         );
@@ -157,7 +157,7 @@ class Handler
             'passwordtypes.handler.view.template.lastEdit',
             array(
                 'date'     => date('Y-m-d H:i:s', $viewData['editDate']),
-                'userName' => $EditUser->getUsername(),
+                'userName' => $EditUser->getName(),
                 'userId'   => $EditUser->getId()
             )
         );

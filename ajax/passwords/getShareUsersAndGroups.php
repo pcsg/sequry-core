@@ -32,7 +32,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups
         $User                   = QUI::getUsers()->get($userId);
         $usersGroups['users'][] = array(
             'id'   => $userId,
-            'name' => $User->getUsername()
+            'name' => $User->getName()
         );
     }
 

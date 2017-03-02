@@ -99,7 +99,7 @@ class Events
             $CrpyotUser = CryptoActors::getCryptoUser((int)$userId);
             $users[]    = array(
                 'userId'   => $CrpyotUser->getId(),
-                'userName' => $CrpyotUser->getUsername()
+                'userName' => $CrpyotUser->getName()
             );
         }
 
@@ -226,7 +226,7 @@ class Events
                             'attention.events.onusersavebegin.add.user.error',
                             array(
                                 'userId'    => $User->getId(),
-                                'userName'  => $User->getUsername(),
+                                'userName'  => $User->getName(),
                                 'groupId'   => $CryptoGroup->getId(),
                                 'groupName' => $CryptoGroup->getAttribute('name'),
                                 'error'     => $Exception->getMessage()
@@ -296,7 +296,7 @@ class Events
                             'attention.events.onusersavebegin.remove.user.error',
                             array(
                                 'userId'    => $User->getId(),
-                                'userName'  => $User->getUsername(),
+                                'userName'  => $User->getName(),
                                 'groupId'   => $CryptoGroup->getId(),
                                 'groupName' => $CryptoGroup->getAttribute('name'),
                                 'error'     => $Exception->getMessage()

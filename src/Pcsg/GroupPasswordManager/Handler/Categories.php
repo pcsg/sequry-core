@@ -582,7 +582,7 @@ class Categories
                 'exception.handler.categories.add.private.category.no.access',
                 array(
                     'userId'     => $CryptoUser->getId(),
-                    'userName'   => $CryptoUser->getUsername(),
+                    'userName'   => $CryptoUser->getName(),
                     'passwordId' => $Password->getId()
                 )
             ));
@@ -686,7 +686,7 @@ class Categories
             'pcsg/grouppasswordmanager',
             'exception.handler.categories.no.private.permission',
             array(
-                'userName' => $User->getUsername(),
+                'userName' => $User->getName(),
                 'userId'   => $User->getId()
             )
         ));

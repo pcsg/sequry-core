@@ -651,7 +651,7 @@ class CryptoUser extends QUI\Users\User
                 'exception.cryptouser.getgroupaccesskey.error',
                 array(
                     'userId'    => $this->getId(),
-                    'userName'  => $this->getUsername(),
+                    'userName'  => $this->getName(),
                     'groupId'   => $CryptoGroup->getId(),
                     'groupName' => $CryptoGroup->getAttribute('name')
                 )
@@ -949,7 +949,7 @@ class CryptoUser extends QUI\Users\User
 
             switch ($row['ownerType']) {
                 case '1':
-                    $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getUsername();
+                    $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getName();
                     break;
 
                 case '2':
@@ -1362,7 +1362,7 @@ class CryptoUser extends QUI\Users\User
                 'exception.cryptouser.rencryptpasswordaccessKey.securityclass.not.eligible',
                 array(
                     'userId'             => $this->getId(),
-                    'userName'           => $this->getUsername(),
+                    'userName'           => $this->getName(),
                     'passwordId'         => $passwordId,
                     'securityClassId'    => $SecurityClass->getId(),
                     'securityClassTitle' => $SecurityClass->getAttribute('title')
@@ -1458,7 +1458,7 @@ class CryptoUser extends QUI\Users\User
                 'exception.cryptouser.rencryptpasswordaccessKey.securityclass.not.eligible',
                 array(
                     'userId'             => $this->getId(),
-                    'userName'           => $this->getUsername(),
+                    'userName'           => $this->getName(),
                     'securityClassId'    => $SecurityClass->getId(),
                     'securityClassTitle' => $SecurityClass->getAttribute('title')
                 )
