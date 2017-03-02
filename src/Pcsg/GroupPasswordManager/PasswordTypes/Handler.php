@@ -47,7 +47,7 @@ class Handler
             }
         }
 
-        usort($types, function($a, $b) {
+        usort($types, function ($a, $b) {
             $name1 = $a['name'];
             $name2 = $b['name'];
 
@@ -55,8 +55,16 @@ class Handler
                 return -1;
             }
 
+            if ($name1 == 'Credentials') {
+                return 1;
+            }
+
             if ($name2 == 'Website') {
                 return 1;
+            }
+
+            if ($name2 == 'Credentials') {
+                return -1;
             }
 
             if ($name1 === $name2) {

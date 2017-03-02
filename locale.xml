@@ -559,7 +559,7 @@
             <de><![CDATA[FTP-Server]]></de>
         </locale>
         <locale name="passwordtypes.Website.title">
-            <de><![CDATA[Website-Login]]></de>
+            <de><![CDATA[Zugangsdaten]]></de>
         </locale>
         <locale name="passwordtypes.SecretKey.title">
             <de><![CDATA[SSH-Schlüssel]]></de>
@@ -568,7 +568,7 @@
             <de><![CDATA[API-Schlüssel]]></de>
         </locale>
         <locale name="passwordtypes.Credentials.title">
-            <de><![CDATA[Zugangsdaten]]></de>
+            <de><![CDATA[Zugangsdaten (alt - nicht mehr benutzen!)]]></de>
         </locale>
 
         <!-- General password type locales -->
