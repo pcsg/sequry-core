@@ -161,9 +161,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                             securityClassId
                         );
                     } else {
-                        securityClassId = self.$SecurityClassSelect
-                            .firstChild()
-                            .getAttribute('value');
+                        securityClassId = self.$SecurityClassSelect.getValue();
                         self.$SecurityClassSelect.setValue(securityClassId);
                     }
 

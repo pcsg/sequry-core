@@ -111,7 +111,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
                         max: Object.getLength(SecurityClasses)
                     },
                     start  : [1],
-                    snap   : true,
+                    snap   : false,
                     connect: false,
                     pips   : {
                         mode   : 'steps',
@@ -192,6 +192,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
         },
 
         $onChangeValue: function (value) {
+
+
+            console.log(1);
             var SecurityClass = this.$SecurityClasses[value];
 
             this.$InfoElm.set(
