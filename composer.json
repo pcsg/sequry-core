@@ -15,12 +15,13 @@
     "email": "support@pcsg.de"
   },
   "require": {
-    "quiqqer/quiqqer": "*@dev",
-    "phpseclib/phpseclib": "2.0.0",
-    "paragonie/halite": "^v1",
+    "quiqqer\/quiqqer": "*@dev",
+    "quiqqer/tooltips": "1.0.0",
+    "phpseclib\/phpseclib": "2.0.0",
+    "paragonie\/halite": "3.2.0",
     "ext-bcmath": "*",
-    "pcsg/gpmauthpassword": "dev-master",
-    "npm-asset/clipboard": "1.5.16"
+    "pcsg\/gpmauthpassword": "dev-master",
+    "npm-asset\/clipboard": "1.5.16"
   },
   "autoload": {
     "psr-0": {

@@ -108,6 +108,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                 'package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml',
                 function (templateHtml) {
                     self.$EditContent.set('html', templateHtml);
+                    //self.$EditContent.getElement('table').addClass(
+                    //    'pcsg-gpm-password-payload-table'
+                    //);
                     self.$parseTemplate();
                 }, {
                     'package': 'pcsg/grouppasswordmanager',
@@ -131,6 +134,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
             var Elm;
             var showHideElms = this.$Elm.getElements('.pwm-passwordtypes-show');
 
+            var FuncOnShowBtnClick = function (Btn) {
+                var Elm = Btn.getAttribute('Elm');
+
+                if (Btn.getAttribute('action') === 'show') {
+                    Btn.setAttributes({
+                        icon  : 'fa fa-eye-slash',
+                        action: 'hide'
+                    });
+
+                    Elm.setProperty('type', 'text');
+                    Elm.focus();
+                    Elm.select();
+
+                    return;
+                }
+
+                Btn.setAttributes({
+                    icon  : 'fa fa-eye',
+                    action: 'show'
+                });
+
+                Elm.setProperty('type', 'password');
+                Elm.blur();
+            };
+
             for (var i = 0, len = showHideElms.length; i < len; i++) {
                 Elm = showHideElms[i];
 
@@ -141,35 +169,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                     title : QUILocale.get(lg, 'controls.passwordtypes.edit.show.btn'),
                     action: 'show',
                     events: {
-                        onClick: function (Btn) {
-                            var Elm = Btn.getAttribute('Elm');
-
-                            if (Btn.getAttribute('action') === 'show') {
-                                Btn.setAttributes({
-                                    icon  : 'fa fa-eye-slash',
-                                    action: 'hide'
-                                });
-
-                                Elm.setProperty('type', 'text');
-                                Elm.focus();
-                                Elm.select();
-
-                                return;
-                            }
-
-                            Btn.setAttributes({
-                                icon  : 'fa fa-eye',
-                                action: 'show'
-                            });
-
-                            Elm.setProperty('type', 'password');
-                            Elm.blur();
-                        }
+                        onClick: FuncOnShowBtnClick
                     }
-                }).inject(Elm.getParent(), 'after');
+                }).inject(Elm.getParent());
             }
 
             var rndPassElms = this.$Elm.getElements('.pwm-passwordtypes-randompassword');
+
+            var FuncOnRndBtnClick = function (Btn) {
+                var Elm   = Btn.getAttribute('Elm');
+                Elm.value = Math.random().toString(36).slice(-16);
+            };
 
             for (i = 0, len = rndPassElms.length; i < len; i++) {
                 Elm = rndPassElms[i];
@@ -180,12 +190,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                     title : QUILocale.get(lg, 'controls.passwordtypes.edit.rnd.btn'),
                     icon  : 'fa fa-random',
                     events: {
-                        onClick: function (Btn) {
-                            var Elm   = Btn.getAttribute('Elm');
-                            Elm.value = Math.random().toString(36).slice(-16);
-                        }
+                        onClick: FuncOnRndBtnClick
                     }
-                }).inject(Elm.getParent(), 'after');
+                }).inject(Elm.getParent());
             }
 
             this.fireEvent('loaded', [this]);

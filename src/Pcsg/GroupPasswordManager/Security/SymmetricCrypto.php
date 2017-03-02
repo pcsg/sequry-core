@@ -11,12 +11,7 @@ use QUI;
  */
 class SymmetricCrypto
 {
-    const CRYPTO_MODULE = 'XSalsa20'; // @todo in config auslagern
-
-    /**
-     * Key size of symmetric key used for en/decryption [bits]
-     */
-    const KEY_SIZE_ENCRYPTION = 256;
+    const CRYPTO_MODULE = 'Halite3'; // @todo in config auslagern
 
     /**
      * HashWrapper Class Object for the configured hash module
@@ -34,7 +29,8 @@ class SymmetricCrypto
      */
     public static function encrypt($plainText, $Key)
     {
-        return self::getCryptoModule()->encrypt($plainText, $Key->getValue());
+        $cipherText = self::getCryptoModule()->encrypt($plainText, $Key->getValue());
+        return $cipherText . Utils::getCryptoModuleVersionString(self::CRYPTO_MODULE);
     }
 
     /**
@@ -46,6 +42,7 @@ class SymmetricCrypto
      */
     public static function decrypt($cipherText, $Key)
     {
+        $cipherText = Utils::stripModuleVersionString($cipherText);
         return self::getCryptoModule()->decrypt($cipherText, $Key->getValue());
     }
 

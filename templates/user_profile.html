@@ -10,7 +10,17 @@
                 <span class="field-container-item">
                     {locale group="pcsg/grouppasswordmanager" var="user.profile.authplugins.label"}
                 </span>
-                <input name="pcsg.gpm.settings.authplugins" type="text" data-qui="package/pcsg/grouppasswordmanager/bin/controls/user/AuthPluginSettings"/>
+                <input class="field-container-field" name="pcsg.gpm.settings.authplugins" type="text" data-qui="package/pcsg/grouppasswordmanager/bin/controls/user/AuthPluginSettings"/>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
+                <span class="field-container-item">
+                    {locale group="pcsg/grouppasswordmanager" var="user.profile.reencryption.label"}
+                </span>
+                <div class="field-container-field" data-qui="package/pcsg/grouppasswordmanager/bin/controls/user/ReEncryptKeys"></div>
             </label>
         </td>
     </tr>

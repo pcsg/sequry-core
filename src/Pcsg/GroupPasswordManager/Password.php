@@ -243,7 +243,7 @@ class Password extends QUI\QDOM
             'editDate'        => $this->getAttribute('editDate')
         );
 
-        // private category id
+        // private category ids
         $metaData                       = $this->User->getPasswordMetaData($this->id);
         $viewData['categoryIdsPrivate'] = explode(',', trim($metaData['categoryIds'], ','));
         $viewData['favorite']           = $metaData['favorite'];
@@ -275,6 +275,10 @@ class Password extends QUI\QDOM
             'securityClassId' => $this->SecurityClass->getId(),
             'categoryIds'     => $this->getAttribute('categoryIds')
         );
+
+        // private category ids
+        $metaData                   = $this->User->getPasswordMetaData($this->id);
+        $data['categoryIdsPrivate'] = explode(',', trim($metaData['categoryIds'], ','));
 
         return $data;
     }
@@ -576,7 +580,7 @@ class Password extends QUI\QDOM
         switch ($this->getAttribute('ownerType')) {
             case $this::OWNER_TYPE_USER:
                 $ownerType = 'user';
-                $name      = CryptoActors::getCryptoUser($ownerId)->getUsername();
+                $name      = CryptoActors::getCryptoUser($ownerId)->getName();
                 break;
 
             case $this::OWNER_TYPE_GROUP:
@@ -801,6 +805,21 @@ class Password extends QUI\QDOM
                     ));
                 }
 
+                $CryptoUser = CryptoActors::getCryptoUser($id);
+
+                if (!$this->SecurityClass->isUserEligible($CryptoUser)) {
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.create.access.user.not.eligible',
+                        array(
+                            'userId'             => $CryptoUser->getId(),
+                            'userName'           => $CryptoUser->getName(),
+                            'securityClassId'    => $this->SecurityClass->getId(),
+                            'securityClassTitle' => $this->SecurityClass->getAttribute('title')
+                        )
+                    ));
+                }
+
                 if ($currentOwnerId === $id) {
                     return true;
                 }
@@ -817,6 +836,21 @@ class Password extends QUI\QDOM
 
             case self::OWNER_TYPE_GROUP:
             case 'group':
+                $CryptoGroup = CryptoActors::getCryptoGroup($id);
+
+                if (!$this->SecurityClass->isGroupEligible($CryptoGroup)) {
+                    throw new QUI\Exception(array(
+                        'pcsg/grouppasswordmanager',
+                        'exception.password.create.access.group.not.eligible',
+                        array(
+                            'groupId'            => $CryptoGroup->getId(),
+                            'groupName'          => $CryptoGroup->getAttribute('name'),
+                            'securityClassId'    => $this->SecurityClass->getId(),
+                            'securityClassTitle' => $this->SecurityClass->getAttribute('title')
+                        )
+                    ));
+                }
+
                 if ($currentOwnerId === $id
                     && $currentOwnerType === self::OWNER_TYPE_GROUP
                 ) {
@@ -958,7 +992,7 @@ class Password extends QUI\QDOM
                 'exception.password.create.access.user.not.eligible',
                 array(
                     'userId'             => $User->getId(),
-                    'userName'           => $User->getUsername(),
+                    'userName'           => $User->getName(),
                     'securityClassId'    => $this->SecurityClass->getId(),
                     'securityClassTitle' => $this->SecurityClass->getAttribute('title')
                 )
@@ -1255,7 +1289,9 @@ class Password extends QUI\QDOM
 
         /** @var CryptoUser $CryptoUser */
         foreach ($CryptoGroup->getCryptoUsers() as $CryptoUser) {
-            $this->removeMetaTableEntry($CryptoUser);
+            if (!$this->hasPasswordAccess($CryptoUser)) {
+                $this->removeMetaTableEntry($CryptoUser);
+            }
         }
 
         return true;

@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GpmAuthPassword\AuthPlugin;
 use QUI\Package\Package;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
@@ -73,6 +74,7 @@ class Events
         }
 
         Authentication::loadAuthPlugins();
+        self::initialSystemSetup();
     }
 
     /**
@@ -97,7 +99,7 @@ class Events
             $CrpyotUser = CryptoActors::getCryptoUser((int)$userId);
             $users[]    = array(
                 'userId'   => $CrpyotUser->getId(),
-                'userName' => $CrpyotUser->getUsername()
+                'userName' => $CrpyotUser->getName()
             );
         }
 
@@ -224,7 +226,7 @@ class Events
                             'attention.events.onusersavebegin.add.user.error',
                             array(
                                 'userId'    => $User->getId(),
-                                'userName'  => $User->getUsername(),
+                                'userName'  => $User->getName(),
                                 'groupId'   => $CryptoGroup->getId(),
                                 'groupName' => $CryptoGroup->getAttribute('name'),
                                 'error'     => $Exception->getMessage()
@@ -294,7 +296,7 @@ class Events
                             'attention.events.onusersavebegin.remove.user.error',
                             array(
                                 'userId'    => $User->getId(),
-                                'userName'  => $User->getUsername(),
+                                'userName'  => $User->getName(),
                                 'groupId'   => $CryptoGroup->getId(),
                                 'groupName' => $CryptoGroup->getAttribute('name'),
                                 'error'     => $Exception->getMessage()
@@ -340,6 +342,11 @@ class Events
                 'pcsg/grouppasswordmanager',
                 'exception.events.user.delete.no.permission'
             ));
+        }
+
+        if (QUI::isSystem()) {
+            CryptoActors::getCryptoUser($User->getId())->delete();
+            return;
         }
 
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
@@ -399,6 +406,8 @@ class Events
      * event: onAdminLoad
      *
      * Load css files into admin header
+     *
+     * @return void
      */
     public static function onAdminLoad()
     {
@@ -410,10 +419,45 @@ class Events
      * event: onAdminLoadFooter
      *
      * Load javascript code into admin footer
+     *
+     * @return void
      */
     public static function onAdminLoadFooter()
     {
         $jsFile = URL_OPT_DIR . 'pcsg/grouppasswordmanager/bin/onAdminLoadFooter.js';
         echo '<script src="' . $jsFile . '"></script>';
+    }
+
+    /**
+     * Performs an initial system setup for first time use of the
+     * password manager
+     *
+     * @return void
+     */
+    public static function initialSystemSetup()
+    {
+        // Basic security class
+        $securityClasses = Authentication::getSecurityClassesList();
+
+        if (!empty($securityClasses)) {
+            return;
+        }
+
+        // get ID of basic quiqqer auth plugin
+        $defaultPluginId = Authentication::getDefaultAuthPluginId();
+
+        if (empty($defaultPluginId)) {
+            return;
+        }
+
+        $L  = QUI::getLocale();
+        $lg = 'pcsg/grouppasswordmanager';
+
+        Authentication::createSecurityClass(array(
+            'title'           => $L->get($lg, 'setup.securityclass.title'),
+            'description'     => $L->get($lg, 'setup.securityclass.description'),
+            'authPluginIds'   => array($defaultPluginId),
+            'requiredFactors' => 1
+        ));
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
-use Pcsg\GroupPasswordManager\Security\Interfaces\HashWrapper;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IKDF;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 
@@ -11,14 +10,7 @@ use Pcsg\GroupPasswordManager\Security\Keys\Key;
  */
 class KDF
 {
-    const KDF_MODULE = 'Scrypt'; // @todo in config auslagern
-
-    /**
-     * Salt length [bits]
-     *
-     * @var Integer
-     */
-    const SALT_LENGTH = 64;
+    const KDF_MODULE = 'Halite3'; // @todo in config auslagern
 
     /**
      * KDF Class Object for the configured hash module

@@ -2,6 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security;
 
+use Pcsg\GroupPasswordManager\Constants\Crypto;
+use QUI\Utils\Security\Orthos;
 use QUI;
 
 /**
@@ -9,6 +11,85 @@ use QUI;
  */
 class Utils
 {
+    /**
+     * Strip the module version from a string (if appended) and return original string
+     *
+     * @param string $str
+     * @return string
+     */
+    public static function stripModuleVersionString($str)
+    {
+        if (mb_substr($str, -3, null, '8bit') === '$$$') {
+            $str = mb_substr($str, 0, -Crypto::VERSION_LENGTH, '8bit');
+        }
+
+        return $str;
+    }
+
+    /**
+     * Get special version string fro a cryptomodule
+     *
+     * This string is appended to encrypted/hashed/encoded string to identify
+     * the package version and crypto module that was used to generate such string.
+     *
+     * @param string $module - internal class name of used crypto module
+     * @return string - padded to 30 characters
+     */
+    public static function getCryptoModuleVersionString($module)
+    {
+        $str = '';
+
+        $str .= self::getPackageVersion();
+        $str .= '|' . $module;
+
+        return self::mb_str_pad($str, Crypto::VERSION_LENGTH, '$');
+    }
+
+    /**
+     * str_pad (multi-byte safe)
+     *
+     * @param string $str
+     * @param int $pad_len
+     * @param string $pad_str
+     * @param int $dir
+     * @param null $encoding
+     * @return string
+     */
+    public static function mb_str_pad($str, $pad_len, $pad_str = ' ', $dir = STR_PAD_RIGHT, $encoding = null)
+    {
+        $encoding = $encoding === null ? mb_internal_encoding() : $encoding;
+
+        $padBefore = $dir === STR_PAD_BOTH || $dir === STR_PAD_LEFT;
+        $padAfter  = $dir === STR_PAD_BOTH || $dir === STR_PAD_RIGHT;
+
+        $pad_len -= mb_strlen($str, $encoding);
+
+        $targetLen      = $padBefore && $padAfter ? $pad_len / 2 : $pad_len;
+        $strToRepeatLen = mb_strlen($pad_str, $encoding);
+        $repeatTimes    = ceil($targetLen / $strToRepeatLen);
+        $repeatedString = str_repeat($pad_str, max(0, $repeatTimes)); // safe if used with valid utf-8 strings
+        $before         = $padBefore ? mb_substr($repeatedString, 0, floor($targetLen), $encoding) : '';
+        $after          = $padAfter ? mb_substr($repeatedString, 0, ceil($targetLen), $encoding) : '';
+
+        return $before . $str . $after;
+    }
+
+    /**
+     * Get version of pcsg/grouppasswordmanager package
+     *
+     * @return string
+     */
+    public static function getPackageVersion()
+    {
+        $composerData = QUI::getPackage('pcsg/grouppasswordmanager')->getComposerData();
+
+        if (isset($composerData['version'])) {
+            return $composerData['version'];
+        }
+
+        return '';
+    }
+
     /**
      * Get system authentication key for key pairs
      *
@@ -59,5 +140,48 @@ class Utils
         }
 
         return file_get_contents($keyFile);
+    }
+
+    /**
+     * Clear array of potentially unsafe code
+     *
+     * @param array $data
+     * @return array - cleared data
+     */
+    public static function clearArray($data)
+    {
+        if (!is_array($data)) {
+            return array();
+        }
+
+        $cleanData = array();
+
+        foreach ($data as $key => $str) {
+            if (is_array($data[$key])) {
+                $cleanData[$key] = self::clearArray($data[$key]);
+                continue;
+            }
+
+            $cleanData[$key] = self::clear($str);
+        }
+
+        return $cleanData;
+    }
+
+    /**
+     * Clear string
+     *
+     * @param string $str
+     * @return string - cleared string
+     */
+    public static function clear($str)
+    {
+        $str = Orthos::removeHTML($str);
+        $str = Orthos::clearPath($str);
+//        $str = Orthos::clearFormRequest($str);
+
+        $str = htmlspecialchars($str);
+
+        return $str;
     }
 }

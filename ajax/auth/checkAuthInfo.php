@@ -13,9 +13,14 @@ function package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfo($securityClas
 {
     try {
         $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
-        $SecurityClass->authenticate(
-            json_decode($authData, true) // @todo ggf. filtern
-        );
+        $authData      = json_decode($authData, true);
+
+        // no session cache on check
+        if (isset($authData['sessioncache'])) {
+            unset($authData['sessioncache']);
+        }
+
+        $SecurityClass->authenticate($authData);
     } catch (\Exception $Exception) {
         return false;
     }

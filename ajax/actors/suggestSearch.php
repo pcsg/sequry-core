@@ -12,14 +12,14 @@ use QUI\Utils\Security\Orthos;
  * @param integer $limit
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_search($search, $type, $securityClassId, $limit)
+function package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch($search, $type, $securityClassId, $limit)
 {
     $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 
     $search = Orthos::clear($search);
     $limit  = (int)$limit;
 
-    $actors = $SecurityClass->searchEligibleActors($search, $type, $limit);
+    $actors = $SecurityClass->suggestSearchEligibleActors($search, $type, $limit);
 
     foreach ($actors as $k => $actor) {
         switch ($actor['type']) {
@@ -43,7 +43,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_search($search, $type, $s
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_search',
+    'package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch',
     array('search', 'type', 'securityClassId', 'limit'),
     'Permission::checkAdminUser'
 );

@@ -24,6 +24,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId, $auth
 
         // get password data
         $Password = Passwords::get($passwordId);
+
         $Password->increasePublicViewCount();
 
         // increase personal view count

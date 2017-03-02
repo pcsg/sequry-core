@@ -5,6 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security\Modules\AsymmetricCrypto;
 use ParagonIE\Halite\Asymmetric\Crypto;
 use ParagonIE\Halite\Asymmetric\EncryptionPublicKey;
 use ParagonIE\Halite\Asymmetric\EncryptionSecretKey;
+use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
@@ -12,9 +13,9 @@ use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
  *
- * ECC - Ellicptic Curce Cryptography (Curve25519)
+ * Uses asymmetric encryption from paragonie/halite 3.*
  */
-class ECC implements IAsymmetricCrypto
+class Halite3 implements IAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
@@ -27,11 +28,13 @@ class ECC implements IAsymmetricCrypto
     public static function encrypt($plainText, $publicKey)
     {
         try {
-            $PublicKey = new EncryptionPublicKey($publicKey);
-            $cipherText = Crypto::seal($plainText, $PublicKey, true);
+            $HiddenPlainText = new HiddenString($plainText);
+            $HiddenPublicKey = new HiddenString($publicKey);
+            $PublicKey       = new EncryptionPublicKey($HiddenPublicKey);
+            $cipherText      = Crypto::seal($HiddenPlainText, $PublicKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'ECC :: Plaintext encryption with publiy key failed: '
+                self::class . ' :: Plaintext encryption with publiy key failed: '
                 . $Exception->getMessage()
             );
         }
@@ -50,16 +53,18 @@ class ECC implements IAsymmetricCrypto
     public static function decrypt($cipherText, $privateKey)
     {
         try {
-            $PrivateKey = new EncryptionSecretKey($privateKey);
-            $plainText = Crypto::unseal($cipherText, $PrivateKey, true);
+            $HiddenCypherText = new HiddenString($cipherText);
+            $HiddenPrivateKey = new HiddenString($privateKey);
+            $PrivateKey       = new EncryptionSecretKey($HiddenPrivateKey);
+            $HiddenPlainText  = Crypto::unseal($HiddenCypherText, $PrivateKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'ECC :: Ciphertext decryption with private key failed: '
+                self::class . ' :: Ciphertext decryption with private key failed: '
                 . $Exception->getMessage()
             );
         }
 
-        return $plainText;
+        return $HiddenPlainText->getString();
     }
 
     /**
@@ -74,12 +79,12 @@ class ECC implements IAsymmetricCrypto
             $KeyPair = KeyFactory::generateEncryptionKeyPair();
 
             $keys = array(
-                'publicKey' => $KeyPair->getPublicKey()->get(),
-                'privateKey' => $KeyPair->getSecretKey()->get()
+                'publicKey'  => $KeyPair->getPublicKey()->getRawKeyMaterial(),
+                'privateKey' => $KeyPair->getSecretKey()->getRawKeyMaterial()
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
-                'ECC :: Key pair creation failed: ' . $Exception->getMessage()
+                self::class . ' :: Key pair creation failed: ' . $Exception->getMessage()
             );
         }
 

@@ -38,7 +38,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
 
         Binds: [
-            '$loadContent'
+            '$loadContent',
+            '$onDestroy'
         ],
 
         options: {
@@ -52,6 +53,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             this.$PasswordTypeControl = null;
             this.$ContentElm          = null;
             this.$passwordType        = null;
+            this.$CurrentData         = {};
+            this.$loaded              = false;
+
+            this.addEvents({
+                onDestroy: this.$onDestroy
+            });
         },
 
         /**
@@ -91,6 +98,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             var self = this;
 
             this.$ContentElm.set('html', '');
+            this.$CurrentData = Object.merge(this.$CurrentData, this.getData());
 
             require([
                 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit'
@@ -99,7 +107,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
                     type  : type,
                     events: {
                         onLoaded: function () {
-                            self.fireEvent('loaded');
+                            if (!self.$loaded) {
+                                self.fireEvent('loaded');
+                                self.$loaded = true;
+                            }
+
+                            if (Object.getLength(self.$CurrentData)) {
+                                self.setData(self.$CurrentData);
+                            }
                         }
                     }
                 }).inject(self.$ContentElm);
@@ -141,6 +156,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
          */
         getPasswordType: function () {
             return this.$passwordType;
+        },
+
+        /**
+         * Event: onDestroy
+         */
+        $onDestroy: function() {
+            this.$CurrentData = null;
         }
     });
 });

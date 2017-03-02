@@ -59,7 +59,7 @@
 
 .pcsg-gpm-passwords-panel-table-accesstype {
     float: left;
-    text-align: center;
+    text-align: left;
     width: 90%;
 }
 
@@ -155,4 +155,22 @@
 .pcsg-gpm-passwords-panel-search span:hover {
     cursor: pointer;
     color: #000000;
+}
+
+.pcsg-gpm-passwords-panel-table-accesstype-share-indicator {
+    font-size: 10px !important;
+    position: relative;
+    bottom: 6px;
+    margin: 0 !important;
+    color: #0069b4;
+}
+
+.pcsg-passwords-panel-initialRegistration label {
+    float: left;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.pcsg-passwords-panel-initialRegistration input {
+    width: 100%;
 }

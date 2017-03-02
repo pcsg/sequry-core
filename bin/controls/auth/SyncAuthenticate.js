@@ -28,8 +28,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate',
 
         Binds: [
-            '$onLoaded',
-            '$getPasswordId'
+            '$onLoaded'
         ],
 
         options: {
@@ -48,27 +47,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
          * Disable sync auth plugin
          */
         $onLoaded: function () {
-            var self = this;
-
             var syncAuthPluginId = this.getAttribute('authPluginId');
 
-            this.$AuthPopup.Loader.show();
+            for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
+                var authPluginId = this.$authPluginControls[i].getAttribute('authPluginId');
 
-            Authentication.getAllowedSyncAuthPlugins(syncAuthPluginId).then(function (allowedAuthPluginIds) {
-                for (var i = 0, len = self.$authPluginControls.length; i < len; i++) {
-                    var authPluginId = self.$authPluginControls[i].getAttribute('authPluginId');
-
-                    if (allowedAuthPluginIds.contains(authPluginId)) {
-                        continue;
-                    }
-
-                    var AuthPluginElm = self.$authPluginControls[i].getElm();
-
-                    AuthPluginElm.getParent().setStyle('display', 'none');
+                if (authPluginId != syncAuthPluginId) {
+                    continue;
                 }
 
-                self.$AuthPopup.Loader.hide();
-            });
+                var AuthPluginElm = this.$authPluginControls[i].getElm();
+                AuthPluginElm.getParent().setStyle('display', 'none');
+            }
         }
     });
 });

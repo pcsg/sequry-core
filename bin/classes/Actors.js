@@ -135,6 +135,37 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
                     onError  : reject
                 });
             });
+        },
+
+        /**
+         * Re-encrypt all keys a user has access to
+         *
+         * @param {Object} AuthData - Authentication data for all (registered) auth plugins
+         * @return {Promise}
+         */
+        reEncryptAllKeys: function (AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_actors_reEncryptAll', resolve, {
+                    'package': pkg,
+                    onError  : reject,
+                    authData : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
+         * Check if the current session user is eligible to user basic
+         * password manager functionality
+         *
+         * @returns {Promise}
+         */
+        canUsePasswordManager: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_canUsePasswordManager', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });

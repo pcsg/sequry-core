@@ -23,27 +23,29 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/controls/loader/Loader',
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Categories',
+    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
+    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
 
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html'
     //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, AuthHandler, PasswordHandler,
-             SecurityClassSelect, ActorSelect, PasswordContent, CategorySelect, template) {
+], function (QUI, QUIControl, QUILoader, QUILocale, Mustache, Authentication, Passwords,
+             Categories, SecurityClassSelect, ActorSelect, PasswordContent,
+             CategorySelect, CategorySelectPrivate, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Passwords      = new PasswordHandler(),
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -54,7 +56,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             '$onInject',
             '$onDestroy',
             '$save',
-            '$onPasswordDataLoaded'
+            '$onPasswordDataLoaded',
+            '$setPrivateCategories',
+            '$onSecurityClassChange',
+            '$onOwnerChange',
+            '$showSetOwnerInformation'
         ],
 
         options: {
@@ -69,12 +75,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 onDestroy: this.$onDestroy
             });
 
-            this.$PasswordData    = null;
-            this.$owner           = false;
-            this.$PassContent     = null;
-            this.$AuthData        = null;
-            this.$securityClassId = false;
-            this.$CategorySelect  = null;
+            this.$PasswordData          = null;
+            this.$owner                 = false;
+            this.$PassContent           = null;
+            this.$AuthData              = null;
+            this.$securityClassId       = false;
+            this.$CategorySelect        = null;
+            this.$CategorySelectPrivate = null;
+            this.$OwnerSelect           = null;
+            this.$OwnerSelectElm        = null;
+            this.$CurrentOwner          = null;
         },
 
         /**
@@ -85,28 +95,42 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
         create: function () {
             var lg_prefix = 'password.create.template.';
 
-            this.$Elm = this.parent();
+            this.$Elm   = this.parent();
+            this.Loader = new QUILoader().inject(this.$Elm);
 
             this.$Elm.set({
                 'class': 'pcsg-gpm-password-edit',
                 html   : Mustache.render(template, {
-                    title              : QUILocale.get(lg, 'edit.template.title'),
-                    basicData          : QUILocale.get(lg, lg_prefix + 'basicData'),
-                    securityClass      : QUILocale.get(lg, lg_prefix + 'securityClass'),
-                    passwordTitle      : QUILocale.get(lg, lg_prefix + 'passwordTitle'),
-                    passwordDescription: QUILocale.get(lg, lg_prefix + 'passwordDescription'),
-                    passwordCategory   : QUILocale.get(lg, lg_prefix + 'passwordCategory'),
-                    payload            : QUILocale.get(lg, lg_prefix + 'payload'),
-                    passwordPayload    : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
-                    payloadWarning     : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
-                    owner              : QUILocale.get(lg, lg_prefix + 'owner'),
-                    passwordOwner      : QUILocale.get(lg, lg_prefix + 'passwordOwner')
+                    title                  : QUILocale.get(lg, 'edit.template.title'),
+                    basicData              : QUILocale.get(lg, lg_prefix + 'basicData'),
+                    securityClass          : QUILocale.get(lg, lg_prefix + 'securityClass'),
+                    passwordTitle          : QUILocale.get(lg, lg_prefix + 'passwordTitle'),
+                    passwordDescription    : QUILocale.get(lg, lg_prefix + 'passwordDescription'),
+                    passwordCategory       : QUILocale.get(lg, lg_prefix + 'passwordCategory'),
+                    passwordCategoryPrivate: QUILocale.get(lg,
+                        'controls.categories.panel.private.title'
+                    ),
+                    payload                : QUILocale.get(lg, lg_prefix + 'payload'),
+                    passwordPayload        : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
+                    payloadWarning         : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
+                    extra                  : QUILocale.get(lg, lg_prefix + 'extra'),
+                    passwordOwner          : QUILocale.get(lg, lg_prefix + 'passwordOwner')
                 })
             });
 
             this.$CategorySelect = new CategorySelect().inject(
                 this.$Elm.getElement(
                     '.pcsg-gpm-password-edit-category'
+                )
+            );
+
+            this.$CategorySelectPrivate = new CategorySelectPrivate({
+                events: {
+                    onChange: this.$setPrivateCategories
+                }
+            }).inject(
+                this.$Elm.getElement(
+                    '.pcsg-gpm-password-edit-category-private'
                 )
             );
 
@@ -129,7 +153,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 ).then(
                     function (PasswordData) {
                         if (!PasswordData) {
-                            self.fireEvent('close');
+                            return;
                         }
 
                         self.$PasswordData    = PasswordData;
@@ -156,9 +180,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 'span.pcsg-gpm-security-classes'
             );
 
-            var OwnerSelectElm = this.$Elm.getElement(
-                'span.pcsg-gpm-password-owner'
+            this.$OwnerSelectElm = this.$Elm.getElement(
+                'div.pcsg-gpm-password-owner'
             );
+
+            this.$CurrentOwner = {
+                id  : this.$PasswordData.ownerId,
+                type: this.$PasswordData.ownerType == 1 ? 'user' : 'group'
+            };
 
             this.$SecurityClassSelect = new SecurityClassSelect({
                 initialValue: this.$securityClassId,
@@ -167,21 +196,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                         self.$insertData();
                         self.fireEvent('loaded');
                     },
-                    onChange: function (value) {
-                        OwnerSelectElm.set('html', '');
-
-                        self.$OwnerSelect = new ActorSelect({
-                            max            : 1,
-                            securityClassId: value,
-                            events         : {
-                                onChange: function () {
-                                    self.$owner = self.$OwnerSelect.getValue();
-                                }
-                            }
-                        }).inject(OwnerSelectElm);
-
-                        self.$securityClassId = value;
-                    }
+                    onChange: this.$onSecurityClassChange
                 }
             }).inject(
                 SecurityClassElm
@@ -192,7 +207,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 new Element('div', {
                     'class': 'pcsg-gpm-password-warning',
                     html   : QUILocale.get(lg, 'password.edit.securityclass.change.warning')
-                }).inject(OwnerSelectElm, 'top');
+                }).inject(this.$OwnerSelectElm, 'top');
             }
         },
 
@@ -209,23 +224,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             // set security class
             this.$SecurityClassSelect.setValue(this.$PasswordData.securityClassId);
 
-            // set owner
-            this.$OwnerSelect.clear();
-
-            if (this.$PasswordData.ownerId && this.$PasswordData.ownerType) {
-                switch (parseInt(this.$PasswordData.ownerType)) {
-                    case 1:
-                        this.$OwnerSelect.addItem('u' + this.$PasswordData.ownerId);
-                        break;
-
-                    case 2:
-                        this.$OwnerSelect.addItem('g' + this.$PasswordData.ownerId);
-                        break;
-                }
-            }
-
             // set category
             this.$CategorySelect.setValue(this.$PasswordData.categoryIds);
+            this.$CategorySelectPrivate.setValue(this.$PasswordData.categoryIdsPrivate);
 
             // set form values
             this.$Elm.getElement('.pcsg-gpm-password-title').value       = self.$PasswordData.title;
@@ -246,11 +247,128 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
         },
 
         /**
+         * Perform certain actions if the selected security class changes:
+         *
+         * - Check if the currently selected owner is eligible for security class
+         *
+         * @param {number} securityClassId - security class ID
+         */
+        $onSecurityClassChange: function (securityClassId) {
+            var self = this;
+
+            this.$OwnerSelectElm.set('html', '');
+
+            this.$OwnerSelect = new ActorSelect({
+                max            : 1,
+                securityClassId: securityClassId,
+                events         : {
+                    onChange: this.$onOwnerChange
+                }
+            }).inject(this.$OwnerSelectElm);
+
+            if (!this.$CurrentOwner) {
+                this.$showSetOwnerInformation();
+                return;
+            }
+
+            var ownerValue = this.$CurrentOwner.id;
+
+            if (this.$CurrentOwner.type === 'user') {
+                ownerValue = 'u' + ownerValue;
+            } else {
+                ownerValue = 'g' + ownerValue;
+            }
+
+            this.$OwnerSelect.addItem(ownerValue);
+
+            Authentication.isActorEligibleForSecurityClass(
+                this.$CurrentOwner.id,
+                this.$CurrentOwner.type,
+                securityClassId
+            ).then(
+                function (isEligible) {
+                    if (isEligible) {
+                        return;
+                    }
+
+                    if (self.$OwnerInfoElm) {
+                        self.$OwnerInfoElm.destroy();
+                    }
+
+                    self.$OwnerInfoElm = new Element('div', {
+                        'class': 'pcsg-gpm-password-warning',
+                        styles : {
+                            marginTop: 10
+                        },
+                        html   : QUILocale.get(lg, 'password.create.set.owner.not.eligible')
+                    }).inject(self.$OwnerSelectElm);
+                }
+            );
+        },
+
+        /**
+         * On owner change
+         */
+        $onOwnerChange: function () {
+            var actors = this.$OwnerSelect.getActors();
+
+            if (!actors.length) {
+                this.$showSetOwnerInformation();
+                this.$CurrentOwner = null;
+                return;
+            }
+
+            this.$CurrentOwner = actors[0];
+
+            if (this.$OwnerInfoElm) {
+                this.$OwnerInfoElm.destroy();
+            }
+        },
+
+        /**
+         * Show info about owner
+         */
+        $showSetOwnerInformation: function () {
+            if (this.$OwnerInfoElm) {
+                this.$OwnerInfoElm.destroy();
+            }
+
+            this.$OwnerInfoElm = new Element('div', {
+                'class': 'pcsg-gpm-password-hint',
+                styles : {
+                    marginTop: 10
+                },
+                html   : QUILocale.get(lg, 'password.create.set.owner.info')
+            }).inject(this.$OwnerSelectElm);
+        },
+
+        /**
          * event: on destroy
          */
         $onDestroy: function () {
             this.$PasswordData = null;
             this.$AuthData     = null;
+        },
+
+        /**
+         * Set private password categories
+         *
+         * @return {Promise}
+         */
+        $setPrivateCategories: function (categoryIds) {
+            var self = this;
+
+            this.Loader.show();
+
+            return new Promise(function (resolve, reject) {
+                Categories.setPrivatePasswordCategories(
+                    self.getAttribute('passwordId'),
+                    categoryIds
+                ).then(function () {
+                    self.Loader.hide();
+                    resolve();
+                }, reject);
+            });
         },
 
         /**

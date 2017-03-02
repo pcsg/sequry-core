@@ -4,53 +4,22 @@ define('QUIQQER_SYSTEM', true);
 
 require dirname(dirname(dirname(dirname(__FILE__)))) . '/header.php';
 
-if (!isset($_REQUEST['code'])
-    || empty($_REQUEST['code'])
+if (!isset($_REQUEST['pluginId'])
+    || empty($_REQUEST['pluginId'])
 ) {
     exit;
 }
 
-if (!isset($_REQUEST['id'])
-    || empty($_REQUEST['id'])
-) {
+$recoveryData = \Pcsg\GroupPasswordManager\Security\Handler\Recovery::getRecoveryDataFromSession(
+    (int)$_REQUEST['pluginId']
+);
+
+if (!$recoveryData) {
+    echo "There is nothing to see here.";
     exit;
 }
 
-// get recovery data
-try {
-    $result = QUI::getDataBase()->fetch(array(
-        'select' => array(
-            'id',
-            'userId',
-            'authPluginId'
-        ),
-        'from'   => \Pcsg\GroupPasswordManager\Constants\Tables::RECOVERY,
-        'where'  => array(
-            'id' => (int)$_REQUEST['id']
-        )
-    ));
-} catch (\Exception $Exception) {
-    exit;
-}
-
-if (empty($result)) {
-    exit;
-}
-
-$recoveryData = current($result);
-
-// get auth plugin and user data
-try {
-    $AuthPlugin = \Pcsg\GroupPasswordManager\Security\Handler\Authentication::getAuthPlugin(
-        $recoveryData['authPluginId']
-    );
-
-    $User = QUI::getUsers()->get($recoveryData['userId']);
-} catch (\Exception $Exception) {
-    exit;
-}
-
-$code         = preg_split("//u", $_REQUEST['code'], -1, PREG_SPLIT_NO_EMPTY);
+$code         = preg_split("//u", $recoveryData['recoveryCode'], -1, PREG_SPLIT_NO_EMPTY);
 $codeReadable = '';
 $i            = 0;
 
@@ -63,13 +32,7 @@ foreach ($code as $char) {
     $i++;
 }
 
-if (!isset($_REQUEST['lang'])
-    || empty($_REQUEST['lang'])
-) {
-    exit;
-}
-
-$lang  = $_REQUEST['lang'];
+$lang  = QUI::getUserBySession()->getLang();
 $langs = QUI::availableLanguages();
 
 if (!in_array($lang, $langs)) {
@@ -157,7 +120,19 @@ $html = '
                     ' . $L->get($lg, 'auth.recoverycodewindow.recoveryCodeId') . '
                 </span>
                 <span class="field-container-field">
-                    ' . $recoveryData['id'] . '
+                    ' . $recoveryData['recoveryCodeId'] . '
+                </span>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
+                <span class="field-container-item" title="Host">
+                    Host
+                </span>
+                <span class="field-container-field">
+                    ' . $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '
                 </span>
             </label>
         </td>
@@ -169,7 +144,7 @@ $html = '
                     ' . $L->get($lg, 'auth.recoverycodewindow.username') . '
                 </span>
                 <span class="field-container-field">
-                    ' . $User->getUsername() . ' (ID: ' . $User->getId() . ')
+                    ' . $recoveryData['userName'] . ' (ID: ' . $recoveryData['userId'] . ')
                 </span>
             </label>
         </td>
@@ -177,11 +152,11 @@ $html = '
     <tr>
         <td>
             <label class="field-container">
-                <span class="field-container-item" title="' . $L->get($lg, 'auth.auth.recoverycodewindow.authplugin') . '">
-                    ' . $L->get($lg, 'auth.auth.recoverycodewindow.authplugin') . '
+                <span class="field-container-item" title="' . $L->get($lg, 'auth.recoverycodewindow.authplugin') . '">
+                    ' . $L->get($lg, 'auth.recoverycodewindow.authplugin') . '
                 </span>
                 <span class="field-container-field">
-                    ' . $AuthPlugin->getAttribute('title') . ' (ID:' . $AuthPlugin->getId() . ')
+                    ' . $recoveryData['authPluginTitle'] . ' (ID:' . $recoveryData['authPluginId'] . ')
                 </span>
             </label>
         </td>
@@ -193,7 +168,7 @@ $html = '
                     ' . $L->get($lg, 'auth.recoverycodewindow.date') . '
                 </span>
                 <span class="field-container-field">
-                    ' . date('d.m.Y') . '
+                    ' . $recoveryData['date'] . '
                 </span>
             </label>
         </td>

@@ -19,7 +19,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getEligibleUsers($securityC
 
         $eligibleUserData[] = array(
             'id'       => $User->getId(),
-            'username' => $User->getUsername()
+            'username' => $User->getName()
         );
     }
 

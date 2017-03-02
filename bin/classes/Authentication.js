@@ -32,6 +32,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @return {Promise}
          */
         securityClassAuth: function (securityClassId) {
+            var self = this;
+
             return new Promise(function (resolve, reject) {
                 require([
                     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate'
@@ -40,8 +42,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         securityClassId: securityClassId,
                         events         : {
                             onSubmit: function (AuthData) {
-                                resolve(AuthData);
-                                Popup.close();
+                                self.checkAuthInfo(
+                                    securityClassId,
+                                    AuthData
+                                ).then(function (correct) {
+                                    resolve(AuthData);
+
+                                    if (correct) {
+                                        Popup.close();
+                                    }
+                                });
                             },
                             onClose : function () {
                                 reject();
@@ -77,16 +87,48 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 resolve(AuthData);
                                 Popup.close();
                             },
-                            onClose: function(Popup) {
+                            onClose : function (Popup) {
                                 reject();
                                 Popup.close();
                             },
-                            onAbort: function(Popup) {
+                            onAbort : function (Popup) {
                                 reject();
                                 Popup.close();
                             }
                         }
                     }).open();
+                });
+            });
+        },
+
+        /**
+         * Authenticate for all available plugins
+         *
+         * @return Promise
+         */
+        authAll: function () {
+            return new Promise(function (resolve, reject) {
+                require([
+                    'package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll'
+                ], function (AllAuth) {
+                    var Popup = new AllAuth({
+                        events: {
+                            onSubmit: function (AuthData) {
+                                resolve(AuthData);
+                                Popup.close();
+                            },
+                            onClose : function () {
+                                reject();
+                                Popup.close();
+                            },
+                            onAbort : function () {
+                                reject();
+                                Popup.close();
+                            }
+                        }
+                    });
+
+                    Popup.open();
                 });
             });
         },
@@ -98,6 +140,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @return {Promise}
          */
         passwordAuth: function (passwordId) {
+            var self = this;
+
             return new Promise(function (resolve, reject) {
                 require([
                     'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate'
@@ -106,8 +150,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         passwordId: passwordId,
                         events    : {
                             onSubmit: function (AuthData) {
-                                resolve(AuthData);
-                                Popup.close();
+                                self.checkAuthInfoPassword(
+                                    passwordId,
+                                    AuthData
+                                ).then(function (correct) {
+                                    resolve(AuthData);
+
+                                    if (correct) {
+                                        Popup.close();
+                                    }
+                                });
                             },
                             onClose : function () {
                                 reject();
@@ -209,6 +261,24 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
+         * Get all authentication controls a user has access to
+         *
+         * @return {Promise}
+         */
+        getControlsByUser: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_getControlsByUser',
+                    resolve,
+                    {
+                        'package': pkg,
+                        onError  : reject
+                    }
+                );
+            });
+        },
+
+        /**
          * Get control to authenticate with authentication plugins of a specific
          * security class
          *
@@ -268,7 +338,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Get id, title and description of an authentication plugin
+         * Check if authentication information for a specific security class is correct
          *
          * @param {number} securityClassId - id of security class
          * @param {Object} AuthData - authentication information
@@ -281,6 +351,24 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     onError        : reject,
                     securityClassId: securityClassId,
                     authData       : JSON.encode(AuthData)
+                });
+            });
+        },
+
+        /**
+         * Check if authentication information for a specific password is correct
+         *
+         * @param {number} passwordId - Password ID
+         * @param {Object} AuthData - authentication information
+         * @returns {Promise}
+         */
+        checkAuthInfoPassword: function (passwordId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfoPassword', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId,
+                    authData  : JSON.encode(AuthData)
                 });
             });
         },
@@ -444,6 +532,72 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
+                });
+            });
+        },
+
+        /**
+         * Register a user with an authentication plugin
+         *
+         * @param {Integer} authPluginId
+         * @param {Object} RegistrationData
+         * @return {Promise}
+         */
+        registerUser: function (authPluginId, RegistrationData) {
+            return new Promise(function (resolve, reject) {
+                Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
+                    'package'       : 'pcsg/grouppasswordmanager',
+                    onError         : reject,
+                    authPluginId    : authPluginId,
+                    registrationData: JSON.encode(RegistrationData)
+                });
+            });
+        },
+
+        /**
+         * Get ID of default authentication plugin
+         *
+         * @return {Promise}
+         */
+        getDefaultAuthPluginId: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultPluginId', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Checks if the given user is eligible for a security class
+         *
+         * @param {number} actorId - user or group ID
+         * @param {string} actorType - "user" / "group"
+         * @param {number} securityClassId
+         * @return {Promise}
+         */
+        isActorEligibleForSecurityClass: function (actorId, actorType, securityClassId) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_isActorEligibleForSecurityClass', resolve, {
+                    'package'      : pkg,
+                    onError        : reject,
+                    actorId        : actorId,
+                    actorType      : actorType,
+                    securityClassId: securityClassId
+                });
+            });
+        },
+
+        /**
+         * Get ID of the default security class (if set)
+         *
+         * @return {Promise}
+         */
+        getDefaultSecurityClassId: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultSecurityClassId', resolve, {
+                    'package': pkg,
+                    onError  : reject
                 });
             });
         }

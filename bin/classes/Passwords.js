@@ -302,6 +302,42 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                     }
                 );
             });
+        },
+
+        /**
+         * Opens the password list panel
+         *
+         * @return {Promise}
+         */
+        openPasswordListPanel: function () {
+            if (window.PasswordList) {
+                return Promise.resolve(window.PasswordList);
+            }
+
+            return new Promise(function (resolve) {
+                require([
+                    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
+                    'utils/Panels'
+                ], function (PasswordManager, PanelUtils) {
+                    var PasswordManagerPanel = new PasswordManager({
+                        events: {
+                            onLoaded : function (Panel) {
+                                resolve(Panel);
+                                window.PasswordList = Panel;
+                            }
+                        }
+                    });
+
+                    PanelUtils.openPanelInTasks(PasswordManagerPanel).then(function (Panel) {
+                        Panel.open();
+                        Panel.addEvents({
+                            onDestroy: function () {
+                                window.PasswordList = null;
+                            }
+                        });
+                    });
+                });
+            });
         }
     });
 });

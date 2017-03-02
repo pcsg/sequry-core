@@ -19,7 +19,7 @@
     background-color: #ededed;
     border-bottom: 1px solid #929292;
     float: left;
-    max-height: 300px;
+    /*max-height: 300px;*/
     overflow-y: auto;
     width: 100%;
 }

@@ -19,7 +19,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
                 'exception.actors.sendinstructions.no.email.address',
                 array(
                     'userId'   => $User->getId(),
-                    'userName' => $User->getUsername()
+                    'userName' => $User->getName()
                 )
             )
         );
@@ -39,7 +39,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
             'pcsg/grouppasswordmanager',
             'actors.sendinstructions.instructions',
             array(
-                'userName' => $User->getUsername(),
+                'userName' => $User->getName(),
                 'url'      => $_SERVER['HTTP_ORIGIN'] . '/admin/'
             )
         )

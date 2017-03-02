@@ -1,28 +1,82 @@
 require.config({
-    paths  : {
-        "ClipboardJS": URL_OPT_DIR + 'bin/clipboard/dist/clipboard'
+    paths: {
+        "ClipboardJS"  : URL_OPT_DIR + 'bin/clipboard/dist/clipboard',
+        "html5tooltips": URL_OPT_DIR + 'quiqqer/tooltips/bin/html5tooltips'
     }
 });
 
 require([
+    'qui/QUI',
     'Ajax',
     'qui/controls/windows/Confirm',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
-    'utils/Panels',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
     'Locale'
-], function (QUIAjax, QUIConfirm, PasswordManager, PanelUtils, QUILocale) {
+], function (QUI, QUIAjax, QUIConfirm, Passwords, QUILocale) {
+    "use strict";
+
     var lg  = 'pcsg/grouppasswordmanager';
     var pkg = 'pcsg/grouppasswordmanager';
 
+    var loadExecute = 0;
+
+    var loadPasswordCategoryPanel = function () {
+        loadExecute++;
+
+        if (loadExecute == 10) {
+            return;
+        }
+
+        var ColumnElm = document.getElement('.qui-column'),
+            Column    = QUI.Controls.getById(ColumnElm.get('data-quiid'));
+
+        var panels = Column.getChildren(),
+            length = Object.getLength(panels);
+
+        if (length === 0) {
+            loadPasswordCategoryPanel();
+            return;
+        }
+
+        for (var i in panels) {
+            if (!panels.hasOwnProperty(i)) {
+                continue;
+            }
+
+            if (panels[i].getType() === 'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel') {
+                return;
+            }
+        }
+
+        require([
+            'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel'
+        ], function (CategoryPanel) {
+            Column.appendChild(new CategoryPanel());
+        });
+    };
+
     QUI.addEvents({
-        onQuiqqerLoaded: function() {
-            if (window.PasswordList) {
+        onQuiqqerLoaded: function () {
+            var panels = QUI.Controls.getByType(
+                'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel'
+            );
+
+            if (!panels.length) {
+                Passwords.openPasswordListPanel();
+                loadPasswordCategoryPanel();
+
                 return;
             }
 
-            PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
-                Panel.open();
+            var PasswordPanel = panels[0];
+
+            PasswordPanel.addEvents({
+                onDestroy: function () {
+                    window.PasswordList = null;
+                }
             });
+
+            window.PasswordList = PasswordPanel;
+            loadPasswordCategoryPanel();
         }
     });
 

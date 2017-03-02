@@ -7,6 +7,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Composer\Cache;
+use Pcsg\GpmAuthPassword\AuthPlugin;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
@@ -434,9 +435,11 @@ class Authentication
             $id = (int)$row['id'];
 
             $list[$id] = array(
-                'title'       => $row['title'],
-                'description' => $row['description'],
-                'authPlugins' => array()
+                'id'              => $id,
+                'title'           => $row['title'],
+                'description'     => $row['description'],
+                'authPlugins'     => array(),
+                'requiredFactors' => $row['requiredFactors']
             );
 
             $authPlugins = self::getAuthPluginsBySecurityClass($id);
@@ -450,6 +453,17 @@ class Authentication
                 );
             }
         }
+
+        uasort($list, function ($a, $b) {
+            $authPluginsA = count($a['authPlugins']);
+            $authPluginsB = count($b['authPlugins']);
+
+            if ($authPluginsA === $authPluginsB) {
+                return 0;
+            }
+
+            return $authPluginsA < $authPluginsB ? -1 : 1;
+        });
 
         return $list;
     }
@@ -584,5 +598,30 @@ class Authentication
     {
         QUI::getSession()->set('quiqqer_pwm_authkeys', false);
         AuthCache::clear('pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId());
+    }
+
+    /**
+     * Get ID of default authentication plugin (QUIQQER Password auth)
+     *
+     * @return false|int - false if default plugin not installed; ID otherwise
+     */
+    public static function getDefaultAuthPluginId()
+    {
+        // get ID of basic quiqqer auth plugin
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => QUI::getDBTableName(Tables::AUTH_PLUGINS),
+            'where'  => array(
+                'path' => '\\' . AuthPlugin::class
+            )
+        ));
+
+        if (empty($result)) {
+            return false;
+        }
+
+        return (int)$result[0]['id'];
     }
 }

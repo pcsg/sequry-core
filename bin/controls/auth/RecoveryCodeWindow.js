@@ -132,7 +132,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
                     dateValue          : RecoveryCodeData.date,
                     recoveryCode       : recoveryCodeReadable,
                     recoveryCodeId     : QUILocale.get(lg, lg_prefix + 'recoveryCodeId'),
-                    recoveryCodeIdValue: RecoveryCodeData.recoveryCodeId
+                    recoveryCodeIdValue: RecoveryCodeData.recoveryCodeId,
+                    hostValue          : window.location.origin
                 })
             );
         },
@@ -180,19 +181,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
          */
         $print: function () {
             var url = window.location.protocol + '//' +
-                window.location.host + URL_OPT_DIR + 'pcsg/grouppasswordmanager/bin/recoverycode.php?';
+                window.location.host + URL_OPT_DIR + 'pcsg/grouppasswordmanager/bin/recoverycode.php';
 
-            url += 'code=' + this.$RecoveryData.recoveryCode;
-            url += '&id=' + this.$RecoveryData.recoveryCodeId;
-            url += '&lang=' + USER.lang;
-
-            var Link = new Element('a', {
-                href  : url,
+            var Form = new Element('form', {
+                action: url,
+                method: 'post',
                 target: '_blank'
             }).inject(document.body);
 
-            Link.click();
-            Link.destroy();
+            new Element('input', {
+                name : 'pluginId',
+                type : 'hidden',
+                value: this.$RecoveryData.authPluginId
+            }).inject(Form);
+
+            Form.submit();
+            Form.destroy();
         }
     });
 });

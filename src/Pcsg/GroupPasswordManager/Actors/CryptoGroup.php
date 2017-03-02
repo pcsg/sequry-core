@@ -69,7 +69,9 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function getKeyPair($SecurityClass)
     {
-        if (!is_null($this->keyPairs[$SecurityClass->getId()])) {
+        if (isset($this->keyPairs[$SecurityClass->getId()])
+            && !is_null($this->keyPairs[$SecurityClass->getId()])
+        ) {
             return $this->keyPairs[$SecurityClass->getId()];
         }
 

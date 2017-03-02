@@ -30,11 +30,11 @@ class Handler
 
             // skip certain types, because they are no longer available
             // but have to be kept for legacy reasons
-            switch ($fileName) {
-                case 'Credentials': // removed: 2017-21-02
-                    continue 2;
-                    break;
-            }
+//            switch ($fileName) {
+//                case 'Credentials': // removed: 2017-21-02
+//                    continue 2;
+//                    break;
+//            }
 
             if (is_dir($file)) {
                 $types[] = array(
@@ -47,7 +47,7 @@ class Handler
             }
         }
 
-        usort($types, function($a, $b) {
+        usort($types, function ($a, $b) {
             $name1 = $a['name'];
             $name2 = $b['name'];
 
@@ -55,8 +55,16 @@ class Handler
                 return -1;
             }
 
+            if ($name1 == 'Credentials') {
+                return 1;
+            }
+
             if ($name2 == 'Website') {
                 return 1;
+            }
+
+            if ($name2 == 'Credentials') {
+                return -1;
             }
 
             if ($name1 === $name2) {
@@ -140,7 +148,7 @@ class Handler
             'passwordtypes.handler.view.template.created',
             array(
                 'date'     => date('Y-m-d H:i:s', $viewData['createDate']),
-                'userName' => $CreateUser->getUsername(),
+                'userName' => $CreateUser->getName(),
                 'userId'   => $CreateUser->getId()
             )
         );
@@ -149,7 +157,7 @@ class Handler
             'passwordtypes.handler.view.template.lastEdit',
             array(
                 'date'     => date('Y-m-d H:i:s', $viewData['editDate']),
-                'userName' => $EditUser->getUsername(),
+                'userName' => $EditUser->getName(),
                 'userId'   => $EditUser->getId()
             )
         );

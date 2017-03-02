@@ -10,7 +10,7 @@ use Pcsg\GroupPasswordManager\Security\Keys\Key;
  */
 class Hash
 {
-    const HASH_MODULE = 'Scrypt'; // @todo in config auslagern
+    const HASH_MODULE = 'Argon2'; // @todo in config auslagern
 
     /**
      * Hash Class Object for the configured hash module
@@ -24,7 +24,7 @@ class Hash
      *
      * @param string $str - A String
      * @param string $salt (optional) - if ommitted generate random salt
-     * @return Key - symmetric key
+     * @return string - hash
      */
     public static function create($str, $salt = null)
     {

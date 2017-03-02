@@ -6,7 +6,9 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/passwords/DesktopSearchResult', [
 
-], function () {
+    'package/pcsg/grouppasswordmanager/bin/Passwords'
+
+], function (Passwords) {
     "use strict";
 
     return new Class({
@@ -18,25 +20,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/DesktopSearchRe
                 return;
             }
 
-            if (window.PasswordList) {
-                window.PasswordList.viewPassword(options.passwordId);
-                return;
-            }
-
-            require([
-                'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
-                'utils/Panels'
-            ], function(PasswordManager, PanelUtils) {
-                PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
-                    Panel.open();
-
-                    var waitForPanel = setInterval(function() {
-                        if (window.PasswordList) {
-                            window.PasswordList.viewPassword(options.passwordId);
-                            clearInterval(waitForPanel);
-                        }
-                    }, 200);
-                });
+            Passwords.openPasswordListPanel().then(function(PasswordList) {
+                PasswordList.viewPassword(options.passwordId);
             });
         }
     });
