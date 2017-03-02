@@ -190,21 +190,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
             }).inject(document.body);
 
             new Element('input', {
-                name : 'code',
+                name : 'pluginId',
                 type : 'hidden',
-                value: this.$RecoveryData.recoveryCode
-            }).inject(Form);
-
-            new Element('input', {
-                name : 'id',
-                type : 'hidden',
-                value: this.$RecoveryData.recoveryCodeId
-            }).inject(Form);
-
-            new Element('input', {
-                name : 'lang',
-                type : 'hidden',
-                value: USER.lang
+                value: this.$RecoveryData.authPluginId
             }).inject(Form);
 
             Form.submit();

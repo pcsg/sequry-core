@@ -112,6 +112,12 @@ class Recovery
             'date'            => date('d.m.Y')
         );
 
+        // save in session
+        QUI::getSession()->set(
+            'pcsg_gpm_recovery_code_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId(),
+            json_encode($recoveryCodeData)
+        );
+
         return $recoveryCodeData;
     }
 
@@ -225,6 +231,35 @@ class Recovery
     }
 
     /**
+     * Get recovery data from session!
+     *
+     * This can be only done ONCE per recovery code. After one retrieval, the data is
+     * deleted from the session.
+     *
+     * @param int $authPluginId - AuthPlugin ID
+     * @param CryptoUser $CryptoUser (optional) - if omitted, use session user
+     * @return false|array - false if code not in session; recovery code data otherwise
+     */
+    public static function getRecoveryDataFromSession($authPluginId, $CryptoUser = null)
+    {
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
+        $sessionKey = 'pcsg_gpm_recovery_code_' . $CryptoUser->getId() . '_' . $authPluginId;
+
+        $data = QUI::getSession()->get($sessionKey);
+
+        if (empty($data)) {
+            return false;
+        }
+
+        QUI::getSession()->set($sessionKey, null);
+
+        return json_decode($data, true);
+    }
+
+    /**
      * Generates a human-readable random recovery code
      *
      * @return string
@@ -272,7 +307,7 @@ class Recovery
         $len  = count($chars) - 1;
 
         for ($i = 0; $i < 25; $i++) {
-            $code .= $chars[mt_rand(0, $len)];
+            $code .= $chars[random_int(0, $len)];
         }
 
         return $code;

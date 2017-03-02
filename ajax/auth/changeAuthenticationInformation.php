@@ -45,6 +45,20 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
         );
 
         return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation -> '
+            . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.general.error'
+            )
+        );
+
+        return false;
     }
 
     QUI::getMessagesHandler()->addSuccess(
