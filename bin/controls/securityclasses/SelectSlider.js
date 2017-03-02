@@ -192,9 +192,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
         },
 
         $onChangeValue: function (value) {
-
-
-            console.log(1);
             var SecurityClass = this.$SecurityClasses[value];
 
             this.$InfoElm.set(
