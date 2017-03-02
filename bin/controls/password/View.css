@@ -75,6 +75,8 @@
 
 div.field-container-field {
     overflow-x: auto;
+    -ms-word-break: break-word;
+    word-break: break-word;
 }
 
 /*.pcsg-gpm-password-view-copy-tooltip:hover span {*/
