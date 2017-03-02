@@ -282,15 +282,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.$Grid.addEvents({
                 onDblClick: function () {
-                    var pwId = self.$Grid.getSelectedData()[0].id;
+                    var Row  = self.$Grid.getSelectedData()[0];
+                    var pwId = Row.id;
 
                     switch (self.$dblClickAction) {
                         case 'edit':
-                            self.editPassword(pwId);
+                            if (Row.isOwner) {
+                                self.editPassword(pwId);
+                                break;
+                            }
+
+                            self.viewPassword(pwId);
                             break;
 
                         case 'share':
-                            self.sharePassword(pwId);
+                            if (Row.canShare) {
+                                self.sharePassword(pwId);
+                                break;
+                            }
+
+                            self.viewPassword(pwId);
                             break;
 
                         default:
@@ -871,9 +882,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         Sheet.getContent().setStyle('padding', 20);
 
                         var View = new PasswordView({
-                            passwordId          : passwordId,
+                            passwordId: passwordId,
                             //editPublicCategories: canEdit,
-                            events              : {
+                            events    : {
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
