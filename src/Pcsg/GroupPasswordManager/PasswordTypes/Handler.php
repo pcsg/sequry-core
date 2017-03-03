@@ -4,6 +4,7 @@ namespace Pcsg\GroupPasswordManager\PasswordTypes;
 
 use QUI;
 use QUI\Utils\System\File;
+use QUI\Utils\Security\Orthos;
 
 /**
  * Class Handler

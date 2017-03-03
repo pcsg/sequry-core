@@ -29,7 +29,7 @@ class Type implements IPasswordType
             preg_match('#https?:\/\/#i', $url, $matches);
 
             if (empty($matches)) {
-                $url = 'http://' . $url;
+                $url = 'https://' . $url;
             }
 
             $content['url'] = $url;

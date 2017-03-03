@@ -2,6 +2,7 @@
 
 use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use QUI\Utils\Security\Orthos;
 
 /**
  * Get a single password object
@@ -23,8 +24,15 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $
         );
 
         $Password = Passwords::get($passwordId);
+        $viewData = $Password->getViewData();
 
-        return Handler::getViewHtml($Password->getDataType(), $Password->getViewData());
+        foreach ($viewData as $k => $v) {
+            if (is_string($v)) {
+                $viewData[$k] = Orthos::escapeHTML($v);
+            }
+        }
+
+        return Handler::getViewHtml($Password->getDataType(), $viewData);
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(

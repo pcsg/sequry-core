@@ -27,10 +27,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
     // edit password
     try {
         $Password = Passwords::get($passwordId);
-
-        $Password->setData(
-            Utils::clearArray(json_decode($passwordData, true))
-        );
+        $Password->setData(json_decode($passwordData, true));
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
