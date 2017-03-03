@@ -7,6 +7,8 @@
 namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GpmAuthPassword\AuthPlugin;
+use Pcsg\GroupPasswordManager\Constants\Crypto;
+use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI\Package\Package;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
@@ -123,6 +125,28 @@ class Events
         );
 
         self::$addUsersViaGroup = true;
+    }
+
+    /**
+     * QUIQQER Event: onUserLogin
+     *
+     * @param QUI\Users\User $User
+     * @return void
+     */
+    public static function onUserLogin($User)
+    {
+        // generate random 128-bit key and initialization vector
+        $commKey = \Sodium\randombytes_buf(16);
+        $iv      = \Sodium\randombytes_buf(
+            openssl_cipher_iv_length(Crypto::COMMUNICATION_ENCRYPTION_ALGO)
+        );
+
+        $data = array(
+            'key' => bin2hex($commKey),
+            'iv'  => bin2hex($iv)
+        );
+
+        QUI::getSession()->set('pcsg-gpm-comm-key', json_encode($data));
     }
 
     /**

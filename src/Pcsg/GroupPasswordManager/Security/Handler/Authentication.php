@@ -624,4 +624,26 @@ class Authentication
 
         return (int)$result[0]['id'];
     }
+
+    /**
+     * Get the symmetric key that is used for encryption
+     * between frontend and backend for the current session
+     *
+     * @return false|string - false if no key set, key otherwise
+     */
+    public static function getSessionCommunicationKey()
+    {
+        $data = QUI::getSession()->get('pcsg-gpm-comm-key');
+
+        if (!$data) {
+            return false;
+        }
+
+        $data = json_decode($data, true);
+
+        $data['key'] = hex2bin($data['key']);
+        $data['iv']  = hex2bin($data['iv']);
+
+        return $data;
+    }
 }

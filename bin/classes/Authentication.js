@@ -600,6 +600,29 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     onError  : reject
                 });
             });
+        },
+
+        /**
+         * Get the symmetric key that is used for encryption
+         * between frontend and backend for the current session
+         *
+         * @return {Promise}
+         */
+        getCommKey: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getCommKey',
+                    function(keyData) {
+                        if (!keyData) {
+                            resolve(keyData);
+                            return;
+                        }
+
+                        resolve(keyData);
+                    }, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });
