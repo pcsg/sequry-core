@@ -192,42 +192,37 @@ class Utils
      */
     public static function generatePassword()
     {
+        $passwordParts = array();
+
+        // 3 to 5 numbers
+        for ($i = 0, $len = random_int(3,5); $i < $len; $i++) {
+            $passwordParts[] = random_int(0,9);
+        }
+
+        // 3 to 5 special characters
+        $special = array('-', '_', '$', '@', '?');
+
+        for ($i = 0, $len = random_int(3,5); $i < $len; $i++) {
+            $passwordParts[] = $special[random_int(0, (count($special)-1))];
+        }
+
+        // 4 to 10 letters
         $letters = array(
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
             'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
             'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
         );
-        $numbers = array(1,2,3,4,5,6,7,8,9,0);
-        $special = array('-', '_', '$');
 
-        $all = array_merge($letters, $numbers, $special);
-
-        $password = '';
-        $len      = random_int(10, 20);
-
-        for ($i = 0; $i < $len; $i++) {
-            $password .= $all[random_int(0, (count($all)-1))];
+        for ($i = 0, $len = random_int(4,10); $i < $len; $i++) {
+            $passwordParts[] = $letters[random_int(0, (count($letters)-1))];
         }
 
-        // at least one uppercase letter
-        $rndLetter = random_int(0, (mb_strlen($password)));
-        $password[$rndLetter] = strtoupper($letters[random_int(0, (count($letters)-1))]);
+        // shuffle parts
+        for ($i = 0, $len = random_int(500,1000); $i < $len; $i++) {
+            shuffle($passwordParts);
+        }
 
-        // at least one special character
-        do {
-            $rndLetter2 = random_int(0, (mb_strlen($password)));
-        } while ($rndLetter == $rndLetter2);
-
-        $password[$rndLetter2] = $special[random_int(0, (count($special)-1))];
-
-        // at least one number
-        do {
-            $rndLetter3 = random_int(0, (mb_strlen($password)));
-        } while ($rndLetter == $rndLetter3 || $rndLetter2 == $rndLetter3);
-
-        $password[$rndLetter3] = random_int(0,9);
-
-        return $password;
+        return implode('', $passwordParts);
     }
 }
