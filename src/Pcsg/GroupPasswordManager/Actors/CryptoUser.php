@@ -9,7 +9,7 @@ namespace Pcsg\GroupPasswordManager\Actors;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Events;
 use Pcsg\GroupPasswordManager\Password;
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
+use Pcsg\GroupPasswordManager\PasswordTypes\Handler as PasswordTypesHandler;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
@@ -717,7 +717,7 @@ class CryptoUser extends QUI\Users\User
         $where     = array();
 
         $passwordIds = $this->getPasswordIds();
-        $Grid        = new \QUI\Utils\Grid($searchParams);
+        $Grid        = new QUI\Utils\Grid($searchParams);
         $gridParams  = $Grid->parseDBParams($searchParams);
 
         // private category filter
@@ -761,17 +761,18 @@ class CryptoUser extends QUI\Users\User
         $where[] = 'meta.`userId` = ' . $this->id;
         $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
-        if (isset($searchParams['searchterm']) &&
-            !empty($searchParams['searchterm'])
+        if (isset($searchParams['search']['searchterm']) &&
+            !empty($searchParams['search']['searchterm'])
         ) {
-            $whereOR = array();
+            $whereOR    = array();
+            $searchTerm = trim($searchParams['search']['searchterm']);
 
             if (isset($searchParams['title'])
                 && $searchParams['title']
             ) {
                 $whereOR[]      = 'data.`title` LIKE :title';
                 $binds['title'] = array(
-                    'value' => '%' . $searchParams['searchterm'] . '%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 );
             }
@@ -781,7 +782,7 @@ class CryptoUser extends QUI\Users\User
             ) {
                 $whereOR[]            = 'data.`description` LIKE :description';
                 $binds['description'] = array(
-                    'value' => '%' . $searchParams['searchterm'] . '%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 );
             }
@@ -791,17 +792,27 @@ class CryptoUser extends QUI\Users\User
             } else {
                 $where[]        = 'data.`title` LIKE :title';
                 $binds['title'] = array(
-                    'value' => '%' . $searchParams['searchterm'] . '%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 );
             }
         }
 
-        if (isset($searchParams['passwordtypes'])
-            && !empty($searchParams['passwordtypes'])
+        if (isset($searchParams['search']['passwordtypes'])
+            && !empty($searchParams['search']['passwordtypes'])
         ) {
-            if (!in_array('all', $searchParams['passwordtypes'])) {
-                $where[] = 'data.`dataType` IN (\'' . implode('\',\'', $searchParams['passwordtypes']) . '\')';
+            $pwTypes = $searchParams['search']['passwordtypes'];
+
+            if (!in_array('all', $pwTypes)) {
+                foreach ($pwTypes as $k => $v) {
+                    if (!PasswordTypesHandler::existsType($v)) {
+                        unset($pwTypes[$k]);
+                    }
+                }
+
+                if (!empty($pwTypes)) {
+                    $where[] = 'data.`dataType` IN (\'' . implode('\',\'', $pwTypes) . '\')';
+                }
             }
         }
 
@@ -813,6 +824,18 @@ class CryptoUser extends QUI\Users\User
                 'value' => '%,' . (int)$searchParams['categoryId'] . ',%',
                 'type'  => \PDO::PARAM_STR
             );
+        }
+
+        if (isset($searchParams['search']['uncategorized'])
+            && !empty($searchParams['search']['uncategorized'])
+        ) {
+            $where[] = 'data.`categoryIds` IS NULL';
+        }
+
+        if (isset($searchParams['search']['uncategorizedPrivate'])
+            && !empty($searchParams['search']['uncategorizedPrivate'])
+        ) {
+            $where[] = 'meta.`categoryIds` IS NULL';
         }
 
         // WHERE filters
@@ -946,7 +969,7 @@ class CryptoUser extends QUI\Users\User
                 $row['canDelete'] = $canDeleteGroup;
             }
 
-            $row['dataType'] = Handler::getTypeTitle($row['dataType']);
+            $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
 
             switch ($row['ownerType']) {
                 case '1':

@@ -124,11 +124,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 )
             );
 
-            this.$CategorySelectPrivate = new CategorySelectPrivate({
-                events: {
-                    onChange: this.$setPrivateCategories
-                }
-            }).inject(
+            this.$CategorySelectPrivate = new CategorySelectPrivate().inject(
                 this.$Elm.getElement(
                     '.pcsg-gpm-password-edit-category-private'
                 )
@@ -351,44 +347,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
         },
 
         /**
-         * Set private password categories
+         * Edit the password
          *
          * @return {Promise}
-         */
-        $setPrivateCategories: function (categoryIds) {
-            var self = this;
-
-            this.Loader.show();
-
-            return new Promise(function (resolve, reject) {
-                Categories.setPrivatePasswordCategories(
-                    self.getAttribute('passwordId'),
-                    categoryIds
-                ).then(function () {
-                    self.Loader.hide();
-
-                    if (window.PasswordCategories) {
-                        window.PasswordCategories.refreshCategories();
-                    }
-
-                    resolve();
-                }, reject);
-            });
-        },
-
-        /**
-         * Edit the password
          */
         submit: function () {
             var self = this;
 
             var PasswordData = {
-                securityClassId: this.$SecurityClassSelect.getValue(),
-                title          : this.$Elm.getElement('.pcsg-gpm-password-title').value,
-                description    : this.$Elm.getElement('.pcsg-gpm-password-description').value,
-                payload        : this.$PassContent.getData(),
-                dataType       : this.$PassContent.getPasswordType(),
-                categoryIds    : this.$CategorySelect.getValue()
+                securityClassId   : this.$SecurityClassSelect.getValue(),
+                title             : this.$Elm.getElement('.pcsg-gpm-password-title').value,
+                description       : this.$Elm.getElement('.pcsg-gpm-password-description').value,
+                payload           : this.$PassContent.getData(),
+                dataType          : this.$PassContent.getPasswordType(),
+                categoryIds       : this.$CategorySelect.getValue(),
+                categoryIdsPrivate: this.$CategorySelectPrivate.getValue()
             };
 
             var actors = this.$OwnerSelect.getActors();
@@ -400,33 +373,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                     );
                 });
 
-                return;
+                return Promise.resolve;
             }
 
             PasswordData.owner = actors[0];
 
-            Passwords.editPassword(
-                this.getAttribute('passwordId'),
-                PasswordData,
-                this.$AuthData
-            ).then(
-                function (PasswordData) {
-                    if (!PasswordData) {
-                        self.fireEvent('close', [self]);
-                        return;
-                    }
+            return new Promise(function (resolve, reject) {
+                Passwords.editPassword(
+                    self.getAttribute('passwordId'),
+                    PasswordData,
+                    self.$AuthData
+                ).then(
+                    function (PasswordData) {
+                        if (!PasswordData) {
+                            reject();
+                            return;
+                        }
 
-                    self.$PasswordData = PasswordData;
-                    self.$insertData();
+                        self.$PasswordData = null;
+                        //self.$insertData();
 
-                    if (window.PasswordCategories) {
-                        window.PasswordCategories.refreshCategories();
-                    }
-                },
-                function () {
-                    self.fireEvent('close', [self]);
-                }
-            );
+                        if (window.PasswordCategories) {
+                            window.PasswordCategories.refreshCategories();
+                        }
+
+                        resolve();
+                    },
+                    reject
+                );
+            });
         }
     });
 });

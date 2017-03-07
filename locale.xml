@@ -1436,6 +1436,15 @@
         <locale name="password.search.template.searchfieldsDescription">
             <de><![CDATA[Kurzbeschreibung]]></de>
         </locale>
+        <locale name="password.search.template.filters">
+            <de><![CDATA[Such-Filter]]></de>
+        </locale>
+        <locale name="password.search.template.uncategorized">
+            <de><![CDATA[Passwörter ohne öffentliche Passwort-Kategorie]]></de>
+        </locale>
+        <locale name="password.search.template.uncategorizedPrivate">
+            <de><![CDATA[Passwörter ohne persönliche Passwort-Kategorie]]></de>
+        </locale>
 
         <!-- Control: password/View -->
         <locale name="password.view.restricted.info">

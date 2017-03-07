@@ -8,13 +8,13 @@
 .data-table .field-container-item {
     width: 190px;
     overflow: hidden;
-    line-height: 30px;
+    /*line-height: 30px;*/
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .data-table div.field-container-field {
-    line-height: 30px;
+    /*line-height: 30px;*/
 }
 
 .pcsg-gpm-password-warning {

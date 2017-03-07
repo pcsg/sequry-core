@@ -1,0 +1,8 @@
+.field-container-field input {
+    float: left;
+}
+
+.field-container-field label {
+    clear: both;
+    width: initial !important;
+}

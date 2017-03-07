@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Utils;
+use Pcsg\GroupPasswordManager\Handler\Categories;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 
 /**
@@ -26,8 +26,15 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
 
     // edit password
     try {
-        $Password = Passwords::get($passwordId);
-        $Password->setData(json_decode($passwordData, true));
+        $Password     = Passwords::get($passwordId);
+        $passwordData = json_decode($passwordData, true);
+        $Password->setData($passwordData);
+
+        if (isset($passwordData['categoryIdsPrivate'])
+            && is_array($passwordData['categoryIdsPrivate'])
+        ) {
+            Categories::addPasswordToPrivateCategories($Password, $passwordData['categoryIdsPrivate']);
+        }
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(

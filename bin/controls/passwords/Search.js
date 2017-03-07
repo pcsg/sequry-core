@@ -26,19 +26,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Search', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.html'
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.css'
+    'text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.html',
+    'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.css'
 
-], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, PasswordHandler,
-             AuthHandler, template) {
+], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, Passwords, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Passwords      = new PasswordHandler(),
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -84,7 +80,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Search', [
                     passwordTypes          : QUILocale.get(lg, lg_prefix + 'passwordTypes'),
                     passwordTypesOptionAll : QUILocale.get(lg, lg_prefix + 'passwordTypesOptionAll'),
                     searchfieldsTitle      : QUILocale.get(lg, lg_prefix + 'searchfieldsTitle'),
-                    searchfieldsDescription: QUILocale.get(lg, lg_prefix + 'searchfieldsDescription')
+                    searchfieldsDescription: QUILocale.get(lg, lg_prefix + 'searchfieldsDescription'),
+                    filters                : QUILocale.get(lg, lg_prefix + 'filters'),
+                    uncategorized          : QUILocale.get(lg, lg_prefix + 'uncategorized'),
+                    uncategorizedPrivate   : QUILocale.get(lg, lg_prefix + 'uncategorizedPrivate')
                 })
             });
 
