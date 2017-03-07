@@ -1697,7 +1697,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     }
                 });
 
-                Popup.open();
+                (function() {
+                    Popup.open();
+                }.delay(2000));
 
                 Popup.addButton(new QUIButton({
                     text  : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
