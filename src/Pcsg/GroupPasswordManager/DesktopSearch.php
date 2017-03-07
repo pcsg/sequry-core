@@ -29,7 +29,9 @@ class DesktopSearch implements ProviderInterface
         $CryptoActor = CryptoActors::getCryptoUser(); // session user
 
         $result = $CryptoActor->getPasswordList(array(
-            'searchterm' => $search
+            'search' => array(
+                'searchterm' => $search
+            )
         ));
 
         $searchResults = array();
