@@ -1697,18 +1697,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     }
                 });
 
-                (function() {
+                var FuncOpenPopup = function() {
                     Popup.open();
-                }.delay(2000));
 
-                Popup.addButton(new QUIButton({
-                    text  : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
-                    alt   : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
-                    title : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
-                    events: {
-                        onClick: FuncSubmit
+                    Popup.addButton(new QUIButton({
+                        text  : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                        alt   : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                        title : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                        events: {
+                            onClick: FuncSubmit
+                        }
+                    }));
+                };
+
+                var passwordChangePopups = QUI.Controls.getByType(
+                    'controls/users/password/Password'
+                );
+
+                if (!passwordChangePopups.length) {
+                    FuncOpenPopup();
+                    return;
+                }
+
+                passwordChangePopups[0].addEvents({
+                    onClose: function() {
+                        FuncOpenPopup();
                     }
-                }));
+                });
             });
         },
 
