@@ -1,8 +1,8 @@
-.field-container-field input {
+.pcsg-gpm-password-search .field-container-field input {
     float: left;
 }
 
-.field-container-field label {
+.pcsg-gpm-password-search .field-container-field label {
     clear: both;
     width: initial !important;
 }
