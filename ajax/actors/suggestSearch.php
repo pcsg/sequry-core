@@ -20,16 +20,15 @@ function package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch($search, $t
     $search = Orthos::clear($search);
     $limit  = (int)$limit;
 
-    $actors      = $SecurityClass->suggestSearchEligibleActors($search, $type, $limit);
-    $CryptoUsers = CryptoActors::getCryptoUser();
+    $actors = $SecurityClass->suggestSearchEligibleActors($search, $type, $limit);
 
     foreach ($actors as $k => $actor) {
         switch ($actor['type']) {
             case 'user':
-                if ($actor['id'] == $CryptoUsers->getId()) {
-                    unset($actors[$k]);
-                    continue 2;
-                }
+//                if ($actor['id'] == $CryptoUsers->getId()) {
+//                    unset($actors[$k]);
+//                    continue 2;
+//                }
 
                 $actor['icon'] = 'fa fa-user';
                 $actor['id']   = 'u' . $actor['id'];
