@@ -243,8 +243,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                         }
 
                         if (Elm.nodeName === 'DIV') {
-                            var ContentElm = Elm.getChildren()[0];
-                            return ContentElm.innerHTML.trim();
+                            var children = Elm.getChildren();
+
+                            if (children.length) {
+                                return children[0].innerHTML.trim();
+                            }
                         }
 
                         return Elm.innerHTML.trim();
