@@ -124,7 +124,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.Loader          = new QUILoader();
             this.$GridContainer  = null;
             this.$Grid           = null;
-            this.$SearchParams   = {};
+            this.$SearchParams   = {
+                search: {}
+            };
             this.$dblClickAction = 'view';
             this.$InfoElm        = null;
             this.$searchUsed     = false;
@@ -326,7 +328,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.$SearchInput.getElement('input').addEvents({
                 keyup: function (event) {
                     if (event.code === 13) {
-                        self.$SearchParams.searchterm = event.target.value.trim();
+                        self.$SearchParams.search.searchterm = event.target.value.trim();
+
+                        if (event.target.value.trim() !== '') {
+                            self.$searchUsed = true;
+                        }
+
                         self.refresh();
                     }
                 }
@@ -339,7 +346,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     if (Input.getProperty('data-mode') === 'refresh') {
                         Input.value = '';
                         Input.focus();
-                        self.$SearchParams.search = null;
+                        self.$SearchParams.search = {};
                         self.$searchUsed          = false;
                         self.refresh();
 
@@ -1697,7 +1704,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     }
                 });
 
-                var FuncOpenPopup = function() {
+                var FuncOpenPopup = function () {
                     Popup.open();
 
                     Popup.addButton(new QUIButton({
@@ -1720,7 +1727,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
 
                 passwordChangePopups[0].addEvents({
-                    onClose: function() {
+                    onClose: function () {
                         FuncOpenPopup();
                     }
                 });
