@@ -158,7 +158,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                         self.fireEvent('close');
                     }
                 );
-            }, function () {
+            }, function() {
                 self.fireEvent('close');
             });
         },

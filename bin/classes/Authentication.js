@@ -45,12 +45,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 self.checkAuthInfo(
                                     securityClassId,
                                     AuthData
-                                ).then(function (correct) {
+                                ).then(function () {
                                     resolve(AuthData);
-
-                                    if (correct) {
-                                        Popup.close();
-                                    }
+                                    Popup.close();
+                                }, function() {
+                                    // do nothing if auth data is wrong
                                 });
                             },
                             onClose : function () {
@@ -153,12 +152,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 self.checkAuthInfoPassword(
                                     passwordId,
                                     AuthData
-                                ).then(function (correct) {
+                                ).then(function () {
                                     resolve(AuthData);
-
-                                    if (correct) {
-                                        Popup.close();
-                                    }
+                                    Popup.close();
+                                }, function() {
+                                    // do nothing if auth data is wrong
                                 });
                             },
                             onClose : function () {

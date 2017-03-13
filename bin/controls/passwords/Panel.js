@@ -1015,6 +1015,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                             events    : {
                                 onLoaded: function () {
                                     self.Loader.hide();
+                                },
+                                onClose: function() {
+                                    self.Loader.hide();
+                                    Edit.destroy();
+                                    Sheet.destroy();
                                 }
                             }
                         }).inject(Sheet.getContent());

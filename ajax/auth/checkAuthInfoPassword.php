@@ -11,19 +11,15 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfoPassword($passwordId, $authData)
 {
-    try {
-        $SecurityClass = Passwords::getSecurityClass($passwordId);
-        $authData      = json_decode($authData, true);
+    $SecurityClass = Passwords::getSecurityClass($passwordId);
+    $authData      = json_decode($authData, true);
 
-        // no session cache on check
-        if (isset($authData['sessioncache'])) {
-            unset($authData['sessioncache']);
-        }
-
-        $SecurityClass->authenticate($authData);
-    } catch (\Exception $Exception) {
-        return false;
+    // no session cache on check
+    if (isset($authData['sessioncache'])) {
+        unset($authData['sessioncache']);
     }
+
+    $SecurityClass->authenticate($authData);
 
     return true;
 }
