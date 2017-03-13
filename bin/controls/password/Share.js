@@ -218,19 +218,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 this.$ActorSelectGroups.getActors()
             );
 
-            Passwords.setShareData(
-                this.getAttribute('passwordId'),
-                shareData,
-                this.$AuthData
-            ).then(
-                function (ShareData) {
-                    self.$ShareData = ShareData;
-                    self.$insertData();
-                },
-                function () {
-                    // @todo Fehlermeldung
-                }
-            );
+            return new Promise(function(resolve, reject) {
+                Passwords.setShareData(
+                    self.getAttribute('passwordId'),
+                    shareData,
+                    self.$AuthData
+                ).then(
+                    function () {
+                        self.fireEvent('close');
+                        //self.$ShareData = ShareData;
+                        //self.$insertData();
+                    },
+                    reject
+                );
+            });
         }
     });
 });

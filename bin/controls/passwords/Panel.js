@@ -981,7 +981,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
-                                        Share.submit();
+                                        self.Loader.show();
+
+                                        Share.submit().then(function() {
+                                            Share.destroy();
+                                            Sheet.destroy();
+                                            self.Loader.hide();
+                                            self.refresh();
+                                        });
                                     }
                                 }
                             })
