@@ -2,6 +2,7 @@
 
 use Pcsg\GroupPasswordManager\Handler\Categories;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 
 /**
  * Edit a password object
@@ -32,8 +33,22 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
 
         if (isset($passwordData['categoryIdsPrivate'])
             && is_array($passwordData['categoryIdsPrivate'])
+            && !empty($passwordData['categoryIdsPrivate'])
         ) {
-            Categories::addPasswordToPrivateCategories($Password, $passwordData['categoryIdsPrivate']);
+            if (!$Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
+                QUI::getMessagesHandler()->addAttention(
+                    QUI::getLocale()->get(
+                        'pcsg/grouppasswordmanager',
+                        'message.passwords.edit.private.categories.no.access',
+                        array(
+                            'passwordId' => $passwordId
+                        )
+                    )
+                );
+            } else {
+                \QUI\System\Log::writeRecursive("hasAccess");
+                Categories::addPasswordToPrivateCategories($Password, $passwordData['categoryIdsPrivate']);
+            }
         }
 
         QUI::getMessagesHandler()->addSuccess(

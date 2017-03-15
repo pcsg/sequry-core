@@ -707,7 +707,7 @@ class CryptoUser extends QUI\Users\User
      *
      * @param array $searchParams - search options
      * @param bool $countOnly (optional) - get count only
-     * @return array
+     * @return array|int - passwords or password count (depending on $countOnly)
      */
     public function getPasswordList($searchParams, $countOnly = false)
     {
@@ -2020,5 +2020,53 @@ class CryptoUser extends QUI\Users\User
         CacheManager::set($cacheName, !empty($count));
 
         return !empty($count);
+    }
+
+    /**
+     * Checks all user passwords and adds or deletes meta table entries
+     *
+     * @return void
+     */
+    public function refreshPasswordMetaTableEntries()
+    {
+        $metaTbl = QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META);
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'dataId'
+            ),
+            'from'   => $metaTbl,
+            'where'  => array(
+                'userId' => $this->id
+            )
+        ));
+
+        $passwordIds     = $this->getPasswordIds();
+        $metaPasswordIds = array();
+
+        foreach ($result as $row) {
+            $metaPasswordIds[$row['dataId']] = true;
+        }
+
+        // create missing meta table entries
+        foreach ($passwordIds as $passwordId) {
+            if (!isset($metaPasswordIds[$passwordId])) {
+                $Password = Passwords::get($passwordId);
+                $Password->createMetaTableEntry($this);
+            }
+        }
+
+        // delete old meta table entries
+        foreach ($metaPasswordIds as $passwordId => $v) {
+            if (!in_array($passwordId, $passwordIds)) {
+                QUI::getDataBase()->delete(
+                    $metaTbl,
+                    array(
+                        'userId' => $this->id,
+                        'dataId' => $passwordId
+                    )
+                );
+            }
+        }
     }
 }

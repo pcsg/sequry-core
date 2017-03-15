@@ -466,6 +466,9 @@ class CryptoGroup extends QUI\Groups\Group
                 }
             }
         }
+
+        // create meta table entries
+        $AddUser->refreshPasswordMetaTableEntries();
     }
 
     /**
@@ -509,6 +512,9 @@ class CryptoGroup extends QUI\Groups\Group
                 'groupId' => $this->getId()
             )
         );
+
+        // delete meta table entries
+        $RemoveUser->refreshPasswordMetaTableEntries();
     }
 
     /**
@@ -610,6 +616,23 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         return $passwordIds;
+    }
+
+    /**
+     * Get all passwords the group has access to
+     *
+     * @param SecurityClass $SecurityClass
+     * @return array
+     */
+    public function getPasswords(SecurityClass $SecurityClass = null)
+    {
+        $passwords = array();
+
+        foreach ($this->getPasswordIds($SecurityClass) as $passwordId) {
+            $passwords[] = Passwords::get($passwordId);
+        }
+
+        return $passwords;
     }
 
     /**

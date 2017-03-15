@@ -310,9 +310,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * @return {Promise}
          */
         openPasswordListPanel: function () {
-            if (window.PasswordList) {
-                return Promise.resolve(window.PasswordList);
-            }
+            //if (window.PasswordList) {
+            //    return Promise.resolve(window.PasswordList);
+            //}
 
             return new Promise(function (resolve) {
                 require([

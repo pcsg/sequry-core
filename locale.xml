@@ -392,6 +392,9 @@
         <locale name="success.password.edit">
             <de><![CDATA[Die Passwort-Daten (#[passwordId]) wurden erfolgreich geändert.]]></de>
         </locale>
+        <locale name="message.passwords.edit.private.categories.no.access">
+            <de><![CDATA[Die persönlichen Kategorien, die Sie dem Passwort #[passwordId] zugewiesen haben, konnten nicht gespeichert werden, da Sie nach dem Bearbeiten des Passworts keinen Zugriff mehr auf dieses Passwort haben.]]></de>
+        </locale>
         <locale name="error.password.share">
             <de><![CDATA[Das Teilen der Passwort-Daten (#[passwordId]) war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
