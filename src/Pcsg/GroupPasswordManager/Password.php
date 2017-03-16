@@ -790,6 +790,13 @@ class Password extends QUI\QDOM
             ));
         }
 
+        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.permission'
+            ));
+        }
+
         $id               = (int)$id;
         $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
         $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
@@ -1235,10 +1242,7 @@ class Password extends QUI\QDOM
                 return true;
             }
 
-            $userGroupIds     = $CryptoActor->getCryptoGroupIds();
-            $passwordGroupIds = $this->getAccessGroupsIds();
-
-            return !empty(array_intersect($passwordGroupIds, $userGroupIds));
+            return $this->hasPasswordAccessViaGroup($CryptoActor);
         }
 
         if ($CryptoActor instanceof CryptoGroup) {
@@ -1246,6 +1250,20 @@ class Password extends QUI\QDOM
         }
 
         return false;
+    }
+
+    /**
+     * Determines if a user has access to this password via a password group
+     *
+     * @param CryptoUser $CryptoUser
+     * @return bool
+     */
+    public function hasPasswordAccessViaGroup(CryptoUser $CryptoUser)
+    {
+        $userGroupIds     = $CryptoUser->getCryptoGroupIds();
+        $passwordGroupIds = $this->getAccessGroupsIds();
+
+        return !empty(array_intersect($passwordGroupIds, $userGroupIds));
     }
 
     /**
@@ -1266,7 +1284,10 @@ class Password extends QUI\QDOM
             )
         );
 
-        $this->removeMetaTableEntry($CryptoUser);
+        // only remove meta table entry if the user does not have access to this password via a group
+        if (!$this->hasPasswordAccessViaGroup($CryptoUser)) {
+            $this->removeMetaTableEntry($CryptoUser);
+        }
 
         return true;
     }
