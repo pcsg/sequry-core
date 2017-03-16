@@ -790,13 +790,6 @@ class Password extends QUI\QDOM
             ));
         }
 
-        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.no.share.permission'
-            ));
-        }
-
         $id               = (int)$id;
         $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
         $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
@@ -881,6 +874,13 @@ class Password extends QUI\QDOM
                     'pcsg/grouppasswordmanager',
                     'exception.password.change.owner.wrong.type'
                 ));
+        }
+
+        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.permission'
+            ));
         }
 
         // delete access data for old owner(s)
