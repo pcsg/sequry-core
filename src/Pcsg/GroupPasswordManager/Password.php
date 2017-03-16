@@ -1400,20 +1400,7 @@ class Password extends QUI\QDOM
      */
     public function createMetaTableEntry(CryptoUser $CryptoUser)
     {
-        $metaData = $CryptoUser->getPasswordMetaData($this->id);
-
-        if (!empty($metaData)) {
-            return;
-        }
-
-        QUI::getDataBase()->insert(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
-            array(
-                'userId'     => $CryptoUser->getId(),
-                'dataId'     => $this->id,
-                'accessDate' => time()
-            )
-        );
+        $CryptoUser->createMetaTableEntry($this);
     }
 
     /**
@@ -1438,13 +1425,7 @@ class Password extends QUI\QDOM
 //            ));
 //        }
 
-        QUI::getDataBase()->delete(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
-            array(
-                'userId' => $CryptoUser->getId(),
-                'dataId' => $this->id
-            )
-        );
+        $CryptoUser->removeMetaTableEntry($this);
     }
 
     /**

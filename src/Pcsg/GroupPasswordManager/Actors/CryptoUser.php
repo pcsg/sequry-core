@@ -1815,6 +1815,57 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
+     * Create entry in meta data table for a password for this user
+     *
+     * @param Password $Password - The password the meta table entry is created for
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function createMetaTableEntry(Password $Password)
+    {
+        $metaData = $this->getPasswordMetaData($Password->getId());
+
+        if (!empty($metaData)) {
+            return;
+        }
+
+        QUI::getDataBase()->insert(
+            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            array(
+                'userId'     => $this->id,
+                'dataId'     => $Password->getId(),
+                'accessDate' => time()
+            )
+        );
+    }
+
+    /**
+     * Remove entry in meta data table for a password for this user
+     *
+     * @param Password $Password
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function removeMetaTableEntry(Password $Password)
+    {
+        $passwordId = $Password->getId();
+
+        QUI::getDataBase()->delete(
+            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            array(
+                'userId' => $this->id,
+                'dataId' => $passwordId
+            )
+        );
+
+        if (isset($this->passwordMetaData[$passwordId])) {
+            unset($this->passwordMetaData[$passwordId]);
+        }
+    }
+
+    /**
      * Set favorite status to password
      *
      * @param int $passwordId - Password ID
