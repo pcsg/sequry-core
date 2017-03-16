@@ -310,10 +310,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * @return {Promise}
          */
         openPasswordListPanel: function () {
-            //if (window.PasswordList) {
-            //    return Promise.resolve(window.PasswordList);
-            //}
-
             return new Promise(function (resolve) {
                 require([
                     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
@@ -335,6 +331,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                                 window.PasswordList = null;
                             }
                         });
+
+                        if (window.PasswordList) {
+                            window.PasswordList = Panel;
+                            resolve(window.PasswordList);
+                        }
                     });
                 });
             });
