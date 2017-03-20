@@ -889,6 +889,11 @@
         <locale name="panels.categories.description">
             <de><![CDATA[Kategorisierung und Filtern von Passwörtern]]></de>
         </locale>
+
+        <!-- Desktop Search -->
+        <locale name="desktopsearch.group.passwords.label">
+            <de><![CDATA[Passwörter]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="js">
