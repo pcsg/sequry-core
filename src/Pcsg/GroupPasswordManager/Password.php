@@ -1134,9 +1134,9 @@ class Password extends QUI\QDOM
             $this->permissionDenied();
         }
 
-        if ($this->SecurityClass->getId() == $SecurityClass->getId()) {
-            return;
-        }
+//        if ($this->SecurityClass->getId() == $SecurityClass->getId()) {
+//            return;
+//        }
 
         $ownerId = $this->getSecretAttribute('ownerId');
 
