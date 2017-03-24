@@ -40,7 +40,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
             'actors.sendinstructions.instructions',
             array(
                 'userName' => $User->getName(),
-                'url'      => $_SERVER['HTTP_ORIGIN'] . '/admin/'
+                'url'      => 'https://' . $_SERVER['SERVER_NAME'] . '/admin/'
             )
         )
     );
