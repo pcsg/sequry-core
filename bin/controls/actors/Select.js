@@ -108,7 +108,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             actorIds = actorIds.split(',');
 
             for (var i = 0, len = actorIds.length; i < len; i++) {
-                var id = actorIds[0];
+                var id = actorIds[i];
 
                 // is user
                 if (id.charAt(0) === 'u') {

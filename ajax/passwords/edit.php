@@ -46,7 +46,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
                     )
                 );
             } else {
-                \QUI\System\Log::writeRecursive("hasAccess");
                 Categories::addPasswordToPrivateCategories($Password, $passwordData['categoryIdsPrivate']);
             }
         }
