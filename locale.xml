@@ -1686,6 +1686,9 @@
         <locale name="controls.categories.filters.favorites">
             <de><![CDATA[Favoriten]]></de>
         </locale>
+        <locale name="controls.categories.filters.owned">
+            <de><![CDATA[Eigene Passwörter]]></de>
+        </locale>
 
         <!-- Control: categories/Select -->
         <locale name="controls.categories.select.title">

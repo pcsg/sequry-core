@@ -847,6 +847,10 @@ class CryptoUser extends QUI\Users\User
                     case 'favorites':
                         $where[] = 'meta.`favorite` = 1';
                         break;
+
+                    case 'owned':
+                        $where[] = 'data.`ownerId` = ' . $this->id;
+                        break;
                 }
             }
         }

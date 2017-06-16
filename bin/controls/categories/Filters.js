@@ -47,6 +47,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
 
             this.$filters = [
                 'favorites',
+                'owned',
                 'mostUsed',
                 'new'
             ];
@@ -83,6 +84,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
 
                 // icon
                 switch (filter) {
+                    case 'owned':
+                        filterIcon = 'fa fa-user';
+                        break;
+
                     case 'new':
                         filterIcon = 'fa fa-asterisk';
                         break;
