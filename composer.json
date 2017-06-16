@@ -21,8 +21,7 @@
     "paragonie\/halite": "3.2.0",
     "ext-bcmath": "*",
     "pcsg\/gpmauthpassword": "dev-master",
-    "npm-asset\/clipboard": "1.5.16",
-    "npm-asset\/aes-js": "3.0.0"
+    "npm-asset\/clipboard": "1.5.16"
   },
   "autoload": {
     "psr-0": {
