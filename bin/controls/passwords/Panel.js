@@ -457,6 +457,65 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
          * @return {Promise}
          */
         refresh: function () {
+
+            /*** TEST ***/
+            require([
+                'aesJS',
+                'crypticoJS',
+                'Ajax'
+            ], function (aesJS, CrypticoJS, QUIAjax) {
+
+                var RSAKey = CrypticoJS.generateRSAKey('peat', 1024);
+                var pubKey = CrypticoJS.publicKeyString(RSAKey);
+
+                console.log(pubKey);
+                console.log(aesJS.utils.hex.fromBytes(pubKey));
+
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_testAES',
+                    function (commKey) {
+                        commKey = aesJS.utils.hex.toBytes(commKey);
+                        var decryptedCommKey = CrypticoJS.decrypt(commKey, MattsRSAkey);
+
+                        console.log(JSON.decode(decryptedCommKey));
+                    }, {
+                        'package': 'pcsg/grouppasswordmanager',
+                        pubKey   : pubKey
+                    }
+                );
+
+                return;
+
+                Authentication.getCommKey().then(function (commKey) {
+
+                    console.log(commKey);
+
+                    var textBytes      = aesJS.utils.utf8.toBytes('Dies ist eine wunderschöne Schönheit!');
+                    var textBytesPadded = aesJS.padding.pkcs7.pad(textBytes);
+
+                    var aesCbc         = new aesJS.ModeOfOperation.cbc(commKey.key, commKey.iv);
+                    var encryptedBytes = aesCbc.encrypt(textBytesPadded);
+
+                    var encryptedHex = aesJS.utils.hex.fromBytes(encryptedBytes);
+
+                    console.log(encryptedHex);
+
+                    // aesCbc         = new aesJS.ModeOfOperation.cbc(commKey.key, commKey.iv);
+                    // var decryptedBytes = aesCbc.decrypt(encryptedBytes);
+                    //
+                    // //Convert our bytes back into text
+                    // var decryptedText = aesJS.padding.pkcs7.strip(decryptedBytes);
+                    // var decryptedTextUnpadded = aesJS.utils.utf8.fromBytes(decryptedText);
+                    //
+                    // console.log(decryptedTextUnpadded);
+
+
+
+
+                });
+            });
+
+
             var SearchIcon = this.$SearchInput.getElement('span');
 
             if (this.$searchUsed) {

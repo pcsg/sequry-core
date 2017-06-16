@@ -10,77 +10,71 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  */
 \QUI::$Ajax->registerFunction(
     'package_pcsg_grouppasswordmanager_ajax_auth_testAES',
-    function ($cipher) {
-        $binary = hex2bin($cipher);
-
+    function ($pubKey) {
+//        $binary = hex2bin($cipher);
+//
         $commKey = Authentication::getSessionCommunicationKey();
-
+//        $pubKey = hex2bin($pubKey);
+//
         $algo = 'aes-128-cbc';
-    //        $iv   = random_bytes(openssl_cipher_iv_length($algo));
-        $iv = $commKey['iv'];
+//    //        $iv   = random_bytes(openssl_cipher_iv_length($algo));
+//        $iv = $commKey['iv'];
+//
 
-    //        $encrypt = openssl_encrypt(
-    //            'Pferde sind super!',
-    //            $algo,
-    //            $commKey,
-    //            OPENSSL_RAW_DATA,
-    //            $iv
-    //        );
+//        $k = "-----BEGIN RSA PUBLIC KEY-----";
+//        $k .= "\n" . $pubKey . "\n";
+//        $k .= "-----END RSA PUBLIC KEY-----\n";
 
-        // Change 1 bit in ciphertext
-    // $i = rand(0, mb_strlen($ciphertext, '8bit') - 1);
-    // $ciphertext[$i] = $ciphertext[$i] ^ chr(1);
-        $decrypt = openssl_decrypt(
-            $binary,
-            $algo,
-            $commKey['key'],
-            OPENSSL_RAW_DATA,
-            $iv
+        $k = "-----BEGIN PUBLIC KEY-----\n" .
+        chunk_split(base64_encode($pubKey), 64, "\n") .
+        "-----END PUBLIC KEY-----\n";
+
+        \QUI\System\Log::writeRecursive($k);
+
+        $PubKey = openssl_pkey_get_public($k);
+
+        \QUI\System\Log::writeRecursive(openssl_error_string());
+
+        openssl_public_encrypt(
+            json_encode($commKey),
+            $encrypt,
+            $PubKey
         );
 
-    //        /*** TEST ***/
-    //        require([
-    //            'aesJS',
-    //            'Ajax'
-    //        ], function (aesJS, QUIAjax) {
-    //            Authentication.getCommKey().then(function (commKey) {
-    //
-    //                console.log(commKey);
-    //
-    //                var textBytes      = aesJS.utils.utf8.toBytes('Pferde sind schneller als du!');
-    //                var textBytesPadded = aesJS.padding.pkcs7.pad(textBytes);
-    //
-    //                var aesCbc         = new aesJS.ModeOfOperation.cbc(commKey.key, commKey.iv);
-    //                var encryptedBytes = aesCbc.encrypt(textBytesPadded);
-    //
-    //                var encryptedHex = aesJS.utils.hex.fromBytes(encryptedBytes);
-    //
-    //                //console.log(encryptedHex);
-    //
-    //                //aesCbc         = new aesJS.ModeOfOperation.cbc(commKey.key, commKey.iv);
-    //                //var decryptedBytes = aesCbc.decrypt(encryptedBytes);
-    //                //
-    //                // //Convert our bytes back into text
-    //                //var decryptedText = aesJS.padding.pkcs7.strip(decryptedBytes);
-    //                //var decryptedTextUnpadded = aesJS.utils.utf8.fromBytes(decryptedText);
-    //                //
-    //                //console.log(decryptedTextUnpadded);
-    //
-    //
-    //
-    //                QUIAjax.post(
-    //                    'package_pcsg_grouppasswordmanager_ajax_auth_testAES',
-    //                    function () {
-    //
-    //                    }, {
-    //                            'package': 'pcsg/grouppasswordmanager',
-    //                            cipher   : encryptedHex
-    //                        }
-    //                    );
-    //                });
-    //        });
-    //            /************/
+//        \QUI\System\Log::writeRecursive($commKey);
+
+        return bin2hex($encrypt);
+
+//            $encrypt = openssl_encrypt(
+//                $commKey,
+//                $algo,
+//                $commKey['key'],
+//                OPENSSL_RAW_DATA,
+//                $commKey['iv']
+//            );
+//
+//        // Change 1 bit in ciphertext
+//    // $i = rand(0, mb_strlen($ciphertext, '8bit') - 1);
+//    // $ciphertext[$i] = $ciphertext[$i] ^ chr(1);
+//        $decrypt = openssl_decrypt(
+//            $binary,
+//            $algo,
+//            $commKey['key'],
+//            OPENSSL_RAW_DATA,
+//            $iv
+//        );
+//
+//        \QUI\System\Log::writeRecursive($decrypt);
+
+
+
+                /************/
+
+
+
+
+
     },
-    array('cipher'),
+    array('pubKey'),
     'Permission::checkAdminUser'
 );
