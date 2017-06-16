@@ -647,6 +647,7 @@ class SecurityClass extends QUI\QDOM
      * Edits title and/or description of a security class
      *
      * @param array $data
+     * @return void
      *
      * @throws QUI\Exception
      */
@@ -718,7 +719,7 @@ class SecurityClass extends QUI\QDOM
     /**
      * Saves current settings
      *
-     * @return true - on success
+     * @return void
      * @throws QUI\Database\Exception
      */
     protected function save()

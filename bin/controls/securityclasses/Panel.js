@@ -369,7 +369,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
                 closeButton: true,
                 content    : '<div class="pcsg-gpm-securityclasses-delete-info">' +
                 '<h1 class="pcsg-gpm-securityclasses-delete-info-title">' +
-                QUILocale.get(lg, 'gpm.securityclasses.panel.delete.popup.info.title') +
+                QUILocale.get(lg, 'gpm.securityclasses.panel.delete.popup.title') +
                 '</h1>' +
                 '<span class="pcsg-gpm-securityclasses-delete-info-description">' +
                 QUILocale.get(lg, 'gpm.securityclasses.panel.delete.popup.info.description', {

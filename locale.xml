@@ -488,7 +488,24 @@
         <locale name="message.ajax.reEncryptAll.success" html="true">
             <de><![CDATA[Alle kryptografisch gesicherten Daten wurden erfolgreich neu verschlüsselt.]]></de>
         </locale>
-
+        <locale name="message.ajax.auth.editSecurityClass.error" html="true">
+            <de><![CDATA[Die Sicherheitsklasse konnte nicht bearbeitet werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.auth.editSecurityClass.success" html="true">
+            <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich bearbeitet.]]></de>
+        </locale>
+        <locale name="message.ajax.auth.createSecurityClass.error" html="true">
+            <de><![CDATA[Die Sicherheitsklasse konnte nicht erstellt werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.auth.createSecurityClass.success" html="true">
+            <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich erstellt und kann jetzt Passwörtern zugewiesen werden.]]></de>
+        </locale>
+        <locale name="message.ajax.auth.deleteSecurityClass.error" html="true">
+            <de><![CDATA[Die Sicherheitsklasse konnte nicht gelöscht werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.auth.deleteSecurityClass.success" html="true">
+            <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich gelöscht.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
