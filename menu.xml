@@ -28,12 +28,5 @@
     >
         <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.securityclasses.title"/>
     </item>
-    <item parent="/extras/gpmsettings/"
-          name="gpmsettingsgroups"
-          require="package/pcsg/grouppasswordmanager/bin/controls/actors/GroupPanel"
-          icon="fa fa-users"
-    >
-        <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.groups.title"/>
-    </item>
 
 </menu>

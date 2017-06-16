@@ -1,5 +1,5 @@
 /**
- * Control for editing a security class
+ * Control for editing a password manager groupd
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit
  * @author www.pcsg.de (Patrick Müller)
@@ -27,22 +27,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Actors',
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
 
     'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.css'
 
-], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, ActorHandler,
-             AuthenticationHandler, AuthenticationControl, QUIAjax, template) {
+], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors,
+             Authentication, QUIAjax, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthenticationHandler(),
-        Actors         = new ActorHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -71,21 +68,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
             this.$NoEditWarnElm          = null;
             this.$SecurityClasses        = {};
             this.$Group                  = {};
+            this.$groupId                = false;
         },
 
         /**
-         * create the domnode element
-         *
-         * @return {HTMLDivElement}
+         * event : on inject
          */
-        create: function () {
+        $onInject: function () {
             var self      = this,
                 lg_prefix = 'actors.groups.edit.template.';
 
-            this.$Elm = this.parent();
+            this.$groupId = this.$Elm.getParent('form').get('name').split('-')[2];
 
             Promise.all([
-                Actors.getActor(this.getAttribute('groupId'), 'group'),
+                Actors.getActor(this.$groupId, 'group'),
                 Authentication.getSecurityClasses()
             ]).then(function (result) {
                 var Group           = result[0];
@@ -97,10 +93,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                 self.$Elm.set({
                     'class': 'pcsg-gpm-group-edit',
                     html   : Mustache.render(template, {
-                        title          : QUILocale.get(lg, lg_prefix + 'title', {
-                            groupId  : Group.id,
-                            groupName: Group.name
-                        }),
                         basicData      : QUILocale.get(lg, lg_prefix + 'basicData'),
                         securityclasses: QUILocale.get(lg, lg_prefix + 'securityclasses')
                     })
@@ -230,15 +222,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                 //self.$currentSecurityClassId = Actor.securityClassId;
                 //self.$SecurityClassSelect.setValue(Actor.securityClassId);
             });
-
-            return this.$Elm;
-        },
-
-        /**
-         * event : on inject
-         */
-        $onInject: function () {
-            // @todo
         },
 
         /**
@@ -249,7 +232,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
          */
         $addSecurityClass: function (securityClassId) {
             return Actors.addGroupSecurityClass(
-                this.getAttribute('groupId'),
+                this.$groupId,
                 securityClassId
             );
         },
@@ -279,7 +262,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                             Confirm.Loader.show();
 
                             Actors.removeGroupSecurityClass(
-                                self.getAttribute('groupId'),
+                                self.$groupId,
                                 securityClassId
                             ).then(function(success) {
                                 Confirm.close();
@@ -308,7 +291,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
             if (!this.$currentSecurityClassId) {
                 Actors.setGroupSecurityClass(
-                    this.getAttribute('groupId'),
+                    this.$groupId,
                     this.$SecurityClassSelect.getValue()
                 ).then(function () {
                     self.fireEvent('success');
@@ -317,24 +300,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                 return;
             }
 
-            var AuthControl = new AuthenticationControl({
-                securityClassId: this.$currentSecurityClassId,
-                events         : {
-                    onSubmit: function (AuthData) {
-                        Actors.setGroupSecurityClass(
-                            self.getAttribute('groupId'),
-                            self.$SecurityClassSelect.getValue(),
-                            AuthData
-                        ).then(function () {
-                            self.fireEvent('success');
-                            AuthData = null;
-                            AuthControl.destroy();
-                        });
-                    }
-                }
+            Authentication.securityClassAuth(
+                this.$currentSecurityClassId
+            ).then(function(AuthData) {
+                Actors.setGroupSecurityClass(
+                    self.$groupId,
+                    self.$SecurityClassSelect.getValue(),
+                    AuthData
+                ).then(function () {
+                    self.fireEvent('success');
+                });
             });
-
-            AuthControl.open();
         }
     });
 });

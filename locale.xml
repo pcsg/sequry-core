@@ -739,6 +739,11 @@
             <de><![CDATA[Neu-Verschlüsselung]]></de>
         </locale>
 
+        <!-- QUIQQER Group Panel -->
+        <locale name="group.category.grouppasswordmanager">
+            <de><![CDATA[Einstellungen Passwort-Manager]]></de>
+        </locale>
+
         <!-- Settings -->
         <locale name="settings.title">
             <de><![CDATA[Passwort-Manager]]></de>
@@ -1502,7 +1507,7 @@
             <de><![CDATA[Zugeordnete Sicherheitsklassen]]></de>
         </locale>
         <locale name="actors.groupedit.no.securityclass" html="true">
-            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann. <b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
+            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
         </locale>
         <locale name="actors.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>
