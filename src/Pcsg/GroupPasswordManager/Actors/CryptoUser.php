@@ -842,15 +842,37 @@ class CryptoUser extends QUI\Users\User
         if (isset($searchParams['filters'])
             && !empty($searchParams['filters'])
         ) {
-            foreach ($searchParams['filters'] as $filter) {
-                switch ($filter) {
-                    case 'favorites':
-                        $where[] = 'meta.`favorite` = 1';
-                        break;
+            if (!empty($searchParams['filters']['filters'])) {
+                foreach ($searchParams['filters']['filters'] as $filter) {
+                    switch ($filter) {
+                        case 'favorites':
+                            $where[] = 'meta.`favorite` = 1';
+                            break;
 
-                    case 'owned':
-                        $where[] = 'data.`ownerId` = ' . $this->id;
-                        break;
+                        case 'owned':
+                            $where[] = 'data.`ownerId` = ' . $this->id;
+                            break;
+                    }
+                }
+            }
+
+            if (!empty($searchParams['filters']['types'])) {
+                $whereOr = array();
+
+                foreach ($searchParams['filters']['types'] as $type) {
+                    if (!is_string($type)) {
+                        continue;
+                    }
+
+                    $whereOr[]    = 'data.`dataType` = :' . $type;
+                    $binds[$type] = array(
+                        'value' => $type,
+                        'type'  => \PDO::PARAM_STR
+                    );
+                }
+
+                if (!empty($whereOr)) {
+                    $where[] = '(' . implode(' OR ', $whereOr) . ')';
                 }
             }
         }
@@ -863,10 +885,9 @@ class CryptoUser extends QUI\Users\User
         $orderFields = array();
 
         // ORDER BY filters
-        if (isset($searchParams['filters'])
-            && !empty($searchParams['filters'])
+        if (!empty($searchParams['filters']['filters'])
         ) {
-            foreach ($searchParams['filters'] as $filter) {
+            foreach ($searchParams['filters']['filters'] as $filter) {
                 switch ($filter) {
                     case 'new':
                         $orderFields[] = 'meta.`accessDate` DESC';

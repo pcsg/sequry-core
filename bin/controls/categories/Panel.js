@@ -281,7 +281,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                     PasswordList.setSearchCategory(self.$selectedCatId);
                 }
 
-                if (self.$filters.length) {
+                if (self.$filters) {
                     PasswordList.setSearchFilters(self.$filters);
                 } else {
                     PasswordList.removeSearchFilters();

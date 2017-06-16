@@ -18,11 +18,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
     'qui/controls/Control',
     'qui/controls/sitemap/Item',
 
+    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
+
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/categories/Filters.css'
 
-], function (QUIControl, QUISiteMapItem, QUILocale) {
+], function (QUIControl, QUISiteMapItem, PasswordTypesSelect, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -35,7 +37,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
         Binds: [
             '$onInject',
             '$filterItemToggle',
-            'getSelected'
+            'getSelected',
+            '$change'
         ],
 
         initialize: function (options) {
@@ -44,6 +47,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
             this.addEvents({
                 onInject: this.$onInject
             });
+
+            this.$TypeSelect = null;
 
             this.$filters = [
                 'favorites',
@@ -60,7 +65,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
          */
         create: function () {
             this.$Elm = new Element('div', {
-                'class': 'pcsg-gpm-categories-filters'
+                'class': 'pcsg-gpm-categories-filters',
+                'html': '<div class="pcsg-gpm-categories-filters-filter"></div>' +
+                '<div class="pcsg-gpm-categories-filters-types"></div>'
             });
 
             return this.$Elm;
@@ -70,7 +77,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
          * Event: onInject
          */
         $onInject: function () {
+            var self = this;
+
             this.$buildFilters();
+
+            this.$TypeSelect = new PasswordTypesSelect({
+                multiple             : true,
+                showIcons            : false,
+                checkable            : true,
+                placeholderText      : 'Passwort-Typen',
+                placeholderSelectable: false,
+                events               : {
+                    onChange: self.$change
+                }
+            }).inject(
+                this.$Elm.getElement(
+                    '.pcsg-gpm-categories-filters-types'
+                )
+            );
         },
 
         /**
@@ -116,7 +140,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
                     events     : {
                         onClick: this.$filterItemToggle
                     }
-                }).inject(this.$Elm);
+                }).inject(
+                    this.$Elm.getElement(
+                        '.pcsg-gpm-categories-filters-filter'
+                    )
+                );
             }
         },
 
@@ -144,7 +172,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
                 this.$selectedFilters.push(filter);
             }
 
-            this.fireEvent('change', [this.$selectedFilters, this]);
+            this.$change();
+        },
+
+        /**
+         * Fire onChange event with selects data
+         */
+        $change: function()
+        {
+            this.fireEvent('change', [{
+                filters: this.$selectedFilters,
+                types  : this.$TypeSelect.getValue()
+            }, this]);
         },
 
         /**
