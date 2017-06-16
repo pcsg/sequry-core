@@ -464,14 +464,47 @@ class SecurityClass extends QUI\QDOM
             return $actors;
         }
 
+        // search users_adress table
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'uid',
+                'company'
+            ),
+            'from'   => QUI::getDBTableName('users_address'),
+            'where'  => array(
+                'company' => array(
+                    'type'  => '%LIKE%',
+                    'value' => $search
+                ),
+                'uid'     => array(
+                    'type'  => 'IN',
+                    'value' => $userIds
+                )
+            )
+        ));
+
+        $addressUserIds       = array();
+        $addressUserCompanies = array();
+
+        foreach ($result as $row) {
+            $addressUserIds[]                  = $row['uid'];
+            $addressUserCompanies[$row['uid']] = $row['company'];
+        }
+
+        // search users table
         $sql = "SELECT id, username, firstname, lastname";
-        $sql .= " FROM " . QUI::getDBTableName('users');
+        $sql .= " FROM `" . QUI::getDBTableName('users') . "`";
         $where = array();
         $binds = array();
 
         $where[] = '`id` IN (' . implode(',', $userIds) . ')';
 
         $whereOr = array();
+
+        // add matches from users_address search
+        if (!empty($addressUserIds)) {
+            $whereOr[] = '`id` IN (' . implode(',', $addressUserIds) . ')';
+        }
 
         $whereOr[]         = 'username LIKE :username';
         $binds['username'] = array(
@@ -525,6 +558,10 @@ class SecurityClass extends QUI\QDOM
 
             if (!empty($row['lastname'])) {
                 $userNameParts[] = $row['lastname'];
+            }
+
+            if (isset($addressUserCompanies[$row['id']])) {
+                $userNameParts[] = '[' . $addressUserCompanies[$row['id']] . ']';
             }
 
             if (empty($userNameParts)) {
