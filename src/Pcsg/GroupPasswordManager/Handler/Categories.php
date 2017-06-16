@@ -605,7 +605,7 @@ class Categories
         }
 
         QUI::getDataBase()->update(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            Tables::usersToPasswordMeta(),
             array(
                 'categories'  => empty($family) ? null : ',' . implode(',', array_unique($family)) . ',',
                 'categoryIds' => empty($categoryIds) ? null : ',' . implode(',', $categoryIds) . ','

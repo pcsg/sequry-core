@@ -1,6 +1,7 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Constants\Tables;
 
 /**
  * Get password actor info (user/group)
@@ -27,7 +28,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_get($id, $type)
 
             $result = QUI::getDataBase()->fetch(array(
                 'count' => 1,
-                'from'  => \Pcsg\GroupPasswordManager\Constants\Tables::KEYPAIRS_GROUP,
+                'from'  => Tables::keyPairsGroup(),
                 'where' => array(
                     'groupId' => $Actor->getId()
                 )

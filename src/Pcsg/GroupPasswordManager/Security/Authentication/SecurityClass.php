@@ -55,7 +55,7 @@ class SecurityClass extends QUI\QDOM
         $id = (int)$id;
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::SECURITY_CLASSES,
+            'from'  => Tables::securityClasses(),
             'where' => array(
                 'id' => $id
             )
@@ -234,7 +234,7 @@ class SecurityClass extends QUI\QDOM
             'select' => array(
                 'authPluginId'
             ),
-            'from'   => Tables::SECURITY_TO_AUTH,
+            'from'   => Tables::securityClassesToAuthPlugins(),
             'where'  => array(
                 'securityClassId' => $this->id
             )
@@ -279,7 +279,7 @@ class SecurityClass extends QUI\QDOM
     {
         $result = QUI::getDataBase()->fetch(array(
             'count' => 1,
-            'from'  => Tables::SECURITY_TO_AUTH,
+            'from'  => Tables::securityClassesToAuthPlugins(),
             'where' => array(
                 'securityClassId' => $this->id
             )
@@ -381,7 +381,7 @@ class SecurityClass extends QUI\QDOM
             'select' => array(
                 'groupId'
             ),
-            'from'   => Tables::KEYPAIRS_GROUP,
+            'from'   => Tables::keyPairsGroup(),
             'where'  => array(
                 'securityClassId' => $this->id
             )
@@ -406,7 +406,7 @@ class SecurityClass extends QUI\QDOM
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::PASSWORDS,
+            'from'   => Tables::passwords(),
             'where'  => array(
                 'securityClassId' => $this->id
             )
@@ -745,7 +745,7 @@ class SecurityClass extends QUI\QDOM
         }
 
         QUI::getDataBase()->insert(
-            Tables::SECURITY_TO_AUTH,
+            Tables::securityClassesToAuthPlugins(),
             array(
                 'securityClassId' => $this->id,
                 'authPluginId'    => $AuthPlugin->getId()
@@ -762,7 +762,7 @@ class SecurityClass extends QUI\QDOM
     protected function save()
     {
         QUI::getDataBase()->update(
-            Tables::SECURITY_CLASSES,
+            Tables::securityClasses(),
             array(
                 'title'       => $this->getAttribute('title'),
                 'description' => $this->getAttribute('description')
@@ -795,7 +795,7 @@ class SecurityClass extends QUI\QDOM
         $count = $DB->fetch(
             array(
                 'count' => 1,
-                'from'  => Tables::PASSWORDS,
+                'from'  => Tables::passwords(),
                 'where' => array(
                     'securityClassId' => $this->getId()
                 )
@@ -811,7 +811,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete group keys for security class
         $DB->delete(
-            Tables::KEYPAIRS_GROUP,
+            Tables::keyPairsGroup(),
             array(
                 'securityClassId' => $this->getId()
             )
@@ -819,7 +819,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete user group access for security class
         $DB->delete(
-            Tables::USER_TO_GROUPS,
+            Tables::usersToGroups(),
             array(
                 'securityClassId' => $this->getId()
             )
@@ -827,7 +827,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete securityclass to auth entries
         $DB->delete(
-            Tables::SECURITY_TO_AUTH,
+            Tables::securityClassesToAuthPlugins(),
             array(
                 'securityClassId' => $this->getId()
             )
@@ -835,7 +835,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete security class entry
         $DB->delete(
-            Tables::SECURITY_CLASSES,
+            Tables::securityClasses(),
             array(
                 'id' => $this->getId()
             )

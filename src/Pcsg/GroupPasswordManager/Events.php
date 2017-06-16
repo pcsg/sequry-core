@@ -203,7 +203,7 @@ class Events
                 'select' => array(
                     'groupId'
                 ),
-                'from'   => Tables::KEYPAIRS_GROUP,
+                'from'   => Tables::keyPairsGroup(),
                 'where'  => array(
                     'groupId' => array(
                         'type'  => 'IN',
@@ -292,7 +292,7 @@ class Events
                 'select' => array(
                     'groupId'
                 ),
-                'from'   => Tables::KEYPAIRS_GROUP,
+                'from'   => Tables::keyPairsGroup(),
                 'where'  => array(
                     'groupId' => array(
                         'type'  => 'IN',

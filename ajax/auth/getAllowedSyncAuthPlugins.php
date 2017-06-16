@@ -31,7 +31,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins($
                 'groupId',
                 'userKeyPairId'
             ),
-            'from'   => Tables::USER_TO_GROUPS,
+            'from'   => Tables::usersToGroups(),
             'where'  => array(
                 'groupId'         => $CryptoGroup->getId(),
                 'userId'          => $CryptoUser->getId(),

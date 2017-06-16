@@ -158,7 +158,7 @@ class CryptoActors
         // calculate group key MAC
         $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
 
-        $DB->insert(Tables::KEYPAIRS_GROUP, $data);
+        $DB->insert(Tables::keyPairsGroup(), $data);
 
         // split group access key into parts and share with group users
         $groupAccessKeyParts = SecretSharing::splitSecret(
@@ -190,7 +190,7 @@ class CryptoActors
                 // calculate MAC
                 $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
 
-                $DB->insert(Tables::USER_TO_GROUPS, $data);
+                $DB->insert(Tables::usersToGroups(), $data);
             }
         }
     }
@@ -222,7 +222,7 @@ class CryptoActors
     {
         $result = QUI::getDataBase()->fetch(array(
             'count' => 1,
-            'from'  => Tables::KEYPAIRS_GROUP,
+            'from'  => Tables::keyPairsGroup(),
             'where' => array(
                 'groupId' => $groupId
             )

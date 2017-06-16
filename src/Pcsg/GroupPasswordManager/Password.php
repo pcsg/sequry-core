@@ -109,7 +109,7 @@ class Password extends QUI\QDOM
         $id = (int)$id;
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::PASSWORDS,
+            'from'  => Tables::passwords(),
             'where' => array(
                 'id' => $id
             )
@@ -684,7 +684,7 @@ class Password extends QUI\QDOM
 
         try {
             $DB->update(
-                Tables::PASSWORDS,
+                Tables::passwords(),
                 $passwordData,
                 array(
                     'id' => $this->id
@@ -718,14 +718,14 @@ class Password extends QUI\QDOM
 
             // first: delete access entries for users and groups
             $DB->delete(
-                Tables::USER_TO_PASSWORDS,
+                Tables::usersToPasswords(),
                 array(
                     'dataId' => $this->id
                 )
             );
 
             $DB->delete(
-                Tables::GROUP_TO_PASSWORDS,
+                Tables::groupsToPasswords(),
                 array(
                     'dataId' => $this->id
                 )
@@ -733,7 +733,7 @@ class Password extends QUI\QDOM
 
             // second: delete password entry
             $DB->delete(
-                Tables::PASSWORDS,
+                Tables::passwords(),
                 array(
                     'id' => $this->id
                 )
@@ -741,7 +741,7 @@ class Password extends QUI\QDOM
 
             // delete meta data entries
             $DB->delete(
-                QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+                Tables::usersToPasswordMeta(),
                 array(
                     'dataId' => $this->id
                 )
@@ -1046,7 +1046,7 @@ class Password extends QUI\QDOM
             );
 
             $DB->insert(
-                Tables::USER_TO_PASSWORDS,
+                Tables::usersToPasswords(),
                 $dataAccessEntry
             );
         }
@@ -1115,7 +1115,7 @@ class Password extends QUI\QDOM
         );
 
         QUI::getDataBase()->insert(
-            Tables::GROUP_TO_PASSWORDS,
+            Tables::groupsToPasswords(),
             $dataAccessEntry
         );
     }
@@ -1277,7 +1277,7 @@ class Password extends QUI\QDOM
     protected function removeUserPasswordAccess($CryptoUser)
     {
         QUI::getDataBase()->delete(
-            Tables::USER_TO_PASSWORDS,
+            Tables::usersToPasswords(),
             array(
                 'userId' => $CryptoUser->getId(),
                 'dataId' => $this->id,
@@ -1303,7 +1303,7 @@ class Password extends QUI\QDOM
     protected function removeGroupPasswordAccess($CryptoGroup)
     {
         QUI::getDataBase()->delete(
-            Tables::GROUP_TO_PASSWORDS,
+            Tables::groupsToPasswords(),
             array(
                 'groupId' => $CryptoGroup->getId(),
                 'dataId'  => $this->id,
@@ -1372,7 +1372,7 @@ class Password extends QUI\QDOM
             'select' => array(
                 'userId'
             ),
-            'from'   => Tables::USER_TO_PASSWORDS,
+            'from'   => Tables::usersToPasswords(),
             'where'  => array(
                 'dataId' => $this->id
             )
@@ -1398,7 +1398,7 @@ class Password extends QUI\QDOM
             'select' => array(
                 'groupId'
             ),
-            'from'   => Tables::GROUP_TO_PASSWORDS,
+            'from'   => Tables::groupsToPasswords(),
             'where'  => array(
                 'dataId' => $this->id
             )
@@ -1713,7 +1713,7 @@ class Password extends QUI\QDOM
         }
 
         QUI::getDataBase()->update(
-            QUI::getDBTableName(Tables::PASSWORDS),
+            Tables::passwords(),
             array(
                 'viewCount' => ++$currentViewCount
             ),
