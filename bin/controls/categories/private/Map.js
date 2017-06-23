@@ -21,6 +21,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
         Extends: CategoryMap,
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
 
+        initialize: function (options) {
+            this.parent(options);
+            this.$lcKey = 'pcsg-gpm-passwords-categories-toggleCategories-private';
+        },
+
         /**
          * Get all categories
          *
