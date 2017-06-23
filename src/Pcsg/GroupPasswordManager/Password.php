@@ -1633,17 +1633,19 @@ class Password extends QUI\QDOM
             return;
         }
 
-        if (!$this->SecurityClass->isAuthenticated()) {
-            // @todo eigenen 401 error code einfügen
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.password.user.not.authenticated',
-                array(
-                    'id'     => $this->id,
-                    'userId' => $this->getUser()->getId()
-                )
-            ));
-        }
+        $this->SecurityClass->checkAuthentication();
+
+//        if (!$this->SecurityClass->isAuthenticated()) {
+//            // @todo eigenen 401 error code einfügen
+//            throw new QUI\Exception(array(
+//                'pcsg/grouppasswordmanager',
+//                'exception.password.user.not.authenticated',
+//                array(
+//                    'id'     => $this->id,
+//                    'userId' => $this->getUser()->getId()
+//                )
+//            ));
+//        }
 
         $PasswordKey = $this->getPasswordKey();
 

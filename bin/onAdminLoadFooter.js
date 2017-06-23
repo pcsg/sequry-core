@@ -81,6 +81,17 @@ require([
     });
 
     QUIAjax.registerGlobalJavaScriptCallback(
+        'authSingle',
+        function (response, Data) {
+            require([
+                'package/pcsg/grouppasswordmanager/bin/Authentication'
+            ], function (Authentication) {
+                console.log(123123123);
+            });
+        }
+    );
+
+    QUIAjax.registerGlobalJavaScriptCallback(
         'addUsersByGroup',
         function (response, AuthInfo) {
 

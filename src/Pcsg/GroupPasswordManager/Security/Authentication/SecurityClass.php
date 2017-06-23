@@ -8,6 +8,7 @@ use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
@@ -112,6 +113,24 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
+     * Checks the auth status of every auth plugin of this security class
+     *
+     * @return array
+     */
+    public function getAuthStatus()
+    {
+        $plugins = $this->getAuthPlugins();
+        $status  = array();
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($plugins as $AuthPlugin) {
+            $status[$AuthPlugin->getId()] = $AuthPlugin->isAuthenticated();
+        }
+
+        return $status;
+    }
+
+    /**
      * Authenticates current session user with all authentication plugins associated with this security class
      *
      * @param array $authData - authentication data
@@ -190,6 +209,46 @@ class SecurityClass extends QUI\QDOM
         }
 
         return true;
+    }
+
+    /**
+     * Checks if a user is authenticated for this security class
+     *
+     * @param CryptoUser $CryptoUser (optional) - if omitted, use session user
+     * @return void
+     *
+     * @throws
+     */
+    public function checkAuthentication($CryptoUser = null)
+    {
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
+        $plugins     = $this->getAuthPlugins();
+        $isAuthCount = 0;
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($plugins as $AuthPlugin) {
+            if ($AuthPlugin->isAuthenticated($CryptoUser)) {
+                $isAuthCount++;
+            }
+        }
+
+        if ($isAuthCount >= $this->requiredFactors) {
+            return;
+        }
+
+        if (QUI::getRequest()->isXmlHttpRequest()) {
+            QUI::getAjax()->triggerGlobalJavaScriptCallback(
+                'authSingle',
+                array(
+                    'securityClassId' => $this->getId()
+                )
+            );
+        }
+
+        throw new InvalidAuthDataException(array());
     }
 
     /**
@@ -492,8 +551,8 @@ class SecurityClass extends QUI\QDOM
         }
 
         // search users table
-        $sql = "SELECT id, username, firstname, lastname";
-        $sql .= " FROM `" . QUI::getDBTableName('users') . "`";
+        $sql   = "SELECT id, username, firstname, lastname";
+        $sql   .= " FROM `" . QUI::getDBTableName('users') . "`";
         $where = array();
         $binds = array();
 

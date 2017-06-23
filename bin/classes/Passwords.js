@@ -48,13 +48,13 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * @param {object} AuthData
          * @returns {*}
          */
-        get: function (passwordId, AuthData) {
+        get: function (passwordId) {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_get', resolve, {
                     'package' : pkg,
                     onError   : reject,
-                    passwordId: passwordId,
-                    authData  : JSON.encode(AuthData)
+                    passwordId: passwordId
+                    //authData  : JSON.encode(AuthData)
                 });
             });
         },

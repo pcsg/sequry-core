@@ -140,30 +140,48 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             var self = this;
             var pwId = this.getAttribute('passwordId');
 
-            Authentication.passwordAuth(pwId).then(function (AuthData) {
-                self.$AuthData = AuthData;
-
-                Passwords.get(
-                    pwId,
-                    AuthData
-                ).then(
-                    function (PasswordData) {
-                        if (!PasswordData) {
-                            return;
-                        }
-
-                        self.$PasswordData    = PasswordData;
-                        self.$AuthData        = AuthData;
-                        self.$securityClassId = PasswordData.securityClassId;
-                        self.$onPasswordDataLoaded();
-                    },
-                    function () {
-                        self.fireEvent('close');
+            Passwords.get(
+                pwId
+            ).then(
+                function (PasswordData) {
+                    if (!PasswordData) {
+                        return;
                     }
-                );
-            }, function () {
-                self.fireEvent('close');
-            });
+
+                    self.$PasswordData    = PasswordData;
+                    //self.$AuthData        = AuthData;
+                    self.$securityClassId = PasswordData.securityClassId;
+                    self.$onPasswordDataLoaded();
+                },
+                function () {
+                    self.fireEvent('close');
+                }
+            );
+
+            //Authentication.passwordAuth(pwId).then(function (AuthData) {
+            //    self.$AuthData = AuthData;
+            //
+            //    Passwords.get(
+            //        pwId,
+            //        AuthData
+            //    ).then(
+            //        function (PasswordData) {
+            //            if (!PasswordData) {
+            //                return;
+            //            }
+            //
+            //            self.$PasswordData    = PasswordData;
+            //            self.$AuthData        = AuthData;
+            //            self.$securityClassId = PasswordData.securityClassId;
+            //            self.$onPasswordDataLoaded();
+            //        },
+            //        function () {
+            //            self.fireEvent('close');
+            //        }
+            //    );
+            //}, function () {
+            //    self.fireEvent('close');
+            //});
         },
 
         /**

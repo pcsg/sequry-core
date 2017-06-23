@@ -113,7 +113,6 @@ class Events
         }
 
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
-
             'addUsersByGroup',
             array(
                 'groupId'          => $CryptoGroup->getId(),

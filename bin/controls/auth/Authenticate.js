@@ -1,5 +1,5 @@
 /**
- * Control for creating a new password
+ * Authenticate for a single security class
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
  * @author www.pcsg.de (Patrick Müller)
@@ -65,6 +65,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
             this.$AuthPopup     = null;
             this.$SecurityClass = null;
+            this.$AuthStatus    = {};
         },
 
         /**
@@ -108,15 +109,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             Prom.then(function () {
                 var securityClassId = self.getAttribute('securityClassId');
 
-                Authentication.isAuthenticatedBySession(
+                Authentication.checkAuthStatus(
                     securityClassId
-                ).then(function (isAuth) {
-                    if (isAuth) {
-                        self.fireEvent('submit', [{}]);
-                    } else {
-                        self.$openPopup();
-                    }
+                ).then(function (StatusData) {
+                    self.$AuthStatus = StatusData;
+                    self.$openPopup();
                 });
+
+                //Authentication.isAuthenticatedBySession(
+                //    securityClassId
+                //).then(function (isAuth) {
+                //    if (isAuth) {
+                //        self.fireEvent('submit', [{}]);
+                //    } else {
+                //        self.$openPopup();
+                //    }
+                //});
             }).catch(function () {
                 self.destroy();
             });
@@ -164,10 +172,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             AuthPopup.open();
 
             AuthPopup.addButton(new QUIButton({
-                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.text'),
-                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
-                title : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
-                events: {
+                'class': 'btn-green',
+                text   : QUILocale.get(lg, 'controls.authenticate.popup.btn.text'),
+                alt    : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                title  : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                events : {
                     onClick: submitFunc
                 }
             }));
@@ -253,15 +262,29 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
                         // build controls
                         for (var i = 0, len = controls.length; i < len; i++) {
-                            var Control = new controls[i]({
-                                authPluginId: self.$authPluginIds[i]
-                            });
-
-                            self.$authPluginControls.push(Control);
+                            var authPluginId = self.$authPluginIds[i];
 
                             var PluginElm = new Element('div', {
                                 'class': 'pcsg-gpm-auth-authenticate-plugins-plugin'
                             }).inject(PluginsElm);
+
+                            // if the user is already authenticated for a specific plugin
+                            // do not build control
+                            if (authPluginId in self.$AuthStatus) {
+                                if (self.$AuthStatus[authPluginId]) {
+                                    new Element('div', {
+                                        html: 'Bereits authentifiziert!'
+                                    }).inject(PluginElm);
+
+                                    continue;
+                                }
+                            }
+
+                            var Control = new controls[i]({
+                                authPluginId: authPluginId
+                            });
+
+                            self.$authPluginControls.push(Control);
 
                             Control.addEvents({
                                 onSubmit: submitFunc
@@ -345,7 +368,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         /**
          * Close popup
          */
-        close: function() {
+        close: function () {
             if (this.$AuthPopup) {
                 this.$AuthPopup.close();
             }
