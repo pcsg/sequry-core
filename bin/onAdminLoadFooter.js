@@ -80,13 +80,14 @@ require([
         }
     });
 
+    // Authentication for a single SecurityClass
     QUIAjax.registerGlobalJavaScriptCallback(
         'authSingle',
         function (response, Data) {
             require([
                 'package/pcsg/grouppasswordmanager/bin/Authentication'
             ], function (Authentication) {
-                console.log(123123123);
+                console.log(Data);
             });
         }
     );

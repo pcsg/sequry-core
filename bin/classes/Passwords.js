@@ -25,6 +25,26 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         Extends: QUIDOM,
         Type   : 'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
 
+        Binds: [
+            'globalResponseHandler'
+        ],
+
+        globalResponseHandler: function(data, resolve, reject)
+        {
+            if (data.getCode() !== 4001) {
+                reject();
+                return;
+            }
+
+            console.log(data);
+
+            require([
+                'package/pcsg/grouppasswordmanager/bin/Authentication'
+            ], function (Authentication) {
+
+            });
+        },
+
         /**
          * Search categories
          *
@@ -45,14 +65,18 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get all data of single password object (authentication required!)
          *
          * @param {number} passwordId
-         * @param {object} AuthData
+         //* @param {object} AuthData
          * @returns {*}
          */
         get: function (passwordId) {
+            var self = this;
+
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_get', resolve, {
                     'package' : pkg,
-                    onError   : reject,
+                    onError   : function(result) {
+                        self.globalResponseHandler(result, resolve, reject);
+                    },
                     passwordId: passwordId
                     //authData  : JSON.encode(AuthData)
                 });

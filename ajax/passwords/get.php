@@ -34,7 +34,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
 
         return $data;
     } catch (InvalidAuthDataException $Exception) {
-        // nothing
+        throw $Exception;
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(

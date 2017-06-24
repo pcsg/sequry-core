@@ -239,16 +239,16 @@ class SecurityClass extends QUI\QDOM
             return;
         }
 
-        if (QUI::getRequest()->isXmlHttpRequest()) {
-            QUI::getAjax()->triggerGlobalJavaScriptCallback(
-                'authSingle',
-                array(
-                    'securityClassId' => $this->getId()
-                )
-            );
-        }
+//        if (QUI::getRequest()->isXmlHttpRequest()) {
+//            QUI::getAjax()->triggerGlobalJavaScriptCallback(
+//                'authSingle',
+//                array(
+//                    'securityClassId' => $this->getId()
+//                )
+//            );
+//        }
 
-        throw new InvalidAuthDataException(array());
+        throw new InvalidAuthDataException();
     }
 
     /**
