@@ -116,7 +116,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     self.$openPopup();
                 });
 
-                //Authentication.isAuthenticatedBySession(
+                //Authentication.isAuthenticated(
                 //    securityClassId
                 //).then(function (isAuth) {
                 //    if (isAuth) {

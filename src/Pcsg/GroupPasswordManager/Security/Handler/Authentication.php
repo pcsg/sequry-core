@@ -28,26 +28,36 @@ use Pcsg\GroupPasswordManager\Security\Authentication\Cache as AuthCache;
  */
 class Authentication
 {
+    const AUTH_MODE_TIME          = 1;
+    const AUTH_MODE_SINGLE_ACTION = 2;
+
     /**
-     * Loaded plugin objects
+     * Runtime cache for Plugins
      *
      * @var array
      */
     protected static $plugins = array();
 
     /**
-     * Loaded security class objects
+     * Runtime cache for SecurityClasses
      *
      * @var array
      */
     protected static $securityClasses = array();
 
     /**
-     * Loaded authentication keypairs
+     * Runtime cache for AuthKeyPairs
      *
      * @var array
      */
     protected static $authKeyPairs = array();
+
+    /**
+     * Runtime AuthKey cache
+     *
+     * @var Key[]
+     */
+    protected static $authKeys = array();
 
     /**
      * Flag:
@@ -489,17 +499,11 @@ class Authentication
     /**
      * Save derived key from authenticated plugin to user session
      *
-     * @param int $authPluginId - Auth Plugin ID
-     * @param string $authKey - derived key
-     *
-     * @return void
+     * @param $authPluginId
+     * @param $authKey
      */
-    public static function saveAuthKeyToSession($authPluginId, $authKey)
+    public static function saveAuthKey($authPluginId, $authKey)
     {
-        if (!self::$sessionCache) {
-            return;
-        }
-
         $Session            = QUI::getSession();
         $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
 
@@ -517,20 +521,30 @@ class Authentication
         );
 
         $currentAuthKeyData[$authPluginId] = base64_encode($encryptedKey);
-
         $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+
+        $Session->set(
+            'quiqqer_pwm_authmode',
+            self::$sessionCache ? self::AUTH_MODE_TIME : self::AUTH_MODE_SINGLE_ACTION
+        );
     }
 
     /**
-     * Get derived key from authenticated plugin
+     * Retrieve derived key from session data
      *
+     * @param $authPluginId
      * @param int $authPluginId - Auth Plugin ID
-     * @return false|string - false if no key set; key as string otherwise
+     * @return false|Key - false if no key set; key as string otherwise
      */
-    public static function getAuthKeyFromSession($authPluginId)
+    public static function getAuthKey($authPluginId)
     {
         $Session            = QUI::getSession();
         $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+        $authMode           = $Session->get('quiqqer_pwm_authmode');
+
+        if (isset(self::$authKeys[$authPluginId])) {
+            return self::$authKeys[$authPluginId];
+        }
 
         if (empty($currentAuthKeyData)) {
             $currentAuthKeyData = array();
@@ -545,22 +559,35 @@ class Authentication
             );
 
             if ($timeAlive > $max) {
-                $Session->set('quiqqer_pwm_authkeys', false);
+                self::clearAuthInfoFromSession();
                 return false;
             }
         }
 
         if (!isset($currentAuthKeyData[$authPluginId])) {
+            \QUI\System\Log::writeRecursive("not saved");
             return false;
         }
 
         try {
             $encryptedKey = base64_decode($currentAuthKeyData[$authPluginId]);
 
-            return SymmetricCrypto::decrypt(
+            $keyData = SymmetricCrypto::decrypt(
                 $encryptedKey,
                 self::getSessionEncryptionKey()
             );
+
+            $Key = new Key($keyData);
+
+            self::$authKeys[$authPluginId] = $Key;
+
+            // delete from Session if auth data should not be safed
+            if ($authMode === self::AUTH_MODE_SINGLE_ACTION) {
+                unset($currentAuthKeyData[$authPluginId]);
+                $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+            }
+
+            return $Key;
         } catch (\Exception $Exception) {
             self::clearAuthInfoFromSession();
             return false;

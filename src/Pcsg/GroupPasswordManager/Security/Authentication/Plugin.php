@@ -138,9 +138,9 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        $keyData = Authentication::getAuthKeyFromSession($this->id);
+        $Key = Authentication::getAuthKey($this->id);
 
-        if ($keyData) {
+        if ($Key) {
             return true;
         }
 
@@ -318,16 +318,14 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        $keyData = Authentication::getAuthKeyFromSession($this->id);
+        $Key = Authentication::getAuthKey($this->id);
 
-        if ($keyData) {
-            return new Key($keyData);
+        if ($Key) {
+            return $Key;
         }
 
         try {
             $DerivedKey = $this->AuthClass->getDerivedKey($User);
-            Authentication::saveAuthKeyToSession($this->id, $DerivedKey->getValue());
-
             return $DerivedKey;
         } catch (\Exception $Exception) {
             throw new QUI\Exception(array(

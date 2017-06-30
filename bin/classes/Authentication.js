@@ -42,15 +42,20 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         securityClassId: securityClassId,
                         events         : {
                             onSubmit: function (AuthData) {
-                                self.checkAuthInfo(
+                                //self.checkAuthInfo(
+                                //    securityClassId,
+                                //    AuthData
+                                //).then(function () {
+                                //    resolve(AuthData);
+                                //    Popup.close();
+                                //}, function () {
+                                //    // do nothing if auth data is wrong
+                                //});
+
+                                self.$authenticate(
                                     securityClassId,
                                     AuthData
-                                ).then(function () {
-                                    resolve(AuthData);
-                                    Popup.close();
-                                }, function() {
-                                    // do nothing if auth data is wrong
-                                });
+                                ).then(resolve, reject);
                             },
                             onClose : function () {
                                 reject();
@@ -65,6 +70,27 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
 
                     Popup.open();
                 });
+            });
+        },
+
+        /**
+         * Authenticate for a single SecurityClass
+         *
+         * @param {Number} securityClassId
+         * @param {Object} AuthData
+         * @return {Promise}
+         */
+        $authenticate: function (securityClassId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_authenticate',
+                    resolve, {
+                        'package'      : pkg,
+                        authData       : JSON.encode(AuthData),
+                        securityClassId: securityClassId,
+                        onError        : reject
+                    }
+                );
             });
         },
 
@@ -91,7 +117,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 ).then(function () {
                                     resolve(AuthData);
                                     Popup.close();
-                                }, function() {
+                                }, function () {
                                     // do nothing if auth data is wrong
                                 });
                             },
@@ -198,7 +224,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 ).then(function () {
                                     resolve(AuthData);
                                     Popup.close();
-                                }, function() {
+                                }, function () {
                                     // do nothing if auth data is wrong
                                 });
                             },
@@ -450,9 +476,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          *
          * @returns {Promise}
          */
-        isAuthenticatedBySession: function (securityClassId) {
+        isAuthenticated: function (securityClassId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_isAuthenticatedBySession', resolve, {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_isAuthenticated', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     securityClassId: securityClassId
@@ -667,7 +693,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         getCommKey: function () {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getCommKey',
-                    function(keyData) {
+                    function (keyData) {
                         if (!keyData) {
                             resolve(keyData);
                             return;
@@ -675,9 +701,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
 
                         resolve(keyData);
                     }, {
-                    'package': pkg,
-                    onError  : reject
-                });
+                        'package': pkg,
+                        onError  : reject
+                    });
             });
         }
     });
