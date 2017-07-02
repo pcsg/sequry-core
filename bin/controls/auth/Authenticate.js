@@ -109,22 +109,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             Prom.then(function () {
                 var securityClassId = self.getAttribute('securityClassId');
 
-                Authentication.checkAuthStatus(
-                    securityClassId
-                ).then(function (StatusData) {
-                    self.$AuthStatus = StatusData;
-                    self.$openPopup();
-                });
-
-                //Authentication.isAuthenticated(
-                //    securityClassId
-                //).then(function (isAuth) {
-                //    if (isAuth) {
-                //        self.fireEvent('submit', [{}]);
-                //    } else {
-                //        self.$openPopup();
-                //    }
-                //});
+                Authentication.checkAuthStatus([securityClassId]).then(
+                    function (StatusData) {
+                        self.$AuthStatus = StatusData[securityClassId];
+                        self.$openPopup();
+                    }
+                );
             }).catch(function () {
                 self.destroy();
             });

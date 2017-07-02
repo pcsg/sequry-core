@@ -63,7 +63,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
             });
 
             this.$ShareData = null;
-            this.$AuthData  = null;
         },
 
         /**
@@ -154,48 +153,40 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
             var pwId = this.getAttribute('passwordId');
 
-            Authentication.passwordAuth(pwId).then(function(AuthData) {
-                Passwords.getShareData(
-                    pwId,
-                    AuthData
-                ).then(
-                    function (ShareData) {
-                        self.$Elm.getElement(
-                            '.gpm-password-share-info'
-                        ).set(
-                            'html',
-                            QUILocale.get(
-                                lg,
-                                'controls.password.share.info', {
-                                    passwordTitle: ShareData.title,
-                                    passwordId   : pwId
-                                }
-                            )
-                        );
+            Passwords.getShareData(pwId).then(
+                function (ShareData) {
+                    self.$Elm.getElement(
+                        '.gpm-password-share-info'
+                    ).set(
+                        'html',
+                        QUILocale.get(
+                            lg,
+                            'controls.password.share.info', {
+                                passwordTitle: ShareData.title,
+                                passwordId   : pwId
+                            }
+                        )
+                    );
 
-                        self.$ShareData = ShareData;
-                        self.$AuthData  = AuthData;
+                    self.$ShareData = ShareData;
 
-                        self.$ActorSelectUsers = new ActorSelect({
-                            actorType      : 'users',
-                            securityClassId: ShareData.securityClassId
-                        }).inject(ActorUsersElm);
+                    self.$ActorSelectUsers = new ActorSelect({
+                        actorType      : 'users',
+                        securityClassId: ShareData.securityClassId
+                    }).inject(ActorUsersElm);
 
-                        self.$ActorSelectGroups = new ActorSelect({
-                            actorType      : 'groups',
-                            securityClassId: ShareData.securityClassId
-                        }).inject(ActorGroupsElm);
+                    self.$ActorSelectGroups = new ActorSelect({
+                        actorType      : 'groups',
+                        securityClassId: ShareData.securityClassId
+                    }).inject(ActorGroupsElm);
 
-                        self.$insertData();
-                        self.fireEvent('loaded');
-                    },
-                    function () {
-                        self.fireEvent('close');
-                    }
-                );
-            }, function() {
-                self.fireEvent('close');
-            });
+                    self.$insertData();
+                    self.fireEvent('loaded');
+                },
+                function () {
+                    self.fireEvent('close');
+                }
+            );
         },
 
         /**
@@ -203,7 +194,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
          */
         $onDestroy: function () {
             this.$ShareData = null;
-            this.$AuthData  = null;
         },
 
         /**
@@ -218,11 +208,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 this.$ActorSelectGroups.getActors()
             );
 
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 Passwords.setShareData(
                     self.getAttribute('passwordId'),
-                    shareData,
-                    self.$AuthData
+                    shareData
                 ).then(
                     function () {
                         self.fireEvent('close');

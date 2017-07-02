@@ -16,6 +16,8 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
             $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
             $authData      = json_decode($authData, true);
             $SecurityClass->authenticate($authData);
+        } catch (QUI\Exception $Exception) {
+            throw $Exception;
         } catch (\Exception $Exception) {
             return false;
         }

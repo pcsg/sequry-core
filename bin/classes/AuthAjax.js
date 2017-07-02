@@ -23,7 +23,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
     return new Class({
 
         //Extends: QUIAjax,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/classes/AuthAjax',
+        Type: 'package/pcsg/grouppasswordmanager/bin/classes/AuthAjax',
 
         /**
          * Execute an authenticated GET request
@@ -36,7 +36,74 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                var FuncAuthBySecurityClass = function(securityClassId) {
+                var FuncAuthBySecurityClass = function (securityClassIds) {
+                    RequestParams = Object.merge({
+                            'package': pkg,
+                            onError  : reject
+                        },
+                        RequestParams
+                    );
+
+                    Authentication.checkAuthStatus(
+                        securityClassIds
+                    ).then(function (AuthStatus) {
+                        if (AuthStatus.authenticatedAll) {
+                            QUIAjax.get(func, resolve, RequestParams);
+                            return;
+                        }
+
+                        // authenticate for single SecurityClass
+                        if (securityClassIds.length === 1) {
+                            Authentication.securityClassAuth(
+                                securityClassIds[0]
+                            ).then(
+                                function () {
+                                    QUIAjax.get(func, resolve, RequestParams);
+                                },
+                                reject
+                            );
+
+                            return;
+                        }
+
+                        // authenticate for multiple SecurityClasses
+
+                    });
+                };
+
+                // If a securityClassId is given, immediately authenticate for it
+                if ("securityClassId" in RequestParams) {
+                    FuncAuthBySecurityClass([RequestParams.securityClassId]);
+                    return;
+                }
+
+                // If a passwordId is given, get securityClassId first, then authenticate
+                if ("passwordId" in RequestParams) {
+                    self.$getSecurityClassId(
+                        RequestParams.passwordId
+                    ).then(function (securityClassId) {
+                        FuncAuthBySecurityClass([securityClassId]);
+                    });
+
+                    return;
+                }
+
+                reject('Please specify securityClassId or passwordId in RequestParams.');
+            });
+        },
+
+        /**
+         * Execute an authenticated POST request
+         *
+         * @param {String} func - Ajax function
+         * @param {Object} RequestParams - Additional request parameters
+         * @returns {Promise}
+         */
+        post: function (func, RequestParams) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                var FuncAuthBySecurityClass = function (securityClassId) {
                     RequestParams = Object.merge(
                         RequestParams, {
                             'package': pkg
@@ -45,17 +112,17 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
 
                     Authentication.checkAuthStatus(
                         securityClassId
-                    ).then(function(AuthStatus) {
+                    ).then(function (AuthStatus) {
                         if (AuthStatus.authenticated) {
-                            QUIAjax.get(func, resolve, RequestParams);
+                            QUIAjax.post(func, resolve, RequestParams);
                             return;
                         }
 
                         Authentication.securityClassAuth(
                             securityClassId
-                        ).then(function() {
-                            QUIAjax.get(func, resolve, RequestParams);
-                        });
+                        ).then(function () {
+                            QUIAjax.post(func, resolve, RequestParams);
+                        }, reject);
                     });
                 };
 

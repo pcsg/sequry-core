@@ -42,81 +42,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         securityClassId: securityClassId,
                         events         : {
                             onSubmit: function (AuthData) {
-                                //self.checkAuthInfo(
-                                //    securityClassId,
-                                //    AuthData
-                                //).then(function () {
-                                //    resolve(AuthData);
-                                //    Popup.close();
-                                //}, function () {
-                                //    // do nothing if auth data is wrong
-                                //});
-
                                 self.$authenticate(
                                     securityClassId,
                                     AuthData
-                                ).then(resolve, reject);
-                            },
-                            onClose : function () {
-                                reject();
-                                Popup.close();
-                            },
-                            onAbort : function () {
-                                reject();
-                                Popup.close();
-                            }
-                        }
-                    });
+                                ).then(function (success) {
+                                    if (!success) {
+                                        return;
+                                    }
 
-                    Popup.open();
-                });
-            });
-        },
-
-        /**
-         * Authenticate for a single SecurityClass
-         *
-         * @param {Number} securityClassId
-         * @param {Object} AuthData
-         * @return {Promise}
-         */
-        $authenticate: function (securityClassId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_auth_authenticate',
-                    resolve, {
-                        'package'      : pkg,
-                        authData       : JSON.encode(AuthData),
-                        securityClassId: securityClassId,
-                        onError        : reject
-                    }
-                );
-            });
-        },
-
-        /**
-         * Authentication for a specific security class
-         *
-         * @param {number} securityClassId
-         * @return {Promise}
-         */
-        securityClassAuthTest: function (securityClassId) {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate'
-                ], function (SecurityClassAuth) {
-                    var Popup = new SecurityClassAuth({
-                        securityClassId: securityClassId,
-                        events         : {
-                            onSubmit: function (AuthData) {
-                                self.checkAuthInfo(
-                                    securityClassId,
-                                    AuthData
-                                ).then(function () {
-                                    resolve(AuthData);
                                     Popup.close();
+                                    resolve();
                                 }, function () {
                                     // do nothing if auth data is wrong
                                 });
@@ -170,6 +105,27 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
+         * Authenticate for a single SecurityClass
+         *
+         * @param {Number} securityClassId
+         * @param {Object} AuthData
+         * @return {Promise}
+         */
+        $authenticate: function (securityClassId, AuthData) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_authenticate',
+                    resolve, {
+                        'package'      : pkg,
+                        authData       : JSON.encode(AuthData),
+                        securityClassId: securityClassId,
+                        onError        : reject
+                    }
+                );
+            });
+        },
+
+        /**
          * Authenticate for all available plugins
          *
          * @return Promise
@@ -184,49 +140,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                             onSubmit: function (AuthData) {
                                 resolve(AuthData);
                                 Popup.close();
-                            },
-                            onClose : function () {
-                                reject();
-                                Popup.close();
-                            },
-                            onAbort : function () {
-                                reject();
-                                Popup.close();
-                            }
-                        }
-                    });
-
-                    Popup.open();
-                });
-            });
-        },
-
-        /**
-         * Authentication for a specific password
-         *
-         * @param {number} passwordId
-         * @return {Promise}
-         */
-        passwordAuth: function (passwordId) {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate'
-                ], function (PasswordAuth) {
-                    var Popup = new PasswordAuth({
-                        passwordId: passwordId,
-                        events    : {
-                            onSubmit: function (AuthData) {
-                                self.checkAuthInfoPassword(
-                                    passwordId,
-                                    AuthData
-                                ).then(function () {
-                                    resolve(AuthData);
-                                    Popup.close();
-                                }, function () {
-                                    // do nothing if auth data is wrong
-                                });
                             },
                             onClose : function () {
                                 reject();
@@ -423,24 +336,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Check if authentication information for a specific password is correct
-         *
-         * @param {number} passwordId - Password ID
-         * @param {Object} AuthData - authentication information
-         * @returns {Promise}
-         */
-        checkAuthInfoPassword: function (passwordId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfoPassword', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId,
-                    authData  : JSON.encode(AuthData)
-                });
-            });
-        },
-
-        /**
          * Get id, title and description of a security class
          *
          * @param {number} securityClassId - ID of security class
@@ -471,32 +366,17 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Checks if the current session user has already authenticated
-         * himself with a security class
-         *
-         * @returns {Promise}
-         */
-        isAuthenticated: function (securityClassId) {
-            return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_isAuthenticated', resolve, {
-                    'package'      : pkg,
-                    onError        : reject,
-                    securityClassId: securityClassId
-                });
-            });
-        },
-
-        /**
          * Check authentication status of every auth module of a security class
          *
+         * @param {Array} securityClassIds
          * @returns {Promise}
          */
-        checkAuthStatus: function (securityClassId) {
+        checkAuthStatus: function (securityClassIds) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkAuthStatus', resolve, {
-                    'package'      : pkg,
-                    onError        : reject,
-                    securityClassId: securityClassId
+                    'package'       : pkg,
+                    onError         : reject,
+                    securityClassIds: JSON.encode(securityClassIds)
                 });
             });
         },

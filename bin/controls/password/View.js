@@ -99,68 +99,61 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
         $onInject: function () {
             var self = this;
 
-            Authentication.passwordAuth(this.getAttribute('passwordId')).then(function (AuthData) {
-                Passwords.getView(
-                    self.getAttribute('passwordId'),
-                    AuthData
-                ).then(
-                    function (viewHtml) {
-                        if (!viewHtml) {
-                            return;
-                        }
-
-                        self.$Elm.set(
-                            'html',
-                            viewHtml
-                        );
-
-                        var CategoryPrivateElm = self.$Elm.getElement(
-                            '.pcsg-gpm-password-view-info-categories-private'
-                        );
-
-                        var CategoryPrivate = new CategorySelectPrivate({
-                            events: {
-                                onChange: self.$setPrivateCategories
-                            }
-                        }).inject(CategoryPrivateElm);
-
-                        var catIdsPrivate = CategoryPrivateElm.getProperty(
-                            'data-catids'
-                        );
-
-                        if (catIdsPrivate) {
-                            catIdsPrivate = catIdsPrivate.split(',');
-                            CategoryPrivate.setValue(catIdsPrivate);
-                        }
-
-                        // public categories
-                        var CategoriesPublicElm = self.$Elm.getElement(
-                            '.pcsg-gpm-password-view-info-categories-public'
-                        );
-
-                        var Categories = new CategorySelect({
-                            editMode: self.getAttribute('editPublicCategories')
-                        }).inject(CategoriesPublicElm);
-
-                        var catIdsPublic = CategoriesPublicElm.getProperty(
-                            'data-catids'
-                        );
-
-                        if (catIdsPublic) {
-                            catIdsPublic = catIdsPublic.split(',');
-                            Categories.setValue(catIdsPublic);
-                        }
-
-                        self.$parseView();
-                        self.fireEvent('loaded');
-                    },
-                    function () {
-                        self.fireEvent('close');
+            Passwords.getView(self.getAttribute('passwordId')).then(
+                function (viewHtml) {
+                    if (!viewHtml) {
+                        return;
                     }
-                );
-            }, function() {
-                self.fireEvent('close');
-            });
+
+                    self.$Elm.set(
+                        'html',
+                        viewHtml
+                    );
+
+                    var CategoryPrivateElm = self.$Elm.getElement(
+                        '.pcsg-gpm-password-view-info-categories-private'
+                    );
+
+                    var CategoryPrivate = new CategorySelectPrivate({
+                        events: {
+                            onChange: self.$setPrivateCategories
+                        }
+                    }).inject(CategoryPrivateElm);
+
+                    var catIdsPrivate = CategoryPrivateElm.getProperty(
+                        'data-catids'
+                    );
+
+                    if (catIdsPrivate) {
+                        catIdsPrivate = catIdsPrivate.split(',');
+                        CategoryPrivate.setValue(catIdsPrivate);
+                    }
+
+                    // public categories
+                    var CategoriesPublicElm = self.$Elm.getElement(
+                        '.pcsg-gpm-password-view-info-categories-public'
+                    );
+
+                    var Categories = new CategorySelect({
+                        editMode: self.getAttribute('editPublicCategories')
+                    }).inject(CategoriesPublicElm);
+
+                    var catIdsPublic = CategoriesPublicElm.getProperty(
+                        'data-catids'
+                    );
+
+                    if (catIdsPublic) {
+                        catIdsPublic = catIdsPublic.split(',');
+                        Categories.setValue(catIdsPublic);
+                    }
+
+                    self.$parseView();
+                    self.fireEvent('loaded');
+                },
+                function () {
+                    self.fireEvent('close');
+                }
+            );
         },
 
         /**

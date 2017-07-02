@@ -847,30 +847,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 title : QUILocale.get(lg, 'gpm.passwords.panel.delete.popup.btn'),
                 events: {
                     onClick: function () {
-                        Authentication.securityClassAuth(
-                            RowData.securityClassId
-                        ).then(function (AuthData) {
-                            DeletePopup.Loader.show();
+                        DeletePopup.Loader.show();
 
-                            Passwords.deletePassword(
-                                RowData.id,
-                                AuthData
-                            ).then(
-                                function () {
-                                    DeletePopup.close();
-                                    self.refresh();
+                        Passwords.deletePassword(RowData.id).then(
+                            function () {
+                                DeletePopup.close();
+                                self.refresh();
 
-                                    if (window.PasswordCategories) {
-                                        window.PasswordCategories.refreshCategories();
-                                    }
-                                },
-                                function () {
-                                    DeletePopup.close();
+                                if (window.PasswordCategories) {
+                                    window.PasswordCategories.refreshCategories();
                                 }
-                            );
-                        }, function () {
-                            DeletePopup.close();
-                        });
+                            },
+                            function () {
+                                DeletePopup.close();
+                            }
+                        );
                     }
                 }
             }));
@@ -983,7 +974,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                     onClick: function () {
                                         self.Loader.show();
 
-                                        Share.submit().then(function() {
+                                        Share.submit().then(function () {
                                             Share.destroy();
                                             Sheet.destroy();
                                             self.Loader.hide();
@@ -1023,7 +1014,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
-                                onClose: function() {
+                                onClose : function () {
                                     self.Loader.hide();
                                     Edit.destroy();
                                     Sheet.destroy();
@@ -1577,31 +1568,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
-            var AuthControl = new PasswordAuthentication({
-                passwordId: Password.id,
-                events    : {
-                    onSubmit: function (AuthData) {
-                        Passwords.getShareUsersAndGroups(
-                            Password.id,
-                            AuthData
-                        ).then(
-                            function (shareUsersGroups) {
-                                AuthControl.destroy();
-                                shareActors = shareUsersGroups;
-                                Popup.open();
-                            },
-                            function () {
-                                // @todo getShareData error
-                            }
-                        );
-                    },
-                    onClose : function () {
-                        self.Loader.hide();
-                    }
+            Passwords.getShareUsersAndGroups(Password.id).then(
+                function (shareUsersGroups) {
+                    shareActors = shareUsersGroups;
+                    Popup.open();
+                },
+                function () {
+                    // @todo getShareData error
                 }
-            });
-
-            AuthControl.open();
+            );
         },
 
         /**

@@ -4,17 +4,36 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
 /**
  * Checks the auth status for every authentication plugin necessary
- * to authenticate for a security class
+ * to authenticate for one or more SecurityClasses
  *
- * @param integer $securityClassId - id of security class
+ * @param array $securityClassId - ids of SecurityClasses
  * @return array
  */
 \QUI::$Ajax->registerFunction(
     'package_pcsg_grouppasswordmanager_ajax_auth_checkAuthStatus',
-    function ($securityClassId)
-    {
-        return Authentication::getSecurityClass((int)$securityClassId)->getAuthStatus();
+    function ($securityClassIds) {
+        $authStatus = array(
+            'authenticatedAll' => false
+        );
+
+        $securityClassIds = json_decode($securityClassIds, true);
+        $authCounter      = 0;
+
+        foreach ($securityClassIds as $id) {
+            $id              = (int)$id;
+            $authStatus[$id] = Authentication::getSecurityClass($id)->getAuthStatus();
+
+            if ($authStatus[$id]['authenticated']) {
+                $authCounter++;
+            }
+        }
+
+        if ($authCounter === count($securityClassIds)) {
+            $authStatus['authenticatedAll'] = true;
+        }
+
+        return $authStatus;
     },
-    array('securityClassId'),
+    array('securityClassIds'),
     'Permission::checkAdminUser'
 );
