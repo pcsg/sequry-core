@@ -25,7 +25,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
 
         Binds: [
-            'actorSearch'
+            'actorSearch',
+            '$onSearchButtonClick'
         ],
 
         options: {
@@ -67,7 +68,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             }
 
             this.setAttribute('child', 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem');
-            this.setAttribute('searchbutton', false);
+
+            this.addEvents({
+                onSearchButtonClick: this.$onSearchButtonClick
+            });
         },
 
         /**
@@ -128,6 +132,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             }
 
             return actors;
+        },
+
+        $onSearchButtonClick: function() {
+            console.log("clicki on the search btn");
         }
     });
 });

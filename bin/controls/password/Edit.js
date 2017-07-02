@@ -373,7 +373,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                     );
                 });
 
-                return Promise.resolve;
+                return Promise.reject();
             }
 
             PasswordData.owner = actors[0];
