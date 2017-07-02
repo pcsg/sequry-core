@@ -91,41 +91,30 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Checks if the authentication information for this security class
-     * is saved in the session
-     *
-     * @return bool
-     */
-    public function isAuthenticatedBySession()
-    {
-        $plugins   = $this->getAuthPlugins();
-        $authCount = 0;
-
-        /** @var Plugin $AuthPlugin */
-        foreach ($plugins as $AuthPlugin) {
-            if ($AuthPlugin->isAuthenticated()) {
-                $authCount++;
-                continue;
-            }
-        }
-
-        return $authCount >= $this->requiredFactors;
-    }
-
-    /**
      * Checks the auth status of every auth plugin of this security class
      *
      * @return array
      */
     public function getAuthStatus()
     {
-        $plugins = $this->getAuthPlugins();
-        $status  = array();
+        $status  = array(
+            'authenticated' => false,
+            'authPlugins'   => array()
+        );
+
+        $authCount = 0;
 
         /** @var Plugin $AuthPlugin */
-        foreach ($plugins as $AuthPlugin) {
-            $status[$AuthPlugin->getId()] = $AuthPlugin->isAuthenticated();
+        foreach ($this->getAuthPlugins() as $AuthPlugin) {
+            if ($AuthPlugin->isAuthenticated()) {
+                $status['authPlugins'][$AuthPlugin->getId()] = true;
+                $authCount++;
+            } else {
+                $status['authPlugins'][$AuthPlugin->getId()] = false;
+            }
         }
+
+        $status['authenticated'] = $authCount >= $this->requiredFactors;
 
         return $status;
     }
@@ -140,7 +129,7 @@ class SecurityClass extends QUI\QDOM
      */
     public function authenticate($authData, $CryptoUser = null)
     {
-        if ($this->isAuthenticatedBySession()) {
+        if ($this->isAuthenticated()) {
             return true;
         }
 
@@ -195,6 +184,9 @@ class SecurityClass extends QUI\QDOM
             }
 
             $succesfulAuthenticationCount++;
+
+            // On successful authentication, save derived key in session data
+            Authentication::saveAuthKey($this->id, $AuthPlugin->getDerivedKey()->getValue());
         }
 
         if ($succesfulAuthenticationCount < $this->requiredFactors) {
@@ -239,16 +231,7 @@ class SecurityClass extends QUI\QDOM
             return;
         }
 
-//        if (QUI::getRequest()->isXmlHttpRequest()) {
-//            QUI::getAjax()->triggerGlobalJavaScriptCallback(
-//                'authSingle',
-//                array(
-//                    'securityClassId' => $this->getId()
-//                )
-//            );
-//        }
-
-        throw new InvalidAuthDataException();
+        throw new InvalidAuthDataException(array());
     }
 
     /**
