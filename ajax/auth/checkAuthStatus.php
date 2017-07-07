@@ -19,6 +19,10 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
         $securityClassIds = json_decode($securityClassIds, true);
         $authCounter      = 0;
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $authStatus;
+        }
+
         foreach ($securityClassIds as $id) {
             $id              = (int)$id;
             $authStatus[$id] = Authentication::getSecurityClass($id)->getAuthStatus();

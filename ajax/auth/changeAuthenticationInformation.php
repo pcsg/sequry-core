@@ -2,7 +2,6 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
-use QUI\Utils\Security\Orthos;
 
 /**
  * Register current session user and create a keypair for an authentication plugin
@@ -11,7 +10,7 @@ use QUI\Utils\Security\Orthos;
  * @param string $oldAuthInfo - old authentication information
  * @param string $newAuthInfo - new authentication information
  * @param bool $recovery (optional) - oldAuthInfo is recovery code
- * @return string - recovery code
+ * @return array|false - recovery code data; false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation(
     $authPluginId,
@@ -23,7 +22,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
 //    $newAuthInfo = Orthos::clear($newAuthInfo);
 
     try {
-        $AuthPlugin = Authentication::getAuthPlugin($authPluginId);
+        $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
 
         if ($recovery) {
             $oldAuthInfo = Recovery::recoverEntry($AuthPlugin, $oldAuthInfo);

@@ -1,5 +1,7 @@
 <?php
 
+use QUI\Utils\Security\Orthos;
+
 /**
  * Get edit template
  *
@@ -10,6 +12,11 @@
  */
 function package_pcsg_grouppasswordmanager_ajax_passwordtypes_getViewHtml($type)
 {
+    if (!is_string($type)) {
+        return '';
+    }
+
+    $type         = Orthos::clear($type);
     $dir          = dirname(dirname(dirname(__FILE__))) . '/bin/passwordtypes/';
     $templateFile = $dir . $type . '/View.html';
 

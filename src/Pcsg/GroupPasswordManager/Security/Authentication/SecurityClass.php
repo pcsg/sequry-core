@@ -164,14 +164,14 @@ class SecurityClass extends QUI\QDOM
                 continue;
             }
 
-            $pluginAuthData = $authData[$AuthPlugin->getId()];
-
-            if (empty($pluginAuthData)) {
+            if (empty($authData[$AuthPlugin->getId()])) {
                 continue;
             }
 
+            $pluginAuthData = $authData[$AuthPlugin->getId()];
+
             try {
-                $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
+                $AuthPlugin->authenticate($pluginAuthData, $CryptoUser);
             } catch (\Exception $Exception) {
                 throw new QUI\Exception(array(
                     'pcsg/grouppasswordmanager',
@@ -186,7 +186,7 @@ class SecurityClass extends QUI\QDOM
             $succesfulAuthenticationCount++;
 
             // On successful authentication, save derived key in session data
-            Authentication::saveAuthKey($this->id, $AuthPlugin->getDerivedKey()->getValue());
+            Authentication::saveAuthKey($AuthPlugin->getId(), $AuthPlugin->getDerivedKey()->getValue());
         }
 
         if ($succesfulAuthenticationCount < $this->requiredFactors) {
@@ -209,7 +209,7 @@ class SecurityClass extends QUI\QDOM
      * @param CryptoUser $CryptoUser (optional) - if omitted, use session user
      * @return void
      *
-     * @throws
+     * @throws InvalidAuthDataException
      */
     public function checkAuthentication($CryptoUser = null)
     {

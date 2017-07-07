@@ -565,7 +565,6 @@ class Authentication
         }
 
         if (!isset($currentAuthKeyData[$authPluginId])) {
-            \QUI\System\Log::writeRecursive("not saved");
             return false;
         }
 

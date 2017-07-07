@@ -22,7 +22,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
 
     return new Class({
 
-        //Extends: QUIAjax,
         Type: 'package/pcsg/grouppasswordmanager/bin/classes/AuthAjax',
 
         /**
@@ -103,32 +102,44 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                var FuncAuthBySecurityClass = function (securityClassId) {
-                    RequestParams = Object.merge(
-                        RequestParams, {
-                            'package': pkg
-                        }
+                var FuncAuthBySecurityClass = function (securityClassIds) {
+                    RequestParams = Object.merge({
+                            'package': pkg,
+                            onError  : reject
+                        },
+                        RequestParams
                     );
 
                     Authentication.checkAuthStatus(
-                        securityClassId
+                        securityClassIds
                     ).then(function (AuthStatus) {
-                        if (AuthStatus.authenticated) {
+                        if (AuthStatus.authenticatedAll) {
                             QUIAjax.post(func, resolve, RequestParams);
                             return;
                         }
 
-                        Authentication.securityClassAuth(
-                            securityClassId
-                        ).then(function () {
-                            QUIAjax.post(func, resolve, RequestParams);
-                        }, reject);
+                        // authenticate for single SecurityClass
+                        if (securityClassIds.length === 1) {
+                            Authentication.securityClassAuth(
+                                securityClassIds[0]
+                            ).then(
+                                function () {
+                                    QUIAjax.post(func, resolve, RequestParams);
+                                },
+                                reject
+                            );
+
+                            return;
+                        }
+
+                        // authenticate for multiple SecurityClasses
+
                     });
                 };
 
                 // If a securityClassId is given, immediately authenticate for it
                 if ("securityClassId" in RequestParams) {
-                    FuncAuthBySecurityClass(RequestParams.securityClassId);
+                    FuncAuthBySecurityClass([RequestParams.securityClassId]);
                     return;
                 }
 
@@ -136,7 +147,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
                 if ("passwordId" in RequestParams) {
                     self.$getSecurityClassId(
                         RequestParams.passwordId
-                    ).then(FuncAuthBySecurityClass);
+                    ).then(function (securityClassId) {
+                        FuncAuthBySecurityClass([securityClassId]);
+                    });
 
                     return;
                 }

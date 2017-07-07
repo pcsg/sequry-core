@@ -15,13 +15,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
     $passwordId = (int)$passwordId;
 
     try {
-        // authenticate
-//        Passwords::getSecurityClass(
-//            $passwordId
-//        )->authenticate(
-//            json_decode($authData, true) // @todo diese daten ggf. filtern
-//        );
-
         // get password data
         $Password = Passwords::get($passwordId);
         $data     = $Password->getData();
@@ -33,8 +26,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
         $CryptoUser->increasePasswordViewCount($passwordId);
 
         return $data;
-    } catch (InvalidAuthDataException $Exception) {
-        throw $Exception;
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
