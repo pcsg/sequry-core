@@ -86,8 +86,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     new MultiAuthWindow({
                         securityClassIds: securityClassIds,
                         events          : {
-                            onSubmit: function (AuthData, Popup) {
-                                resolve(AuthData);
+                            onSubmit: function (Popup) {
+                                resolve();
                                 Popup.close();
                             },
                             onClose : function (Popup) {

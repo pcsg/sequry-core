@@ -138,9 +138,9 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        $Key = Authentication::getAuthKey($this->id);
+        $existsKey = Authentication::existsAuthKeyInSession($this->id);
 
-        if ($Key) {
+        if ($existsKey) {
             return true;
         }
 

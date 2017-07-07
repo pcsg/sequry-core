@@ -139,105 +139,81 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.Loader.show();
 
+            var FuncBuildSecurityClassElm = function(SecurityClassInfo) {
+                var SecurityClassElm = new Element('tr', {
+                    'data-sid': SecurityClassInfo.id,
+                    html      : '<td>' +
+                    '<label class="field-container">' +
+                    '<span class="field-container-item">' +
+                    SecurityClassInfo.title + ' (ID: ' + SecurityClassInfo.id + ')' +
+                    '</span>' +
+                    '<span class="field-container-field pcsg-gpm-auth-syncauthplugin-btn">' +
+                    '</span>' +
+                    '</label>' +
+                    '</td>'
+                }).inject(TableBodyElm);
+
+                new QUIButton({
+                    'class'        : 'pcsg-gpm-auth-btn-control',
+                    textimage      : 'fa fa-lock',
+                    text           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
+                    alt            : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
+                    title          : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
+                    securityClassId: SecurityClassInfo.id,
+                    events         : {
+                        onClick: self.$onAuthBtnClick
+                    }
+                }).inject(
+                    SecurityClassElm.getElement('.pcsg-gpm-auth-syncauthplugin-btn')
+                );
+
+                securityClassInfosLoaded++;
+
+                if (securityClassInfosLoaded >= securityClassIds.length) {
+                    self.Loader.hide();
+                }
+
+                if (self.$AuthStatus[SecurityClassInfo.id].authenticated) {
+                    self.$setSecurityClassSuccess(SecurityClassInfo.id);
+                }
+            };
+
             for (var i = 0, len = securityClassIds.length; i < len; i++) {
                 Authentication.getSecurityClassInfo(
                     securityClassIds[i]
-                ).then(function (SecurityClassInfo) {
-                    var SecurityClassElm = new Element('tr', {
-                        'data-sid': SecurityClassInfo.id,
-                        html      : '<td>' +
-                        '<label class="field-container">' +
-                        '<span class="field-container-item">' +
-                        SecurityClassInfo.title + ' (ID: ' + SecurityClassInfo.id + ')' +
-                        '</span>' +
-                        '<span class="field-container-field pcsg-gpm-auth-btn">' +
-                        '</span>' +
-                        '</label>' +
-                        '</td>'
-                    }).inject(TableBodyElm);
-
-                    new QUIButton({
-                        'class'        : 'pcsg-gpm-auth-btn-control',
-                        textimage      : 'fa fa-lock',
-                        text           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                        alt            : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                        title          : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                        securityClassId: SecurityClassInfo.id,
-                        events         : {
-                            onClick: self.$onAuthBtnClick
-                        }
-                    }).inject(
-                        SecurityClassElm.getElement('.pcsg-gpm-auth-syncauthplugin-btn')
-                    );
-
-                    securityClassInfosLoaded++;
-
-                    if (securityClassInfosLoaded >= securityClassIds.length) {
-                        self.Loader.hide();
-                    }
-
-                    if (self.$AuthStatus[SecurityClassInfo.id].authenticated) {
-                        self.$setSecurityClassSuccess(SecurityClassInfo.id);
-                    }
-                });
+                ).then(FuncBuildSecurityClassElm);
             }
         },
 
+        /**
+         * onClick Event on authentication button for a SecurityClass
+         *
+         * @param {Object} Btn
+         */
         $onAuthBtnClick: function (Btn) {
             var self            = this;
             var securityClassId = Btn.getAttribute('securityClassId');
 
             this.Loader.show();
 
-            var AuthControl = new AuthenticationControl({
-                securityClassId: securityClassId,
-                events         : {
-                    onSubmit: function (AuthData) {
-                        Authentication.checkAuthInfo(
-                            securityClassId,
-                            AuthData
-                        ).then(function (authDataCorrect) {
-                            self.Loader.hide();
-                            AuthControl.destroy();
+            Authentication.securityClassAuth(securityClassId).then(function() {
+                self.Loader.hide();
+                self.$authSuccessCount++;
+                self.$setSecurityClassSuccess(securityClassId);
 
-                            if (!authDataCorrect) {
-                                QUI.getMessageHandler().then(function (MH) {
-                                    MH.addError(
-                                        QUILocale.get(
-                                            lg,
-                                            'auth.multisecurityclassauthwindow.authdata.incorrect', {
-                                                securityClassId: securityClassId
-                                            }
-                                        )
-                                    );
-                                });
-                            }
-
-                            this.$AuthData[securityClassId] = AuthData;
-
-                            self.$authSuccessCount++;
-
-                            if (self.$authSuccessCount >= self.$authSuccessCountNeeded) {
-                                self.$AuthBtn.enable();
-                            }
-
-                            self.$setSecurityClassSuccess(securityClassId);
-                            AuthControl.close();
-                        });
-                    },
-                    onAbort : function () {
-                        self.Loader.hide();
-                        self.fireEvent('abort', [self]);
-                    },
-                    onClose : function () {
-                        self.fireEvent('close', [self]);
-                    }
+                if (self.$authSuccessCount >= self.$authSuccessCountNeeded) {
+                    self.$AuthBtn.enable();
                 }
+            }, function() {
+                self.Loader.hide();
             });
-
-            AuthControl.open();
         },
 
+        /**
+         * Set success status to SecurityClass info element
+         *
+         * @param {Integer} securityClassId
+         */
         $setSecurityClassSuccess: function (securityClassId) {
             var Row = this.$Elm.getElement(
                 'tr[data-sid="' + securityClassId + '"]'

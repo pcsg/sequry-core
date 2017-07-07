@@ -553,7 +553,7 @@
         <locale name="exception.events.group.delete.info">
             <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen der Gruppe.]]></de>
         </locale>
-        <locale name="exception.events.add.users.to.group.infos">
+        <locale name="exception.events.add.users.to.group.info">
             <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Gruppe authentifizieren, bevor Sie dieser Gruppe Benutzer hinzufügen können.]]></de>
         </locale>
         <locale name="exception.events.add.groups.to.user.info">

@@ -80,42 +80,16 @@ require([
         }
     });
 
-    // Authentication for a single SecurityClass
-    QUIAjax.registerGlobalJavaScriptCallback(
-        'authSingle',
-        function (response, Data) {
-            require([
-                'package/pcsg/grouppasswordmanager/bin/Authentication'
-            ], function (Authentication) {
-                console.log(Data);
-            });
-        }
-    );
-
     QUIAjax.registerGlobalJavaScriptCallback(
         'addUsersByGroup',
         function (response, AuthInfo) {
-
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
-                'package/pcsg/grouppasswordmanager/bin/classes/Actors'
-            ], function (MultiAuthWindow, ActorHandler) {
-                var Actors = new ActorHandler();
-
-                new MultiAuthWindow({
-                    securityClassIds: AuthInfo.securityClassIds,
-                    events          : {
-                        onSubmit: function (AuthData, Popup) {
-                            Actors.addUsersToGroup(
-                                AuthInfo.groupId,
-                                AuthInfo.userIds,
-                                AuthData
-                            );
-
-                            Popup.close();
-                        }
-                    }
-                }).open();
+                'package/pcsg/grouppasswordmanager/bin/Actors'
+            ], function (Actors) {
+                Actors.addUsersToGroup(
+                    AuthInfo.groupId,
+                    AuthInfo.userIds
+                );
             });
         }
     );

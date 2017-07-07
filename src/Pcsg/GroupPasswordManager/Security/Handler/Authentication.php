@@ -530,6 +530,19 @@ class Authentication
     }
 
     /**
+     * Check if an authentication key for an AuthPlugin exists in the session
+     *
+     * @param int $authPluginId
+     * @return bool
+     */
+    public static function existsAuthKeyInSession($authPluginId)
+    {
+        $Session            = QUI::getSession();
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+        return !empty($currentAuthKeyData[$authPluginId]);
+    }
+
+    /**
      * Retrieve derived key from session data
      *
      * @param $authPluginId
