@@ -89,7 +89,11 @@ require([
                 Actors.addUsersToGroup(
                     AuthInfo.groupId,
                     AuthInfo.userIds
-                );
+                ).then(function() {
+                    // nothing
+                }, function() {
+                    // nothing
+                });
             });
         }
     );

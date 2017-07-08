@@ -90,9 +90,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 resolve();
                                 Popup.close();
                             },
-                            onClose : function (Popup) {
+                            onClose : function () {
                                 reject();
-                                Popup.close();
                             },
                             onAbort : function (Popup) {
                                 reject();

@@ -43,7 +43,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
         Binds: [
             '$onInject',
-            'submit',
+            '$submit',
             'open',
             'close',
             '$openPopup',
@@ -63,9 +63,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 onDestroy: this.$onDestroy
             });
 
-            this.$AuthPopup     = null;
-            this.$SecurityClass = null;
-            this.$AuthStatus    = {};
+            this.$AuthPopup      = null;
+            this.$SecurityClass  = null;
+            this.$AuthStatus     = {};
+            this.$authPluginIds  = [];
+            this.$AuthPluginData = {};
         },
 
         /**
@@ -149,16 +151,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
             this.$AuthPopup = AuthPopup;
 
-            var submitFunc = function () {
-                var AuthData = self.getAuthData();
-
-                AuthData.sessioncache = AuthPopup.getContent().getElement(
-                    '.pcsg-gpm-auth-authenticate-save-authdata'
-                ).checked;
-
-                self.fireEvent('submit', [AuthData]);
-            };
-
             AuthPopup.open();
 
             AuthPopup.addButton(new QUIButton({
@@ -167,7 +159,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 alt    : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
                 title  : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
                 events : {
-                    onClick: submitFunc
+                    onClick: this.$submit
                 }
             }));
 
@@ -185,7 +177,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
             var Content         = AuthPopup.getContent();
             var InfoElm         = Content.getElement('.pcsg-gpm-auth-authenticate-info');
-            var PluginsElm      = Content.getElement('.pcsg-gpm-auth-authenticate-plugins');
             var securityClassId = this.getAttribute('securityClassId');
 
             AuthPopup.Loader.show();
@@ -194,10 +185,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             this.$authPluginIds      = [];
 
             Promise.all([
-
                 Authentication.getSecurityClassInfo(securityClassId),
                 Authentication.getAuthPluginControlsBySecurityClass(securityClassId)
-
             ]).then(function (result) {
                 var SecurityClassInfo  = result[0];
                 var authPluginControls = result[1];
@@ -219,15 +208,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 );
 
                 var i, len;
-                var paths                 = [];
-                var AuthPluginsRegistered = {};
-                var autoSaveCount         = 0;
+                var paths         = [];
+                var autoSaveCount = 0;
 
                 for (i = 0, len = authPluginControls.length; i < len; i++) {
                     var AuthPluginControl = authPluginControls[i];
 
                     self.$authPluginIds.push(AuthPluginControl.authPluginId);
-                    AuthPluginsRegistered[AuthPluginControl.authPluginId] = AuthPluginControl.registered;
+                    self.$AuthPluginData[AuthPluginControl.authPluginId] = AuthPluginControl;
                     paths.push(AuthPluginControl.control);
 
                     if (AuthPluginControl.autosave) {
@@ -242,117 +230,153 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     ).checked = true;
                 }
 
-                // load auth plugins
-                require(
-                    paths,
-                    function () {
-                        var controls                  = arguments;
-                        var FirstControl              = false;
-                        var eligibleAuthPluginsLoaded = 0;
-
-                        // build controls
-                        for (var i = 0, len = controls.length; i < len; i++) {
-                            var authPluginId = self.$authPluginIds[i];
-
-                            var PluginElm = new Element('div', {
-                                'class': 'pcsg-gpm-auth-authenticate-plugins-plugin'
-                            }).inject(PluginsElm);
-
-                            // if the user is already authenticated for a specific plugin
-                            // do not build control
-                            if (authPluginId in self.$AuthStatus) {
-                                if (self.$AuthStatus[authPluginId]) {
-                                    new Element('div', {
-                                        html: 'Bereits authentifiziert!'
-                                    }).inject(PluginElm);
-
-                                    continue;
-                                }
-                            }
-
-                            var Control = new controls[i]({
-                                authPluginId: authPluginId
-                            });
-
-                            self.$authPluginControls.push(Control);
-
-                            Control.addEvents({
-                                onSubmit: submitFunc
-                            });
-
-                            Control.inject(PluginElm);
-                            Control.setAttribute('eligibleForAuth', true);
-
-                            if (!AuthPluginsRegistered[self.$authPluginIds[i]]) {
-                                new Element('div', {
-                                    'class': 'pcsg-gpm-auth-authenticate-warning',
-                                    html   : '<span>' +
-                                    QUILocale.get(
-                                        lg,
-                                        'controls.auth.authenticate.warning.nonregistered'
-                                    ) +
-                                    '</span>'
-                                }).inject(
-                                    PluginElm,
-                                    'top'
-                                );
-
-                                Control.setAttribute('eligibleForAuth', false);
-                            } else {
-                                eligibleAuthPluginsLoaded++;
-                            }
-
-                            if (!FirstControl) {
-                                FirstControl = Control;
-                            }
-                        }
-
-                        // hide unnecessary controls
-                        if (eligibleAuthPluginsLoaded >= self.$SecurityClass.requiredFactors) {
-                            for (i = 0, len = self.$authPluginControls.length; i < len; i++) {
-                                if (i < self.$SecurityClass.requiredFactors) {
-                                    continue;
-                                }
-
-                                var AuthPluginElm = self.$authPluginControls[i].getElm();
-
-                                new Element('div', {
-                                    'class'         : 'pcsg-gpm-auth-authenticate-plugins-show',
-                                    'data-controlid': i,
-                                    'html'          : '<span class="fa fa-plus"></span>' +
-                                    '<span class="pcsg-gpm-auth-authenticate-plugins-show-title">' +
-                                    authPluginControls[i].title +
-                                    '</span>',
-                                    events          : {
-                                        click: function () {
-                                            var controlId = this.getProperty('data-controlid');
-                                            self.$authPluginControls[controlId].getElm().setStyle('display', '');
-
-                                            this.destroy();
-                                        }
-                                    }
-                                }).inject(
-                                    AuthPluginElm.getParent()
-                                );
-
-                                AuthPluginElm.setStyle(
-                                    'display',
-                                    'none'
-                                );
-                            }
-
-                            FirstControl = self.$authPluginControls[0];
-                        }
-
-                        if (FirstControl) {
-                            FirstControl.focus();
-                        }
-
-                        AuthPopup.Loader.hide();
-                        self.fireEvent('loaded');
-                    }
-                );
+                self.$buildContent(paths);
             });
+        },
+
+        /**
+         * Load authentication control for every AuthPlugin and display it
+         * appropriately
+         */
+        $buildContent: function (controlPaths) {
+            var self       = this;
+            var Content    = this.$AuthPopup.getContent();
+            var PluginsElm = Content.getElement('.pcsg-gpm-auth-authenticate-plugins');
+
+            this.$AuthPopup.Loader.show();
+
+            // load auth plugins
+            require(
+                controlPaths,
+                function () {
+                    var controls                  = arguments;
+                    var FirstControl              = false;
+                    var eligibleAuthPluginsLoaded = 0;
+
+                    // build controls
+                    for (var i = 0, len = controls.length; i < len; i++) {
+                        var authPluginId   = self.$authPluginIds[i];
+                        var AuthPluginData = self.$AuthPluginData[authPluginId];
+                        var authenticated  = false;
+
+                        var PluginElm = new Element('div', {
+                            'class': 'pcsg-gpm-auth-authenticate-plugins-plugin',
+                            'html' : '<h3>' + AuthPluginData.title + '</h3>' +
+                            '<input type="text">'
+                        }).inject(PluginsElm);
+
+                        var Control = new controls[i]({
+                            authPluginId: authPluginId
+                        });
+
+                        self.$authPluginControls.push(Control);
+
+                        Control.addEvents({
+                            onSubmit: self.$submit
+                        });
+
+                        Control.imports(PluginElm.getElement('input'));
+                        Control.setAttribute('eligibleForAuth', true);
+
+                        // if the user is already authenticated for a specific plugin
+                        // disable it and show a check icon
+                        if (authPluginId in self.$AuthStatus.authPlugins) {
+                            if (self.$AuthStatus.authPlugins[authPluginId]) {
+                                Control.disable();
+                                Control.getElm().addClass(
+                                    'pcsg-gpm-auth-authenticate-plugins-plugin__hidden'
+                                );
+
+                                new Element('span', {
+                                    'class': 'fa fa-check pcsg-gpm-auth-authenticate-check'
+                                }).inject(PluginElm, 'top');
+
+                                authenticated = true;
+                            }
+                        }
+
+                        if (!AuthPluginData.registered) {
+                            new Element('div', {
+                                'class': 'pcsg-gpm-auth-authenticate-warning',
+                                html   : '<span>' +
+                                QUILocale.get(
+                                    lg,
+                                    'controls.auth.authenticate.warning.nonregistered'
+                                ) +
+                                '</span>'
+                            }).inject(
+                                PluginElm,
+                                'top'
+                            );
+
+                            Control.setAttribute('eligibleForAuth', false);
+                        } else {
+                            eligibleAuthPluginsLoaded++;
+                        }
+
+                        if (!FirstControl && !authenticated) {
+                            FirstControl = Control;
+                        }
+                    }
+
+                    // hide unnecessary controls
+                    if (eligibleAuthPluginsLoaded > self.$SecurityClass.requiredFactors) {
+                        for (i = 0, len = self.$authPluginControls.length; i < len; i++) {
+                            if (i < self.$SecurityClass.requiredFactors) {
+                                continue;
+                            }
+
+                            var AuthPluginElm = self.$authPluginControls[i].getElm();
+
+                            new Element('div', {
+                                'class'         : 'pcsg-gpm-auth-authenticate-plugins-show',
+                                'data-controlid': i,
+                                'html'          : '<span class="fa fa-plus"></span>' +
+                                '<span class="pcsg-gpm-auth-authenticate-plugins-show-title">' +
+                                authPluginControls[i].title +
+                                '</span>',
+                                events          : {
+                                    click: function () {
+                                        var controlId = this.getProperty('data-controlid');
+                                        self.$authPluginControls[controlId].getElm().setStyle('display', '');
+
+                                        this.destroy();
+                                    }
+                                }
+                            }).inject(
+                                AuthPluginElm.getParent()
+                            );
+
+                            AuthPluginElm.setStyle(
+                                'display',
+                                'none'
+                            );
+                        }
+
+                        FirstControl = self.$authPluginControls[0];
+                    }
+
+                    if (FirstControl) {
+                        FirstControl.focus();
+                    }
+
+                    self.$AuthPopup.Loader.hide();
+                    self.fireEvent('loaded');
+                }
+            );
+        },
+
+        /**
+         * Submit authentication data
+         */
+        $submit: function () {
+            var AuthData = this.getAuthData();
+
+            AuthData.sessioncache = this.$AuthPopup.getContent().getElement(
+                '.pcsg-gpm-auth-authenticate-save-authdata'
+            ).checked;
+
+            this.fireEvent('submit', [AuthData]);
         },
 
         /**

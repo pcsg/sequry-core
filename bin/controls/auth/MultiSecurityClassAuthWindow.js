@@ -145,7 +145,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                     html      : '<td>' +
                     '<label class="field-container">' +
                     '<span class="field-container-item">' +
-                    SecurityClassInfo.title + ' (ID: ' + SecurityClassInfo.id + ')' +
+                    SecurityClassInfo.title +
                     '</span>' +
                     '<span class="field-container-field pcsg-gpm-auth-syncauthplugin-btn">' +
                     '</span>' +
@@ -174,6 +174,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 }
 
                 if (self.$AuthStatus[SecurityClassInfo.id].authenticated) {
+                    self.$authSuccessCount++;
                     self.$setSecurityClassSuccess(SecurityClassInfo.id);
                 }
             };
