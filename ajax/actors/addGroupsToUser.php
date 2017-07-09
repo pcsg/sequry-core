@@ -2,6 +2,7 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Events;
+use Pcsg\GroupPasswordManager\Security\Utils;
 
 /**
  * Add group(s) to a user
@@ -13,7 +14,7 @@ use Pcsg\GroupPasswordManager\Events;
 \QUI::$Ajax->registerFunction(
     'package_pcsg_grouppasswordmanager_ajax_actors_addGroupsToUser',
     function ($userId, $groupIds) {
-        $groupIds = json_decode($groupIds, true);
+        $groupIds = Utils::saveJsonDecode($groupIds);
 
         try {
             $CryptoUser = CryptoActors::getCryptoUser((int)$userId);

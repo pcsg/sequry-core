@@ -225,4 +225,24 @@ class Utils
 
         return implode('', $passwordParts);
     }
+
+    /**
+     * Perform a json_decode and catch all errors. Returns an array in every case.
+     *
+     * @param string $arrayData - Data to be decoded
+     * @return array
+     */
+    public static function saveJsonDecode($arrayData) {
+        if (!is_string($arrayData)) {
+            return array();
+        }
+
+        $array = json_decode($arrayData, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return array();
+        }
+
+        return $array;
+    }
 }

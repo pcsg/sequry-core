@@ -15,8 +15,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/authPlugins/Authenticatio
 ], function (QUIControl) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
-
     return new Class({
 
         Extends: QUIControl,

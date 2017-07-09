@@ -84,6 +84,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
                 ], function (MultiAuthWindow) {
                     new MultiAuthWindow({
+                        info: 'Dum di dum!',
                         securityClassIds: securityClassIds,
                         events          : {
                             onSubmit: function (Popup) {

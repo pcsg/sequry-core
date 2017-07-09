@@ -54,7 +54,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
         options: {
             securityClassIds: [],   // id of all security classes the user should authenticate for
-            title           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.title')
+            title           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.title'),
+            info            : false // info text that is shown in top section of popup
         },
 
         initialize: function (options) {
@@ -89,6 +90,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.$Elm.addClass('pcsg-gpm-multisecurityclassauth');
 
+            // add authenticate button that is only enabled
+            // when user has authenticated with all SecurityClasses
             this.$AuthBtn = new QUIButton({
                 textimage: 'fa fa-key',
                 text     : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.auth.text'),
@@ -105,10 +108,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             this.addButton(this.$AuthBtn);
             this.$AuthBtn.disable();
 
+            // replace generic info with custom info
+            var customInfo = this.getAttribute('info');
+            var info       = QUILocale.get(lg, lg_prefix + 'info');
+
+            if (customInfo) {
+                info = customInfo;
+            }
+
             this.setContent(
                 Mustache.render(template, {
                     tableHeader: QUILocale.get(lg, lg_prefix + 'tableHeader'),
-                    info       : QUILocale.get(lg, lg_prefix + 'info')
+                    info       : info
                 })
             );
 
@@ -139,7 +150,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.Loader.show();
 
-            var FuncBuildSecurityClassElm = function(SecurityClassInfo) {
+            var FuncBuildSecurityClassElm = function (SecurityClassInfo) {
                 var SecurityClassElm = new Element('tr', {
                     'data-sid': SecurityClassInfo.id,
                     html      : '<td>' +
@@ -197,7 +208,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.Loader.show();
 
-            Authentication.securityClassAuth(securityClassId).then(function() {
+            Authentication.securityClassAuth(securityClassId).then(function () {
                 self.Loader.hide();
                 self.$authSuccessCount++;
                 self.$setSecurityClassSuccess(securityClassId);
@@ -205,7 +216,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 if (self.$authSuccessCount >= self.$authSuccessCountNeeded) {
                     self.$AuthBtn.enable();
                 }
-            }, function() {
+            }, function () {
                 self.Loader.hide();
             });
         },

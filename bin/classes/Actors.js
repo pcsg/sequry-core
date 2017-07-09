@@ -94,7 +94,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
             var self = this;
 
             return new Promise(function (resolve, reject) {
-                self.getGroupSecurityClassIds(groupId).then(function (securityClassIds) {
+                self.getGroupsSecurityClassIds([groupId]).then(function (securityClassIds) {
                     AuthAjax.post(
                         'package_pcsg_grouppasswordmanager_ajax_actors_addUsersToGroup', {
                             securityClassIds: securityClassIds,
@@ -106,12 +106,18 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
             });
         },
 
-        getGroupSecurityClassIds: function (groupId) {
+        /**
+         * Get IDs of all SecurityClasses of given CryptoGroups
+         *
+         * @param {Array} groupIds
+         * @returns {Promise}
+         */
+        getGroupsSecurityClassIds: function (groupIds) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_getGroupSecurityClassIds', resolve, {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_getGroupsSecurityClassIds', resolve, {
                     'package': pkg,
                     onError  : reject,
-                    groupId  : groupId
+                    groupIds : JSON.encode(groupIds)
                 });
             });
         },
@@ -121,18 +127,21 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          *
          * @param {number} userId - User ID
          * @param {array} groupIds - IDs of groups that shall be added to the user
-         * @param {object} AuthData - Authentifaction data for all relevant security classes
          *
          * @returns {Promise}
          */
-        addGroupsToUser: function (userId, groupIds, AuthData) {
+        addGroupsToUser: function (userId, groupIds) {
+            var self = this;
+
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_addGroupsToUser', resolve, {
-                    'package': pkg,
-                    onError  : reject,
-                    userId   : userId,
-                    groupIds : JSON.encode(groupIds),
-                    authData : JSON.encode(AuthData)
+                self.getGroupsSecurityClassIds(groupIds).then(function (securityClassIds) {
+                    AuthAjax.post(
+                        'package_pcsg_grouppasswordmanager_ajax_actors_addGroupsToUser', {
+                            securityClassIds: securityClassIds,
+                            userId          : userId,
+                            groupIds        : JSON.encode(groupIds)
+                        }
+                    ).then(resolve, reject);
                 });
             });
         },
