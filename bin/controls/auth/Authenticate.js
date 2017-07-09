@@ -333,7 +333,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                                 'data-controlid': i,
                                 'html'          : '<span class="fa fa-plus"></span>' +
                                 '<span class="pcsg-gpm-auth-authenticate-plugins-show-title">' +
-                                authPluginControls[i].title +
+                                AuthPluginData.title +
                                 '</span>',
                                 events          : {
                                     click: function () {
