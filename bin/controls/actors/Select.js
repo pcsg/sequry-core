@@ -11,10 +11,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
 
     'qui/QUI',
     'qui/controls/elements/Select',
+
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
+
     'Ajax',
     'Locale'
 
-], function (QUI, QUIElementSelect, QUIAjax, QUILocale) {
+], function (QUI, QUIElementSelect, SelectTablePopup, QUIAjax, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -134,8 +137,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             return actors;
         },
 
+        /**
+         * Event: onSearchButtonClick
+         */
         $onSearchButtonClick: function() {
-            console.log("clicki on the search btn");
+            new SelectTablePopup({
+                securityClassId: this.getAttribute('securityClassId')
+            }).open();
         }
     });
 });

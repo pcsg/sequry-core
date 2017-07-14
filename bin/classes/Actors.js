@@ -166,6 +166,22 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
                     onError  : reject
                 });
             });
+        },
+
+        /**
+         * Search actors (users or groups)
+         *
+         * @param {Object} SearchParams
+         * @return {Promise}
+         */
+        search: function (SearchParams) {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_actors_search', resolve, {
+                    'package'   : pkg,
+                    searchParams: JSON.encode(SearchParams),
+                    onError     : reject
+                });
+            });
         }
     });
 });

@@ -1740,6 +1740,29 @@
             <de><![CDATA[[requiredFactors]-Faktor Authentifizierung]]></de>
         </locale>
 
+        <!-- Control: actors/SelectTable -->
+        <locale name="controls.actors.selecttable.tbl.header.id">
+            <de><![CDATA[User ID]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.header.name">
+            <de><![CDATA[Name]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.header.notice">
+            <de><![CDATA[Eignung für Sicherheitsklasse "[securityClassTitle]"]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.eligible">
+            <de><![CDATA[geeignet]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.not.eligible" html="true">
+            <de><![CDATA[nicht geeignet <i>(nicht für die Mindestanzahl an Authentifizierungs-Faktoren registriert)</i>]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.btn.users">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.btn.groups">
+            <de><![CDATA[Gruppen]]></de>
+        </locale>
+
     </groups>
 
 </locales>
