@@ -37,7 +37,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             actorType      : 'all', // "users", "groups", "all"
             securityClassId: false,  // id of security class this actors are searched for
             Search         : false,
-            multiselect    : false
+            filterActorIds : []   // IDs of actors that are filtered from list (entries must have
+            // prefix "u" (user) or "g" (group)
         },
 
         initialize: function (options) {
@@ -143,11 +144,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
          * Event: onSearchButtonClick
          */
         $onSearchButtonClick: function () {
-            var self = this;
+            var self           = this;
+            var filterActorIds = Array.clone(this.getAttribute('filterActorIds'));
+
+            if (this.getValue() !== '') {
+                filterActorIds.combine(this.getValue().split(','));
+            }
 
             new SelectTablePopup({
                 securityClassId: this.getAttribute('securityClassId'),
-                multiselect    : this.getAttribute('multiselect'),
+                multiselect    : this.getAttribute('multiple'),
+                actorType      : this.getAttribute('actorType'),
+                filterActorIds : filterActorIds,
                 events         : {
                     onSubmit: function (ids, actorType) {
                         var prefix = 'u';

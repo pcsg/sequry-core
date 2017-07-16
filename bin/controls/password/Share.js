@@ -154,7 +154,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
             var pwId = this.getAttribute('passwordId');
 
-            Authentication.passwordAuth(pwId).then(function(AuthData) {
+            Authentication.passwordAuth(pwId).then(function (AuthData) {
                 Passwords.getShareData(
                     pwId,
                     AuthData
@@ -178,12 +178,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
                         self.$ActorSelectUsers = new ActorSelect({
                             actorType      : 'users',
-                            securityClassId: ShareData.securityClassId
+                            securityClassId: ShareData.securityClassId,
+                            multiple       : true,
+                            filterActorIds : ShareData.ownerUserIds
                         }).inject(ActorUsersElm);
 
                         self.$ActorSelectGroups = new ActorSelect({
                             actorType      : 'groups',
-                            securityClassId: ShareData.securityClassId
+                            securityClassId: ShareData.securityClassId,
+                            multiple       : true,
+                            filterActorIds : ShareData.ownerGroupIds
                         }).inject(ActorGroupsElm);
 
                         self.$insertData();
@@ -193,7 +197,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                         self.fireEvent('close');
                     }
                 );
-            }, function() {
+            }, function () {
                 self.fireEvent('close');
             });
         },
@@ -218,7 +222,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 this.$ActorSelectGroups.getActors()
             );
 
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 Passwords.setShareData(
                     self.getAttribute('passwordId'),
                     shareData,

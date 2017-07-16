@@ -427,8 +427,25 @@ class Password extends QUI\QDOM
             'description'     => $this->getAttribute('description'),
             'dataType'        => $this->getAttribute('dataType'),
             'sharedWith'      => $this->getSecretAttribute('sharedWith'),
-            'securityClassId' => $this->SecurityClass->getId()
+            'securityClassId' => $this->SecurityClass->getId(),
+            'ownerUserIds'    => $this->getOwnerUserIds(),
+            'ownerGroupIds'   => array()
         );
+
+        $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
+        $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
+
+        if ($currentOwnerType === self::OWNER_TYPE_GROUP) {
+            $data['ownerGroupIds'][] = $currentOwnerId;
+        }
+
+        foreach ($data['ownerUserIds'] as $k => $v) {
+            $data['ownerUserIds'][$k] = 'u' . $v;
+        }
+
+        foreach ($data['ownerGroupIds'] as $k => $v) {
+            $data['ownerGroupIds'][$k] = 'g' . $v;
+        }
 
         return $data;
     }

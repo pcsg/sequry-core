@@ -249,7 +249,7 @@ class CryptoActors
 
         switch ($type) {
             case 'groups':
-                $actors = self::searchGroups($searchParams);
+                $actors = self::searchGroups($searchParams, $countOnly);
                 break;
 
             // users
@@ -285,6 +285,20 @@ class CryptoActors
 
             if (!empty($searchParams['eligibleOnly'])) {
                 $where[] = 'users.`id` IN (' . implode(',', $eligibleUserIds) . ')';
+            }
+        }
+
+        if (!empty($searchParams['filterActorIds'])) {
+            $filterActorIds = array();
+
+            foreach ($searchParams['filterActorIds'] as $actorId) {
+                if (mb_strpos($actorId, 'u') === 0) {
+                    $filterActorIds[] = (int)mb_substr($actorId, 1);
+                }
+            }
+
+            if (!empty($filterActorIds)) {
+                $where[] = 'users.`id` NOT IN (' . implode(',', $filterActorIds) . ')';
             }
         }
 
@@ -450,6 +464,20 @@ class CryptoActors
 
             if (!empty($searchParams['eligibleOnly'])) {
                 $where[] = 'groups.`id` IN (' . implode(',', $eligibleGroupIds) . ')';
+            }
+        }
+
+        if (!empty($searchParams['filterActorIds'])) {
+            $filterActorIds = array();
+
+            foreach ($searchParams['filterActorIds'] as $actorId) {
+                if (mb_strpos($actorId, 'g') === 0) {
+                    $filterActorIds[] = (int)mb_substr($actorId, 1);
+                }
+            }
+
+            if (!empty($filterActorIds)) {
+                $where[] = 'groups.`id` NOT IN (' . implode(',', $filterActorIds) . ')';
             }
         }
 

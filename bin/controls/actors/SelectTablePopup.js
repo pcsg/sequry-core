@@ -38,7 +38,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
 
         options: {
             securityClassId: false,   // security class id the actors have to be eligible for
-            multiselect    : false
+            multiselect    : false,
+            actorType      : 'all', // can be "all", "users" or "groups"
+            filterActorIds : []   // IDs of actors that are filtered from list (entries must have
+            // prefix "u" (user) or "g" (group)
         },
 
         initialize: function (options) {
@@ -58,6 +61,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
             this.$SelectTable = new SelectTable({
                 securityClassId: this.getAttribute('securityClassId'),
                 multiselect    : this.getAttribute('multiselect'),
+                actorType      : this.getAttribute('actorType'),
+                filterActorIds : this.getAttribute('filterActorIds'),
                 events         : {
                     onSubmit: this.$submit
                 }
