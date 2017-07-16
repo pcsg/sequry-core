@@ -4,22 +4,22 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
  * @require qui/controls/Control
+ * @require qui/controls/loader/Loader
+ * @require qui/controls/buttons/Button
  * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable.html
+ * @require controls/grid/Grid
+ * @require package/pcsg/grouppasswordmanager/bin/Actors
+ * @require package/pcsg/grouppasswordmanager/bin/Authentication
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable.css
  *
- * @event onSubmit [
+ * @event onSubmit [selectedIds, actorType, this]
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
 
     'qui/controls/Control',
     'qui/controls/loader/Loader',
     'qui/controls/buttons/Button',
-    'qui/utils/Form',
     'Locale',
 
     'controls/grid/Grid',
@@ -27,11 +27,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
     'package/pcsg/grouppasswordmanager/bin/Actors',
     'package/pcsg/grouppasswordmanager/bin/Authentication',
 
-    //'text!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable.css'
 
-], function (QUIControl, QUILoader, QUIButton, QUIFormUtils, QUILocale, Grid,
-             Actors, Authentication) {
+], function (QUIControl, QUILoader, QUIButton, QUILocale, Grid, Actors, Authentication) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -53,6 +51,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
         ],
 
         options: {
+            multiselect    : false,
             securityClassId: false   // security class id the actors have to be eligible for
         },
 
@@ -76,6 +75,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
             this.$actorType     = 'users';
             this.$search        = false;
             this.$SecurityClass = null;
+            this.$SearchInput   = null;
+            this.$eligibleOnly  = false;
         },
 
         /**
@@ -106,23 +107,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                 self.$Grid = new Grid(self.$GridParent, {
                     buttons          : [{
                         name  : 'users',
-                        text  : QUILocale.get(lg, 'controls.actors.selecttable.tbl.btn.users'),
                         icon  : 'fa fa-user',
                         events: {
                             onClick: self.$onTypeBtnClick
                         }
                     }, {
                         name  : 'groups',
-                        text  : QUILocale.get(lg, 'controls.actors.selecttable.tbl.btn.groups'),
                         icon  : 'fa fa-users',
                         events: {
                             onClick: self.$onTypeBtnClick
+                        }
+                    }, {
+                        name     : 'showeligibleonly',
+                        text     : QUILocale.get(lg, 'controls.actors.selecttable.tbl.btn.showeligibleonly'),
+                        textimage: 'fa fa-check-circle-o',
+                        events   : {
+                            onClick: function () {
+                                self.$eligibleOnly = !self.$eligibleOnly;
+                                self.refresh();
+                            }
                         }
                     }],
                     pagination       : true,
                     selectable       : true,
                     serverSort       : true,
-                    multipleSelection: false,
+                    multipleSelection: self.getAttribute('multiselect'),
                     columnModel      : [{
                         header   : QUILocale.get(lg, 'controls.actors.selecttable.tbl.header.id'),
                         dataIndex: 'id',
@@ -147,15 +156,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                     }]
                 });
 
+                // add search input
+                var ButtonBarElm = self.$Grid.getElm().getElement('.tDiv');
+
+                self.$SearchInput = new Element('input', {
+                    'class'    : 'pcsg-gpm-actors-selecttable-searchinput',
+                    placeholder: QUILocale.get(lg,
+                        'controls.actors.selecttable.search.input.placeholder'
+                    ),
+                    type       : 'search'
+                }).inject(ButtonBarElm);
+
+                self.$SearchInput.addEventListener('search', function (event) {
+                    var Input    = event.target;
+                    self.$search = Input.value.trim();
+                    self.refresh();
+                });
+
                 self.$Grid.addEvents({
                     onDblClick: function () {
-                        self.$submit();
+                        self.fireEvent('submit', [
+                            self.getSelectedIds(), self.$actorType, self
+                        ]);
                     },
                     onRefresh : self.$listRefresh
                 });
 
                 self.resize();
                 self.refresh();
+                self.$SearchInput.focus();
 
                 var TableButtons = self.$Grid.getAttribute('buttons');
                 TableButtons.users.setActive();
@@ -170,6 +199,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
         $onTypeBtnClick: function (Btn) {
             var TableButtons = this.$Grid.getAttribute('buttons');
             var type         = Btn.getAttribute('name');
+
+            if (type === this.$actorType) {
+                return;
+            }
+
+            this.$search            = false;
+            this.$SearchInput.value = '';
+            this.$SearchInput.focus();
 
             if (type === 'users') {
                 TableButtons.groups.setNormal();
@@ -230,6 +267,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                 SearchParams.search = this.$search;
             }
 
+            SearchParams.eligibleOnly    = this.$eligibleOnly;
             SearchParams.type            = this.$actorType;
             SearchParams.securityClassId = this.getAttribute('securityClassId');
 
@@ -252,17 +290,32 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
 
                 if (Row.eligible) {
                     Row.notice = new Element('div', {
-                        'class': 'pcsg-gpm-actors-selecttable-eligible',
-                        html   : '<span>' + QUILocale.get(lg,
+                        'class': 'pcsg-gpm-actors-selecttable-eligibility',
+                        html   : '<span class="pcsg-gpm-actors-selecttable-eligible">' +
+                        QUILocale.get(lg,
                             'controls.actors.selecttable.tbl.eligible'
                         ) + '</span>'
                     });
                 } else {
+                    var reasonText;
+
+                    if (this.$actorType === 'users') {
+                        reasonText = QUILocale.get(lg,
+                            'controls.actors.selecttable.tbl.not.eligible.user'
+                        );
+                    } else {
+                        reasonText = QUILocale.get(lg,
+                            'controls.actors.selecttable.tbl.not.eligible.group'
+                        );
+                    }
+
                     Row.notice = new Element('div', {
-                        'class': 'pcsg-gpm-actors-selecttable-noteligible',
-                        html   : '<span>' + QUILocale.get(lg,
+                        'class': 'pcsg-gpm-actors-selecttable-eligibility',
+                        html   : '<span class="pcsg-gpm-actors-selecttable-noteligible">' +
+                        QUILocale.get(lg,
                             'controls.actors.selecttable.tbl.not.eligible'
-                        ) + '</span>'
+                        ) + '</span>' +
+                        '<span>' + reasonText + '</span>'
                     });
                 }
             }
@@ -271,12 +324,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
 
             var TableButtons = this.$Grid.getAttribute('buttons');
             TableButtons[this.$actorType].setActive();
+
+            if (this.$eligibleOnly) {
+                TableButtons.showeligibleonly.setActive();
+            } else {
+                TableButtons.showeligibleonly.setNormal();
+            }
         },
 
         /**
-         * Submit selected actors (user or groups)
+         * Get IDs of all selected actors
+         *
+         * @return {Array}
          */
-        $submit: function () {
+        getSelectedIds: function () {
             var selectedIds  = [];
             var selectedData = this.$Grid.getSelectedData();
 
@@ -284,18 +345,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                 selectedIds.push(selectedData[i].id);
             }
 
-            var SubmitData = {
-                users : [],
-                groups: []
-            };
+            return selectedIds;
+        },
 
-            if (this.$actorType === 'users') {
-                SubmitData.users = selectedIds;
-            } else {
-                SubmitData.groups = selectedIds;
-            }
-
-            this.fireEvent('submit', [SubmitData, this]);
+        /**
+         * Get currently selected actor type
+         *
+         * @returns {string} - "users" / "groups"
+         */
+        getActorType: function () {
+            return this.$actorType;
         }
     });
 });

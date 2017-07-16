@@ -1,25 +1,26 @@
 /**
- * Select actors for a SecurityClass via Grid
+ * Select actors for a SecurityClass via Grid (Popup)
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
+ * @require qui/controls/windows/Popup
+ * @require qui/controls/buttons/Button
  * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup.css
+ * @require package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable
  *
- * @event onSubmit [
+ * @event onSubmit [selectedIds, actorType, this]
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup', [
 
     'qui/controls/windows/Popup',
+    'qui/controls/buttons/Button',
+
+    'Locale',
+
     'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable'
 
-], function (QUIPopup, SelectTable) {
+], function (QUIPopup, QUIButton, QUILocale, SelectTable) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -31,11 +32,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
 
         Binds: [
             '$onOpen',
-            '$onResize'
+            '$onResize',
+            '$submit'
         ],
 
         options: {
-            securityClassId: false   // security class id the actors have to be eligible for
+            securityClassId: false,   // security class id the actors have to be eligible for
+            multiselect    : false
         },
 
         initialize: function (options) {
@@ -52,13 +55,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
          * Event: onOpen
          */
         $onOpen: function () {
-            //var self = this;
-            //
-            //this.Loader.show();
-
             this.$SelectTable = new SelectTable({
-                securityClassId: this.getAttribute('securityClassId')
+                securityClassId: this.getAttribute('securityClassId'),
+                multiselect    : this.getAttribute('multiselect'),
+                events         : {
+                    onSubmit: this.$submit
+                }
             }).inject(this.getContent());
+
+            this.addButton(new QUIButton({
+                text     : QUILocale.get(lg, 'controls.actors.selecttablepopup.btn.confirm'),
+                textimage: 'fa fa-check',
+                events   : {
+                    onClick: this.$submit
+                }
+            }));
+        },
+
+        /**
+         * Submit actor selection
+         */
+        $submit: function () {
+            this.fireEvent('submit', [
+                this.$SelectTable.getSelectedIds(),
+                this.$SelectTable.getActorType(),
+                this
+            ]);
+
+            this.close();
         },
 
         /**

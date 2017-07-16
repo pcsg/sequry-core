@@ -277,6 +277,17 @@ class CryptoActors
         $Grid       = new QUI\Utils\Grid($searchParams);
         $gridParams = $Grid->parseDBParams($searchParams);
 
+        $eligibleUserIds = false;
+
+        if (!empty($searchParams['securityClassId'])) {
+            $SecurityClass   = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
+            $eligibleUserIds = $SecurityClass->getEligibleUserIds();
+
+            if (!empty($searchParams['eligibleOnly'])) {
+                $where[] = 'users.`id` IN (' . implode(',', $eligibleUserIds) . ')';
+            }
+        }
+
         if ($countOnly) {
             $sql = "SELECT COUNT(*)";
         } else {
@@ -292,11 +303,10 @@ class CryptoActors
         }
 
         // JOIN user access meta table with password data table
-        $sql .= " FROM `" . Tables::keyPairsUser() . "` keypairs, ";
-        $sql .= " `" . QUI::getDBTableName('users') . "` users";
+//        $sql .= " FROM `" . Tables::keyPairsUser() . "` keypairs, ";
+        $sql .= "FROM `" . QUI::getDBTableName('users') . "` users";
 
-        $where[] = 'keypairs.`userId` = users.`id`';
-//        $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
+//        $where[] = 'keypairs.`userId` = users.`id`';
 
         if (!empty($searchParams['search'])
         ) {
@@ -384,13 +394,7 @@ class CryptoActors
             return (int)current(current($result));
         }
 
-        $users           = array();
-        $eligibleUserIds = false;
-
-        if (!empty($searchParams['securityClassId'])) {
-            $SecurityClass   = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
-            $eligibleUserIds = $SecurityClass->getEligibleUserIds();
-        }
+        $users = array();
 
         foreach ($result as $row) {
             if (isset($users[$row['id']])) {
@@ -438,6 +442,17 @@ class CryptoActors
         $binds = array();
         $where = array();
 
+        $eligibleGroupIds = false;
+
+        if (!empty($searchParams['securityClassId'])) {
+            $SecurityClass    = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
+            $eligibleGroupIds = $SecurityClass->getGroupIds();
+
+            if (!empty($searchParams['eligibleOnly'])) {
+                $where[] = 'groups.`id` IN (' . implode(',', $eligibleGroupIds) . ')';
+            }
+        }
+
         $Grid       = new QUI\Utils\Grid($searchParams);
         $gridParams = $Grid->parseDBParams($searchParams);
 
@@ -454,10 +469,10 @@ class CryptoActors
         }
 
         // JOIN user access meta table with password data table
-        $sql .= " FROM `" . Tables::keyPairsGroup() . "` keypairs, ";
-        $sql .= " `" . QUI::getDBTableName('groups') . "` groups";
+//        $sql .= " FROM `" . Tables::keyPairsGroup() . "` keypairs, ";
+        $sql .= " FROM `" . QUI::getDBTableName('groups') . "` groups";
 
-        $where[] = 'keypairs.`groupId` = groups.`id`';
+//        $where[] = 'keypairs.`groupId` = groups.`id`';
 //        $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
         if (!empty($searchParams['search'])
@@ -544,13 +559,7 @@ class CryptoActors
             return (int)current(current($result));
         }
 
-        $groups           = array();
-        $eligibleGroupIds = false;
-
-        if (!empty($searchParams['securityClassId'])) {
-            $SecurityClass    = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
-            $eligibleGroupIds = $SecurityClass->getGroupIds();
-        }
+        $groups = array();
 
         foreach ($result as $row) {
             if (isset($groups[$row['id']])) {

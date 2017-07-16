@@ -4,6 +4,7 @@
  *
  * @require qui/QUI
  * @require qui/controls/elements/Select
+ * @require package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup
  * @require Ajax
  * @require Locale
  */
@@ -35,7 +36,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
         options: {
             actorType      : 'all', // "users", "groups", "all"
             securityClassId: false,  // id of security class this actors are searched for
-            Search         : false
+            Search         : false,
+            multiselect    : false
         },
 
         initialize: function (options) {
@@ -140,9 +142,25 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
         /**
          * Event: onSearchButtonClick
          */
-        $onSearchButtonClick: function() {
+        $onSearchButtonClick: function () {
+            var self = this;
+
             new SelectTablePopup({
-                securityClassId: this.getAttribute('securityClassId')
+                securityClassId: this.getAttribute('securityClassId'),
+                multiselect    : this.getAttribute('multiselect'),
+                events         : {
+                    onSubmit: function (ids, actorType) {
+                        var prefix = 'u';
+
+                        if (actorType === 'groups') {
+                            prefix = 'g';
+                        }
+
+                        for (var i = 0, len = ids.length; i < len; i++) {
+                            self.addItem(prefix + ids[i]);
+                        }
+                    }
+                }
             }).open();
         }
     });

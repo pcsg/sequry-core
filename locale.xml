@@ -1742,7 +1742,7 @@
 
         <!-- Control: actors/SelectTable -->
         <locale name="controls.actors.selecttable.tbl.header.id">
-            <de><![CDATA[User ID]]></de>
+            <de><![CDATA[ID]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.header.name">
             <de><![CDATA[Name]]></de>
@@ -1753,14 +1753,31 @@
         <locale name="controls.actors.selecttable.tbl.eligible">
             <de><![CDATA[geeignet]]></de>
         </locale>
-        <locale name="controls.actors.selecttable.tbl.not.eligible" html="true">
-            <de><![CDATA[nicht geeignet <i>(nicht für die Mindestanzahl an Authentifizierungs-Faktoren registriert)</i>]]></de>
+        <locale name="controls.actors.selecttable.tbl.not.eligible">
+            <de><![CDATA[nicht geeignet]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.not.eligible.user" html="true">
+            <de><![CDATA[<i>(nicht für die Mindestanzahl an Authentifizierungs-Faktoren registriert)</i>]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.not.eligible.group" html="true">
+            <de><![CDATA[<i>(nicht für die Sicherheitsklasse freigeschaltet)</i>]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.btn.users">
             <de><![CDATA[Benutzer]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.btn.groups">
             <de><![CDATA[Gruppen]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.search.input.placeholder">
+            <de><![CDATA[Suche]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.btn.showeligibleonly">
+            <de><![CDATA[Nur geeignete zeigen]]></de>
+        </locale>
+
+        <!-- Control: actors/SelectTablePopup -->
+        <locale name="controls.actors.selecttablepopup.btn.confirm">
+            <de><![CDATA[Auswählen]]></de>
         </locale>
 
     </groups>
