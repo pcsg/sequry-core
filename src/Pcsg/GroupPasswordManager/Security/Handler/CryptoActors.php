@@ -73,32 +73,29 @@ class CryptoActors
      *
      * @param QUI\Groups\Group $Group
      * @param SecurityClass $SecurityClass - The security class that determines how the group key will be encrypted
+     * @param QUI\Users\User $User - Initial User that gets access to the group key
+     * (requires eligibility for given $SecurityClass)
      * @return CryptoGroup
      *
      * @throws QUI\Exception
      */
-    public static function createCryptoGroup($Group, $SecurityClass)
-    {
-        $SessionUser = QUI::getUserBySession();
-
-        if (!$SessionUser->isInGroup($Group->getId())) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptoactors.addcryptogroup.user.not.in.group',
-                array(
-                    'groupId' => $Group->getId(),
-                    'userId'  => $SessionUser->getId()
-                )
-            ));
-        }
-
-        if (!QUIPermissions::hasPermission(Permissions::GROUP_EDIT, $SessionUser)) {
+    public static function createCryptoGroup(
+        QUI\Groups\Group $Group,
+        SecurityClass $SecurityClass,
+        QUI\Users\User $User = null
+    ) {
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_EDIT)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptogroup.no.permission'
             ));
         };
 
+        if (is_null($User)) {
+            $User = QUI::getUserBySession();
+        }
+
+        // @todo muss maybe entfernt werden
         if (self::existsCryptoGroup($Group->getId())) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -110,18 +107,28 @@ class CryptoActors
             ));
         }
 
-        $users = $Group->getUsers();
-
-        if (empty($users)) {
+        // first: check if user is eligible for security class
+        if (!$SecurityClass->isUserEligible($User)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.cryptoactors.addcryptogroup.no.users',
+                'exception.cryptoactors.addcryptogroup.user.not.eligible',
                 array(
-                    'groupId'         => $Group->getId(),
-                    'securityClassId' => $SecurityClass->getId()
+                    'userId'             => $User->getId(),
+                    'userName'           => $User->getName(),
+                    'securityClassId'    => $SecurityClass->getId(),
+                    'securityClassTitle' => $SecurityClass->getAttribute('title')
                 )
             ));
         }
+
+        // second: put user in group if he isn't already
+        if (!$User->isInGroup($Group->getId())) {
+            $Group->addUser($User);
+            $Group->save();
+        }
+
+        // third: check eligibility for all (other) users
+        $users = $Group->getUsers();
 
         if (!$SecurityClass->checkGroupUsersForEligibility($Group)) {
             throw new QUI\Exception(array(
@@ -190,10 +197,11 @@ class CryptoActors
 
                 // calculate MAC
                 $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
-
                 $DB->insert(Tables::usersToGroups(), $data);
             }
         }
+
+        return self::getCryptoGroup($Group->getId());
     }
 
     /**

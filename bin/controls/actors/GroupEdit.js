@@ -100,19 +100,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
                 var SecurityClassesElm = self.$Elm.getElement('.pcsg-gpm-group-edit-securityclasses');
 
-                if (!Group.sessionUserInGroup) {
-                    self.$canEditGroup = false;
-
-                    self.$NoEditWarnElm = new Element('div', {
-                        'class': 'pcsg-gpm-password-error',
-                        html   : '<span>' +
-                        QUILocale.get(lg, 'actors.groupedit.not.in.group') +
-                        '</span>'
-                    }).inject(SecurityClassesElm);
-
-                    self.fireEvent('loaded');
-                    return;
-                }
+                //if (!Group.sessionUserInGroup) {
+                //    self.$canEditGroup = false;
+                //
+                //    self.$NoEditWarnElm = new Element('div', {
+                //        'class': 'pcsg-gpm-password-error',
+                //        html   : '<span>' +
+                //        QUILocale.get(lg, 'actors.groupedit.not.in.group') +
+                //        '</span>'
+                //    }).inject(SecurityClassesElm);
+                //
+                //    self.fireEvent('loaded');
+                //    return;
+                //}
 
                 if (!Group.securityClassIds.length) {
                     new Element('div', {

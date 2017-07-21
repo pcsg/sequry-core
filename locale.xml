@@ -323,6 +323,9 @@
         <locale name="exception.cryptoactors.addcryptogroup.group.already.exists">
             <de><![CDATA[Die Gruppe #]]></de>
         </locale>
+        <locale name="exception.cryptoactors.addcryptogroup.user.not.eligible">
+            <de><![CDATA[Die Benutzer "[userName]" (#[userId]) ist nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet.]]></de>
+        </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
         <locale name="exception.authentication.plugin.register.error">
