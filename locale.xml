@@ -1133,6 +1133,9 @@
         <locale name="password.create.set.owner.not.eligible">
             <de><![CDATA[Der aktuell gewählte Passwort-Eigentümer ist nicht für die gewählte Authentifizierungs-Stufe geeignet. Bitte wählen Sie einen anderen Benutzer oder eine andere Gruppe als Passwort-Eigentümer.]]></de>
         </locale>
+        <locale name="controls.password.create.ownerselect.info">
+            <de><![CDATA[Bitte wählen Sie einen Eigentümer, der das Passwort bearbeiten, teilen und löschen kann. Wenn eine Gruppe als Eigentümer gewählt wird, haben alle Benutzer dieser Gruppe die genannten Passwort-Berechtigungen.]]></de>
+        </locale>
 
         <!-- Control: password/Edit -->
         <locale name="edit.template.title">
@@ -1392,6 +1395,12 @@
         </locale>
         <locale name="controls.password.share.groups.header">
             <de><![CDATA[Gruppen]]></de>
+        </locale>
+        <locale name="controls.password.share.actorselect.users.info">
+            <de><![CDATA[Wählen Sie alle Benutzer aus, für die das Passwort sichtbar sein soll. Bitte beachten Sie, dass Benutzer, die bereits direkt oder über eine Gruppe Zugriff auf das Passwort haben, hier nicht aufgelistet sind.]]></de>
+        </locale>
+        <locale name="controls.password.share.actorselect.groups.info">
+            <de><![CDATA[Wählen Sie alle Gruppen aus, für deren Benutzer das Passwort sichtbar sein soll. Bitte beachten Sie, dass Gruppen, die bereits Zugriff auf das Passwort haben, hier nicht aufgelistet sind.]]></de>
         </locale>
 
         <!-- Control: actors/Select -->
@@ -1778,6 +1787,15 @@
         <!-- Control: actors/SelectTablePopup -->
         <locale name="controls.actors.selecttablepopup.btn.confirm">
             <de><![CDATA[Auswählen]]></de>
+        </locale>
+        <locale name="controls.actors.selecttablepopup.title.users">
+            <de><![CDATA[Benutzer-Auswahl]]></de>
+        </locale>
+        <locale name="controls.actors.selecttablepopup.title.groups">
+            <de><![CDATA[Gruppen-Auswahl]]></de>
+        </locale>
+        <locale name="controls.actors.selecttablepopup.title.all">
+            <de><![CDATA[Benutzer- und Gruppen-Auswahl]]></de>
         </locale>
 
     </groups>

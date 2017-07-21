@@ -4,6 +4,13 @@
     width: 100%;
 }
 
+.pcsg-gpm-actors-selecttable-info {
+    float: left;
+    margin-bottom: 20px;
+    font-size: 13px;
+    width: 100%;
+}
+
 .pcsg-gpm-actors-selecttable-grid {
     float: left;
     height: 100% !important;

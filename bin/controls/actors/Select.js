@@ -34,6 +34,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
         ],
 
         options: {
+            popupInfo      : '',    // info that is shown in the ActorSelect Popup
             actorType      : 'all', // "users", "groups", "all"
             securityClassId: false,  // id of security class this actors are searched for
             Search         : false,
@@ -152,6 +153,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             }
 
             new SelectTablePopup({
+                info           : this.getAttribute('popupInfo'),
                 securityClassId: this.getAttribute('securityClassId'),
                 multiselect    : this.getAttribute('multiple'),
                 actorType      : this.getAttribute('actorType'),

@@ -51,11 +51,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
         ],
 
         options: {
-            multiselect    : false,
-            securityClassId: false,   // security class id the actors have to be eligible for
-            filterActorIds : [],   // IDs of actors that are filtered from list (entries must have
-            // prefix "u" (user) or "g" (group)
-            actorType      : 'all' // can be "all", "users" or "groups"
+            info           : '',        // info text that is shown above the table
+            multiselect    : false,     // can select multiple actors
+            securityClassId: false,     // security class id the actors have to be eligible for
+            filterActorIds : [],        // IDs of actors that are filtered from list (entries must have
+                                        // prefix "u" (user) or "g" (group)
+            actorType      : 'all'      // can be "all", "users" or "groups"
         },
 
         initialize: function (options) {
@@ -80,6 +81,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
             this.$SecurityClass = null;
             this.$SearchInput   = null;
             this.$eligibleOnly  = false;
+            this.$InfoElm       = null;
         },
 
         /**
@@ -97,16 +99,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                 '<div class="pcsg-gpm-actors-selecttable-grid"></div>'
             );
 
+            this.$GridParent = self.$Elm.getElement(
+                '.pcsg-gpm-actors-selecttable-grid'
+            );
+
             this.Loader.show();
 
             Authentication.getSecurityClassInfo(this.getAttribute('securityClassId')).then(function (SecurityClass) {
                 self.$SecurityClass = SecurityClass;
 
                 // content
-                self.$GridParent = self.$Elm.getElement(
-                    '.pcsg-gpm-actors-selecttable-grid'
-                );
-
                 var buttons   = [];
                 var actorType = self.getAttribute('actorType');
 
@@ -222,6 +224,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                     TableButtons.groups.setActive();
                 }
 
+                // info
+                var info = self.getAttribute('info');
+
+                if (info) {
+                    self.$InfoElm = new Element('p', {
+                        'class': 'pcsg-gpm-actors-selecttable-info',
+                        html   : info
+                    }).inject(self.$GridParent, 'top');
+                }
+
                 self.resize();
                 self.refresh();
                 self.$SearchInput.focus();
@@ -271,7 +283,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
          */
         resize: function () {
             if (this.$Grid && this.$GridParent) {
-                this.$Grid.setHeight(this.$GridParent.getSize().y);
+                var y = this.$GridParent.getSize().y;
+
+                if (this.$InfoElm) {
+                    y -= this.$InfoElm.getSize().y + parseInt(this.$InfoElm.getStyle('margin-bottom'));
+                }
+
+                this.$Grid.setHeight(y);
                 this.$Grid.resize();
             }
         },

@@ -183,6 +183,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             this.$OwnerSelectElm.set('html', '');
 
             this.$OwnerSelect = new ActorSelect({
+                popupInfo      : QUILocale.get(lg,
+                    'controls.password.create.ownerselect.info'
+                ),
                 max            : 1,
                 securityClassId: securityClassId,
                 events         : {

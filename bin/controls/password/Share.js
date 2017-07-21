@@ -177,6 +177,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                         self.$AuthData  = AuthData;
 
                         self.$ActorSelectUsers = new ActorSelect({
+                            popupInfo      : QUILocale.get(lg,
+                                'controls.password.share.actorselect.users.info'
+                            ),
                             actorType      : 'users',
                             securityClassId: ShareData.securityClassId,
                             multiple       : true,
@@ -184,6 +187,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                         }).inject(ActorUsersElm);
 
                         self.$ActorSelectGroups = new ActorSelect({
+                            popupInfo      : QUILocale.get(lg,
+                                'controls.password.share.actorselect.groups.info'
+                            ),
                             actorType      : 'groups',
                             securityClassId: ShareData.securityClassId,
                             multiple       : true,
