@@ -181,96 +181,18 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
-     * Set security class for this group
+     * Create a SecurityClass key for this group
      *
      * @param SecurityClass $SecurityClass
-     * @return void
+     * @param QUI\Users\User $User (optional) - Initial User that gets access to the group key
+     * (requires eligibility for given $SecurityClass) [default: Session user]
+     * @return CryptoGroup
      *
      * @throws QUI\Exception
      */
-    public function addSecurityClass($SecurityClass)
+    public function addSecurityClass($SecurityClass, $User = null)
     {
-        $this->checkCryptoUserPermission();
-
-        // check if security class is already set to this group
-        if (in_array($SecurityClass->getId(), $this->getSecurityClassIds())) {
-            return;
-        }
-
-        if (!$SecurityClass->checkGroupUsersForEligibility($this)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptogroup.addsecurityclass.users.not.eligible',
-                array(
-                    'groupId'            => $this->getId(),
-                    'groupName'          => $this->getAttribute('name'),
-                    'securityClassId'    => $SecurityClass->getId(),
-                    'securityClassTitle' => $SecurityClass->getAttribute('title')
-                )
-            ));
-        }
-
-        // generate new key pair and encrypt
-        $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
-        $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
-        $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();
-
-        $GroupAccessKey = SymmetricCrypto::generateKey();
-
-        $privateGroupKeyEncrypted = SymmetricCrypto::encrypt(
-            $privateGroupKey,
-            $GroupAccessKey
-        );
-
-        // insert group key data into database
-        $DB = QUI::getDataBase();
-
-        $data = array(
-            'groupId'         => $this->getId(),
-            'securityClassId' => $SecurityClass->getId(),
-            'publicKey'       => $publicGroupKey,
-            'privateKey'      => $privateGroupKeyEncrypted
-        );
-
-        // calculate group key MAC
-        $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
-
-        $DB->insert(Tables::keyPairsGroup(), $data);
-
-        // split group access key into parts and share with group users
-        $groupAccessKeyParts = SecretSharing::splitSecret(
-            $GroupAccessKey->getValue(),
-            $SecurityClass->getAuthPluginCount(),
-            $SecurityClass->getRequiredFactors()
-        );
-
-        $users = $this->getCryptoUsers();
-
-        /** @var CryptoUser $User */
-        foreach ($users as $User) {
-            $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
-            $i            = 0;
-
-            /** @var AuthKeyPair $AuthKeyPair */
-            foreach ($authKeyPairs as $AuthKeyPair) {
-                $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $groupAccessKeyParts[$i++],
-                    $AuthKeyPair
-                );
-
-                $data = array(
-                    'userId'          => $User->getId(),
-                    'userKeyPairId'   => $AuthKeyPair->getId(),
-                    'securityClassId' => $SecurityClass->getId(),
-                    'groupId'         => $this->getId(),
-                    'groupKey'        => $privateKeyEncryptionKeyPartEncrypted
-                );
-
-                // calculate MAC
-                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
-                $DB->insert(Tables::usersToGroups(), $data);
-            }
-        }
+        return CryptoActors::createCryptoGroupKey($this, $SecurityClass, $User);
     }
 
     /**

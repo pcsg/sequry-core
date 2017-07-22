@@ -231,6 +231,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
          * @return {Promise}
          */
         $addSecurityClass: function (securityClassId) {
+            console.log(this.$Group.eligibleUser[securityClassId]);
+            return;
+
             return Actors.addGroupSecurityClass(
                 this.$groupId,
                 securityClassId

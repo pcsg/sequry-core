@@ -320,11 +320,11 @@
         <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
             <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindestanzahl der nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
         </locale>
-        <locale name="exception.cryptoactors.addcryptogroup.group.already.exists">
-            <de><![CDATA[Die Gruppe #]]></de>
-        </locale>
         <locale name="exception.cryptoactors.addcryptogroup.user.not.eligible">
             <de><![CDATA[Die Benutzer "[userName]" (#[userId]) ist nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.securityclass.already.assigned">
+            <de><![CDATA[Die Gruppe ist der Sicherheitsklasse bereits zugeordnet.]]></de>
         </locale>
 
         <!-- Class: Security\Authentication\Plugin -->

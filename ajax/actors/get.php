@@ -2,6 +2,7 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
 /**
  * Get password actor info (user/group)
@@ -34,18 +35,39 @@ function package_pcsg_grouppasswordmanager_ajax_actors_get($id, $type)
                 )
             ));
 
-            $securityClassIds = array();
+            $securityClassIds             = array();
+            $eligibleUserForSecurityClass = array();
+            $groupUserIds                 = $Actor->getUserIds();
 
             if (current(current($result)) > 0) {
                 $CryptoGroup      = CryptoActors::getCryptoGroup((int)$id);
                 $securityClassIds = $CryptoGroup->getSecurityClassIds();
             }
 
+            // get all security classes and check if the group has at least
+            // one eligible user
+            foreach (Authentication::getSecurityClassesList() as $secClassId => $data) {
+                if (in_array($secClassId, $securityClassIds)) {
+                    $eligibleUserForSecurityClass[$secClassId] = true;
+                    continue;
+                }
+
+                $SecurityClass            = Authentication::getSecurityClass($secClassId);
+                $eligibleUserIds          = $SecurityClass->getEligibleUserIds();
+                $eligibleUserIdsIntersect = array_intersect(
+                    $groupUserIds,
+                    $eligibleUserIds
+                );
+
+                $eligibleUserForSecurityClass[$secClassId] = !empty($eligibleUserIdsIntersect);
+            }
+
             $info = array(
                 'id'                 => $Actor->getId(),
                 'name'               => $Actor->getAttribute('name'),
                 'securityClassIds'   => $securityClassIds,
-                'sessionUserInGroup' => QUI::getUserBySession()->isInGroup($Actor->getId())
+                'sessionUserInGroup' => QUI::getUserBySession()->isInGroup($Actor->getId()),
+                'eligibleUser'       => $eligibleUserForSecurityClass
             );
             break;
     }

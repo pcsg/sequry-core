@@ -648,7 +648,7 @@ class SecurityClass extends QUI\QDOM
 
         /** @var QUI\Groups\Group $Group */
         foreach ($allGroups as $Group) {
-            if (!$this->checkGroupUsersForEligibility($Group)) {
+            if (!$this->areGroupUsersEligible($Group)) {
                 continue;
             }
 
@@ -869,7 +869,7 @@ class SecurityClass extends QUI\QDOM
      *
      * @return bool
      */
-    public function checkGroupUsersForEligibility($Group)
+    public function areGroupUsersEligible($Group)
     {
         $result = $Group->getUsers(array(
             'select' => 'id'

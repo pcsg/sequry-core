@@ -73,13 +73,13 @@ class CryptoActors
      *
      * @param QUI\Groups\Group $Group
      * @param SecurityClass $SecurityClass - The security class that determines how the group key will be encrypted
-     * @param QUI\Users\User $User - Initial User that gets access to the group key
-     * (requires eligibility for given $SecurityClass)
+     * @param QUI\Users\User $User (optional) - Initial User that gets access to the group key
+     * (requires eligibility for given $SecurityClass) [default: Session user]
      * @return CryptoGroup
      *
      * @throws QUI\Exception
      */
-    public static function createCryptoGroup(
+    public static function createCryptoGroupKey(
         QUI\Groups\Group $Group,
         SecurityClass $SecurityClass,
         QUI\Users\User $User = null
@@ -91,62 +91,44 @@ class CryptoActors
             ));
         };
 
+        $CryptoGroup = self::getCryptoGroup($Group->getId());
+
+        // check if CryptoGroup already has a key for the given SecurityClass
+        if ($CryptoGroup->hasSecurityClass($SecurityClass)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.securityclass.already.assigned'
+            ));
+        }
+
         if (is_null($User)) {
             $User = QUI::getUserBySession();
         }
 
-        // @todo muss maybe entfernt werden
-        if (self::existsCryptoGroup($Group->getId())) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptoactors.addcryptogroup.otherwise.associated',
-                array(
-                    'groupId'         => $Group->getId(),
-                    'securityClassId' => $SecurityClass->getId()
-                )
-            ));
-        }
+        // check eligibility for all users
+        if (!$SecurityClass->areGroupUsersEligible($Group)) {
+            // if the inital group users are not eligible, check if the given $User is
+            if (!$SecurityClass->isUserEligible($User)) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptoactors.addcryptogroup.users.not.eligible',
+                    array(
+                        'groupId'         => $Group->getId(),
+                        'securityClassId' => $SecurityClass->getId()
+                    )
+                ));
+            }
 
-        // first: check if user is eligible for security class
-        if (!$SecurityClass->isUserEligible($User)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptoactors.addcryptogroup.user.not.eligible',
-                array(
-                    'userId'             => $User->getId(),
-                    'userName'           => $User->getName(),
-                    'securityClassId'    => $SecurityClass->getId(),
-                    'securityClassTitle' => $SecurityClass->getAttribute('title')
-                )
-            ));
-        }
-
-        // second: put user in group if he isn't already
-        if (!$User->isInGroup($Group->getId())) {
+            // add user to group if he is eligible
             $Group->addUser($User);
             $Group->save();
         }
 
-        // third: check eligibility for all (other) users
-        $users = $Group->getUsers();
-
-        if (!$SecurityClass->checkGroupUsersForEligibility($Group)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptoactors.addcryptogroup.users.not.eligible',
-                array(
-                    'groupId'         => $Group->getId(),
-                    'securityClassId' => $SecurityClass->getId()
-                )
-            ));
-        }
-
-        // generate key pair and encrypt
+        // generate key pair and encrypt group key for security class
         $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
         $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
         $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();
-
-        $GroupAccessKey = SymmetricCrypto::generateKey();
+        $GroupAccessKey  = SymmetricCrypto::generateKey();
 
         $privateGroupKeyEncrypted = SymmetricCrypto::encrypt(
             $privateGroupKey,
@@ -175,7 +157,7 @@ class CryptoActors
             $SecurityClass->getRequiredFactors()
         );
 
-        foreach ($users as $userData) {
+        foreach ($Group->getUsers() as $userData) {
             $User         = CryptoActors::getCryptoUser($userData['id']);
             $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
             $i            = 0;
@@ -201,7 +183,7 @@ class CryptoActors
             }
         }
 
-        return self::getCryptoGroup($Group->getId());
+        return $CryptoGroup;
     }
 
     /**

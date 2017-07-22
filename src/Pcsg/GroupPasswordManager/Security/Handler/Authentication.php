@@ -420,9 +420,10 @@ class Authentication
     }
 
     /**
-     * Return list of all security classes with name and description and associated authentication plugins
+     * Return list of all security classes with name and description and
+     * associated authentication plugins
      *
-     * @return array
+     * @return array[]
      */
     public static function getSecurityClassesList()
     {
