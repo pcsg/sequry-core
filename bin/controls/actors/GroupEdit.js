@@ -29,6 +29,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
     'package/pcsg/grouppasswordmanager/bin/Actors',
     'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
 
     'Ajax',
 
@@ -36,7 +37,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.css'
 
 ], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors,
-             Authentication, QUIAjax, template) {
+             Authentication, ActorSelectPopup, QUIAjax, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -194,9 +195,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                         btnIcon   = 'fa fa-minus-square';
                         btnAction = 'remove';
                     } else {
-                        btnText    = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add');
-                        btnIcon    = 'fa fa-plus-square';
-                        btnAction  = 'add';
+                        btnText   = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add');
+                        btnIcon   = 'fa fa-plus-square';
+                        btnAction = 'add';
                         //disableBtn = true;
                     }
 
@@ -231,13 +232,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
          * @return {Promise}
          */
         $addSecurityClass: function (securityClassId) {
-            console.log(this.$Group.eligibleUser[securityClassId]);
-            return;
+            if (this.$Group.eligibleUser[securityClassId]) {
+                return Actors.addGroupSecurityClass(
+                    this.$groupId,
+                    securityClassId
+                );
+            }
 
-            return Actors.addGroupSecurityClass(
-                this.$groupId,
-                securityClassId
-            );
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                new ActorSelectPopup({
+                    info           : QUILocale.get(lg,
+                        'controls.actors.groupedit.addsecurityclass.selectactor.info'
+                    ),
+                    securityClassId: securityClassId,
+                    actorType      : 'users',
+                    events: {
+                        onSubmit: function(selectedIds) {
+                            Actors.addGroupSecurityClass(
+                                self.$groupId,
+                                securityClassId,
+                                selectedIds[0]
+                            ).then(resolve, reject);
+                        }
+                    }
+                }).open();
+            });
         },
 
         /**
@@ -267,7 +288,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                             Actors.removeGroupSecurityClass(
                                 self.$groupId,
                                 securityClassId
-                            ).then(function(success) {
+                            ).then(function (success) {
                                 Confirm.close();
                                 resolve(success);
                             });
@@ -305,7 +326,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
             Authentication.securityClassAuth(
                 this.$currentSecurityClassId
-            ).then(function(AuthData) {
+            ).then(function (AuthData) {
                 Actors.setGroupSecurityClass(
                     self.$groupId,
                     self.$SecurityClassSelect.getValue(),

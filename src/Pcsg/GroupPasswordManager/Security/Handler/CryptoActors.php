@@ -9,6 +9,7 @@ namespace Pcsg\GroupPasswordManager\Security\Handler;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
+use Pcsg\GroupPasswordManager\Events;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
@@ -121,7 +122,7 @@ class CryptoActors
 
             // add user to group if he is eligible
             $Group->addUser($User);
-            $Group->save();
+            $User->save(QUI::getUsers()->getSystemUser());
         }
 
         // generate key pair and encrypt group key for security class

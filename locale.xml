@@ -1536,6 +1536,9 @@
         <locale name="actors.groupedit.remove.securityclass.information" html="true">
             <de><![CDATA[Sind Sie sicher, dass sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) aus der Passwort-Gruppe <b>[groupName]</b> (#[groupId]) entfernen möchten? Bei diesem Vorgang werden alle Passwörter gelöscht, deren Eigentümer diese Gruppe ist und die dieser Sicherheitsklasse angehören. Zudem verlieren alle Benutzer der Gruppe Zugriff auf Passwörter dieser Sicherheitsklasse, die den Zugriff über diese Gruppe haben. Wenn Sie den Vorgang durchführen möchten, klicken Sie bitte auf <b>Übernehmen</b>.]]></de>
         </locale>
+        <locale name="controls.actors.groupedit.addsecurityclass.selectactor.info">
+            <de><![CDATA[Dieser Gruppe sind momentan keine Benutzer zugewiesen, die für die gewählte Sicherheitsklasse geeignet sind. Um die Sicherheitsklasse der Gruppe hinzuzufügen, wählen Sie bitte einen geeigneten Benutzer. Dieser wird der Gruppe automatisch hinzugefügt.]]></de>
+        </locale>
 
         <!-- Control: auth/Panel -->
         <locale name="auth.panel.title">

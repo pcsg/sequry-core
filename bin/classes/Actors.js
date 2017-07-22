@@ -44,19 +44,21 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
         },
 
         /**
-         * Set security class to a group
+         * Add SecurityClass to a group
          *
          * @param {number} groupId
          * @param {number} securityClassId
+         * @param {number} [userId]
          *
          * @returns {Promise}
          */
-        addGroupSecurityClass: function (groupId, securityClassId) {
+        addGroupSecurityClass: function (groupId, securityClassId, userId) {
             return new Promise(function (resolve, reject) {
                 Ajax.post('package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     groupId        : groupId,
+                    userId         : userId || null,
                     securityClassId: securityClassId
                 });
             });
