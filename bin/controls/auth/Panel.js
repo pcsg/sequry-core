@@ -227,6 +227,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         $setGridData: function (authPlugins) {
             var Row;
             var data = [];
+            var self = this;
 
             for (var i = 0, len = authPlugins.length; i < len; i++) {
                 var Data = authPlugins[i];
@@ -256,9 +257,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         },
                         events      : {
                             onClick: function (Btn) {
-                                new SyncAuthPluginWindow({
-                                    authPluginId: Btn.getAttribute('authPluginId')
-                                }).open();
+                                self.$showSyncAuthPluginWindow(
+                                    Btn.getAttribute('authPluginId')
+                                );
                             }
                         }
                     }).create();
@@ -275,6 +276,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 data : data,
                 page : 1,
                 total: 1
+            });
+        },
+
+        /**
+         * Open window to synchronise an authentication plugin
+         *
+         * @param {Number} authPluginId
+         */
+        $showSyncAuthPluginWindow: function (authPluginId) {
+            var self = this;
+
+            this.Loader.show();
+
+            Authentication.getNonFullyAccessibleSecurityClassIds(
+                authPluginId
+            ).then(function (securityClassIds) {
+                self.Loader.hide();
+
+                new SyncAuthPluginWindow({
+                    authPluginId    : authPluginId,
+                    securityClassIds: securityClassIds
+                }).open();
             });
         },
 
@@ -408,7 +431,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
-                                onFinish: function() {
+                                onFinish: function () {
                                     Sheet.destroy();
                                 }
                             }

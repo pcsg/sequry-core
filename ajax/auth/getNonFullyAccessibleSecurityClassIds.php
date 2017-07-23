@@ -11,8 +11,9 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param integer $authPluginId - id of auth plugin
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds($authPluginId)
-{
+function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds(
+    $authPluginId
+) {
     $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
     $CryptoUser = CryptoActors::getCryptoUser();
 
@@ -20,7 +21,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecuri
     $securityClassIds = array();
 
     foreach ($passwordIds as $passwordId) {
-        $SecurityClass = Passwords::getSecurityClass($passwordId);
+        $SecurityClass                             = Passwords::getSecurityClass($passwordId);
         $securityClassIds[$SecurityClass->getId()] = true;
     }
 

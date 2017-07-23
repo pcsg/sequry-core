@@ -1212,9 +1212,10 @@ class CryptoUser extends QUI\Users\User
      * registration this method can be used to get all password IDs that need such a re-encryption.
      *
      * @param Plugin $AuthPlugin
+     * @param bool $useCache (optional) - get results from cache [default: true]
      * @return array - password IDs
      */
-    public function getNonFullyAccessiblePasswordIds(Plugin $AuthPlugin)
+    public function getNonFullyAccessiblePasswordIds(Plugin $AuthPlugin, $useCache = true)
     {
         if (!$AuthPlugin->isRegistered($this)) {
             return array();
@@ -1222,10 +1223,12 @@ class CryptoUser extends QUI\Users\User
 
         $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblepasswordids/' . $AuthPlugin->getId();
 
-        try {
-            return QUI\Cache\Manager::get($cname);
-        } catch (\Exception $Exception) {
-            // nothing, determine ids
+        if ($useCache !== false) {
+            try {
+                return QUI\Cache\Manager::get($cname);
+            } catch (\Exception $Exception) {
+                // nothing, determine ids
+            }
         }
 
         $passwordIds = array();
@@ -1304,9 +1307,10 @@ class CryptoUser extends QUI\Users\User
      * authentication plugin
      *
      * @param Plugin $AuthPlugin
+     * @param bool $useCache (optional) - Get results from cache (data may be outdated) [default: true]
      * @return array
      */
-    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin)
+    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin, $useCache = true)
     {
         if (!$AuthPlugin->isRegistered($this)) {
             return array();
@@ -1314,10 +1318,12 @@ class CryptoUser extends QUI\Users\User
 
         $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblegroupandsecurityclassids/' . $AuthPlugin->getId();
 
-        try {
-            return QUI\Cache\Manager::get($cname);
-        } catch (\Exception $Exception) {
-            // nothing, determine ids
+        if (!$useCache !== false) {
+            try {
+                return QUI\Cache\Manager::get($cname);
+            } catch (\Exception $Exception) {
+                // nothing, determine ids
+            }
         }
 
         $AuthKeyPair = $this->getAuthKeyPair($AuthPlugin);

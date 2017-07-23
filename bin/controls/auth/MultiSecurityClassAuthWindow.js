@@ -63,7 +63,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.setAttributes({
                 backgroundClosable: true,
-                closeButton       : true,
+                closeButton       : false,
                 titleCloseButton  : true,
                 maxWidth          : 500
             });
@@ -90,14 +90,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.$Elm.addClass('pcsg-gpm-multisecurityclassauth');
 
-            // add authenticate button that is only enabled
-            // when user has authenticated with all SecurityClasses
             this.$AuthBtn = new QUIButton({
-                textimage: 'fa fa-key',
-                text     : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.auth.text'),
-                alt      : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.auth'),
-                title    : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.auth'),
-                events   : {
+                'class': 'btn-green',
+                text   : QUILocale.get(lg, 'controls.authenticate.popup.btn.text'),
+                alt    : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                title  : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                events : {
                     onClick: function () {
                         self.fireEvent('submit', [self.$AuthData, self]);
                         self.$AuthData = {};
@@ -106,6 +104,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             });
 
             this.addButton(this.$AuthBtn);
+
+            this.addButton(new QUIButton({
+                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort.text'),
+                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                events: {
+                    onClick: function () {
+                        self.fireEvent('abort');
+                        self.close();
+                    }
+                }
+            }));
+
+            // add authenticate button that is only enabled
+            // when user has authenticated with all SecurityClasses
             this.$AuthBtn.disable();
 
             // replace generic info with custom info
@@ -144,9 +157,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             var securityClassIds         = this.getAttribute('securityClassIds');
             var securityClassInfosLoaded = 0;
-            var TableBodyElm             = self.$Table.getElement('tbody');
+            var TableBodyElm             = this.$Table.getElement('tbody');
 
-            self.$authSuccessCountNeeded = securityClassIds.length;
+            this.$authSuccessCountNeeded = securityClassIds.length;
 
             this.Loader.show();
 

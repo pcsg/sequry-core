@@ -118,10 +118,10 @@ class Authentication
                 $AuthPlugin
             );
 
-            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin)) > 0;
+            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false)) > 0;
 
             if (!$sync) {
-                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin)) > 0;
+                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin, false)) > 0;
             }
 
             $row['sync'] = $sync;

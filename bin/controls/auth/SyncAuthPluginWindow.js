@@ -18,9 +18,10 @@
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow', [
 
     'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
     'Ajax'
 
-], function (MultiSecurityClassAuthWindow, QUIAjax) {
+], function (MultiSecurityClassAuthWindow, Authentication, QUIAjax) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -36,9 +37,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
         ],
 
         options: {
-            'authPluginId': false,   // id of auth plugin that is to be synced
-            title         : QUILocale.get(lg, 'auth.syncauthpluginwindow.title'),
-            info          : 'test 123'
+            authPluginId: false,   // id of auth plugin that is to be synced
+            title       : QUILocale.get(lg, 'auth.syncauthpluginwindow.title'),
+            info        : 'test 123'
         },
 
         initialize: function (options) {
@@ -92,7 +93,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
                         securityClassId: securityClassId,
                         events         : {
                             onSubmit: function (AuthData) {
-                                self.$authenticate(
+                                Authentication.$authenticate(
                                     securityClassId,
                                     AuthData
                                 ).then(function (success) {
@@ -128,10 +129,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
         $startSync: function () {
             var self = this;
 
-            QUIAjax.get(
+            QUIAjax.post(
                 'package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin',
                 function (success) {
-                    self.$AuthData = null;
                     self.close();
 
                     if (!success) {
@@ -142,8 +142,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
                     self.fireEvent('success', [self]);
                 }, {
                     'package'   : 'pcsg/grouppasswordmanager',
-                    authPluginId: self.getAttribute('authPluginId'),
-                    authData    : JSON.encode(self.$AuthData)
+                    authPluginId: self.getAttribute('authPluginId')
                 }
             );
         }

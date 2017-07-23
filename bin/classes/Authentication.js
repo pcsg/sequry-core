@@ -81,10 +81,10 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         multiSecurityClassAuth: function (securityClassIds) {
             return new Promise(function (resolve, reject) {
                 require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
+                    'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow'
                 ], function (MultiAuthWindow) {
                     new MultiAuthWindow({
-                        info: 'Dum di dum!',
+                        info: 'Dum di dum!', // @todo Sprachvariable
                         securityClassIds: securityClassIds,
                         events          : {
                             onSubmit: function (Popup) {
