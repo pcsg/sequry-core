@@ -121,7 +121,7 @@ class CryptoActors
             }
 
             // add user to group if he is eligible
-            $Group->addUser($User);
+            $User->addToGroup($Group->getId());
             $User->save(QUI::getUsers()->getSystemUser());
         }
 
