@@ -6,23 +6,16 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
-use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
-use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
-use Pcsg\GroupPasswordManager\Password;
-use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
-use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\KDF;
-use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\Random;
-use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
-use QUI\Permissions\Permission;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * Class for for managing recovery of authentication information via second channel
@@ -35,7 +28,7 @@ class Recovery
      * Create recovery information for specific authenticataion plugin
      *
      * @param Plugin $AuthPlugin - Authentication Plugin the recovery entry is created for
-     * @param mixed $information - authentication information for plugin
+     * @param HiddenString $information - authentication information for plugin
      * @param CryptoUser $CryptoUser (optional) - the user the recovery data is created for;
      * if omitted uses session user
      *
@@ -43,7 +36,7 @@ class Recovery
      *
      * @throws QUI\Exception
      */
-    public static function createEntry($AuthPlugin, $information, $CryptoUser = null)
+    public static function createEntry($AuthPlugin, HiddenString $information, $CryptoUser = null)
     {
         if (is_null($CryptoUser)) {
             $CryptoUser = CryptoActors::getCryptoUser();
@@ -156,7 +149,7 @@ class Recovery
      * Recover recovery information for specific authenticataion plugin
      *
      * @param Plugin $AuthPlugin - Authentication Plugin the recovery entry is created for
-     * @param string $recoveryCode - recovery code
+     * @param HiddenString $recoveryCode - recovery code
      * @param CryptoUser $CryptoUser (optional) - the user the recovery data is created for;
      * if omitted uses session user
      *
@@ -164,7 +157,7 @@ class Recovery
      *
      * @throws QUI\Exception
      */
-    public static function recoverEntry($AuthPlugin, $recoveryCode, $CryptoUser = null)
+    public static function recoverEntry($AuthPlugin, HiddenString $recoveryCode, $CryptoUser = null)
     {
         if (is_null($CryptoUser)) {
             $CryptoUser = CryptoActors::getCryptoUser();

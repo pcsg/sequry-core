@@ -506,6 +506,12 @@
         <locale name="message.ajax.auth.deleteSecurityClass.success" html="true">
             <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich gelöscht.]]></de>
         </locale>
+        <locale name="exception.ajax.authenticate.decode.error">
+            <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
+        </locale>
+        <locale name="exception.ajax.authenticate.decode.error">
+            <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">

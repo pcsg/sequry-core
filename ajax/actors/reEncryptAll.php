@@ -50,6 +50,6 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 
         return true;
     },
-    array('authData'),
+    array(),
     'Permission::checkAdminUser'
 );

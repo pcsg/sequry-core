@@ -2,6 +2,7 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * Register current session user and create a keypair for an authentication plugin
@@ -18,8 +19,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
     $newAuthInfo,
     $recovery = false
 ) {
-//    $oldAuthInfo = Orthos::clear($oldAuthInfo);
-//    $newAuthInfo = Orthos::clear($newAuthInfo);
+    $oldAuthInfo = new HiddenString($oldAuthInfo);
+    $newAuthInfo = new HiddenString($newAuthInfo);
 
     try {
         $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);

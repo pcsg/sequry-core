@@ -4,6 +4,7 @@ namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * This class provides a authentication plugin API for the pcsg/grouppasswordmanager module
@@ -20,10 +21,10 @@ interface IAuthPlugin
     /**
      * Registers a user with this plugin
      *
-     * @param mixed $information - authentication information given by the user
+     * @param HiddenString $information - authentication information given by the user
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      */
-    public static function register($information, $User = null);
+    public static function register(HiddenString $information, $User = null);
 
     /**
      * Checks if the current user is successfully registered with this auth plugin
@@ -51,12 +52,12 @@ interface IAuthPlugin
     /**
      * Authenticate a user with this plugin
      *
-     * @param mixed $information - authentication information given by the user
+     * @param HiddenString $information - authentication information given by the user
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return true - if authenticated
      * @throws \QUI\Exception
      */
-    public static function authenticate($information, $User = null);
+    public static function authenticate(HiddenString $information, $User = null);
 
     /**
      * Checks if a user is successfully authenticated for this runtime
@@ -69,12 +70,12 @@ interface IAuthPlugin
     /**
      * Change authentication information
      *
-     * @param mixed $old - current authentication information
-     * @param mixed $new - new authentication information
+     * @param HiddenString $old - current authentication information
+     * @param HiddenString $new - new authentication information
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
      * @return bool - success
      */
-    public static function changeAuthenticationInformation($old, $new, $User = null);
+    public static function changeAuthenticationInformation(HiddenString $old, HiddenString $new, $User = null);
 
     /**
      * Registers the auth plugin with the main password manager module

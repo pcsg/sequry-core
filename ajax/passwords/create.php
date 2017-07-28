@@ -55,6 +55,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_passwords_create',
-    array('passwordData', 'authData'),
+    array('passwordData'),
     'Permission::checkAdminUser'
 );

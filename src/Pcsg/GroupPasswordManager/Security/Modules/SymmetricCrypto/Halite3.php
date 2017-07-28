@@ -2,12 +2,14 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Modules\SymmetricCrypto;
 
-use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use QUI;
 use ParagonIE\Halite\Symmetric\Crypto;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
 use Pcsg\GroupPasswordManager\Security\Interfaces\ISymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
+use ParagonIE\Halite\HiddenString as ParagonieHiddenString;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 
 /**
  * This class provides an ecnryption API for the pcsg/grouppasswordmanager module
@@ -19,16 +21,16 @@ class Halite3 implements ISymmetricCrypto
     /**
      * Encrypts a plaintext string
      *
-     * @param String $plainText - Data to be encrypted
-     * @param String $key - Encryption key
+     * @param HiddenString $plainText - Data to be encrypted
+     * @param Key $Key - Encryption key
      * @return String - The Ciphertext (encrypted plaintext)
      * @throws QUI\Exception
      */
-    public static function encrypt($plainText, $key)
+    public static function encrypt(HiddenString $plainText, Key $Key)
     {
         try {
-            $HiddenPlainText = new HiddenString($plainText);
-            $HiddenKey       = new HiddenString($key);
+            $HiddenPlainText = new ParagonieHiddenString($plainText->getString());
+            $HiddenKey       = new ParagonieHiddenString($Key->getValue());
             $SecretKey       = new EncryptionKey($HiddenKey);
             $cipherText      = Crypto::encrypt($HiddenPlainText, $SecretKey, true);
         } catch (\Exception $Exception) {
@@ -66,15 +68,15 @@ class Halite3 implements ISymmetricCrypto
      * Decrypts a ciphertext
      *
      * @param String $cipherText - Data to be decrypted
-     * @param String $key - Decryption key
+     * @param Key $Key - Decryption key
      * @return String - The plaintext (decrypted ciphertext)
      * @throws QUI\Exception
      */
-    public static function decrypt($cipherText, $key)
+    public static function decrypt($cipherText, Key $Key)
     {
         try {
-            $HiddenCipherText = new HiddenString($cipherText);
-            $HiddenKey        = new HiddenString($key);
+            $HiddenCipherText = new ParagonieHiddenString($cipherText);
+            $HiddenKey        = new ParagonieHiddenString($Key->getValue());
             $SecretKey        = new EncryptionKey($HiddenKey);
             $HiddenPlainText  = Crypto::decrypt($HiddenCipherText, $SecretKey, true);
         } catch (\Exception $Exception) {

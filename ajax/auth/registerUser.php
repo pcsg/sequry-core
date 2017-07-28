@@ -2,12 +2,13 @@
 
 use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * Register current session user and create a keypair for an authentication plugin
  *
  * @param integer $authPluginId - ID of authentication plugin
- * @param array $registrationData - authentication data
+ * @param string $registrationData - authentication data
  * @return false|array - recovery code data; false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId, $registrationData)
@@ -15,9 +16,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
     try {
         // register with auth plugin
         $AuthPlugin      = Authentication::getAuthPlugin($authPluginId);
-        $authInformation = $AuthPlugin->registerUser(
-            json_decode($registrationData, true)
-        );
+        $authInformation = $AuthPlugin->registerUser(new HiddenString($registrationData));
 
         // generate recovery code
         $recoveryCodeData = Recovery::createEntry($AuthPlugin, $authInformation);

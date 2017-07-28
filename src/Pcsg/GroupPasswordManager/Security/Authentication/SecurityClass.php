@@ -168,10 +168,8 @@ class SecurityClass extends QUI\QDOM
                 continue;
             }
 
-            $pluginAuthData = $authData[$AuthPlugin->getId()];
-
             try {
-                $AuthPlugin->authenticate($pluginAuthData, $CryptoUser);
+                $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
             } catch (\Exception $Exception) {
                 throw new QUI\Exception(array(
                     'pcsg/grouppasswordmanager',

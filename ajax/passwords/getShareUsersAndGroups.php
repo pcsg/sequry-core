@@ -41,6 +41,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups',
-    array('passwordId', 'authData'),
+    array('passwordId'),
     'Permission::checkAdminUser'
 );

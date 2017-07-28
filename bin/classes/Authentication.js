@@ -318,24 +318,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
-         * Check if authentication information for a specific security class is correct
-         *
-         * @param {number} securityClassId - id of security class
-         * @param {Object} AuthData - authentication information
-         * @returns {Promise}
-         */
-        checkAuthInfo: function (securityClassId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkAuthInfo', resolve, {
-                    'package'      : pkg,
-                    onError        : reject,
-                    securityClassId: securityClassId,
-                    authData       : JSON.encode(AuthData)
-                });
-            });
-        },
-
-        /**
          * Get id, title and description of a security class
          *
          * @param {number} securityClassId - ID of security class

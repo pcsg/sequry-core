@@ -2,6 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Keys;
 
+use Pcsg\GroupPasswordManager\Security\HiddenString;
+
 /**
  * Key class
  *
@@ -19,13 +21,18 @@ class Key
     /**
      * Key constructor.
      *
-     * @param string $keyValue - key value
+     * @param HiddenString $keyValue - key value
      */
-    public function __construct($keyValue)
+    public function __construct(HiddenString $keyValue)
     {
         $this->value = $keyValue;
     }
 
+    /**
+     * Return Key value
+     *
+     * @return HiddenString
+     */
     public function getValue()
     {
         return $this->value;

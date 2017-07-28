@@ -57,6 +57,6 @@ use Pcsg\GroupPasswordManager\Security\Utils;
 
         return true;
     },
-    array('userId', 'groupIds', 'authData'),
+    array('userId', 'groupIds'),
     'Permission::checkAdminUser'
 );

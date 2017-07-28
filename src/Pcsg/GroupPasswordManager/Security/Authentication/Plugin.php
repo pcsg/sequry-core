@@ -12,6 +12,7 @@ use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use QUI;
 
 /**
@@ -112,12 +113,12 @@ class Plugin extends QUI\QDOM
     /**
      * Authenticates a user with a plugin
      *
-     * @param mixed $information (optional) - authentication information
+     * @param HiddenString $information (optional) - authentication information
      * @param QUI\Users\User $User (optional) - if omitted use session user
      * @return true - if authenticated
      * @throws QUI\Exception
      */
-    public function authenticate($information, $User = null)
+    public function authenticate(HiddenString $information, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
@@ -157,7 +158,7 @@ class Plugin extends QUI\QDOM
      *
      * @throws QUI\Exception
      */
-    public function changeAuthenticationInformation($old, $new, $User = null)
+    public function changeAuthenticationInformation(HiddenString $old, HiddenString $new, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
@@ -216,11 +217,11 @@ class Plugin extends QUI\QDOM
      * Registers a user with this Plugin
      *
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
-     * @param mixed $information (optional) - registration information
+     * @param HiddenString $information (optional) - registration information
      * @return mixed - authentication information that can decrypt the private key
      * @throws QUI\Exception
      */
-    public function registerUser($information, $User = null)
+    public function registerUser(HiddenString $information, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
