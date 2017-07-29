@@ -12,7 +12,9 @@ use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
@@ -97,7 +99,7 @@ class SecurityClass extends QUI\QDOM
      */
     public function getAuthStatus()
     {
-        $status  = array(
+        $status = array(
             'authenticated' => false,
             'authPlugins'   => array()
         );
@@ -184,7 +186,7 @@ class SecurityClass extends QUI\QDOM
             $succesfulAuthenticationCount++;
 
             // On successful authentication, save derived key in session data
-            Authentication::saveAuthKey($AuthPlugin->getId(), $AuthPlugin->getDerivedKey()->getValue());
+            Authentication::saveAuthKey($AuthPlugin->getId(), $AuthPlugin->getDerivedKey());
         }
 
         if ($succesfulAuthenticationCount < $this->requiredFactors) {

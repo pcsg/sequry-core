@@ -26,6 +26,8 @@ QUI::$Ajax->registerFunction(
             ));
         }
 
+        $sessioncache = !empty($authData['sessioncache']);
+
         foreach ($authData as $authPluginId => $authInfo) {
             if (!is_string($authInfo) || empty($authInfo)) {
                 unset($authData[$authPluginId]);
@@ -33,6 +35,10 @@ QUI::$Ajax->registerFunction(
             }
 
             $authData[$authPluginId] = new HiddenString($authInfo);
+        }
+
+        if ($sessioncache) {
+            $authData['sessioncache'] = true;
         }
 
         try {

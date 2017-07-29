@@ -183,7 +183,10 @@ class Plugin extends QUI\QDOM
         // calculate new MAC
         // @todo noch mehr informationen in den MAC einfließen lassen (plugin id, user id etc.)
         $macValue = MAC::create(
-            $publicKeyValue . $encryptedPrivateKeyValue,
+            new HiddenString(
+                $publicKeyValue->getString()
+                . $encryptedPrivateKeyValue
+            ),
             Utils::getSystemKeyPairAuthKey()
         );
 
@@ -260,7 +263,10 @@ class Plugin extends QUI\QDOM
         // calculate MAC with system auth key
         // @todo noch mehr informationen in den MAC einfließen lassen (plugin id, user id etc.)
         $macValue = MAC::create(
-            $publicKeyValue . $encryptedPrivateKeyValue,
+            new HiddenString(
+                $publicKeyValue->getString()
+                . $encryptedPrivateKeyValue
+            ),
             Utils::getSystemKeyPairAuthKey()
         );
 

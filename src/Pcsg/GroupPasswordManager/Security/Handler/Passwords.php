@@ -13,6 +13,7 @@ use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -201,7 +202,7 @@ class Passwords
 
         // encrypt password data and calculate MAC
         $passwordContentEncrypted = SymmetricCrypto::encrypt(
-            json_encode($passwordContent),
+            new HiddenString(json_encode($passwordContent)),
             $PasswordKey
         );
 
@@ -243,13 +244,13 @@ class Passwords
 
         // save fields that have been used for MAC creation
         $macFields = SymmetricCrypto::encrypt(
-            json_encode(array_keys($passwordEntry)),
-            new Key(Utils::getSystemPasswordAuthKey())
+            new HiddenString(json_encode(array_keys($passwordEntry))),
+            Utils::getSystemPasswordAuthKey()
         );
 
         // calculate MAC
         $mac = MAC::create(
-            implode('', $passwordEntry),
+            new HiddenString(implode('', $passwordEntry)),
             Utils::getSystemPasswordAuthKey()
         );
 
@@ -298,7 +299,7 @@ class Passwords
                         $passwordKeyPart = $passwordKeyParts[$i++];
 
                         $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
-                            $passwordKeyPart,
+                            new HiddenString($passwordKeyPart),
                             $UserAuthKeyPair
                         );
 
@@ -310,7 +311,7 @@ class Passwords
                         );
 
                         $dataAccessEntry['MAC'] = MAC::create(
-                            implode('', $dataAccessEntry),
+                            new HiddenString(implode('', $dataAccessEntry)),
                             Utils::getSystemKeyPairAuthKey()
                         );
 
@@ -357,7 +358,7 @@ class Passwords
                     );
 
                     $dataAccessEntry['MAC'] = MAC::create(
-                        implode('', $dataAccessEntry),
+                        new HiddenString(implode('', $dataAccessEntry)),
                         Utils::getSystemKeyPairAuthKey()
                     );
 

@@ -14,7 +14,7 @@ class Key
     /**
      * The key value
      *
-     * @var string
+     * @var HiddenString
      */
     protected $value = null;
 

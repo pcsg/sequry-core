@@ -86,6 +86,6 @@ class Halite3 implements ISymmetricCrypto
             );
         }
 
-        return $HiddenPlainText->getString();
+        return new HiddenString($HiddenPlainText->getString());
     }
 }

@@ -11,6 +11,7 @@ use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
@@ -156,7 +157,10 @@ class CryptoActors
         );
 
         // calculate group key MAC
-        $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+        $data['MAC'] = MAC::create(
+            new HiddenString(implode('', $data)),
+            Utils::getSystemKeyPairAuthKey()
+        );
 
         $DB->insert(Tables::keyPairsGroup(), $data);
 
@@ -188,7 +192,10 @@ class CryptoActors
                 );
 
                 // calculate MAC
-                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                $data['MAC'] = MAC::create(
+                    new HiddenString(implode('', $data)),
+                    Utils::getSystemKeyPairAuthKey()
+                );
 
                 $DB->insert(Tables::usersToGroups(), $data);
             }

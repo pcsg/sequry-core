@@ -7,6 +7,7 @@ use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
@@ -74,7 +75,7 @@ class AuthKeyPair extends KeyPair
 
         $keyPairMAC      = $data['MAC'];
         $keyPairMACCheck = MAC::create(
-            $publicKeyValue . $privateKeyValueEncrypted,
+            new HiddenString($publicKeyValue . $privateKeyValueEncrypted),
             Utils::getSystemKeyPairAuthKey()
         );
 
@@ -93,7 +94,10 @@ class AuthKeyPair extends KeyPair
             ));
         }
 
-        parent::__construct($publicKeyValue, $privateKeyValueEncrypted);
+        parent::__construct(
+            new HiddenString($publicKeyValue),
+            new HiddenString($privateKeyValueEncrypted)
+        );
 
         $this->id         = $id;
         $this->User       = CryptoActors::getCryptoUser($data['userId']);

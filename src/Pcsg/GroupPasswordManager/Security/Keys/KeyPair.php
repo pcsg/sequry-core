@@ -2,6 +2,8 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Keys;
 
+use Pcsg\GroupPasswordManager\Security\HiddenString;
+
 /**
  * KeyPair class
  *
@@ -22,10 +24,10 @@ class KeyPair
     /**
      * KeyPair constructor.
      *
-     * @param string $publicKeyValue - value of public key
-     * @param string $privateKeyValue - value of private key
+     * @param HiddenString $publicKeyValue - value of public key
+     * @param HiddenString $privateKeyValue - value of private key
      */
-    public function __construct($publicKeyValue, $privateKeyValue)
+    public function __construct(HiddenString $publicKeyValue, HiddenString $privateKeyValue)
     {
         $this->PublicKey  = new Key($publicKeyValue);
         $this->PrivateKey = new Key($privateKeyValue);

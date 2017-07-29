@@ -54,7 +54,10 @@ class Recovery
         $recoveryCode = self::generateRecoveryCode();
         $recoverySalt = Random::getRandomData();
 
-        $RecoveryKey = KDF::createKey($recoveryCode, $recoverySalt);
+        $RecoveryKey = KDF::createKey(
+            new HiddenString($recoveryCode),
+            $recoverySalt
+        );
 
         $recoveryData = SymmetricCrypto::encrypt(
             $information,
@@ -72,7 +75,10 @@ class Recovery
             $recoverySalt
         );
 
-        $MAC = MAC::create(implode('', $MACData), Utils::getSystemPasswordAuthKey());
+        $MAC = MAC::create(
+            new HiddenString(implode('', $MACData)),
+            Utils::getSystemPasswordAuthKey()
+        );
 
         // delete previous entry (if it exists)
         QUI::getDataBase()->delete(
@@ -195,7 +201,10 @@ class Recovery
             $data['salt']
         );
 
-        $MACActual = MAC::create(implode('', $MACData), Utils::getSystemPasswordAuthKey());
+        $MACActual = MAC::create(
+            new HiddenString(implode('', $MACData)),
+            Utils::getSystemPasswordAuthKey()
+        );
 
         if (!MAC::compare($MACActual, $MACExpected)) {
             QUI\System\Log::addCritical(

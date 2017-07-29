@@ -14,6 +14,7 @@ use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -105,7 +106,10 @@ class CryptoGroup extends QUI\Groups\Group
         );
 
         $MACExpected = $data['MAC'];
-        $MACActual   = MAC::create(implode('', $integrityData), Utils::getSystemKeyPairAuthKey());
+        $MACActual   = MAC::create(
+            new HiddenString(implode('', $integrityData)),
+            Utils::getSystemKeyPairAuthKey()
+        );
 
         if (!MAC::compare($MACActual, $MACExpected)) {
             QUI\System\Log::addCritical(
@@ -233,7 +237,10 @@ class CryptoGroup extends QUI\Groups\Group
         );
 
         // calculate group key MAC
-        $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+        $data['MAC'] = MAC::create(
+            new HiddenString(implode('', $data)),
+            Utils::getSystemKeyPairAuthKey()
+        );
 
         $DB->insert(Tables::keyPairsGroup(), $data);
 
@@ -254,7 +261,7 @@ class CryptoGroup extends QUI\Groups\Group
             /** @var AuthKeyPair $AuthKeyPair */
             foreach ($authKeyPairs as $AuthKeyPair) {
                 $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $groupAccessKeyParts[$i++],
+                    new HiddenString($groupAccessKeyParts[$i++]),
                     $AuthKeyPair
                 );
 
@@ -267,7 +274,11 @@ class CryptoGroup extends QUI\Groups\Group
                 );
 
                 // calculate MAC
-                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                $data['MAC'] = MAC::create(
+                    new HiddenString(implode('', $data)),
+                    Utils::getSystemKeyPairAuthKey()
+                );
+
                 $DB->insert(Tables::usersToGroups(), $data);
             }
         }
@@ -425,7 +436,7 @@ class CryptoGroup extends QUI\Groups\Group
                     $payloadKeyPart = $groupAccessKeyParts[$i++];
 
                     $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                        $payloadKeyPart,
+                        new HiddenString($payloadKeyPart),
                         $UserAuthKeyPair
                     );
 
@@ -438,7 +449,9 @@ class CryptoGroup extends QUI\Groups\Group
                     );
 
                     // calculate MAC
-                    $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                    $data['MAC'] = MAC::create(
+                        new HiddenString(implode('', $data)),
+                        Utils::getSystemKeyPairAuthKey());
 
                     QUI::getDataBase()->insert(Tables::usersToGroups(), $data);
                 } catch (\Exception $Exception) {
@@ -764,7 +777,7 @@ class CryptoGroup extends QUI\Groups\Group
             );
 
             $dataAccessEntry['MAC'] = MAC::create(
-                implode('', $dataAccessEntry),
+                new HiddenString(implode('', $dataAccessEntry)),
                 Utils::getSystemKeyPairAuthKey()
             );
 

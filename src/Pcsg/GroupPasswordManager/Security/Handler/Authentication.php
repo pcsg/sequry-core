@@ -13,10 +13,12 @@ use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAuthPlugin;
 use Pcsg\GroupPasswordManager\Security\KDF;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Authentication\Cache as AuthCache;
@@ -499,10 +501,10 @@ class Authentication
     /**
      * Save derived key from authenticated plugin to user session
      *
-     * @param $authPluginId
-     * @param $authKey
+     * @param int $authPluginId
+     * @param Key $AuthKey
      */
-    public static function saveAuthKey($authPluginId, $authKey)
+    public static function saveAuthKey($authPluginId, $AuthKey)
     {
         $Session            = QUI::getSession();
         $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
@@ -516,7 +518,7 @@ class Authentication
         }
 
         $encryptedKey = SymmetricCrypto::encrypt(
-            $authKey,
+            $AuthKey->getValue(),
             self::getSessionEncryptionKey()
         );
 
@@ -616,14 +618,14 @@ class Authentication
         $cacheName = 'pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId();
 
         try {
-            $keyValue = AuthCache::get($cacheName);
+            $keyValue = new HiddenString(AuthCache::get($cacheName));
             return new Key($keyValue);
         } catch (\Exception $Exception) {
             // generate new key
         }
 
-        $SessionKey = KDF::createKey(QUI::getSession()->getId());
-        AuthCache::set($cacheName, $SessionKey->getValue());
+        $SessionKey = KDF::createKey(new HiddenString(QUI::getSession()->getId()));
+        AuthCache::set($cacheName, $SessionKey->getValue()->getString());
 
         return $SessionKey;
     }

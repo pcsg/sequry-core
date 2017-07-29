@@ -6,6 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use QUI\Cache\Manager as CacheManager;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
@@ -133,7 +134,7 @@ class Password extends QUI\QDOM
         // (re)calculate MAC from actual data
         $macFields = SymmetricCrypto::decrypt(
             $passwordData['MACFields'],
-            new Key(Utils::getSystemPasswordAuthKey())
+            Utils::getSystemPasswordAuthKey()
         );
 
         $macFields = json_decode($macFields, true);
@@ -150,7 +151,7 @@ class Password extends QUI\QDOM
         }
 
         $passwordDataMACActual = MAC::create(
-            implode('', $macData),
+            new HiddenString(implode('', $macData)),
             Utils::getSystemPasswordAuthKey()
         );
 
@@ -646,7 +647,7 @@ class Password extends QUI\QDOM
 
         // encrypt secret password data
         $cryptoDataEncrypted = SymmetricCrypto::encrypt(
-            json_encode($this->getSecretAttributes()),
+            new HiddenString(json_encode($this->getSecretAttributes())),
             $this->getPasswordKey()
         );
 
@@ -666,13 +667,13 @@ class Password extends QUI\QDOM
 
         // encrypt fields used for MAC creation (MACFields)
         $macFields = SymmetricCrypto::encrypt(
-            json_encode(array_keys($passwordData)),
-            new Key(Utils::getSystemPasswordAuthKey())
+            new HiddenString(json_encode(array_keys($passwordData))),
+            Utils::getSystemPasswordAuthKey()
         );
 
         // calculate new MAC
         $newMAC = MAC::create(
-            implode('', $passwordData),
+            new HiddenString(implode('', $passwordData)),
             Utils::getSystemPasswordAuthKey()
         );
 
@@ -1029,7 +1030,7 @@ class Password extends QUI\QDOM
             $payloadKeyPart = $payloadKeyParts[$i++];
 
             $encryptedPayloadKeyPart = AsymmetricCrypto::encrypt(
-                $payloadKeyPart,
+                new HiddenString($payloadKeyPart),
                 $UserAuthKeyPair
             );
 
@@ -1041,7 +1042,7 @@ class Password extends QUI\QDOM
             );
 
             $dataAccessEntry['MAC'] = MAC::create(
-                implode('', $dataAccessEntry),
+                new HiddenString(implode('', $dataAccessEntry)),
                 Utils::getSystemKeyPairAuthKey()
             );
 
@@ -1110,7 +1111,7 @@ class Password extends QUI\QDOM
         );
 
         $dataAccessEntry['MAC'] = MAC::create(
-            implode('', $dataAccessEntry),
+            new HiddenString(implode('', $dataAccessEntry)),
             Utils::getSystemKeyPairAuthKey()
         );
 
@@ -1582,6 +1583,14 @@ class Password extends QUI\QDOM
      */
     protected function setSecretAttribute($k, $v)
     {
+        if (is_string($v)) {
+            $v = new HiddenString($v);
+        }
+
+        if (is_array($v)) {
+            $v = new HiddenString(json_encode($v));
+        }
+
         $this->secretAttributes[$k] = $v;
     }
 
@@ -1605,11 +1614,19 @@ class Password extends QUI\QDOM
      */
     protected function getSecretAttribute($k)
     {
-        if (!isset($this->secretAttributes[$k])) {
+        if (!array_key_exists($k, $this->secretAttributes)) {
             return false;
         }
 
-        return $this->secretAttributes[$k];
+        /** @var HiddenString $v */
+        $v = $this->secretAttributes[$k];
+        $v = $v->getString();
+
+        if (Utils::isJson($v)) {
+            $v = json_decode($v, true);
+        }
+
+        return $v;
     }
 
     /**

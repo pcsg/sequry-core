@@ -40,8 +40,6 @@ class Argon2 implements IHash
                 \Sodium\CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
                 \Sodium\CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
             );
-
-            \Sodium\memzero($str);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 self::class . ' :: Hash operation failed: ' . $Exception->getMessage()

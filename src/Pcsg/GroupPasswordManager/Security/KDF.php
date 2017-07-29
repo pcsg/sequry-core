@@ -22,14 +22,13 @@ class KDF
     /**
      * Creates a key from a given low entropy string
      *
-     * @param string $str - A String
+     * @param HiddenString $str - A String
      * @param string $salt (optional) - if ommitted generate random salt
      * @return Key - symmetric key
      */
-    public static function createKey($str, $salt = null)
+    public static function createKey(HiddenString $str, $salt = null)
     {
-        $keyValue = self::getKDFModule()->createKey($str, $salt);
-        return new Key($keyValue);
+        return self::getKDFModule()->createKey($str, $salt);
     }
 
     /**

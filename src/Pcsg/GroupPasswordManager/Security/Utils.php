@@ -3,6 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security;
 
 use Pcsg\GroupPasswordManager\Constants\Crypto;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use QUI\Utils\Security\Orthos;
 use QUI;
 
@@ -93,7 +94,7 @@ class Utils
     /**
      * Get system authentication key for key pairs
      *
-     * @return string
+     * @return Key
      * @throws \QUI\Exception
      */
     public static function getSystemKeyPairAuthKey()
@@ -113,13 +114,13 @@ class Utils
             }
         }
 
-        return file_get_contents($keyFile);
+        return new Key(new HiddenString(file_get_contents($keyFile)));
     }
 
     /**
      * Get system authentication key for passwords
      *
-     * @return string
+     * @return Key
      * @throws \QUI\Exception
      */
     public static function getSystemPasswordAuthKey()
@@ -139,7 +140,7 @@ class Utils
             }
         }
 
-        return file_get_contents($keyFile);
+        return new Key(new HiddenString(file_get_contents($keyFile)));
     }
 
     /**
@@ -244,5 +245,17 @@ class Utils
         }
 
         return $array;
+    }
+
+    /**
+     * Check if a string is ins JSON format
+     *
+     * @param string $str
+     * @return bool
+     */
+    public static function isJson($str)
+    {
+        $str = json_decode($str, true);
+        return json_last_error() === JSON_ERROR_NONE && is_array($str);
     }
 }
