@@ -3,6 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security\Keys;
 
 use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Pcsg\GroupPasswordManager\Security\Utils;
 
 /**
  * Key class
@@ -25,7 +26,8 @@ class Key
      */
     public function __construct(HiddenString $keyValue)
     {
-        $this->value = $keyValue;
+        $keyValue = Utils::stripModuleVersionString($keyValue->getString());
+        $this->value = new HiddenString($keyValue);
     }
 
     /**

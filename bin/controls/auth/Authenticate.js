@@ -321,6 +321,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
                     // hide unnecessary controls
                     if (eligibleAuthPluginsLoaded > self.$SecurityClass.requiredFactors) {
+                        var FuncShowAuthPlugin = function () {
+                            var controlId = this.get('data-controlid');
+                            var Control   = self.$authPluginControls[controlId];
+
+                            Control.getElm().setStyle('display', '');
+                            Control.focus();
+
+                            this.destroy();
+                        };
+
                         for (i = 0, len = self.$authPluginControls.length; i < len; i++) {
                             if (i < self.$SecurityClass.requiredFactors) {
                                 continue;
@@ -333,15 +343,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                                 'data-controlid': i,
                                 'html'          : '<span class="fa fa-plus"></span>' +
                                 '<span class="pcsg-gpm-auth-authenticate-plugins-show-title">' +
-                                AuthPluginData.title +
+                                QUILocale.get(lg, 'controls.auth.authenticate.show_plugin') +
                                 '</span>',
                                 events          : {
-                                    click: function () {
-                                        var controlId = this.getProperty('data-controlid');
-                                        self.$authPluginControls[controlId].getElm().setStyle('display', '');
-
-                                        this.destroy();
-                                    }
+                                    click: FuncShowAuthPlugin
                                 }
                             }).inject(
                                 AuthPluginElm.getParent()

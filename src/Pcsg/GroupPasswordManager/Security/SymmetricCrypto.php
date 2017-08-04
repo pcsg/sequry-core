@@ -55,7 +55,7 @@ class SymmetricCrypto
     public static function generateKey()
     {
         $keyValue = self::getCryptoModule()->generateKey();
-        return new Key($keyValue);
+        return new Key(new HiddenString($keyValue));
     }
 
     /**

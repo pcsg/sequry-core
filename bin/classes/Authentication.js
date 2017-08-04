@@ -484,16 +484,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * Register a user with an authentication plugin
          *
          * @param {Integer} authPluginId
-         * @param {Object} RegistrationData
+         * @param {String} registrationData
          * @return {Promise}
          */
-        registerUser: function (authPluginId, RegistrationData) {
+        registerUser: function (authPluginId, registrationData) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
                     'package'       : 'pcsg/grouppasswordmanager',
                     onError         : reject,
                     authPluginId    : authPluginId,
-                    registrationData: JSON.encode(RegistrationData)
+                    registrationData: registrationData
                 });
             });
         },

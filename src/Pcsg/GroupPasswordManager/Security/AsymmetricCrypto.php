@@ -29,15 +29,7 @@ class AsymmetricCrypto
      */
     public static function encrypt($plainText, $KeyPair)
     {
-        $publicKey  = Utils::stripModuleVersionString($KeyPair->getPublicKey()->getValue()->getString());
-
-        $EncryptionKeyPair = new KeyPair(
-            new HiddenString($publicKey),
-            $KeyPair->getPrivateKey()->getValue()
-        );
-
-        $cipherText = self::getCryptoModule()->encrypt($plainText, $EncryptionKeyPair);
-
+        $cipherText = self::getCryptoModule()->encrypt($plainText, $KeyPair);
         return $cipherText . Utils::getCryptoModuleVersionString(self::CRYPTO_MODULE);
     }
 
@@ -51,14 +43,7 @@ class AsymmetricCrypto
     public static function decrypt($cipherText, $KeyPair)
     {
         $cipherText = Utils::stripModuleVersionString($cipherText);
-        $privateKey = Utils::stripModuleVersionString($KeyPair->getPrivateKey()->getValue()->getString());
-
-        $DecryptionKeyPair = new KeyPair(
-            $KeyPair->getPublicKey()->getValue(),
-            new HiddenString($privateKey)
-        );
-
-        return self::getCryptoModule()->decrypt($cipherText, $DecryptionKeyPair);
+        return self::getCryptoModule()->decrypt($cipherText, $KeyPair);
     }
 
     /**

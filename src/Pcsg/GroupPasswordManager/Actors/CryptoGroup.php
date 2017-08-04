@@ -125,7 +125,10 @@ class CryptoGroup extends QUI\Groups\Group
             ));
         }
 
-        $this->keyPairs[$SecurityClass->getId()] = new KeyPair($data['publicKey'], $data['privateKey']);
+        $this->keyPairs[$SecurityClass->getId()] = new KeyPair(
+            new HiddenString($data['publicKey']),
+            new HiddenString($data['privateKey'])
+        );
 
         return $this->keyPairs[$SecurityClass->getId()];
     }

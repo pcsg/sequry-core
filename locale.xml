@@ -1250,6 +1250,9 @@
         <locale name="controls.auth.authenticate.warning.nonregistered">
             <de><![CDATA[Dieser Authentifizierungs-Faktor kann nicht verwendet werden, da Sie für ihn nicht registriert sind. Um sich für diesen Authentifizierungs-Faktor zu registrieren, gehen Sie bitte in die Authentifizierungsverwaltung.]]></de>
         </locale>
+        <locale name="controls.auth.authenticate.show_plugin">
+            <de><![CDATA[Anzeigen]]></de>
+        </locale>
 
         <!-- Control: password/Authenticate -->
         <locale name="controls.password.authenticate.warning.unsynced">
