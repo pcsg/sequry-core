@@ -4,6 +4,7 @@ namespace Pcsg\GroupPasswordManager\PasswordTypes;
 
 use QUI;
 use QUI\Utils\System\File;
+use QUI\Utils\Security\Orthos;
 
 /**
  * Class Handler
@@ -15,12 +16,23 @@ use QUI\Utils\System\File;
 class Handler
 {
     /**
+     * Type list runtime cache
+     *
+     * @var array
+     */
+    protected static $list = null;
+
+    /**
      * Return a list of all available input types
      *
      * @return array
      */
     public static function getList()
     {
+        if (!is_null(self::$list)) {
+            return self::$list;
+        }
+
         $types = array();
         $dir   = dirname(__FILE__);
         $files = File::readDir($dir);
@@ -74,7 +86,28 @@ class Handler
             return $name1 < $name2 ? -1 : 1;
         });
 
+        self::$list = $types;
+
         return $types;
+    }
+
+    /**
+     * Check if a specific type exists in this setup
+     *
+     * @param string $type - type name
+     * @return bool
+     */
+    public static function existsType($type)
+    {
+        $list = self::getList();
+
+        foreach ($list as $entry) {
+            if ($entry['name'] == $type) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -174,7 +207,15 @@ class Handler
     public static function getEditTemplate($type)
     {
         $TypeClass = self::getPasswordTypeClass($type);
-        return $TypeClass->getEditHtml();
+
+        $editHtml = $TypeClass->getEditHtml();
+
+        // prepend fake input fields to disable Chrome and Firefox aggressive autofill
+        $editHtml = '<input style="display: none;" type="text" name="username"/>
+    <input style="display: none;" type="password" name="password"/>
+    <input style="display: none;" type="password" name="key"/>' . $editHtml;
+
+        return $editHtml;
     }
 
     /**

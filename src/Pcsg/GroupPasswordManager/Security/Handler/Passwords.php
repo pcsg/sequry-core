@@ -261,7 +261,7 @@ class Passwords
 
         try {
             $DB->insert(
-                Tables::PASSWORDS,
+                Tables::passwords(),
                 $passwordEntry
             );
         } catch (\Exception $Exception) {
@@ -315,13 +315,13 @@ class Passwords
                         );
 
                         $DB->insert(
-                            Tables::USER_TO_PASSWORDS,
+                            Tables::usersToPasswords(),
                             $dataAccessEntry
                         );
                     } catch (\Exception $Exception) {
                         // on error delete password entry
                         $DB->delete(
-                            Tables::PASSWORDS,
+                            Tables::passwords(),
                             array(
                                 'id' => $passwordId
                             )
@@ -362,13 +362,13 @@ class Passwords
                     );
 
                     $DB->insert(
-                        Tables::GROUP_TO_PASSWORDS,
+                        Tables::groupsToPasswords(),
                         $dataAccessEntry
                     );
                 } catch (\Exception $Exception) {
                     // on error delete password entry
                     $DB->delete(
-                        Tables::PASSWORDS,
+                        Tables::passwords(),
                         array(
                             'id' => $passwordId
                         )
@@ -437,7 +437,7 @@ class Passwords
     {
         $result = QUI::getDataBase()->fetch(array(
             'count' => 1,
-            'from'  => Tables::USER_TO_PASSWORDS,
+            'from'  => Tables::usersToPasswords(),
             'where' => array(
                 'dataId' => (int)$passwordId,
                 'userId' => $User->getId()
@@ -462,7 +462,7 @@ class Passwords
             'select' => array(
                 'securityClassId'
             ),
-            'from'   => Tables::PASSWORDS,
+            'from'   => Tables::passwords(),
             'where'  => array(
                 'id' => $passwordId
             )
@@ -499,7 +499,7 @@ class Passwords
             'select' => array(
                 'securityClassId'
             ),
-            'from'   => Tables::PASSWORDS,
+            'from'   => Tables::passwords(),
             'where'  => array(
                 'id' => array(
                     'type'  => 'IN',

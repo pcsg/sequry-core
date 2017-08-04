@@ -56,7 +56,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             '$saveToggleStatus',
             '$restoreToggleStatus',
             '$search',
-            '$onInject'
+            '$onInject',
+            'refresh',
+            '$onDestroy'
         ],
 
         options: {
@@ -67,8 +69,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             this.parent(options);
 
             this.addEvents({
-                onCreate: this.$onCreate,
-                onInject: this.$onInject
+                onCreate : this.$onCreate,
+                onInject : this.$onInject,
+                onDestroy: this.$onDestroy
             });
 
             this.Loader                = new QUILoader();
@@ -202,13 +205,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
             });
 
             this.$restoreToggleStatus();
+
+            window.PasswordCategories = this;
         },
 
         /**
          * Event: onInject
          */
-        $onInject: function() {
+        $onInject: function () {
             this.setAttribute('title', QUILocale.get(lg, 'controls.categories.panel.title'));
+            this.refresh();
         },
 
         /**
@@ -275,7 +281,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
                     PasswordList.setSearchCategory(self.$selectedCatId);
                 }
 
-                if (self.$filters.length) {
+                if (self.$filters) {
                     PasswordList.setSearchFilters(self.$filters);
                 } else {
                     PasswordList.removeSearchFilters();
@@ -283,6 +289,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
 
                 PasswordList.refresh();
             });
+        },
+
+        /**
+         * Refresh category trees
+         */
+        refreshCategories: function () {
+            this.$CategoryMap.refresh();
+            this.$CategoryMapPrivate.refresh();
+        },
+
+        /**
+         * Event: onDestroy
+         */
+        $onDestroy: function () {
+            window.PasswordCategories = null;
         }
     });
 });

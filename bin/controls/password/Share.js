@@ -154,7 +154,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
             var pwId = this.getAttribute('passwordId');
 
-            Authentication.passwordAuth(pwId).then(function(AuthData) {
+            Authentication.passwordAuth(pwId).then(function (AuthData) {
                 Passwords.getShareData(
                     pwId,
                     AuthData
@@ -177,13 +177,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                         self.$AuthData  = AuthData;
 
                         self.$ActorSelectUsers = new ActorSelect({
+                            popupInfo      : QUILocale.get(lg,
+                                'controls.password.share.actorselect.users.info'
+                            ),
                             actorType      : 'users',
-                            securityClassId: ShareData.securityClassId
+                            securityClassId: ShareData.securityClassId,
+                            multiple       : true,
+                            filterActorIds : ShareData.ownerUserIds
                         }).inject(ActorUsersElm);
 
                         self.$ActorSelectGroups = new ActorSelect({
+                            popupInfo      : QUILocale.get(lg,
+                                'controls.password.share.actorselect.groups.info'
+                            ),
                             actorType      : 'groups',
-                            securityClassId: ShareData.securityClassId
+                            securityClassId: ShareData.securityClassId,
+                            multiple       : true,
+                            filterActorIds : ShareData.ownerGroupIds
                         }).inject(ActorGroupsElm);
 
                         self.$insertData();
@@ -193,7 +203,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                         self.fireEvent('close');
                     }
                 );
-            }, function() {
+            }, function () {
                 self.fireEvent('close');
             });
         },
@@ -218,19 +228,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                 this.$ActorSelectGroups.getActors()
             );
 
-            Passwords.setShareData(
-                this.getAttribute('passwordId'),
-                shareData,
-                this.$AuthData
-            ).then(
-                function (ShareData) {
-                    self.$ShareData = ShareData;
-                    self.$insertData();
-                },
-                function () {
-                    // @todo Fehlermeldung
-                }
-            );
+            return new Promise(function (resolve, reject) {
+                Passwords.setShareData(
+                    self.getAttribute('passwordId'),
+                    shareData,
+                    self.$AuthData
+                ).then(
+                    function () {
+                        self.fireEvent('close');
+                        //self.$ShareData = ShareData;
+                        //self.$insertData();
+                    },
+                    reject
+                );
+            });
         }
     });
 });

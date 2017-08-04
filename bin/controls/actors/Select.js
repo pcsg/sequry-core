@@ -4,6 +4,7 @@
  *
  * @require qui/QUI
  * @require qui/controls/elements/Select
+ * @require package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup
  * @require Ajax
  * @require Locale
  */
@@ -11,10 +12,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
 
     'qui/QUI',
     'qui/controls/elements/Select',
+
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
+
     'Ajax',
     'Locale'
 
-], function (QUI, QUIElementSelect, QUIAjax, QUILocale) {
+], function (QUI, QUIElementSelect, SelectTablePopup, QUIAjax, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -25,13 +29,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
 
         Binds: [
-            'actorSearch'
+            'actorSearch',
+            '$onSearchButtonClick'
         ],
 
         options: {
+            popupInfo      : '',    // info that is shown in the ActorSelect Popup
             actorType      : 'all', // "users", "groups", "all"
             securityClassId: false,  // id of security class this actors are searched for
-            Search         : false
+            Search         : false,
+            filterActorIds : []   // IDs of actors that are filtered from list (entries must have
+            // prefix "u" (user) or "g" (group)
         },
 
         initialize: function (options) {
@@ -67,7 +75,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             }
 
             this.setAttribute('child', 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem');
-            this.setAttribute('searchbutton', false);
+
+            this.addEvents({
+                onSearchButtonClick: this.$onSearchButtonClick
+            });
         },
 
         /**
@@ -108,7 +119,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             actorIds = actorIds.split(',');
 
             for (var i = 0, len = actorIds.length; i < len; i++) {
-                var id = actorIds[0];
+                var id = actorIds[i];
 
                 // is user
                 if (id.charAt(0) === 'u') {
@@ -128,6 +139,39 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             }
 
             return actors;
+        },
+
+        /**
+         * Event: onSearchButtonClick
+         */
+        $onSearchButtonClick: function () {
+            var self           = this;
+            var filterActorIds = Array.clone(this.getAttribute('filterActorIds'));
+
+            if (this.getValue() !== '') {
+                filterActorIds.combine(this.getValue().split(','));
+            }
+
+            new SelectTablePopup({
+                info           : this.getAttribute('popupInfo'),
+                securityClassId: this.getAttribute('securityClassId'),
+                multiselect    : this.getAttribute('multiple'),
+                actorType      : this.getAttribute('actorType'),
+                filterActorIds : filterActorIds,
+                events         : {
+                    onSubmit: function (ids, actorType) {
+                        var prefix = 'u';
+
+                        if (actorType === 'groups') {
+                            prefix = 'g';
+                        }
+
+                        for (var i = 0, len = ids.length; i < len; i++) {
+                            self.addItem(prefix + ids[i]);
+                        }
+                    }
+                }
+            }).open();
         }
     });
 });

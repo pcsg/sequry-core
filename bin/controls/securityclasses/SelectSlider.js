@@ -94,6 +94,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
          */
         $onInject: function () {
             var self = this;
+            var SecurityClass;
 
             this.Loader.show();
 
@@ -102,6 +103,40 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
             );
 
             Authentication.getSecurityClasses().then(function (SecurityClasses) {
+                // special case: only one security class
+                if (Object.getLength(SecurityClasses) === 1) {
+                    SecurityClass = SecurityClasses[Object.keys(SecurityClasses)[0]];
+
+                    self.$InfoElm.set(
+                        'html',
+                        QUILocale.get(lg, 'controls.securityclasses.selectslider.authfactors', {
+                            title          : SecurityClass.title,
+                            requiredFactors: SecurityClass.requiredFactors
+                        })
+                    );
+
+                    html5tooltips({
+                        animateFunction: "slidein",
+                        delay          : 0,
+                        color          : "tangerine",
+                        stickTo        : "bottom",
+                        contentText    : '<b>' + SecurityClass.title + '</b><br>' +
+                        SecurityClass.description,
+                        targetSelector : '.pcsg-gpm-securityclasses-selectslider-info'
+                    });
+
+                    self.$Elm.setStyle('padding', '15px');
+                    self.$InfoElm.setStyle('margin', 0);
+
+                    self.$securityClassId    = SecurityClass.id;
+                    self.$SecurityClasses[1] = SecurityClass;
+                    self.fireEvent('loaded', [self]);
+
+                    self.Loader.hide();
+
+                    return;
+                }
+
                 self.$Slider = noUiSlider.create(SliderContainer, {
                     step   : 1,
                     min    : 1,
@@ -111,7 +146,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
                         max: Object.getLength(SecurityClasses)
                     },
                     start  : [1],
-                    snap   : true,
+                    snap   : false,
                     connect: false,
                     pips   : {
                         mode   : 'steps',
@@ -134,7 +169,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
                         continue;
                     }
 
-                    var SecurityClass   = SecurityClasses[id];
+                    SecurityClass   = SecurityClasses[id];
                     var sliderNumberId  = 'pcsg-gpm-securityclasses-selectslider-number-' + i;
                     var SliderNumberElm = sliderNumberElms[i - 1];
 
@@ -228,7 +263,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
                 var SecurityClass = this.$SecurityClasses[number];
 
                 if (SecurityClass.id == securityClassId) {
-                    this.$Slider.set(number);
+                    if (this.$Slider) {
+                        this.$Slider.set(number);
+                    } else {
+                        this.$onChangeValue(securityClassId);
+                    }
+
+                    break;
                 }
             }
         },

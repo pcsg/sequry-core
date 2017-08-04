@@ -73,7 +73,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
             }
         }
     } catch (\Exception $Exception) {
-        \QUI\System\Log::writeRecursive($Exception->getMessage());
+        QUI\System\Log::writeException($Exception);
     }
 
     QUI::getMessagesHandler()->addSuccess(

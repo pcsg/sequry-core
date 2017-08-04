@@ -9,7 +9,7 @@ namespace Pcsg\GroupPasswordManager\Actors;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Events;
 use Pcsg\GroupPasswordManager\Password;
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
+use Pcsg\GroupPasswordManager\PasswordTypes\Handler as PasswordTypesHandler;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
@@ -27,6 +27,7 @@ use QUI;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use QUI\Utils\Security\Orthos;
 use QUI\Permissions\Permission;
+use QUI\Cache\Manager as CacheManager;
 
 /**
  * User Class
@@ -69,7 +70,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::KEYPAIRS_USER,
+            'from'   => Tables::keyPairsUser(),
             'where'  => array(
                 'authPluginId' => $AuthPlugin->getId(),
                 'userId'       => $this->getId()
@@ -112,7 +113,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::KEYPAIRS_USER,
+            'from'   => Tables::keyPairsUser(),
             'where'  => array(
                 'userId'       => $this->id,
                 'authPluginId' => array(
@@ -143,7 +144,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::KEYPAIRS_USER,
+            'from'   => Tables::keyPairsUser(),
             'where'  => array(
                 'userId' => $this->id
             )
@@ -186,7 +187,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'groupId'
             ),
-            'from'   => Tables::USER_TO_GROUPS,
+            'from'   => Tables::usersToGroups(),
             'where'  => array(
                 'userId' => $this->id
             )
@@ -244,7 +245,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'dataId'
             ),
-            'from'   => Tables::USER_TO_PASSWORDS,
+            'from'   => Tables::usersToPasswords(),
             'where'  => array(
                 'userId' => $this->getId()
             )
@@ -297,7 +298,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::PASSWORDS,
+            'from'   => Tables::passwords(),
             'where'  => array(
                 'ownerId'   => $this->getId(),
                 'ownerType' => Password::OWNER_TYPE_USER
@@ -372,7 +373,7 @@ class CryptoUser extends QUI\Users\User
     protected function getPasswordAccessKeyUser($passwordId)
     {
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::USER_TO_PASSWORDS,
+            'from'  => Tables::usersToPasswords(),
             'where' => array(
                 'userId' => $this->getId(),
                 'dataId' => $passwordId
@@ -473,7 +474,7 @@ class CryptoUser extends QUI\Users\User
 
         // decrypt password key with group private key
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::GROUP_TO_PASSWORDS,
+            'from'  => Tables::groupsToPasswords(),
             'where' => array(
                 'dataId'  => $passwordId,
                 'groupId' => $groupId
@@ -557,7 +558,7 @@ class CryptoUser extends QUI\Users\User
 
         // get parts of group access key
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::USER_TO_GROUPS,
+            'from'  => Tables::usersToGroups(),
             'where' => array(
                 'userId'          => $this->getId(),
                 'groupId'         => $CryptoGroup->getId(),
@@ -706,7 +707,7 @@ class CryptoUser extends QUI\Users\User
      *
      * @param array $searchParams - search options
      * @param bool $countOnly (optional) - get count only
-     * @return array
+     * @return array|int - passwords or password count (depending on $countOnly)
      */
     public function getPasswordList($searchParams, $countOnly = false)
     {
@@ -716,7 +717,7 @@ class CryptoUser extends QUI\Users\User
         $where     = array();
 
         $passwordIds = $this->getPasswordIds();
-        $Grid        = new \QUI\Utils\Grid($searchParams);
+        $Grid        = new QUI\Utils\Grid($searchParams);
         $gridParams  = $Grid->parseDBParams($searchParams);
 
         // private category filter
@@ -753,24 +754,25 @@ class CryptoUser extends QUI\Users\User
         }
 
         // JOIN user access meta table with password data table
-        $sql .= " FROM `" . QUI::getDBTableName(Tables::PASSWORDS) . "` data, ";
-        $sql .= " `" . QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META) . "` meta";
+        $sql .= " FROM `" . Tables::passwords(). "` data, ";
+        $sql .= " `" . Tables::usersToPasswordMeta() . "` meta";
 
         $where[] = 'data.`id` = meta.`dataId`';
         $where[] = 'meta.`userId` = ' . $this->id;
         $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
-        if (isset($searchParams['searchterm']) &&
-            !empty($searchParams['searchterm'])
+        if (isset($searchParams['search']['searchterm']) &&
+            !empty($searchParams['search']['searchterm'])
         ) {
-            $whereOR = array();
+            $whereOR    = array();
+            $searchTerm = trim($searchParams['search']['searchterm']);
 
             if (isset($searchParams['title'])
                 && $searchParams['title']
             ) {
                 $whereOR[]      = 'data.`title` LIKE :title';
                 $binds['title'] = array(
-                    'value' => '%' . $searchParams['searchterm'] . '%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 );
             }
@@ -780,7 +782,7 @@ class CryptoUser extends QUI\Users\User
             ) {
                 $whereOR[]            = 'data.`description` LIKE :description';
                 $binds['description'] = array(
-                    'value' => '%' . $searchParams['searchterm'] . '%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 );
             }
@@ -790,17 +792,27 @@ class CryptoUser extends QUI\Users\User
             } else {
                 $where[]        = 'data.`title` LIKE :title';
                 $binds['title'] = array(
-                    'value' => '%' . $searchParams['searchterm'] . '%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 );
             }
         }
 
-        if (isset($searchParams['passwordtypes'])
-            && !empty($searchParams['passwordtypes'])
+        if (isset($searchParams['search']['passwordtypes'])
+            && !empty($searchParams['search']['passwordtypes'])
         ) {
-            if (!in_array('all', $searchParams['passwordtypes'])) {
-                $where[] = 'data.`dataType` IN (\'' . implode('\',\'', $searchParams['passwordtypes']) . '\')';
+            $pwTypes = $searchParams['search']['passwordtypes'];
+
+            if (!in_array('all', $pwTypes)) {
+                foreach ($pwTypes as $k => $v) {
+                    if (!PasswordTypesHandler::existsType($v)) {
+                        unset($pwTypes[$k]);
+                    }
+                }
+
+                if (!empty($pwTypes)) {
+                    $where[] = 'data.`dataType` IN (\'' . implode('\',\'', $pwTypes) . '\')';
+                }
             }
         }
 
@@ -814,15 +826,53 @@ class CryptoUser extends QUI\Users\User
             );
         }
 
+        if (isset($searchParams['search']['uncategorized'])
+            && !empty($searchParams['search']['uncategorized'])
+        ) {
+            $where[] = 'data.`categoryIds` IS NULL';
+        }
+
+        if (isset($searchParams['search']['uncategorizedPrivate'])
+            && !empty($searchParams['search']['uncategorizedPrivate'])
+        ) {
+            $where[] = 'meta.`categoryIds` IS NULL';
+        }
+
         // WHERE filters
         if (isset($searchParams['filters'])
             && !empty($searchParams['filters'])
         ) {
-            foreach ($searchParams['filters'] as $filter) {
-                switch ($filter) {
-                    case 'favorites':
-                        $where[] = 'meta.`favorite` = 1';
-                        break;
+            if (!empty($searchParams['filters']['filters'])) {
+                foreach ($searchParams['filters']['filters'] as $filter) {
+                    switch ($filter) {
+                        case 'favorites':
+                            $where[] = 'meta.`favorite` = 1';
+                            break;
+
+                        case 'owned':
+                            $where[] = 'data.`ownerId` = ' . $this->id;
+                            break;
+                    }
+                }
+            }
+
+            if (!empty($searchParams['filters']['types'])) {
+                $whereOr = array();
+
+                foreach ($searchParams['filters']['types'] as $type) {
+                    if (!is_string($type)) {
+                        continue;
+                    }
+
+                    $whereOr[]    = 'data.`dataType` = :' . $type;
+                    $binds[$type] = array(
+                        'value' => $type,
+                        'type'  => \PDO::PARAM_STR
+                    );
+                }
+
+                if (!empty($whereOr)) {
+                    $where[] = '(' . implode(' OR ', $whereOr) . ')';
                 }
             }
         }
@@ -835,10 +885,9 @@ class CryptoUser extends QUI\Users\User
         $orderFields = array();
 
         // ORDER BY filters
-        if (isset($searchParams['filters'])
-            && !empty($searchParams['filters'])
+        if (!empty($searchParams['filters']['filters'])
         ) {
-            foreach ($searchParams['filters'] as $filter) {
+            foreach ($searchParams['filters']['filters'] as $filter) {
                 switch ($filter) {
                     case 'new':
                         $orderFields[] = 'meta.`accessDate` DESC';
@@ -945,7 +994,7 @@ class CryptoUser extends QUI\Users\User
                 $row['canDelete'] = $canDeleteGroup;
             }
 
-            $row['dataType'] = Handler::getTypeTitle($row['dataType']);
+            $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
 
             switch ($row['ownerType']) {
                 case '1':
@@ -993,7 +1042,7 @@ class CryptoUser extends QUI\Users\User
                 'id',
                 'title'
             ),
-            'from'   => QUI::getDBTableName(Tables::SECURITY_CLASSES),
+            'from'   => Tables::securityClasses(),
             'where'  => array(
                 'id' => array(
                     'type'  => 'IN',
@@ -1027,7 +1076,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'dataId'
             ),
-            'from'   => QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            'from'   => Tables::usersToPasswordMeta(),
             'where'  => array(
                 'userId'     => $this->id,
                 'categories' => array(
@@ -1075,7 +1124,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'dataId'
             ),
-            'from'   => Tables::USER_TO_PASSWORDS,
+            'from'   => Tables::usersToPasswords(),
             'where'  => $where
         ));
 
@@ -1121,7 +1170,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'dataId'
             ),
-            'from'   => Tables::GROUP_TO_PASSWORDS,
+            'from'   => Tables::groupsToPasswords(),
             'where'  => $where
         ));
 
@@ -1189,7 +1238,7 @@ class CryptoUser extends QUI\Users\User
             'select' => array(
                 'dataId'
             ),
-            'from'   => Tables::USER_TO_PASSWORDS,
+            'from'   => Tables::usersToPasswords(),
             'where'  => array(
                 'userId'    => $this->getId(),
                 'keyPairId' => $AuthKeyPair->getId()
@@ -1207,7 +1256,7 @@ class CryptoUser extends QUI\Users\User
 //            'select' => array(
 //                'groupId'
 //            ),
-//            'from'   => Tables::USER_TO_GROUPS,
+//            'from'   => Tables::usersToGroups(),
 //            'where'  => array(
 //                'userId'        => $this->getId(),
 //                'userKeyPairId' => $AuthKeyPair->getId()
@@ -1282,7 +1331,7 @@ class CryptoUser extends QUI\Users\User
                 'groupId',
                 'securityClassId'
             ),
-            'from'   => Tables::USER_TO_GROUPS,
+            'from'   => Tables::usersToGroups(),
             'where'  => array(
                 'userId'        => $this->getId(),
                 'userKeyPairId' => $AuthKeyPair->getId()
@@ -1386,7 +1435,7 @@ class CryptoUser extends QUI\Users\User
             try {
                 // delete old access entry
                 $DB->delete(
-                    Tables::USER_TO_PASSWORDS,
+                    Tables::usersToPasswords(),
                     array(
                         'userId'    => $this->getId(),
                         'keyPairId' => $UserAuthKeyPair->getId(),
@@ -1412,7 +1461,7 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 $DB->insert(
-                    Tables::USER_TO_PASSWORDS,
+                    Tables::usersToPasswords(),
                     $dataAccessEntry
                 );
             } catch (\Exception $Exception) {
@@ -1484,7 +1533,7 @@ class CryptoUser extends QUI\Users\User
             try {
                 // delete old access entry
                 $DB->delete(
-                    Tables::USER_TO_GROUPS,
+                    Tables::usersToGroups(),
                     array(
                         'userId'          => $this->getId(),
                         'userKeyPairId'   => $UserAuthKeyPair->getId(),
@@ -1511,14 +1560,14 @@ class CryptoUser extends QUI\Users\User
                 // calculate MAC
                 $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
 
-                $DB->insert(Tables::USER_TO_GROUPS, $data);
+                $DB->insert(Tables::usersToGroups(), $data);
             } catch (\Exception $Exception) {
                 QUI\System\Log::addError(
                     'Error writing group key parts to database: ' . $Exception->getMessage()
                 );
 
                 QUI::getDataBase()->delete(
-                    Tables::USER_TO_GROUPS,
+                    Tables::usersToGroups(),
                     array(
                         'userId'          => $this->getId(),
                         'groupId'         => $CryptoGroup->getId(),
@@ -1595,7 +1644,7 @@ class CryptoUser extends QUI\Users\User
             );
 
             QUI::getDataBase()->update(
-                QUI::getDBTableName(Tables::KEYPAIRS_USER),
+                Tables::keyPairsUser(),
                 array(
                     'privateKey' => $privateKeyEncrypted,
                     'MAC'        => $macValue
@@ -1636,7 +1685,7 @@ class CryptoUser extends QUI\Users\User
                 $mac = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
 
                 QUI::getDataBase()->update(
-                    QUI::getDBTableName(Tables::KEYPAIRS_GROUP),
+                    Tables::keyPairsGroup(),
                     array(
                         'privateKey' => $groupPrivateKeyEncrypted,
                         'MAC'        => $mac
@@ -1666,7 +1715,7 @@ class CryptoUser extends QUI\Users\User
             $PasswordAccessKey = $this->getPasswordAccessKey($passwordId);
 
             $result = QUI::getDataBase()->fetch(array(
-                'from'  => QUI::getDBTableName(Tables::PASSWORDS),
+                'from'  => Tables::passwords(),
                 'where' => array(
                     'id' => $passwordId
                 )
@@ -1714,7 +1763,7 @@ class CryptoUser extends QUI\Users\User
             );
 
             QUI::getDataBase()->update(
-                QUI::getDBTableName(Tables::PASSWORDS),
+                Tables::passwords(),
                 array(
                     'cryptoData' => $pwContentEncrypted,
                     'MAC'        => $newMac,
@@ -1745,7 +1794,7 @@ class CryptoUser extends QUI\Users\User
         $currentViewCount = $metaData['viewCount'];
 
         QUI::getDataBase()->update(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            Tables::usersToPasswordMeta(),
             array(
                 'viewCount' => ++$currentViewCount
             ),
@@ -1771,7 +1820,7 @@ class CryptoUser extends QUI\Users\User
         }
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            'from'  => Tables::usersToPasswordMeta(),
             'where' => array(
                 'userId' => $this->id,
                 'dataId' => $passwordId
@@ -1791,6 +1840,57 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
+     * Create entry in meta data table for a password for this user
+     *
+     * @param Password $Password - The password the meta table entry is created for
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function createMetaTableEntry(Password $Password)
+    {
+        $metaData = $this->getPasswordMetaData($Password->getId());
+
+        if (!empty($metaData)) {
+            return;
+        }
+
+        QUI::getDataBase()->insert(
+            Tables::usersToPasswordMeta(),
+            array(
+                'userId'     => $this->id,
+                'dataId'     => $Password->getId(),
+                'accessDate' => time()
+            )
+        );
+    }
+
+    /**
+     * Remove entry in meta data table for a password for this user
+     *
+     * @param Password $Password
+     * @return void
+     *
+     * @throws QUI\Exception
+     */
+    public function removeMetaTableEntry(Password $Password)
+    {
+        $passwordId = $Password->getId();
+
+        QUI::getDataBase()->delete(
+            Tables::usersToPasswordMeta(),
+            array(
+                'userId' => $this->id,
+                'dataId' => $passwordId
+            )
+        );
+
+        if (isset($this->passwordMetaData[$passwordId])) {
+            unset($this->passwordMetaData[$passwordId]);
+        }
+    }
+
+    /**
      * Set favorite status to password
      *
      * @param int $passwordId - Password ID
@@ -1800,7 +1900,7 @@ class CryptoUser extends QUI\Users\User
     public function setPasswordFavoriteStatus($passwordId, $status = true)
     {
         QUI::getDataBase()->update(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            Tables::usersToPasswordMeta(),
             array(
                 'favorite' => $status ? 1 : 0
             ),
@@ -1868,7 +1968,7 @@ class CryptoUser extends QUI\Users\User
 
         // delete all password access data
         $DB->delete(
-            Tables::USER_TO_PASSWORDS,
+            Tables::usersToPasswords(),
             array(
                 'userId' => $this->getId()
             )
@@ -1884,7 +1984,7 @@ class CryptoUser extends QUI\Users\User
 
         // delete keypairs
         $DB->delete(
-            Tables::KEYPAIRS_USER,
+            Tables::keyPairsUser(),
             array(
                 'userId' => $this->getId()
             )
@@ -1892,7 +1992,7 @@ class CryptoUser extends QUI\Users\User
 
         // delete recovery data
         $DB->delete(
-            Tables::RECOVERY,
+            Tables::recovery(),
             array(
                 'userId' => $this->getId()
             )
@@ -1900,7 +2000,7 @@ class CryptoUser extends QUI\Users\User
 
         // delete password meta data
         $DB->delete(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            Tables::usersToPasswordMeta(),
             array(
                 'userId' => $this->getId()
             )
@@ -1934,5 +2034,115 @@ class CryptoUser extends QUI\Users\User
         }
 
         return true;
+    }
+
+    /**
+     * Determine if this user has access to (any) passwords in a given public
+     * password category
+     *
+     * @param int $categoryId
+     * @return bool
+     */
+    public function hasAccessToPasswordsInPublicCategory($categoryId)
+    {
+        $cacheName = 'pcsg/grouppasswordmanager/publiccategoryaccess/' . $this->id . '/' . $categoryId;
+
+        try {
+            return CacheManager::get($cacheName);
+        } catch (QUI\Cache\Exception $Exception) {
+            // nothing, retrieve fresh information
+        }
+
+        $results = $this->getPasswordList(array(
+            'categoryId' => $categoryId
+        ), true);
+
+        CacheManager::set($cacheName, !empty($results));
+
+        return !empty($results);
+    }
+
+    /**
+     * Determine if this user has access to (any) passwords in a given public
+     * password category
+     *
+     * @param int $categoryId
+     * @return bool
+     */
+    public function hasAccessToPasswordsInPrivateCategory($categoryId)
+    {
+        $cacheName = 'pcsg/grouppasswordmanager/privatecategoryaccess/' . $this->id . '/' . $categoryId;
+
+        try {
+            return CacheManager::get($cacheName);
+        } catch (QUI\Cache\Exception $Exception) {
+            // nothing, retrieve fresh information
+        }
+
+        $result = QUI::getDataBase()->fetch(array(
+            'from'  => Tables::usersToPasswordMeta(),
+            'where' => array(
+                'userId'     => $this->id,
+                'categories' => array(
+                    'type'  => '%LIKE%',
+                    'value' => ',' . $categoryId . ','
+                )
+            ),
+            'count' => 1
+        ));
+
+        $count = current(current($result));
+
+        CacheManager::set($cacheName, !empty($count));
+
+        return !empty($count);
+    }
+
+    /**
+     * Checks all user passwords and adds or deletes meta table entries
+     *
+     * @return void
+     */
+    public function refreshPasswordMetaTableEntries()
+    {
+        $metaTbl = Tables::usersToPasswordMeta();
+
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'dataId'
+            ),
+            'from'   => $metaTbl,
+            'where'  => array(
+                'userId' => $this->id
+            )
+        ));
+
+        $passwordIds     = $this->getPasswordIds();
+        $metaPasswordIds = array();
+
+        foreach ($result as $row) {
+            $metaPasswordIds[$row['dataId']] = true;
+        }
+
+        // create missing meta table entries
+        foreach ($passwordIds as $passwordId) {
+            if (!isset($metaPasswordIds[$passwordId])) {
+                $Password = Passwords::get($passwordId);
+                $Password->createMetaTableEntry($this);
+            }
+        }
+
+        // delete old meta table entries
+        foreach ($metaPasswordIds as $passwordId => $v) {
+            if (!in_array($passwordId, $passwordIds)) {
+                QUI::getDataBase()->delete(
+                    $metaTbl,
+                    array(
+                        'userId' => $this->id,
+                        'dataId' => $passwordId
+                    )
+                );
+            }
+        }
     }
 }

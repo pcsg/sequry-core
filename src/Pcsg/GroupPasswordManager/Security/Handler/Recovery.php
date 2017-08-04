@@ -83,7 +83,7 @@ class Recovery
 
         // delete previous entry (if it exists)
         QUI::getDataBase()->delete(
-            Tables::RECOVERY,
+            Tables::recovery(),
             array(
                 'userId'       => $userId,
                 'authPluginId' => $authPluginId,
@@ -92,7 +92,7 @@ class Recovery
 
         // insert new entry
         QUI::getDataBase()->insert(
-            Tables::RECOVERY,
+            Tables::recovery(),
             array(
                 'userId'       => $userId,
                 'authPluginId' => $authPluginId,
@@ -138,7 +138,7 @@ class Recovery
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::RECOVERY,
+            'from'   => Tables::recovery(),
             'where'  => array(
                 'userId'       => $CryptoUser->getId(),
                 'authPluginId' => $AuthPlugin->getId()
@@ -172,7 +172,7 @@ class Recovery
 
         // get data
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::RECOVERY,
+            'from'  => Tables::recovery(),
             'where' => array(
                 'userId'       => $CryptoUser->getId(),
                 'authPluginId' => $AuthPlugin->getId()

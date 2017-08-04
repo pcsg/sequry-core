@@ -42,7 +42,7 @@ class Plugin extends QUI\QDOM
     public function __construct($id)
     {
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::AUTH_PLUGINS,
+            'from'  => Tables::authPlugins(),
             'where' => array(
                 'id' => (int)$id
             )
@@ -189,7 +189,7 @@ class Plugin extends QUI\QDOM
         try {
             // put everything in the database
             QUI::getDataBase()->update(
-                Tables::KEYPAIRS_USER,
+                Tables::keyPairsUser(),
                 array(
                     'publicKey'  => $publicKeyValue,
                     'privateKey' => $encryptedPrivateKeyValue,
@@ -266,7 +266,7 @@ class Plugin extends QUI\QDOM
         try {
             // put everything in the database
             QUI::getDataBase()->insert(
-                Tables::KEYPAIRS_USER,
+                Tables::keyPairsUser(),
                 array(
                     'userId'       => $User->getId(),
                     'authPluginId' => $this->id,

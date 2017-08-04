@@ -76,7 +76,7 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::KEYPAIRS_GROUP,
+            'from'  => Tables::keyPairsGroup(),
             'where' => array(
                 'groupId'         => $this->getId(),
                 'securityClassId' => $SecurityClass->getId()
@@ -156,7 +156,7 @@ class CryptoGroup extends QUI\Groups\Group
             'select' => array(
                 'securityClassId'
             ),
-            'from'   => Tables::KEYPAIRS_GROUP,
+            'from'   => Tables::keyPairsGroup(),
             'where'  => array(
                 'groupId' => $this->getId()
             )
@@ -181,96 +181,18 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
-     * Set security class for this group
+     * Create a SecurityClass key for this group
      *
      * @param SecurityClass $SecurityClass
-     * @return void
+     * @param QUI\Users\User $User (optional) - Initial User that gets access to the group key
+     * (requires eligibility for given $SecurityClass) [default: Session user]
+     * @return CryptoGroup
      *
      * @throws QUI\Exception
      */
-    public function addSecurityClass($SecurityClass)
+    public function addSecurityClass($SecurityClass, $User = null)
     {
-        $this->checkCryptoUserPermission();
-
-        // check if security class is already set to this group
-        if (in_array($SecurityClass->getId(), $this->getSecurityClassIds())) {
-            return;
-        }
-
-        if (!$SecurityClass->checkGroupUsersForEligibility($this)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptogroup.addsecurityclass.users.not.eligible',
-                array(
-                    'groupId'            => $this->getId(),
-                    'groupName'          => $this->getAttribute('name'),
-                    'securityClassId'    => $SecurityClass->getId(),
-                    'securityClassTitle' => $SecurityClass->getAttribute('title')
-                )
-            ));
-        }
-
-        // generate new key pair and encrypt
-        $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
-        $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
-        $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();
-
-        $GroupAccessKey = SymmetricCrypto::generateKey();
-
-        $privateGroupKeyEncrypted = SymmetricCrypto::encrypt(
-            $privateGroupKey,
-            $GroupAccessKey
-        );
-
-        // insert group key data into database
-        $DB = QUI::getDataBase();
-
-        $data = array(
-            'groupId'         => $this->getId(),
-            'securityClassId' => $SecurityClass->getId(),
-            'publicKey'       => $publicGroupKey,
-            'privateKey'      => $privateGroupKeyEncrypted
-        );
-
-        // calculate group key MAC
-        $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
-
-        $DB->insert(Tables::KEYPAIRS_GROUP, $data);
-
-        // split group access key into parts and share with group users
-        $groupAccessKeyParts = SecretSharing::splitSecret(
-            $GroupAccessKey->getValue(),
-            $SecurityClass->getAuthPluginCount(),
-            $SecurityClass->getRequiredFactors()
-        );
-
-        $users = $this->getCryptoUsers();
-
-        /** @var CryptoUser $User */
-        foreach ($users as $User) {
-            $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
-            $i            = 0;
-
-            /** @var AuthKeyPair $AuthKeyPair */
-            foreach ($authKeyPairs as $AuthKeyPair) {
-                $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $groupAccessKeyParts[$i++],
-                    $AuthKeyPair
-                );
-
-                $data = array(
-                    'userId'          => $User->getId(),
-                    'userKeyPairId'   => $AuthKeyPair->getId(),
-                    'securityClassId' => $SecurityClass->getId(),
-                    'groupId'         => $this->getId(),
-                    'groupKey'        => $privateKeyEncryptionKeyPartEncrypted
-                );
-
-                // calculate MAC
-                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
-                $DB->insert(Tables::USER_TO_GROUPS, $data);
-            }
-        }
+        return CryptoActors::createCryptoGroupKey($this, $SecurityClass, $User);
     }
 
     /**
@@ -308,7 +230,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         if (!empty($securityClassPasswordIds)) {
             $DB->delete(
-                Tables::GROUP_TO_PASSWORDS,
+                Tables::groupsToPasswords(),
                 array(
                     'groupId' => $this->getId(),
                     'dataId'  => array(
@@ -321,7 +243,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         // delete the group key pair for this security class
         $DB->delete(
-            Tables::KEYPAIRS_GROUP,
+            Tables::keyPairsGroup(),
             array(
                 'groupId'         => $this->getId(),
                 'securityClassId' => $SecurityClass->getId()
@@ -330,7 +252,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         // delete all access data of users to this group with this security class
         $DB->delete(
-            Tables::USER_TO_GROUPS,
+            Tables::usersToGroups(),
             array(
                 'groupId'         => $this->getId(),
                 'securityClassId' => $SecurityClass->getId()
@@ -440,14 +362,14 @@ class CryptoGroup extends QUI\Groups\Group
                     // calculate MAC
                     $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
 
-                    QUI::getDataBase()->insert(Tables::USER_TO_GROUPS, $data);
+                    QUI::getDataBase()->insert(Tables::usersToGroups(), $data);
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addError(
                         'Error writing group key parts to database: ' . $Exception->getMessage()
                     );
 
                     QUI::getDataBase()->delete(
-                        Tables::USER_TO_GROUPS,
+                        Tables::usersToGroups(),
                         array(
                             'userId'          => $AddUser->getId(),
                             'groupId'         => $this->getId(),
@@ -466,6 +388,9 @@ class CryptoGroup extends QUI\Groups\Group
                 }
             }
         }
+
+        // create meta table entries
+        $AddUser->refreshPasswordMetaTableEntries();
     }
 
     /**
@@ -503,12 +428,15 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         QUI::getDataBase()->delete(
-            Tables::USER_TO_GROUPS,
+            Tables::usersToGroups(),
             array(
                 'userId'  => $RemoveUser->getId(),
                 'groupId' => $this->getId()
             )
         );
+
+        // delete meta table entries
+        $RemoveUser->refreshPasswordMetaTableEntries();
     }
 
     /**
@@ -541,7 +469,7 @@ class CryptoGroup extends QUI\Groups\Group
             'select' => array(
                 'userId'
             ),
-            'from'   => Tables::USER_TO_GROUPS,
+            'from'   => Tables::usersToGroups(),
             'where'  => array(
                 'groupId' => $this->getId()
             )
@@ -601,7 +529,7 @@ class CryptoGroup extends QUI\Groups\Group
             'select' => array(
                 'dataId'
             ),
-            'from'   => Tables::GROUP_TO_PASSWORDS,
+            'from'   => Tables::groupsToPasswords(),
             'where'  => $where
         ));
 
@@ -610,6 +538,23 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         return $passwordIds;
+    }
+
+    /**
+     * Get all passwords the group has access to
+     *
+     * @param SecurityClass $SecurityClass
+     * @return array
+     */
+    public function getPasswords(SecurityClass $SecurityClass = null)
+    {
+        $passwords = array();
+
+        foreach ($this->getPasswordIds($SecurityClass) as $passwordId) {
+            $passwords[] = Passwords::get($passwordId);
+        }
+
+        return $passwords;
     }
 
     /**
@@ -635,7 +580,7 @@ class CryptoGroup extends QUI\Groups\Group
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::PASSWORDS,
+            'from'   => Tables::passwords(),
             'where'  => $where
         ));
 
@@ -722,7 +667,7 @@ class CryptoGroup extends QUI\Groups\Group
         try {
             // delete old access entry
             $DB->delete(
-                Tables::GROUP_TO_PASSWORDS,
+                Tables::groupsToPasswords(),
                 array(
                     'groupId' => $this->getId(),
                     'dataId'  => $passwordId
@@ -746,7 +691,7 @@ class CryptoGroup extends QUI\Groups\Group
             );
 
             $DB->insert(
-                Tables::GROUP_TO_PASSWORDS,
+                Tables::groupsToPasswords(),
                 $dataAccessEntry
             );
         } catch (\Exception $Exception) {
@@ -797,7 +742,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         // delete all password access data
         $DB->delete(
-            Tables::GROUP_TO_PASSWORDS,
+            Tables::groupsToPasswords(),
             array(
                 'groupId' => $this->getId()
             )
@@ -805,7 +750,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         // delete all key pairs
         $DB->delete(
-            Tables::KEYPAIRS_GROUP,
+            Tables::keyPairsGroup(),
             array(
                 'groupId' => $this->getId()
             )
@@ -813,7 +758,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         // delete all access data of users to this group
         $DB->delete(
-            Tables::USER_TO_GROUPS,
+            Tables::usersToGroups(),
             array(
                 'groupId' => $this->getId()
             )

@@ -95,7 +95,7 @@ class Authentication
                 'title',
                 'description'
             ),
-            'from'   => Tables::AUTH_PLUGINS
+            'from'   => Tables::authPlugins()
         ));
 
         $CryptoUser = CryptoActors::getCryptoUser();
@@ -133,7 +133,7 @@ class Authentication
     {
         $result = QUI::getDataBase()->fetch(array(
             'count' => 1,
-            'from'  => Tables::KEYPAIRS_USER,
+            'from'  => Tables::keyPairsUser(),
             'where' => array(
                 'userId'       => $User->getId(),
                 'authPluginId' => $Plugin->getId()
@@ -178,7 +178,7 @@ class Authentication
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::AUTH_PLUGINS,
+            'from'   => Tables::authPlugins(),
         ));
 
         foreach ($result as $row) {
@@ -203,7 +203,7 @@ class Authentication
             'select' => array(
                 'authPluginId'
             ),
-            'from'   => Tables::SECURITY_TO_AUTH,
+            'from'   => Tables::securityClassesToAuthPlugins(),
             'where'  => array(
                 'securityClassId' => (int)$securityClassId
             )
@@ -223,7 +223,7 @@ class Authentication
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::AUTH_PLUGINS,
+            'from'   => Tables::authPlugins(),
             'where'  => array(
                 'id' => array(
                     'type'  => 'IN',
@@ -254,7 +254,7 @@ class Authentication
     protected static function isAuthPluginRegistered($path)
     {
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::AUTH_PLUGINS,
+            'from'  => Tables::authPlugins(),
             'where' => array(
                 'path' => $path
             )
@@ -290,7 +290,7 @@ class Authentication
 
         if (!(self::isAuthPluginRegistered($class))) {
             QUI::getDataBase()->insert(
-                Tables::AUTH_PLUGINS,
+                Tables::authPlugins(),
                 array(
                     'title'       => $title,
                     'description' => is_null($description) ? '' : $description,
@@ -299,7 +299,7 @@ class Authentication
             );
         } else {
             QUI::getDataBase()->update(
-                Tables::AUTH_PLUGINS,
+                Tables::authPlugins(),
                 array(
                     'title'       => $title,
                     'description' => is_null($description) ? '' : $description,
@@ -384,7 +384,7 @@ class Authentication
 
         try {
             QUI::getDataBase()->insert(
-                Tables::SECURITY_CLASSES,
+                Tables::securityClasses(),
                 array(
                     'title'           => $params['title'],
                     'description'     => $params['description'],
@@ -397,7 +397,7 @@ class Authentication
             /** @var Plugin $AuthPlugin */
             foreach ($authPlugins as $AuthPlugin) {
                 QUI::getDataBase()->insert(
-                    Tables::SECURITY_TO_AUTH,
+                    Tables::securityClassesToAuthPlugins(),
                     array(
                         'securityClassId' => $securityClassId,
                         'authPluginId'    => $AuthPlugin->getId()
@@ -420,15 +420,16 @@ class Authentication
     }
 
     /**
-     * Return list of all security classes with name and description and associated authentication plugins
+     * Return list of all security classes with name and description and
+     * associated authentication plugins
      *
-     * @return array
+     * @return array[]
      */
     public static function getSecurityClassesList()
     {
         $list   = array();
         $result = QUI::getDataBase()->fetch(array(
-            'from' => Tables::SECURITY_CLASSES,
+            'from' => Tables::securityClasses(),
         ));
 
         foreach ($result as $row) {
@@ -612,7 +613,7 @@ class Authentication
             'select' => array(
                 'id'
             ),
-            'from'   => QUI::getDBTableName(Tables::AUTH_PLUGINS),
+            'from'   => Tables::authPlugins(),
             'where'  => array(
                 'path' => '\\' . AuthPlugin::class
             )
@@ -623,5 +624,27 @@ class Authentication
         }
 
         return (int)$result[0]['id'];
+    }
+
+    /**
+     * Get the symmetric key that is used for encryption
+     * between frontend and backend for the current session
+     *
+     * @return false|string - false if no key set, key otherwise
+     */
+    public static function getSessionCommunicationKey()
+    {
+        $data = QUI::getSession()->get('pcsg-gpm-comm-key');
+
+        if (!$data) {
+            return false;
+        }
+
+        $data = json_decode($data, true);
+
+        $data['key'] = hex2bin($data['key']);
+        $data['iv']  = hex2bin($data['iv']);
+
+        return $data;
     }
 }

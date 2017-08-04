@@ -6,7 +6,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
-use ParagonIE\Halite\Asymmetric\Crypto;
+use QUI\Cache\Manager as CacheManager;
 use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
@@ -109,7 +109,7 @@ class Password extends QUI\QDOM
         $id = (int)$id;
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::PASSWORDS,
+            'from'  => Tables::passwords(),
             'where' => array(
                 'id' => $id
             )
@@ -370,6 +370,8 @@ class Password extends QUI\QDOM
                     break;
 
                 case 'categoryIds':
+                    CacheManager::clear('pcsg/grouppasswordmanager/publiccategoryaccess/');
+
                     if (empty($v)) {
                         $this->setAttribute('categories', null);
                         $this->setAttribute('categoryIds', null);
@@ -425,8 +427,25 @@ class Password extends QUI\QDOM
             'description'     => $this->getAttribute('description'),
             'dataType'        => $this->getAttribute('dataType'),
             'sharedWith'      => $this->getSecretAttribute('sharedWith'),
-            'securityClassId' => $this->SecurityClass->getId()
+            'securityClassId' => $this->SecurityClass->getId(),
+            'ownerUserIds'    => $this->getOwnerUserIds(),
+            'ownerGroupIds'   => array()
         );
+
+        $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
+        $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
+
+        if ($currentOwnerType === self::OWNER_TYPE_GROUP) {
+            $data['ownerGroupIds'][] = $currentOwnerId;
+        }
+
+        foreach ($data['ownerUserIds'] as $k => $v) {
+            $data['ownerUserIds'][$k] = 'u' . $v;
+        }
+
+        foreach ($data['ownerGroupIds'] as $k => $v) {
+            $data['ownerGroupIds'][$k] = 'g' . $v;
+        }
 
         return $data;
     }
@@ -682,7 +701,7 @@ class Password extends QUI\QDOM
 
         try {
             $DB->update(
-                Tables::PASSWORDS,
+                Tables::passwords(),
                 $passwordData,
                 array(
                     'id' => $this->id
@@ -716,14 +735,14 @@ class Password extends QUI\QDOM
 
             // first: delete access entries for users and groups
             $DB->delete(
-                Tables::USER_TO_PASSWORDS,
+                Tables::usersToPasswords(),
                 array(
                     'dataId' => $this->id
                 )
             );
 
             $DB->delete(
-                Tables::GROUP_TO_PASSWORDS,
+                Tables::groupsToPasswords(),
                 array(
                     'dataId' => $this->id
                 )
@@ -731,7 +750,7 @@ class Password extends QUI\QDOM
 
             // second: delete password entry
             $DB->delete(
-                Tables::PASSWORDS,
+                Tables::passwords(),
                 array(
                     'id' => $this->id
                 )
@@ -739,7 +758,7 @@ class Password extends QUI\QDOM
 
             // delete meta data entries
             $DB->delete(
-                QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+                Tables::usersToPasswordMeta(),
                 array(
                     'dataId' => $this->id
                 )
@@ -872,6 +891,13 @@ class Password extends QUI\QDOM
                     'pcsg/grouppasswordmanager',
                     'exception.password.change.owner.wrong.type'
                 ));
+        }
+
+        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.password.no.share.permission'
+            ));
         }
 
         // delete access data for old owner(s)
@@ -1037,7 +1063,7 @@ class Password extends QUI\QDOM
             );
 
             $DB->insert(
-                Tables::USER_TO_PASSWORDS,
+                Tables::usersToPasswords(),
                 $dataAccessEntry
             );
         }
@@ -1106,7 +1132,7 @@ class Password extends QUI\QDOM
         );
 
         QUI::getDataBase()->insert(
-            Tables::GROUP_TO_PASSWORDS,
+            Tables::groupsToPasswords(),
             $dataAccessEntry
         );
     }
@@ -1125,9 +1151,9 @@ class Password extends QUI\QDOM
             $this->permissionDenied();
         }
 
-        if ($this->SecurityClass->getId() == $SecurityClass->getId()) {
-            return;
-        }
+//        if ($this->SecurityClass->getId() == $SecurityClass->getId()) {
+//            return;
+//        }
 
         $ownerId = $this->getSecretAttribute('ownerId');
 
@@ -1233,10 +1259,7 @@ class Password extends QUI\QDOM
                 return true;
             }
 
-            $userGroupIds     = $CryptoActor->getCryptoGroupIds();
-            $passwordGroupIds = $this->getAccessGroupsIds();
-
-            return !empty(array_intersect($passwordGroupIds, $userGroupIds));
+            return $this->hasPasswordAccessViaGroup($CryptoActor);
         }
 
         if ($CryptoActor instanceof CryptoGroup) {
@@ -1244,6 +1267,20 @@ class Password extends QUI\QDOM
         }
 
         return false;
+    }
+
+    /**
+     * Determines if a user has access to this password via a password group
+     *
+     * @param CryptoUser $CryptoUser
+     * @return bool
+     */
+    public function hasPasswordAccessViaGroup(CryptoUser $CryptoUser)
+    {
+        $userGroupIds     = $CryptoUser->getCryptoGroupIds();
+        $passwordGroupIds = $this->getAccessGroupsIds();
+
+        return !empty(array_intersect($passwordGroupIds, $userGroupIds));
     }
 
     /**
@@ -1257,14 +1294,17 @@ class Password extends QUI\QDOM
     protected function removeUserPasswordAccess($CryptoUser)
     {
         QUI::getDataBase()->delete(
-            Tables::USER_TO_PASSWORDS,
+            Tables::usersToPasswords(),
             array(
                 'userId' => $CryptoUser->getId(),
                 'dataId' => $this->id,
             )
         );
 
-        $this->removeMetaTableEntry($CryptoUser);
+        // only remove meta table entry if the user does not have access to this password via a group
+        if (!$this->hasPasswordAccessViaGroup($CryptoUser)) {
+            $this->removeMetaTableEntry($CryptoUser);
+        }
 
         return true;
     }
@@ -1280,7 +1320,7 @@ class Password extends QUI\QDOM
     protected function removeGroupPasswordAccess($CryptoGroup)
     {
         QUI::getDataBase()->delete(
-            Tables::GROUP_TO_PASSWORDS,
+            Tables::groupsToPasswords(),
             array(
                 'groupId' => $CryptoGroup->getId(),
                 'dataId'  => $this->id,
@@ -1349,7 +1389,7 @@ class Password extends QUI\QDOM
             'select' => array(
                 'userId'
             ),
-            'from'   => Tables::USER_TO_PASSWORDS,
+            'from'   => Tables::usersToPasswords(),
             'where'  => array(
                 'dataId' => $this->id
             )
@@ -1375,7 +1415,7 @@ class Password extends QUI\QDOM
             'select' => array(
                 'groupId'
             ),
-            'from'   => Tables::GROUP_TO_PASSWORDS,
+            'from'   => Tables::groupsToPasswords(),
             'where'  => array(
                 'dataId' => $this->id
             )
@@ -1398,20 +1438,7 @@ class Password extends QUI\QDOM
      */
     public function createMetaTableEntry(CryptoUser $CryptoUser)
     {
-        $metaData = $CryptoUser->getPasswordMetaData($this->id);
-
-        if (!empty($metaData)) {
-            return;
-        }
-
-        QUI::getDataBase()->insert(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
-            array(
-                'userId'     => $CryptoUser->getId(),
-                'dataId'     => $this->id,
-                'accessDate' => time()
-            )
-        );
+        $CryptoUser->createMetaTableEntry($this);
     }
 
     /**
@@ -1436,13 +1463,7 @@ class Password extends QUI\QDOM
 //            ));
 //        }
 
-        QUI::getDataBase()->delete(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
-            array(
-                'userId' => $CryptoUser->getId(),
-                'dataId' => $this->id
-            )
-        );
+        $CryptoUser->removeMetaTableEntry($this);
     }
 
     /**
@@ -1709,7 +1730,7 @@ class Password extends QUI\QDOM
         }
 
         QUI::getDataBase()->update(
-            QUI::getDBTableName(Tables::PASSWORDS),
+            Tables::passwords(),
             array(
                 'viewCount' => ++$currentViewCount
             ),

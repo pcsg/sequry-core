@@ -100,7 +100,7 @@ class Patch extends QUI\System\Console\Tool
             );
 
             QUI::getDataBase()->update(
-                QUI::getDBTableName(Tables::PASSWORDS),
+                Tables::passwords(),
                 array(
                     'MACFields' => $macFieldsEncrypted
                 ),
@@ -125,10 +125,10 @@ class Patch extends QUI\System\Console\Tool
                 'select' => array(
                     'id'
                 ),
-                'from'   => QUI::getDBTableName(Tables::PASSWORDS)
+                'from'   => Tables::passwords()
             ));
 
-            $metaTbl = QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META);
+            $metaTbl = Tables::usersToPasswordMeta();
 
             define('SYSTEM_INTERN', 1);
 

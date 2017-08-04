@@ -21,6 +21,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
         Extends: CategoryMap,
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
 
+        initialize: function (options) {
+            this.parent(options);
+            this.$lcKey = 'pcsg-gpm-passwords-categories-toggleCategories-private';
+        },
+
         /**
          * Get all categories
          *
@@ -34,7 +39,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         'package': 'pcsg/grouppasswordmanager',
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -55,7 +60,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         title    : title,
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -76,7 +81,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         title    : title,
                         onError  : reject
                     }
-                )
+                );
             });
         },
 
@@ -95,7 +100,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
                         id       : id,
                         onError  : reject
                     }
-                )
+                );
             });
         }
     });

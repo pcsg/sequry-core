@@ -55,7 +55,7 @@ class SecurityClass extends QUI\QDOM
         $id = (int)$id;
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::SECURITY_CLASSES,
+            'from'  => Tables::securityClasses(),
             'where' => array(
                 'id' => $id
             )
@@ -234,7 +234,7 @@ class SecurityClass extends QUI\QDOM
             'select' => array(
                 'authPluginId'
             ),
-            'from'   => Tables::SECURITY_TO_AUTH,
+            'from'   => Tables::securityClassesToAuthPlugins(),
             'where'  => array(
                 'securityClassId' => $this->id
             )
@@ -279,7 +279,7 @@ class SecurityClass extends QUI\QDOM
     {
         $result = QUI::getDataBase()->fetch(array(
             'count' => 1,
-            'from'  => Tables::SECURITY_TO_AUTH,
+            'from'  => Tables::securityClassesToAuthPlugins(),
             'where' => array(
                 'securityClassId' => $this->id
             )
@@ -291,23 +291,31 @@ class SecurityClass extends QUI\QDOM
     /**
      * Checks if a user has the necessary key pairs to use this security class
      *
-     * @param QUI\Users\User $User
+     * @param QUI\Users\User|int $User - QUI\Users\User or user Id
      * @return bool
      */
     public function isUserEligible($User)
     {
-        return in_array($User->getId(), $this->getEligibleUserIds());
+        if ($User instanceof QUI\Users\User) {
+            $User = $User->getId();
+        }
+
+        return in_array((int)$User, $this->getEligibleUserIds());
     }
 
     /**
      * Checks if a group has the necessary key pairs to use this security class
      *
-     * @param QUI\Groups\Group $Group
+     * @param QUI\Groups\Group|int $Group - QUI\Groups\Group or group id
      * @return bool
      */
     public function isGroupEligible($Group)
     {
-        return in_array($Group->getId(), $this->getGroupIds());
+        if ($Group instanceof QUI\Groups\Group) {
+            $Group = $Group->getId();
+        }
+
+        return in_array((int)$Group, $this->getGroupIds());
     }
 
     /**
@@ -381,7 +389,7 @@ class SecurityClass extends QUI\QDOM
             'select' => array(
                 'groupId'
             ),
-            'from'   => Tables::KEYPAIRS_GROUP,
+            'from'   => Tables::keyPairsGroup(),
             'where'  => array(
                 'securityClassId' => $this->id
             )
@@ -406,7 +414,7 @@ class SecurityClass extends QUI\QDOM
             'select' => array(
                 'id'
             ),
-            'from'   => Tables::PASSWORDS,
+            'from'   => Tables::passwords(),
             'where'  => array(
                 'securityClassId' => $this->id
             )
@@ -420,7 +428,7 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Search eligible users and/or groups for this security class
+     * Suggest search eligible users and/or groups for this security class
      *
      * @param string $search - search term (username / group name)
      * @param string $type - "users" / "groups"
@@ -464,14 +472,47 @@ class SecurityClass extends QUI\QDOM
             return $actors;
         }
 
-        $sql = "SELECT id, username, firstname, lastname";
-        $sql .= " FROM " . QUI::getDBTableName('users');
+        // search users_adress table
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'uid',
+                'company'
+            ),
+            'from'   => QUI::getDBTableName('users_address'),
+            'where'  => array(
+                'company' => array(
+                    'type'  => '%LIKE%',
+                    'value' => $search
+                ),
+                'uid'     => array(
+                    'type'  => 'IN',
+                    'value' => $userIds
+                )
+            )
+        ));
+
+        $addressUserIds       = array();
+        $addressUserCompanies = array();
+
+        foreach ($result as $row) {
+            $addressUserIds[]                  = $row['uid'];
+            $addressUserCompanies[$row['uid']] = $row['company'];
+        }
+
+        // search users table
+        $sql   = "SELECT id, username, firstname, lastname";
+        $sql   .= " FROM `" . QUI::getDBTableName('users') . "`";
         $where = array();
         $binds = array();
 
         $where[] = '`id` IN (' . implode(',', $userIds) . ')';
 
         $whereOr = array();
+
+        // add matches from users_address search
+        if (!empty($addressUserIds)) {
+            $whereOr[] = '`id` IN (' . implode(',', $addressUserIds) . ')';
+        }
 
         $whereOr[]         = 'username LIKE :username';
         $binds['username'] = array(
@@ -527,9 +568,19 @@ class SecurityClass extends QUI\QDOM
                 $userNameParts[] = $row['lastname'];
             }
 
+            if (isset($addressUserCompanies[$row['id']])) {
+                $userNameParts[] = '[' . $addressUserCompanies[$row['id']] . ']';
+            }
+
+            if (empty($userNameParts)) {
+                $userName = $row['username'];
+            } else {
+                $userName = implode(' ', $userNameParts) . ' (' . $row['username'] . ')';
+            }
+
             $actors[] = array(
                 'id'   => $row['id'],
-                'name' => implode(' ', $userNameParts) . ' (' . $row['username'] . ')',
+                'name' => $userName,
                 'type' => 'user'
             );
         }
@@ -597,7 +648,7 @@ class SecurityClass extends QUI\QDOM
 
         /** @var QUI\Groups\Group $Group */
         foreach ($allGroups as $Group) {
-            if (!$this->checkGroupUsersForEligibility($Group)) {
+            if (!$this->areGroupUsersEligible($Group)) {
                 continue;
             }
 
@@ -641,6 +692,7 @@ class SecurityClass extends QUI\QDOM
      * Edits title and/or description of a security class
      *
      * @param array $data
+     * @return void
      *
      * @throws QUI\Exception
      */
@@ -701,7 +753,7 @@ class SecurityClass extends QUI\QDOM
         }
 
         QUI::getDataBase()->insert(
-            Tables::SECURITY_TO_AUTH,
+            Tables::securityClassesToAuthPlugins(),
             array(
                 'securityClassId' => $this->id,
                 'authPluginId'    => $AuthPlugin->getId()
@@ -712,13 +764,13 @@ class SecurityClass extends QUI\QDOM
     /**
      * Saves current settings
      *
-     * @return true - on success
+     * @return void
      * @throws QUI\Database\Exception
      */
     protected function save()
     {
         QUI::getDataBase()->update(
-            Tables::SECURITY_CLASSES,
+            Tables::securityClasses(),
             array(
                 'title'       => $this->getAttribute('title'),
                 'description' => $this->getAttribute('description')
@@ -751,7 +803,7 @@ class SecurityClass extends QUI\QDOM
         $count = $DB->fetch(
             array(
                 'count' => 1,
-                'from'  => Tables::PASSWORDS,
+                'from'  => Tables::passwords(),
                 'where' => array(
                     'securityClassId' => $this->getId()
                 )
@@ -767,7 +819,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete group keys for security class
         $DB->delete(
-            Tables::KEYPAIRS_GROUP,
+            Tables::keyPairsGroup(),
             array(
                 'securityClassId' => $this->getId()
             )
@@ -775,7 +827,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete user group access for security class
         $DB->delete(
-            Tables::USER_TO_GROUPS,
+            Tables::usersToGroups(),
             array(
                 'securityClassId' => $this->getId()
             )
@@ -783,7 +835,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete securityclass to auth entries
         $DB->delete(
-            Tables::SECURITY_TO_AUTH,
+            Tables::securityClassesToAuthPlugins(),
             array(
                 'securityClassId' => $this->getId()
             )
@@ -791,7 +843,7 @@ class SecurityClass extends QUI\QDOM
 
         // delete security class entry
         $DB->delete(
-            Tables::SECURITY_CLASSES,
+            Tables::securityClasses(),
             array(
                 'id' => $this->getId()
             )
@@ -817,7 +869,7 @@ class SecurityClass extends QUI\QDOM
      *
      * @return bool
      */
-    public function checkGroupUsersForEligibility($Group)
+    public function areGroupUsersEligible($Group)
     {
         $result = $Group->getUsers(array(
             'select' => 'id'

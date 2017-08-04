@@ -184,4 +184,45 @@ class Utils
 
         return $str;
     }
+
+    /**
+     * Generate a random password
+     *
+     * @return string
+     */
+    public static function generatePassword()
+    {
+        $passwordParts = array();
+
+        // 3 to 5 numbers
+        for ($i = 0, $len = random_int(3,5); $i < $len; $i++) {
+            $passwordParts[] = random_int(0,9);
+        }
+
+        // 3 to 5 special characters
+        $special = array('-', '_', '$', '@', '?');
+
+        for ($i = 0, $len = random_int(3,5); $i < $len; $i++) {
+            $passwordParts[] = $special[random_int(0, (count($special)-1))];
+        }
+
+        // 4 to 10 letters
+        $letters = array(
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+            'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+            'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        );
+
+        for ($i = 0, $len = random_int(4,10); $i < $len; $i++) {
+            $passwordParts[] = $letters[random_int(0, (count($letters)-1))];
+        }
+
+        // shuffle parts
+        for ($i = 0, $len = random_int(500,1000); $i < $len; $i++) {
+            shuffle($passwordParts);
+        }
+
+        return implode('', $passwordParts);
+    }
 }

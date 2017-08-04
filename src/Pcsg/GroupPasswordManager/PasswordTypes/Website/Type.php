@@ -26,15 +26,11 @@ class Type implements IPasswordType
         ) {
             $url = $content['url'];
 
-            preg_match('#https?:\/\/#i', $url, $matches);
-
-            if (empty($matches)) {
-                $url = 'http://' . $url;
+            if (mb_strpos($url, '//') !== false) {
+                $url = '<a href="' . $url . '" target="_blank">' . $url . '</a>';
             }
 
             $content['url'] = $url;
-        } else {
-            $content['url'] = '#';
         }
 
         $content = array_merge($content, self::getTemplateTranslations());

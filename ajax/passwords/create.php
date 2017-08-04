@@ -11,10 +11,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
 {
-    // @todo clearArray könnte zuviel kaputtmachen, evtl. eigene clear methode schreiben
-    $passwordData = \QUI\Utils\Security\Orthos::clearArray(
-        json_decode($passwordData, true)
-    );
+    $passwordData = json_decode($passwordData, true);
 
     if (!isset($passwordData['securityClassId'])
         || empty($passwordData['securityClassId'])) {

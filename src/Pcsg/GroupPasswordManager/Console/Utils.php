@@ -89,7 +89,7 @@ class Utils extends QUI\System\Console\Tool
             try {
                 // pcsg_gpm_group_data_access
                 $DB->delete(
-                    QUI::getDBTableName(Tables::GROUP_TO_PASSWORDS),
+                    Tables::groupsToPasswords(),
                     array(
                         'dataId' => $id
                     )
@@ -97,7 +97,7 @@ class Utils extends QUI\System\Console\Tool
 
                 // pcsg_gpm_password_data
                 $DB->delete(
-                    QUI::getDBTableName(Tables::PASSWORDS),
+                    Tables::passwords(),
                     array(
                         'id' => $id
                     )
@@ -105,7 +105,7 @@ class Utils extends QUI\System\Console\Tool
 
                 // pcsg_gpm_user_data_access
                 $DB->delete(
-                    QUI::getDBTableName(Tables::USER_TO_PASSWORDS),
+                    Tables::usersToPasswords(),
                     array(
                         'dataId' => $id
                     )
@@ -113,7 +113,7 @@ class Utils extends QUI\System\Console\Tool
 
                 // pcsg_gpm_user_data_access_meta
                 $DB->delete(
-                    QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+                    Tables::usersToPasswordMeta(),
                     array(
                         'dataId' => $id
                     )

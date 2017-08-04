@@ -52,7 +52,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
             'getCategory',
             'refresh',
             'deselectAll',
-            'select'
+            'select',
+            '$saveToggleStatus',
+            '$getClosedCategories'
         ],
 
         options: {
@@ -75,6 +77,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
             this.$CategoryMap      = null;
             this.$FlatCategoryTree = {};
             this.$loaded           = false;
+            this.$showEmpty        = false;
+            this.$lcKey            = 'pcsg-gpm-passwords-categories-toggleCategories-public';
         },
 
         /**
@@ -102,7 +106,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         $onInject: function () {
             var self = this;
 
-            this.refresh().then(function() {
+            if (!this.getAttribute('editMode')) {
+                this.$showEmpty = true;
+            } else {
+                this.$showEmpty = localStorage.getItem(
+                    'pcsg-gpm-passwords-categories-showEmpty'
+                );
+            }
+
+            this.refresh().then(function () {
                 self.fireEvent('loaded', [self]);
             });
         },
@@ -149,6 +161,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
             this.Loader.show();
 
             return new Promise(function (resolve) {
+                var closedCategories = self.$getClosedCategories();
+                var FuncItemOnToggle = function (Item) {
+                    if (Item.getAttribute('hasChildren')) {
+                        self.$saveToggleStatus(Item);
+                    }
+                };
+
                 self.$getCategories().then(function (categories) {
                     self.$CategoryMap = new QUISiteMap({
                         multible: !self.getAttribute('editMode')
@@ -156,6 +175,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
 
                     // Special category "All"
                     var ItemAll = new QUISiteMapItem({
+                        id         : 'all',
                         title      : QUILocale.get(lg, 'controls.categories.map.category.all'),
                         text       : QUILocale.get(lg, 'controls.categories.map.category.all'),
                         icon       : 'fa fa-diamond',
@@ -182,7 +202,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                                         event.page.y
                                     )
                                     .show();
-                            }
+                            },
+                            onClose      : FuncItemOnToggle,
+                            onOpen       : FuncItemOnToggle
                         }
                     });
 
@@ -190,9 +212,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                     self.$CategoryMap.appendChild(ItemAll);
 
                     self.$buildCategoryTree(categories, ItemAll);
-                    self.$CategoryMap.openAll();
 
-                    //ItemAll.highlight();
+                    if (!closedCategories.contains('all')) {
+                        ItemAll.open();
+                    }
 
                     self.Loader.hide();
                     self.$loaded = true;
@@ -209,7 +232,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
          * @param {Object} ParentItem - qui/controls/sitemap/Item
          */
         $buildCategoryTree: function (children, ParentItem) {
-            var self = this;
+            var self             = this;
+            var editMode         = this.getAttribute('editMode');
+            var closedCategories = this.$getClosedCategories();
 
             var FuncItemOnClick = function (Item) {
                 self.fireEvent('categorySelect', [
@@ -221,8 +246,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                 self.$selectedCatId = Item.getAttribute('id');
             };
 
+            var FuncItemOnToggle = function (Item) {
+                if (Item.getAttribute('hasChildren')) {
+                    self.$saveToggleStatus(Item);
+                }
+            };
+
             for (var i = 0, len = children.length; i < len; i++) {
                 var Child = children[i];
+
+                if (!Child.hasPasswords && !this.$showEmpty) {
+                    continue;
+                }
 
                 this.$FlatCategoryTree[Child.id] = {
                     id   : Child.id,
@@ -234,7 +269,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                     title      : Child.title,
                     text       : Child.title,
                     icon       : 'fa fa-book',
-                    contextmenu: this.getAttribute('editMode'),
+                    contextmenu: editMode,
                     hasChildren: Child.children.length,
                     dragable   : false,
                     events     : {
@@ -249,9 +284,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                                     event.page.y
                                 )
                                 .show();
-                        }
+                        },
+                        onClose      : FuncItemOnToggle,
+                        onOpen       : FuncItemOnToggle
                     }
                 });
+
+                if (!Child.hasPasswords && editMode) {
+                    MapItem.getElm().addClass('pcsg-gpm-categories-map-empty');
+                }
 
                 if (!ParentItem) {
                     self.$CategoryMap.appendChild(MapItem);
@@ -259,7 +300,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                     ParentItem.appendChild(MapItem);
                 }
 
-                if (this.getAttribute('editMode')) {
+                if (!closedCategories.contains(Child.id)) {
+                    MapItem.open();
+                }
+
+                if (editMode) {
                     this.$addCategoryItemContextMenu(MapItem);
                 }
 
@@ -291,7 +336,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                 })
             );
 
-            if (Item.getAttribute('id')) {
+            if (Item.getAttribute('id') !== 'all') {
                 ContextMenu.appendChild(
                     new QUIContextMenuItem({
                         name  : 'category-rename',
@@ -313,6 +358,49 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
                         events: {
                             onClick: function () {
                                 self.$deleteCategoryDialog(Item);
+                            }
+                        }
+                    })
+                );
+            } else {
+                // Option for showing or hiding empty categories (only in "All Passwords")
+                ContextMenu.appendChild(
+                    new QUIContextMenuSeparator()
+                ).appendChild(
+                    new QUIContextMenuItem({
+                        name  : 'show-hidden',
+                        text  : self.$showEmpty ?
+                            QUILocale.get(lg, 'controls.categories.map.btn.hideempty.text') :
+                            QUILocale.get(lg, 'controls.categories.map.btn.showempty.text'),
+                        icon  : self.$showEmpty ? 'fa fa-eye-slash' : 'fa fa-eye',
+                        events: {
+                            onClick: function (MenuItem) {
+                                if (self.$showEmpty) {
+                                    MenuItem.setAttribute('icon', 'fa fa-eye');
+                                    MenuItem.setAttribute(
+                                        'text',
+                                        QUILocale.get(lg,
+                                            'controls.categories.map.btn.showempty.text'
+                                        )
+                                    );
+                                    self.$showEmpty = false;
+                                } else {
+                                    MenuItem.setAttribute('icon', 'fa fa-eye-slash');
+                                    MenuItem.setAttribute(
+                                        'text',
+                                        QUILocale.get(lg,
+                                            'controls.categories.map.btn.hideempty.text'
+                                        )
+                                    );
+                                    self.$showEmpty = true;
+                                }
+
+                                localStorage.setItem(
+                                    'pcsg-gpm-passwords-categories-showEmpty',
+                                    self.$showEmpty
+                                );
+
+                                self.refresh();
                             }
                         }
                     })
@@ -673,7 +761,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
          *
          * @param {Integer} categoryId - category ID
          */
-        select: function(categoryId) {
+        select: function (categoryId) {
             var categories = this.$CategoryMap.getChildren();
 
             for (var i = 0, len = categories.length; i < len; i++) {
@@ -697,6 +785,41 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
             }
 
             this.$CategoryMap.deselectAllChildren();
+        },
+
+        /**
+         * Get array of closed categories from local storage
+         *
+         * @return {Array}
+         */
+        $getClosedCategories: function () {
+            var closedCategories = localStorage.getItem(this.$lcKey);
+
+            if (!closedCategories) {
+                closedCategories = [];
+            } else {
+                closedCategories = JSON.decode(closedCategories);
+            }
+
+            return closedCategories;
+        },
+
+        /**
+         * Save the toggle status of a single category that has children
+         *
+         * @param {Object} Item - qui/controls/sitemap/Item
+         */
+        $saveToggleStatus: function (Item) {
+            var closedCategories = this.$getClosedCategories();
+            var itemId           = Item.getAttribute('id');
+
+            if (Item.isOpen()) {
+                closedCategories.erase(itemId);
+            } else {
+                closedCategories.push(itemId);
+            }
+
+            localStorage.setItem(this.$lcKey, JSON.encode(closedCategories));
         }
     });
 });

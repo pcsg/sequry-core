@@ -51,7 +51,7 @@ class AuthKeyPair extends KeyPair
         $id = (int)$id;
 
         $result = QUI::getDataBase()->fetch(array(
-            'from'  => Tables::KEYPAIRS_USER,
+            'from'  => Tables::keyPairsUser(),
             'where' => array(
                 'id' => $id
             ),

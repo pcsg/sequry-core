@@ -1,6 +1,7 @@
 <?php
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -24,6 +25,11 @@ function package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch($search, $t
     foreach ($actors as $k => $actor) {
         switch ($actor['type']) {
             case 'user':
+//                if ($actor['id'] == $CryptoUsers->getId()) {
+//                    unset($actors[$k]);
+//                    continue 2;
+//                }
+
                 $actor['icon'] = 'fa fa-user';
                 $actor['id']   = 'u' . $actor['id'];
                 break;
@@ -39,7 +45,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch($search, $t
         $actors[$k] = $actor;
     }
 
-    return $actors;
+    return array_values($actors);
 }
 
 \QUI::$Ajax->register(

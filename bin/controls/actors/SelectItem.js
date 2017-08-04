@@ -12,14 +12,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem', [
     'qui/QUI',
     'qui/controls/elements/SelectItem',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Actors',
+    'package/pcsg/grouppasswordmanager/bin/Actors',
 
     'Ajax'
 
-], function (QUI, QUIElementSelectItem, ActorHandler, QUIAjax) {
+], function (QUI, QUIElementSelectItem, Actors) {
     "use strict";
-
-    var Actors = new ActorHandler();
 
     return new Class({
 

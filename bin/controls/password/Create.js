@@ -161,9 +161,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                             securityClassId
                         );
                     } else {
-                        securityClassId = self.$SecurityClassSelect
-                            .firstChild()
-                            .getAttribute('value');
+                        securityClassId = self.$SecurityClassSelect.getValue();
                         self.$SecurityClassSelect.setValue(securityClassId);
                     }
 
@@ -185,6 +183,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             this.$OwnerSelectElm.set('html', '');
 
             this.$OwnerSelect = new ActorSelect({
+                popupInfo      : QUILocale.get(lg,
+                    'controls.password.create.ownerselect.info'
+                ),
                 max            : 1,
                 securityClassId: securityClassId,
                 events         : {
@@ -297,18 +298,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
         /**
          * Create the field
+         *
+         * @return {Promise}
          */
         submit: function () {
             var self = this;
 
             this.$PasswordData = {
-                securityClassId  : this.$SecurityClassSelect.getValue(),
-                title            : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
-                description      : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
-                dataType         : this.$PasswordTypes.getPasswordType(),
-                payload          : this.$PasswordTypes.getData(),
-                categoryIds      : this.$CategorySelect.getValue(),
-                categoryIdPrivate: this.$CategorySelectPrivate.getValue()
+                securityClassId   : this.$SecurityClassSelect.getValue(),
+                title             : this.$Elm.getElement('input.pcsg-gpm-password-title').value,
+                description       : this.$Elm.getElement('input.pcsg-gpm-password-description').value,
+                dataType          : this.$PasswordTypes.getPasswordType(),
+                payload           : this.$PasswordTypes.getData(),
+                categoryIds       : this.$CategorySelect.getValue(),
+                categoryIdsPrivate: this.$CategorySelectPrivate.getValue()
             };
 
             var actors = this.$OwnerSelect.getActors();
@@ -320,22 +323,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                     );
                 });
 
-                return;
+                return Promise.resolve();
             }
 
             this.$PasswordData.owner = actors[0];
 
-            Passwords.createPassword(
-                self.$PasswordData
-            ).then(
-                function () {
-                    self.$PasswordData = null;
-                    self.fireEvent('finish');
-                },
-                function () {
-                    // @todo
-                }
-            );
+            return new Promise(function (resolve, reject) {
+                Passwords.createPassword(
+                    self.$PasswordData
+                ).then(
+                    function (newPasswordId) {
+                        if (!newPasswordId) {
+                            reject();
+                            return;
+                        }
+
+                        if (window.PasswordCategories) {
+                            window.PasswordCategories.refreshCategories();
+                        }
+
+                        self.$PasswordData = null;
+                        self.fireEvent('finish');
+                        resolve();
+                    }
+                );
+            });
         }
     });
 });

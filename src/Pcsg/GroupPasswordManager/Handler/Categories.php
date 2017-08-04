@@ -7,6 +7,7 @@ use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use QUI;
 use QUI\Permissions\Permission;
+use QUI\Cache\Manager as CacheManager;
 
 /**
  * Class Categories
@@ -170,6 +171,7 @@ class Categories
         }
 
         $categories = array();
+        $CryptoUser = CryptoActors::getCryptoUser();
 
         foreach ($result as $row) {
             $row['children'] = array();
@@ -177,6 +179,8 @@ class Categories
             if (empty($row['parentId'])) {
                 $row['parentId'] = false;
             }
+
+            $row['hasPasswords'] = $CryptoUser->hasAccessToPasswordsInPublicCategory($row['id']);
 
             $categories[] = $row;
         }
@@ -437,6 +441,7 @@ class Categories
         }
 
         $categories = array();
+        $CryptoUser = CryptoActors::getCryptoUser();
 
         foreach ($result as $row) {
             $row['children'] = array();
@@ -444,6 +449,8 @@ class Categories
             if (empty($row['parentId'])) {
                 $row['parentId'] = false;
             }
+
+            $row['hasPasswords'] = $CryptoUser->hasAccessToPasswordsInPrivateCategory($row['id']);
 
             $categories[] = $row;
         }
@@ -598,7 +605,7 @@ class Categories
         }
 
         QUI::getDataBase()->update(
-            QUI::getDBTableName(Tables::USER_TO_PASSWORDS_META),
+            Tables::usersToPasswordMeta(),
             array(
                 'categories'  => empty($family) ? null : ',' . implode(',', array_unique($family)) . ',',
                 'categoryIds' => empty($categoryIds) ? null : ',' . implode(',', $categoryIds) . ','
@@ -608,6 +615,8 @@ class Categories
                 'userId' => $User->getId()
             )
         );
+
+        CacheManager::clear('pcsg/grouppasswordmanager/privatecategoryaccess/');
     }
 
     /**

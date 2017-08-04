@@ -158,7 +158,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                         self.fireEvent('close');
                     }
                 );
-            }, function () {
+            }, function() {
                 self.fireEvent('close');
             });
         },
@@ -179,6 +179,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
                     categoryIds
                 ).then(function () {
                     self.Loader.hide();
+
+                    if (window.PasswordCategories) {
+                        window.PasswordCategories.refreshCategories();
+                    }
+
                     resolve();
                 }, reject);
             });
@@ -235,6 +240,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
                         if (Elm.nodeName === 'INPUT') {
                             return Elm.value;
+                        }
+
+                        if (Elm.nodeName === 'DIV') {
+                            var children = Elm.getChildren();
+
+                            if (children.length) {
+                                return children[0].innerHTML.trim();
+                            }
                         }
 
                         return Elm.innerHTML.trim();

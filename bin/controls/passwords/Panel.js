@@ -124,9 +124,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.Loader          = new QUILoader();
             this.$GridContainer  = null;
             this.$Grid           = null;
-            this.$SearchParams   = {};
+            this.$SearchParams   = {
+                search: {}
+            };
             this.$dblClickAction = 'view';
             this.$InfoElm        = null;
+            this.$searchUsed     = false;
         },
 
         /**
@@ -282,15 +285,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.$Grid.addEvents({
                 onDblClick: function () {
-                    var pwId = self.$Grid.getSelectedData()[0].id;
+                    var Row  = self.$Grid.getSelectedData()[0];
+                    var pwId = Row.id;
 
                     switch (self.$dblClickAction) {
                         case 'edit':
-                            self.editPassword(pwId);
+                            if (Row.isOwner) {
+                                self.editPassword(pwId);
+                                break;
+                            }
+
+                            self.viewPassword(pwId);
                             break;
 
                         case 'share':
-                            self.sharePassword(pwId);
+                            if (Row.canShare) {
+                                self.sharePassword(pwId);
+                                break;
+                            }
+
+                            self.viewPassword(pwId);
                             break;
 
                         default:
@@ -314,7 +328,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.$SearchInput.getElement('input').addEvents({
                 keyup: function (event) {
                     if (event.code === 13) {
-                        self.$SearchParams.searchterm = event.target.value.trim();
+                        self.$SearchParams.search.searchterm = event.target.value.trim();
+
+                        if (event.target.value.trim() !== '') {
+                            self.$searchUsed = true;
+                        }
+
                         self.refresh();
                     }
                 }
@@ -327,7 +346,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     if (Input.getProperty('data-mode') === 'refresh') {
                         Input.value = '';
                         Input.focus();
-                        self.$SearchParams.searchterm = '';
+                        self.$SearchParams.search = {};
+                        self.$searchUsed          = false;
                         self.refresh();
 
                         return;
@@ -339,7 +359,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         return;
                     }
 
-                    self.$SearchParams.searchterm = Input.value.trim();
+                    self.$SearchParams.search.searchterm = Input.value.trim();
                     self.refresh();
                 }
             });
@@ -439,9 +459,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
         refresh: function () {
             var SearchIcon = this.$SearchInput.getElement('span');
 
-            if ("searchterm" in this.$SearchParams &&
-                this.$SearchParams.searchterm !== '') {
-
+            if (this.$searchUsed) {
                 SearchIcon.removeClass('fa-search');
                 SearchIcon.addClass('fa-times');
                 this.$SearchInput.getElement('input').setProperty('data-mode', 'refresh');
@@ -772,7 +790,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
-                                        Create.submit();
+                                        self.Loader.show();
+
+                                        Create.submit().then(function () {
+                                            self.Loader.hide();
+                                        }, function () {
+                                            self.Loader.hide();
+                                        });
                                     }
                                 }
                             })
@@ -835,6 +859,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 function () {
                                     DeletePopup.close();
                                     self.refresh();
+
+                                    if (window.PasswordCategories) {
+                                        window.PasswordCategories.refreshCategories();
+                                    }
                                 },
                                 function () {
                                     DeletePopup.close();
@@ -871,9 +899,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         Sheet.getContent().setStyle('padding', 20);
 
                         var View = new PasswordView({
-                            passwordId          : passwordId,
+                            passwordId: passwordId,
                             //editPublicCategories: canEdit,
-                            events              : {
+                            events    : {
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
@@ -953,7 +981,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
-                                        Share.submit();
+                                        self.Loader.show();
+
+                                        Share.submit().then(function() {
+                                            Share.destroy();
+                                            Sheet.destroy();
+                                            self.Loader.hide();
+                                            self.refresh();
+                                        });
                                     }
                                 }
                             })
@@ -988,11 +1023,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
-                                onClose : function () {
+                                onClose: function() {
+                                    self.Loader.hide();
                                     Edit.destroy();
                                     Sheet.destroy();
-                                    self.refresh();
-                                    self.Loader.hide();
                                 }
                             }
                         }).inject(Sheet.getContent());
@@ -1003,7 +1037,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
-                                        Edit.submit();
+                                        self.Loader.show();
+
+                                        Edit.submit().then(function () {
+                                            Edit.destroy();
+                                            Sheet.destroy();
+                                            self.refresh();
+                                            self.Loader.hide();
+                                        }, function () {
+                                            self.Loader.hide();
+                                        });
                                     }
                                 }
                             })
@@ -1268,8 +1311,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                     self.Loader.hide();
                                 },
                                 onSubmit: function (SearchData) {
-                                    self.$SearchParams                          = SearchData;
+                                    self.$SearchParams.search                   = SearchData;
                                     self.$SearchInput.getElement('input').value = SearchData.searchterm;
+                                    self.$searchUsed                            = true;
                                     self.refresh();
                                     Search.destroy();
                                     Sheet.hide();
@@ -1672,16 +1716,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     }
                 });
 
-                Popup.open();
+                var FuncOpenPopup = function () {
+                    Popup.open();
 
-                Popup.addButton(new QUIButton({
-                    text  : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
-                    alt   : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
-                    title : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
-                    events: {
-                        onClick: FuncSubmit
+                    Popup.addButton(new QUIButton({
+                        text  : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                        alt   : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                        title : QUILocale.get(lg, 'controls.gpm.passwords.panel.initialRegistration.btn'),
+                        events: {
+                            onClick: FuncSubmit
+                        }
+                    }));
+                };
+
+                var passwordChangePopups = QUI.Controls.getByType(
+                    'controls/users/password/Password'
+                );
+
+                if (!passwordChangePopups.length) {
+                    FuncOpenPopup();
+                    return;
+                }
+
+                passwordChangePopups[0].addEvents({
+                    onClose: function () {
+                        FuncOpenPopup();
                     }
-                }));
+                });
             });
         },
 

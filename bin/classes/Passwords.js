@@ -310,10 +310,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * @return {Promise}
          */
         openPasswordListPanel: function () {
-            if (window.PasswordList) {
-                return Promise.resolve(window.PasswordList);
-            }
-
             return new Promise(function (resolve) {
                 require([
                     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
@@ -321,7 +317,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                 ], function (PasswordManager, PanelUtils) {
                     var PasswordManagerPanel = new PasswordManager({
                         events: {
-                            onLoaded : function (Panel) {
+                            onLoaded: function (Panel) {
                                 resolve(Panel);
                                 window.PasswordList = Panel;
                             }
@@ -335,7 +331,26 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                                 window.PasswordList = null;
                             }
                         });
+
+                        if (window.PasswordList) {
+                            window.PasswordList = Panel;
+                            resolve(window.PasswordList);
+                        }
                     });
+                });
+            });
+        },
+
+        /**
+         * Generate a random password
+         *
+         * @returns {Promise}
+         */
+        generateRandomPassword: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_generateRandom', resolve, {
+                    'package': pkg,
+                    onError  : reject
                 });
             });
         }

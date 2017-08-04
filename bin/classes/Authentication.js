@@ -45,12 +45,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 self.checkAuthInfo(
                                     securityClassId,
                                     AuthData
-                                ).then(function (correct) {
+                                ).then(function () {
                                     resolve(AuthData);
-
-                                    if (correct) {
-                                        Popup.close();
-                                    }
+                                    Popup.close();
+                                }, function() {
+                                    // do nothing if auth data is wrong
                                 });
                             },
                             onClose : function () {
@@ -153,12 +152,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                 self.checkAuthInfoPassword(
                                     passwordId,
                                     AuthData
-                                ).then(function (correct) {
+                                ).then(function () {
                                     resolve(AuthData);
-
-                                    if (correct) {
-                                        Popup.close();
-                                    }
+                                    Popup.close();
+                                }, function() {
+                                    // do nothing if auth data is wrong
                                 });
                             },
                             onClose : function () {
@@ -596,6 +594,29 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         getDefaultSecurityClassId: function () {
             return new Promise(function (resolve, reject) {
                 Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultSecurityClassId', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Get the symmetric key that is used for encryption
+         * between frontend and backend for the current session
+         *
+         * @return {Promise}
+         */
+        getCommKey: function () {
+            return new Promise(function (resolve, reject) {
+                Ajax.get('package_pcsg_grouppasswordmanager_ajax_auth_getCommKey',
+                    function(keyData) {
+                        if (!keyData) {
+                            resolve(keyData);
+                            return;
+                        }
+
+                        resolve(keyData);
+                    }, {
                     'package': pkg,
                     onError  : reject
                 });
