@@ -1,34 +1,34 @@
 {
-  "name": "pcsg\/grouppasswordmanager",
-  "type": "quiqqer-module",
-  "description": "Modul zur Verwaltung und dem Teilen von Passw\u00f6rtern f\u00fcr Benutzer\/Gruppen.",
-  "version": "halite3",
-  "authors": [
-    {
-      "name": "Patrick M\u00fcller",
-      "email": "p.mueller@pcsg.de",
-      "homepage": "http:\/\/www.pcsg.de",
-      "role": "Developer"
-    }
-  ],
-  "support": {
-    "email": "support@pcsg.de"
-  },
-  "require": {
-    "quiqqer\/quiqqer": "*@dev",
-    "quiqqer/tooltips": "1.0.0",
-    "phpseclib\/phpseclib": "2.0.0",
-    "paragonie\/halite": "3.2.0",
-    "ext-bcmath": "*",
-    "pcsg\/gpmauthpassword": "dev-master",
-    "npm-asset\/clipboard": "1.5.16"
-  },
-  "autoload": {
-    "psr-0": {
-      "Pcsg": "src\/"
+    "name": "pcsg\/grouppasswordmanager",
+    "type": "quiqqer-module",
+    "description": "Modul zur Verwaltung und dem Teilen von Passw\u00f6rtern f\u00fcr Benutzer\/Gruppen.",
+    "version": "hiddenstring",
+    "authors": [
+        {
+            "name": "Patrick M\u00fcller",
+            "email": "p.mueller@pcsg.de",
+            "homepage": "http:\/\/www.pcsg.de",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "support@pcsg.de"
     },
-    "psr-4": {
-      "TQ\\Shamir\\": "lib\/tq\/shamir\/src\/"
+    "require": {
+        "quiqqer\/quiqqer": "*@dev",
+        "quiqqer\/tooltips": "1.0.0",
+        "phpseclib\/phpseclib": "2.0.0",
+        "paragonie\/halite": "3.2.0",
+        "ext-bcmath": "*",
+        "pcsg\/gpmauthpassword": "dev-master",
+        "npm-asset\/clipboard": "1.5.16"
+    },
+    "autoload": {
+        "psr-0": {
+            "Pcsg": "src\/"
+        },
+        "psr-4": {
+            "TQ\\Shamir\\": "lib\/tq\/shamir\/src\/"
+        }
     }
-  }
 }

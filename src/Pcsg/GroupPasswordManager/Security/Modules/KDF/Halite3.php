@@ -3,10 +3,12 @@
 namespace Pcsg\GroupPasswordManager\Security\Modules\KDF;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\IKDF;
-use ParagonIE\Halite\HiddenString;
+use ParagonIE\Halite\HiddenString as ParagonieHiddenString;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use QUI;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Util;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * This class provides a KDF (key derivation function) API for the pcsg/grouppasswordmanager module
@@ -16,12 +18,12 @@ class Halite3 implements IKDF
     /**
      * Derives a key from a string (and a salt)
      *
-     * @param string $str - A String
+     * @param HiddenString $str - A String
      * @param string $salt (optional) - if ommitted, generate random salt
-     * @return string - raw key material
+     * @return Key
      * @throws QUI\Exception
      */
-    public static function createKey($str, $salt = null)
+    public static function createKey(HiddenString $str, $salt = null)
     {
         if (is_null($salt)) {
             $salt = \Sodium\randombytes_buf(\Sodium\CRYPTO_PWHASH_SALTBYTES);
@@ -33,7 +35,7 @@ class Halite3 implements IKDF
         }
 
         try {
-            $HiddenString = new HiddenString($str);
+            $HiddenString = new ParagonieHiddenString($str->getString());
             $DerivedKey = KeyFactory::deriveEncryptionKey($HiddenString, $salt);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
@@ -41,6 +43,6 @@ class Halite3 implements IKDF
             );
         }
 
-        return $DerivedKey->getRawKeyMaterial();
+        return new Key(new HiddenString($DerivedKey->getRawKeyMaterial()));
     }
 }

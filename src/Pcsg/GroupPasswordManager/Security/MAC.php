@@ -3,6 +3,8 @@
 namespace Pcsg\GroupPasswordManager\Security;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\IMAC;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 
 /**
  * This class provides a MAC API for the pcsg/grouppasswordmanager module
@@ -21,13 +23,13 @@ class MAC
     /**
      * Creates a MAC (Message Authentication Code)
      *
-     * @param String $str - A String
-     * @param String $key - Private key for MAC generation
+     * @param HiddenString $str - A String
+     * @param Key $Key - Cryptographic Key for MAC generation
      * @return String - The MAC hash
      */
-    public static function create($str, $key)
+    public static function create(HiddenString $str, Key $Key)
     {
-        $mac = self::getMACModule()->create($str, $key);
+        $mac = self::getMACModule()->create($str, $Key);
         return $mac . Utils::getCryptoModuleVersionString(self::MAC_MODULE);
     }
 

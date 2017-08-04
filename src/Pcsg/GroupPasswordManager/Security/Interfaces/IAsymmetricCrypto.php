@@ -2,6 +2,9 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 
+use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
+
 /**
  * This class provides a asymmetric encryption/decryption API for the pcsg/grouppasswordmanager module
  */
@@ -10,26 +13,26 @@ interface IAsymmetricCrypto
     /**
      * Encrypts a plaintext string
      *
-     * @param string $plainText - Data to be encrypted
-     * @param string $publicKey - Public encryption key
+     * @param HiddenString $plainText - Data to be encrypted
+     * @param KeyPair $KeyPair - Encryption KeyPair
      * @return string - The Ciphertext (encrypted plaintext)
      */
-    public static function encrypt($plainText, $publicKey);
+    public static function encrypt(HiddenString $plainText, KeyPair $KeyPair);
 
     /**
      * Decrypts a ciphertext
      *
      * @param string $cipherText - Data to be decrypted
-     * @param string $privateKey - Private decryption key
-     * @return string - The plaintext (decrypted ciphertext)
+     * @param KeyPair $KeyPair - Decryption KeyPair
+     * @return HiddenString - The plaintext (decrypted ciphertext)
      */
-    public static function decrypt($cipherText, $privateKey);
+    public static function decrypt($cipherText, KeyPair $KeyPair);
 
 
     /**
      * Generates a new public/private key pair
      *
-     * @return array - "privateKey" and "publicKey"
+     * @return KeyPair
      */
     public static function generateKeyPair();
 }

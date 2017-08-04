@@ -8,21 +8,13 @@ use QUI\Utils\Security\Orthos;
  * Get a single password object
  *
  * @param integer $passwordId - the id of the password object
- * @param array $authData - authentication information
  * @return string|false - view html; false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $authData)
+function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId)
 {
     $passwordId = (int)$passwordId;
 
     try {
-        // authenticate
-        Passwords::getSecurityClass(
-            $passwordId
-        )->authenticate(
-            json_decode($authData, true) // @todo diese daten ggf. filtern
-        );
-
         $Password = Passwords::get($passwordId);
         $viewData = $Password->getViewData();
 
@@ -64,6 +56,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_passwords_getView',
-    array('passwordId', 'authData'),
+    array('passwordId'),
     'Permission::checkAdminUser'
 );

@@ -5,6 +5,7 @@ namespace Pcsg\GroupPasswordManager\Security;
 use Pcsg\GroupPasswordManager\Security\Interfaces\ISymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use QUI;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
@@ -23,13 +24,13 @@ class SymmetricCrypto
     /**
      * Encrypts a plaintext string
      *
-     * @param String $plainText - Data to be encrypted
+     * @param HiddenString $plainText - Data to be encrypted
      * @param Key $Key - Symmetric key
      * @return String - The Ciphertext (encrypted plaintext)
      */
-    public static function encrypt($plainText, $Key)
+    public static function encrypt(HiddenString $plainText, $Key)
     {
-        $cipherText = self::getCryptoModule()->encrypt($plainText, $Key->getValue());
+        $cipherText = self::getCryptoModule()->encrypt($plainText, $Key);
         return $cipherText . Utils::getCryptoModuleVersionString(self::CRYPTO_MODULE);
     }
 
@@ -38,12 +39,12 @@ class SymmetricCrypto
      *
      * @param String $cipherText - Data to be decrypted
      * @param Key $Key - Symmetric key
-     * @return String - The plaintext (decrypted ciphertext)
+     * @return HiddenString - The plaintext (decrypted ciphertext)
      */
     public static function decrypt($cipherText, $Key)
     {
         $cipherText = Utils::stripModuleVersionString($cipherText);
-        return self::getCryptoModule()->decrypt($cipherText, $Key->getValue());
+        return self::getCryptoModule()->decrypt($cipherText, $Key);
     }
 
     /**
@@ -54,7 +55,7 @@ class SymmetricCrypto
     public static function generateKey()
     {
         $keyValue = self::getCryptoModule()->generateKey();
-        return new Key($keyValue);
+        return new Key(new HiddenString($keyValue));
     }
 
     /**

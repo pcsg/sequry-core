@@ -8,10 +8,13 @@ use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
@@ -90,25 +93,32 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Checks if the authentication information for this security class
-     * is saved in the session
+     * Checks the auth status of every auth plugin of this security class
      *
-     * @return bool
+     * @return array
      */
-    public function isAuthenticatedBySession()
+    public function getAuthStatus()
     {
-        $plugins   = $this->getAuthPlugins();
+        $status = array(
+            'authenticated' => false,
+            'authPlugins'   => array()
+        );
+
         $authCount = 0;
 
         /** @var Plugin $AuthPlugin */
-        foreach ($plugins as $AuthPlugin) {
+        foreach ($this->getAuthPlugins() as $AuthPlugin) {
             if ($AuthPlugin->isAuthenticated()) {
+                $status['authPlugins'][$AuthPlugin->getId()] = true;
                 $authCount++;
-                continue;
+            } else {
+                $status['authPlugins'][$AuthPlugin->getId()] = false;
             }
         }
 
-        return $authCount >= $this->requiredFactors;
+        $status['authenticated'] = $authCount >= $this->requiredFactors;
+
+        return $status;
     }
 
     /**
@@ -121,7 +131,7 @@ class SecurityClass extends QUI\QDOM
      */
     public function authenticate($authData, $CryptoUser = null)
     {
-        if ($this->isAuthenticatedBySession()) {
+        if ($this->isAuthenticated()) {
             return true;
         }
 
@@ -156,9 +166,7 @@ class SecurityClass extends QUI\QDOM
                 continue;
             }
 
-            $pluginAuthData = $authData[$AuthPlugin->getId()];
-
-            if (empty($pluginAuthData)) {
+            if (empty($authData[$AuthPlugin->getId()])) {
                 continue;
             }
 
@@ -176,6 +184,9 @@ class SecurityClass extends QUI\QDOM
             }
 
             $succesfulAuthenticationCount++;
+
+            // On successful authentication, save derived key in session data
+            Authentication::saveAuthKey($AuthPlugin->getId(), $AuthPlugin->getDerivedKey());
         }
 
         if ($succesfulAuthenticationCount < $this->requiredFactors) {
@@ -190,6 +201,37 @@ class SecurityClass extends QUI\QDOM
         }
 
         return true;
+    }
+
+    /**
+     * Checks if a user is authenticated for this security class
+     *
+     * @param CryptoUser $CryptoUser (optional) - if omitted, use session user
+     * @return void
+     *
+     * @throws InvalidAuthDataException
+     */
+    public function checkAuthentication($CryptoUser = null)
+    {
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
+        $plugins     = $this->getAuthPlugins();
+        $isAuthCount = 0;
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($plugins as $AuthPlugin) {
+            if ($AuthPlugin->isAuthenticated($CryptoUser)) {
+                $isAuthCount++;
+            }
+        }
+
+        if ($isAuthCount >= $this->requiredFactors) {
+            return;
+        }
+
+        throw new InvalidAuthDataException(array());
     }
 
     /**

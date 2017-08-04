@@ -25,7 +25,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
 
     'Ajax',
@@ -34,11 +34,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.css'
 
 ], function (QUI, QUIPopup, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             AuthHandler, AuthenticationControl, Ajax, template) {
+             Authentication, AuthenticationControl, Ajax, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -47,16 +46,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
         Binds: [
             '$onInject',
-            'submit',
-            '$showRecovery',
-            '$print',
+            '$onCreate',
             '$buildContent',
-            '$startSync'
+            '$onAuthBtnClick',
+            '$setSecurityClassSuccess'
         ],
 
         options: {
             securityClassIds: [],   // id of all security classes the user should authenticate for
-            title           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.title')
+            title           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.title'),
+            info            : false // info text that is shown in top section of popup
         },
 
         initialize: function (options) {
@@ -64,7 +63,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.setAttributes({
                 backgroundClosable: true,
-                closeButton       : true,
+                closeButton       : false,
                 titleCloseButton  : true,
                 maxWidth          : 500
             });
@@ -77,6 +76,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             this.$authSuccessCount       = 0;
             this.$authSuccessCountNeeded = 0;
             this.$Table                  = null;
+            this.$AuthStatus             = null;
         },
 
         /**
@@ -91,11 +91,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             this.$Elm.addClass('pcsg-gpm-multisecurityclassauth');
 
             this.$AuthBtn = new QUIButton({
-                textimage: 'fa fa-key',
-                text     : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.auth.text'),
-                alt      : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.auth'),
-                title    : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.auth'),
-                events   : {
+                'class': 'btn-green',
+                text   : QUILocale.get(lg, 'controls.authenticate.popup.btn.text'),
+                alt    : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                title  : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                events : {
                     onClick: function () {
                         self.fireEvent('submit', [self.$AuthData, self]);
                         self.$AuthData = {};
@@ -104,17 +104,49 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             });
 
             this.addButton(this.$AuthBtn);
+
+            this.addButton(new QUIButton({
+                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort.text'),
+                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                events: {
+                    onClick: function () {
+                        self.fireEvent('abort');
+                        self.close();
+                    }
+                }
+            }));
+
+            // add authenticate button that is only enabled
+            // when user has authenticated with all SecurityClasses
             this.$AuthBtn.disable();
+
+            // replace generic info with custom info
+            var customInfo = this.getAttribute('info');
+            var info       = QUILocale.get(lg, lg_prefix + 'info');
+
+            if (customInfo) {
+                info = customInfo;
+            }
 
             this.setContent(
                 Mustache.render(template, {
                     tableHeader: QUILocale.get(lg, lg_prefix + 'tableHeader'),
-                    info       : QUILocale.get(lg, lg_prefix + 'info')
+                    info       : info
                 })
             );
 
             this.$Table = this.$Elm.getElement('table.multisecurityclassauth-data');
-            this.$buildContent();
+
+            this.Loader.show();
+
+            Authentication.checkAuthStatus(
+                this.getAttribute('securityClassIds')
+            ).then(function (AuthStatus) {
+                self.$AuthStatus = AuthStatus;
+                self.$buildContent();
+                self.Loader.hide();
+            });
         },
 
         /**
@@ -123,109 +155,107 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
         $buildContent: function () {
             var self = this;
 
-            var FuncOnAuthBtnClick = function (Btn) {
-                var securityClassId = Btn.getAttribute('securityClassId');
-
-                self.Loader.show();
-
-                var AuthControl = new AuthenticationControl({
-                    securityClassId: securityClassId,
-                    events         : {
-                        onSubmit: function (AuthData) {
-                            Authentication.checkAuthInfo(
-                                securityClassId,
-                                AuthData
-                            ).then(function (authDataCorrect) {
-                                self.Loader.hide();
-                                AuthControl.destroy();
-
-                                if (!authDataCorrect) {
-                                    QUI.getMessageHandler().then(function (MH) {
-                                        MH.addError(
-                                            QUILocale.get(
-                                                lg,
-                                                'auth.multisecurityclassauthwindow.authdata.incorrect', {
-                                                    securityClassId: securityClassId
-                                                }
-                                            )
-                                        );
-                                    });
-
-                                    return;
-                                }
-
-                                self.$AuthData[securityClassId] = AuthData;
-                                Btn.setAttribute('textimage', 'fa fa-unlock');
-                                Btn.disable();
-
-                                new Element('span', {
-                                    'class': 'fa fa-check auth-success-icon'
-                                }).inject(Btn.getElm(), 'after');
-
-                                self.$authSuccessCount++;
-
-                                if (self.$authSuccessCount >= self.$authSuccessCountNeeded) {
-                                    self.$AuthBtn.enable();
-                                }
-                            });
-                        },
-                        onAbort : function () {
-                            self.Loader.hide();
-                            self.fireEvent('abort', [self]);
-                        },
-                        onClose : function () {
-                            self.fireEvent('close', [self]);
-                        }
-                    }
-                });
-
-                AuthControl.open();
-            };
-
             var securityClassIds         = this.getAttribute('securityClassIds');
             var securityClassInfosLoaded = 0;
-            var TableBodyElm             = self.$Table.getElement('tbody');
+            var TableBodyElm             = this.$Table.getElement('tbody');
 
-            self.$authSuccessCountNeeded = securityClassIds.length;
+            this.$authSuccessCountNeeded = securityClassIds.length;
 
             this.Loader.show();
+
+            var FuncBuildSecurityClassElm = function (SecurityClassInfo) {
+                var SecurityClassElm = new Element('tr', {
+                    'data-sid': SecurityClassInfo.id,
+                    html      : '<td>' +
+                    '<label class="field-container">' +
+                    '<span class="field-container-item">' +
+                    SecurityClassInfo.title +
+                    '</span>' +
+                    '<span class="field-container-field pcsg-gpm-auth-syncauthplugin-btn">' +
+                    '</span>' +
+                    '</label>' +
+                    '</td>'
+                }).inject(TableBodyElm);
+
+                new QUIButton({
+                    'class'        : 'pcsg-gpm-auth-btn-control',
+                    textimage      : 'fa fa-lock',
+                    text           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
+                    alt            : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
+                    title          : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
+                    securityClassId: SecurityClassInfo.id,
+                    events         : {
+                        onClick: self.$onAuthBtnClick
+                    }
+                }).inject(
+                    SecurityClassElm.getElement('.pcsg-gpm-auth-syncauthplugin-btn')
+                );
+
+                securityClassInfosLoaded++;
+
+                if (securityClassInfosLoaded >= securityClassIds.length) {
+                    self.Loader.hide();
+                }
+
+                if (self.$AuthStatus[SecurityClassInfo.id].authenticated) {
+                    self.$authSuccessCount++;
+                    self.$setSecurityClassSuccess(SecurityClassInfo.id);
+                }
+            };
 
             for (var i = 0, len = securityClassIds.length; i < len; i++) {
                 Authentication.getSecurityClassInfo(
                     securityClassIds[i]
-                ).then(function (SecurityClassInfo) {
-                    var SecurityClassElm = new Element('tr', {
-                        html: '<td>' +
-                        '<label class="field-container">' +
-                        '<span class="field-container-item">' +
-                        SecurityClassInfo.title + ' (ID: ' + SecurityClassInfo.id + ')' +
-                        '</span>' +
-                        '<span class="field-container-field pcsg-gpm-auth-syncauthplugin-btn">' +
-                        '</span>' +
-                        '</label>' +
-                        '</td>'
-                    }).inject(TableBodyElm);
-
-                    new QUIButton({
-                        textimage      : 'fa fa-lock',
-                        text           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                        alt            : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                        title          : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                        securityClassId: SecurityClassInfo.id,
-                        events         : {
-                            onClick: FuncOnAuthBtnClick
-                        }
-                    }).inject(
-                        SecurityClassElm.getElement('.pcsg-gpm-auth-syncauthplugin-btn')
-                    );
-
-                    securityClassInfosLoaded++;
-
-                    if (securityClassInfosLoaded >= securityClassIds.length) {
-                        self.Loader.hide();
-                    }
-                });
+                ).then(FuncBuildSecurityClassElm);
             }
+        },
+
+        /**
+         * onClick Event on authentication button for a SecurityClass
+         *
+         * @param {Object} Btn
+         */
+        $onAuthBtnClick: function (Btn) {
+            var self            = this;
+            var securityClassId = Btn.getAttribute('securityClassId');
+
+            this.Loader.show();
+
+            Authentication.securityClassAuth(securityClassId).then(function () {
+                self.Loader.hide();
+                self.$authSuccessCount++;
+                self.$setSecurityClassSuccess(securityClassId);
+
+                if (self.$authSuccessCount >= self.$authSuccessCountNeeded) {
+                    self.$AuthBtn.enable();
+                }
+            }, function () {
+                self.Loader.hide();
+            });
+        },
+
+        /**
+         * Set success status to SecurityClass info element
+         *
+         * @param {Integer} securityClassId
+         */
+        $setSecurityClassSuccess: function (securityClassId) {
+            var Row = this.$Elm.getElement(
+                'tr[data-sid="' + securityClassId + '"]'
+            );
+
+            var Btn = QUI.Controls.getById(
+                Row.getElement(
+                    '.pcsg-gpm-auth-btn-control'
+                ).get('data-quiid')
+            );
+
+            Btn.setAttribute('textimage', 'fa fa-unlock');
+            Btn.disable();
+
+            new Element('span', {
+                'class': 'fa fa-check auth-success-icon'
+            }).inject(Btn.getElm(), 'after');
         }
     });
 });

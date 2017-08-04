@@ -21,7 +21,7 @@ class SecretSharing
     /**
      * Splits a secret into multiple parts
      *
-     * @param string $secret
+     * @param HiddenString $secret
      * @param integer $parts - number of parts the secret is split into
      * @param integer $required - number of parts that are required to recover the secret
      * @return array
@@ -41,7 +41,7 @@ class SecretSharing
      * Recover a secret from parts
      *
      * @param array $parts - the parts to recover the secret from
-     * @return string - the secret
+     * @return HiddenString - the secret
      */
     public static function recoverSecret($parts)
     {

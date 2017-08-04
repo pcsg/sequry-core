@@ -8,22 +8,14 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * Edit a password object
  *
  * @param integer $passwordId - ID of password
- * @param array $passwordData - edited data of password
- * @param array $authData - authentication information
+ * @param string $passwordData - edited data of password
  * @return false|array - new pasword data; false if data could not be retrieved
  *
  * @throws QUI\Exception
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $passwordData, $authData)
+function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $passwordData)
 {
     $passwordId = (int)$passwordId;
-
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
 
     // edit password
     try {
@@ -98,6 +90,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_passwords_edit',
-    array('passwordId', 'passwordData', 'authData'),
+    array('passwordId', 'passwordData'),
     'Permission::checkAdminUser'
 );

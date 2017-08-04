@@ -83,27 +83,17 @@ require([
     QUIAjax.registerGlobalJavaScriptCallback(
         'addUsersByGroup',
         function (response, AuthInfo) {
-
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
-                'package/pcsg/grouppasswordmanager/bin/classes/Actors'
-            ], function (MultiAuthWindow, ActorHandler) {
-                var Actors = new ActorHandler();
-
-                new MultiAuthWindow({
-                    securityClassIds: AuthInfo.securityClassIds,
-                    events          : {
-                        onSubmit: function (AuthData, Popup) {
-                            Actors.addUsersToGroup(
-                                AuthInfo.groupId,
-                                AuthInfo.userIds,
-                                AuthData
-                            );
-
-                            Popup.close();
-                        }
-                    }
-                }).open();
+                'package/pcsg/grouppasswordmanager/bin/Actors'
+            ], function (Actors) {
+                Actors.addUsersToGroup(
+                    AuthInfo.groupId,
+                    AuthInfo.userIds
+                ).then(function() {
+                    // nothing
+                }, function() {
+                    // nothing
+                });
             });
         }
     );
@@ -111,27 +101,17 @@ require([
     QUIAjax.registerGlobalJavaScriptCallback(
         'addGroupsToUser',
         function (response, AuthInfo) {
-
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
-                'package/pcsg/grouppasswordmanager/bin/classes/Actors'
-            ], function (MultiAuthWindow, ActorHandler) {
-                var Actors = new ActorHandler();
-
-                new MultiAuthWindow({
-                    securityClassIds: AuthInfo.securityClassIds,
-                    events          : {
-                        onSubmit: function (AuthData, Popup) {
-                            Actors.addGroupsToUser(
-                                AuthInfo.userId,
-                                AuthInfo.groupIds,
-                                AuthData
-                            );
-
-                            Popup.close();
-                        }
-                    }
-                }).open();
+                'package/pcsg/grouppasswordmanager/bin/Actors'
+            ], function (Actors) {
+                Actors.addGroupsToUser(
+                    AuthInfo.userId,
+                    AuthInfo.groupIds
+                ).then(function() {
+                    // nothing
+                }, function() {
+                    // nothing
+                });
             });
         }
     );

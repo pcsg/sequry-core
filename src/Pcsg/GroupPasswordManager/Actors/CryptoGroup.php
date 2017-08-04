@@ -14,6 +14,7 @@ use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -105,7 +106,10 @@ class CryptoGroup extends QUI\Groups\Group
         );
 
         $MACExpected = $data['MAC'];
-        $MACActual   = MAC::create(implode('', $integrityData), Utils::getSystemKeyPairAuthKey());
+        $MACActual   = MAC::create(
+            new HiddenString(implode('', $integrityData)),
+            Utils::getSystemKeyPairAuthKey()
+        );
 
         if (!MAC::compare($MACActual, $MACExpected)) {
             QUI\System\Log::addCritical(
@@ -121,7 +125,10 @@ class CryptoGroup extends QUI\Groups\Group
             ));
         }
 
-        $this->keyPairs[$SecurityClass->getId()] = new KeyPair($data['publicKey'], $data['privateKey']);
+        $this->keyPairs[$SecurityClass->getId()] = new KeyPair(
+            new HiddenString($data['publicKey']),
+            new HiddenString($data['privateKey'])
+        );
 
         return $this->keyPairs[$SecurityClass->getId()];
     }
@@ -192,7 +199,94 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function addSecurityClass($SecurityClass, $User = null)
     {
-        return CryptoActors::createCryptoGroupKey($this, $SecurityClass, $User);
+        $this->checkCryptoUserPermission();
+
+        // check if security class is already set to this group
+        if (in_array($SecurityClass->getId(), $this->getSecurityClassIds())) {
+            return;
+        }
+
+        if (!$SecurityClass->checkGroupUsersForEligibility($this)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.addsecurityclass.users.not.eligible',
+                array(
+                    'groupId'            => $this->getId(),
+                    'groupName'          => $this->getAttribute('name'),
+                    'securityClassId'    => $SecurityClass->getId(),
+                    'securityClassTitle' => $SecurityClass->getAttribute('title')
+                )
+            ));
+        }
+
+        // generate new key pair and encrypt
+        $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
+        $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
+        $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();
+
+        $GroupAccessKey = SymmetricCrypto::generateKey();
+
+        $privateGroupKeyEncrypted = SymmetricCrypto::encrypt(
+            $privateGroupKey,
+            $GroupAccessKey
+        );
+
+        // insert group key data into database
+        $DB = QUI::getDataBase();
+
+        $data = array(
+            'groupId'         => $this->getId(),
+            'securityClassId' => $SecurityClass->getId(),
+            'publicKey'       => $publicGroupKey,
+            'privateKey'      => $privateGroupKeyEncrypted
+        );
+
+        // calculate group key MAC
+        $data['MAC'] = MAC::create(
+            new HiddenString(implode('', $data)),
+            Utils::getSystemKeyPairAuthKey()
+        );
+
+        $DB->insert(Tables::keyPairsGroup(), $data);
+
+        // split group access key into parts and share with group users
+        $groupAccessKeyParts = SecretSharing::splitSecret(
+            $GroupAccessKey->getValue(),
+            $SecurityClass->getAuthPluginCount(),
+            $SecurityClass->getRequiredFactors()
+        );
+
+        $users = $this->getCryptoUsers();
+
+        /** @var CryptoUser $User */
+        foreach ($users as $User) {
+            $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
+            $i            = 0;
+
+            /** @var AuthKeyPair $AuthKeyPair */
+            foreach ($authKeyPairs as $AuthKeyPair) {
+                $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
+                    new HiddenString($groupAccessKeyParts[$i++]),
+                    $AuthKeyPair
+                );
+
+                $data = array(
+                    'userId'          => $User->getId(),
+                    'userKeyPairId'   => $AuthKeyPair->getId(),
+                    'securityClassId' => $SecurityClass->getId(),
+                    'groupId'         => $this->getId(),
+                    'groupKey'        => $privateKeyEncryptionKeyPartEncrypted
+                );
+
+                // calculate MAC
+                $data['MAC'] = MAC::create(
+                    new HiddenString(implode('', $data)),
+                    Utils::getSystemKeyPairAuthKey()
+                );
+
+                $DB->insert(Tables::usersToGroups(), $data);
+            }
+        }
     }
 
     /**
@@ -347,7 +441,7 @@ class CryptoGroup extends QUI\Groups\Group
                     $payloadKeyPart = $groupAccessKeyParts[$i++];
 
                     $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                        $payloadKeyPart,
+                        new HiddenString($payloadKeyPart),
                         $UserAuthKeyPair
                     );
 
@@ -360,7 +454,9 @@ class CryptoGroup extends QUI\Groups\Group
                     );
 
                     // calculate MAC
-                    $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                    $data['MAC'] = MAC::create(
+                        new HiddenString(implode('', $data)),
+                        Utils::getSystemKeyPairAuthKey());
 
                     QUI::getDataBase()->insert(Tables::usersToGroups(), $data);
                 } catch (\Exception $Exception) {
@@ -686,7 +782,7 @@ class CryptoGroup extends QUI\Groups\Group
             );
 
             $dataAccessEntry['MAC'] = MAC::create(
-                implode('', $dataAccessEntry),
+                new HiddenString(implode('', $dataAccessEntry)),
                 Utils::getSystemKeyPairAuthKey()
             );
 

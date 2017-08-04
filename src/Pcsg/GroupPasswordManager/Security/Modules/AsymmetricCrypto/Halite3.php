@@ -5,10 +5,12 @@ namespace Pcsg\GroupPasswordManager\Security\Modules\AsymmetricCrypto;
 use ParagonIE\Halite\Asymmetric\Crypto;
 use ParagonIE\Halite\Asymmetric\EncryptionPublicKey;
 use ParagonIE\Halite\Asymmetric\EncryptionSecretKey;
-use ParagonIE\Halite\HiddenString;
+use ParagonIE\Halite\HiddenString as ParagonieHiddenString;
 use ParagonIE\Halite\KeyFactory;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAsymmetricCrypto;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * This class provides a symmetric encryption API for the pcsg/grouppasswordmanager module
@@ -20,16 +22,16 @@ class Halite3 implements IAsymmetricCrypto
     /**
      * Encrypts a plaintext string
      *
-     * @param string $plainText - Data to be encrypted
-     * @param string $publicKey - Public encryption key
+     * @param HiddenString $plainText - Data to be encrypted
+     * @param KeyPair $KeyPair - Encryption KeyPair
      * @return string - The Ciphertext (encrypted plaintext)
      * @throws \Exception
      */
-    public static function encrypt($plainText, $publicKey)
+    public static function encrypt(HiddenString $plainText, KeyPair $KeyPair)
     {
         try {
-            $HiddenPlainText = new HiddenString($plainText);
-            $HiddenPublicKey = new HiddenString($publicKey);
+            $HiddenPlainText = new ParagonieHiddenString($plainText->getString());
+            $HiddenPublicKey = new ParagonieHiddenString($KeyPair->getPublicKey()->getValue()->getString());
             $PublicKey       = new EncryptionPublicKey($HiddenPublicKey);
             $cipherText      = Crypto::seal($HiddenPlainText, $PublicKey, true);
         } catch (\Exception $Exception) {
@@ -46,15 +48,15 @@ class Halite3 implements IAsymmetricCrypto
      * Decrypts a ciphertext
      *
      * @param string $cipherText - Data to be decrypted
-     * @param string $privateKey - Private decryption key
-     * @return string - The plaintext (decrypted ciphertext)
+     * @param KeyPair $KeyPair - Decryption KeyPair
+     * @return HiddenString - The plaintext (decrypted ciphertext)
      * @throws \Exception
      */
-    public static function decrypt($cipherText, $privateKey)
+    public static function decrypt($cipherText, KeyPair $KeyPair)
     {
         try {
-            $HiddenCypherText = new HiddenString($cipherText);
-            $HiddenPrivateKey = new HiddenString($privateKey);
+            $HiddenCypherText = new ParagonieHiddenString($cipherText);
+            $HiddenPrivateKey = new ParagonieHiddenString($KeyPair->getPrivateKey()->getValue()->getString());
             $PrivateKey       = new EncryptionSecretKey($HiddenPrivateKey);
             $HiddenPlainText  = Crypto::unseal($HiddenCypherText, $PrivateKey, true);
         } catch (\Exception $Exception) {
@@ -64,23 +66,23 @@ class Halite3 implements IAsymmetricCrypto
             );
         }
 
-        return $HiddenPlainText->getString();
+        return new HiddenString($HiddenPlainText->getString());
     }
 
     /**
      * Generates a new, random public/private key pair
      *
-     * @return array - "privateKey" and "publicKey"
+     * @return KeyPair
      * @throws QUI\Exception
      */
     public static function generateKeyPair()
     {
         try {
-            $KeyPair = KeyFactory::generateEncryptionKeyPair();
+            $GeneratedKeyPair = KeyFactory::generateEncryptionKeyPair();
 
-            $keys = array(
-                'publicKey'  => $KeyPair->getPublicKey()->getRawKeyMaterial(),
-                'privateKey' => $KeyPair->getSecretKey()->getRawKeyMaterial()
+            $KeyPair = new KeyPair(
+                new HiddenString($GeneratedKeyPair->getPublicKey()->getRawKeyMaterial()),
+                new HiddenString($GeneratedKeyPair->getSecretKey()->getRawKeyMaterial())
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
@@ -88,6 +90,6 @@ class Halite3 implements IAsymmetricCrypto
             );
         }
 
-        return $keys;
+        return $KeyPair;
     }
 }

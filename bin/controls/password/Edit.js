@@ -78,7 +78,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$PasswordData          = null;
             this.$owner                 = false;
             this.$PassContent           = null;
-            this.$AuthData              = null;
             this.$securityClassId       = false;
             this.$CategorySelect        = null;
             this.$CategorySelectPrivate = null;
@@ -140,30 +139,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             var self = this;
             var pwId = this.getAttribute('passwordId');
 
-            Authentication.passwordAuth(pwId).then(function (AuthData) {
-                self.$AuthData = AuthData;
-
-                Passwords.get(
-                    pwId,
-                    AuthData
-                ).then(
-                    function (PasswordData) {
-                        if (!PasswordData) {
-                            return;
-                        }
-
-                        self.$PasswordData    = PasswordData;
-                        self.$AuthData        = AuthData;
-                        self.$securityClassId = PasswordData.securityClassId;
-                        self.$onPasswordDataLoaded();
-                    },
-                    function () {
-                        self.fireEvent('close');
+            Passwords.get(pwId).then(
+                function (PasswordData) {
+                    if (!PasswordData) {
+                        return;
                     }
-                );
-            }, function () {
-                self.fireEvent('close');
-            });
+
+                    self.$PasswordData    = PasswordData;
+                    self.$securityClassId = PasswordData.securityClassId;
+                    self.$onPasswordDataLoaded();
+                },
+                function () {
+                    self.fireEvent('close');
+                }
+            );
         },
 
         /**
@@ -343,7 +332,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
          */
         $onDestroy: function () {
             this.$PasswordData = null;
-            this.$AuthData     = null;
         },
 
         /**
@@ -381,8 +369,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             return new Promise(function (resolve, reject) {
                 Passwords.editPassword(
                     self.getAttribute('passwordId'),
-                    PasswordData,
-                    self.$AuthData
+                    PasswordData
                 ).then(
                     function (PasswordData) {
                         if (!PasswordData) {

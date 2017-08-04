@@ -16,6 +16,7 @@ use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
@@ -390,7 +391,7 @@ class CryptoUser extends QUI\Users\User
             // check access data integrity/authenticity
             $accessDataMAC      = $row['MAC'];
             $accessDataMACCheck = MAC::create(
-                implode(
+                new HiddenString(implode(
                     '',
                     array(
                         $row['userId'],
@@ -398,7 +399,7 @@ class CryptoUser extends QUI\Users\User
                         $row['dataKey'],
                         $row['keyPairId']
                     )
-                ),
+                )),
                 Utils::getSystemKeyPairAuthKey()
             );
 
@@ -491,7 +492,7 @@ class CryptoUser extends QUI\Users\User
 
         $MACExpected = $data['MAC'];
         $MACActual   = MAC::create(
-            implode('', $MACData),
+            new HiddenString(implode('', $MACData)),
             Utils::getSystemKeyPairAuthKey()
         );
 
@@ -595,7 +596,7 @@ class CryptoUser extends QUI\Users\User
 
             $MACExcpected = $row['MAC'];
             $MACActual    = MAC::create(
-                implode('', $MACData),
+                new HiddenString(implode('', $MACData)),
                 Utils::getSystemKeyPairAuthKey()
             );
 
@@ -678,7 +679,7 @@ class CryptoUser extends QUI\Users\User
 
         try {
             $groupPrivateKeyDecrypted = SymmetricCrypto::decrypt(
-                $GroupKeyPair->getPrivateKey()->getValue(),
+                $GroupKeyPair->getPrivateKey()->getValue()->getString(),
                 $GroupAccessKey
             );
 
@@ -1212,9 +1213,10 @@ class CryptoUser extends QUI\Users\User
      * registration this method can be used to get all password IDs that need such a re-encryption.
      *
      * @param Plugin $AuthPlugin
+     * @param bool $useCache (optional) - get results from cache [default: true]
      * @return array - password IDs
      */
-    public function getNonFullyAccessiblePasswordIds(Plugin $AuthPlugin)
+    public function getNonFullyAccessiblePasswordIds(Plugin $AuthPlugin, $useCache = true)
     {
         if (!$AuthPlugin->isRegistered($this)) {
             return array();
@@ -1222,10 +1224,12 @@ class CryptoUser extends QUI\Users\User
 
         $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblepasswordids/' . $AuthPlugin->getId();
 
-        try {
-            return QUI\Cache\Manager::get($cname);
-        } catch (\Exception $Exception) {
-            // nothing, determine ids
+        if ($useCache !== false) {
+            try {
+                return QUI\Cache\Manager::get($cname);
+            } catch (\Exception $Exception) {
+                // nothing, determine ids
+            }
         }
 
         $passwordIds = array();
@@ -1304,9 +1308,10 @@ class CryptoUser extends QUI\Users\User
      * authentication plugin
      *
      * @param Plugin $AuthPlugin
+     * @param bool $useCache (optional) - Get results from cache (data may be outdated) [default: true]
      * @return array
      */
-    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin)
+    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin, $useCache = true)
     {
         if (!$AuthPlugin->isRegistered($this)) {
             return array();
@@ -1314,10 +1319,12 @@ class CryptoUser extends QUI\Users\User
 
         $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblegroupandsecurityclassids/' . $AuthPlugin->getId();
 
-        try {
-            return QUI\Cache\Manager::get($cname);
-        } catch (\Exception $Exception) {
-            // nothing, determine ids
+        if (!$useCache !== false) {
+            try {
+                return QUI\Cache\Manager::get($cname);
+            } catch (\Exception $Exception) {
+                // nothing, determine ids
+            }
         }
 
         $AuthKeyPair = $this->getAuthKeyPair($AuthPlugin);
@@ -1444,7 +1451,7 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
-                    $passwordKeyParts[$i++],
+                    new HiddenString($passwordKeyParts[$i++]),
                     $UserAuthKeyPair
                 );
 
@@ -1456,7 +1463,7 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 $dataAccessEntry['MAC'] = MAC::create(
-                    implode('', $dataAccessEntry),
+                    new HiddenString(implode('', $dataAccessEntry)),
                     Utils::getSystemKeyPairAuthKey()
                 );
 
@@ -1545,7 +1552,7 @@ class CryptoUser extends QUI\Users\User
                 $payloadKeyPart = $groupAccessKeyParts[$i++];
 
                 $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $payloadKeyPart,
+                    new HiddenString($payloadKeyPart),
                     $UserAuthKeyPair
                 );
 
@@ -1558,7 +1565,10 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 // calculate MAC
-                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                $data['MAC'] = MAC::create(
+                    new HiddenString(implode('', $data)),
+                    Utils::getSystemKeyPairAuthKey()
+                );
 
                 $DB->insert(Tables::usersToGroups(), $data);
             } catch (\Exception $Exception) {
@@ -1639,7 +1649,10 @@ class CryptoUser extends QUI\Users\User
             );
 
             $macValue = MAC::create(
-                $AuthKeyPair->getPublicKey()->getValue() . $privateKeyEncrypted,
+                new HiddenString(
+                    $AuthKeyPair->getPublicKey()->getValue()->getString()
+                    . $privateKeyEncrypted
+                ),
                 Utils::getSystemKeyPairAuthKey()
             );
 
@@ -1682,7 +1695,10 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 // calculate group key MAC
-                $mac = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                $mac = MAC::create(
+                    new HiddenString(implode('', $data)),
+                    Utils::getSystemKeyPairAuthKey()
+                );
 
                 QUI::getDataBase()->update(
                     Tables::keyPairsGroup(),
@@ -1737,12 +1753,12 @@ class CryptoUser extends QUI\Users\User
 
             $macFields = SymmetricCrypto::decrypt(
                 $pw['MACFields'],
-                new Key(Utils::getSystemPasswordAuthKey())
+                Utils::getSystemPasswordAuthKey()
             );
 
             $macFieldsEncrypted = SymmetricCrypto::encrypt(
                 $macFields,
-                new Key(Utils::getSystemPasswordAuthKey())
+                Utils::getSystemPasswordAuthKey()
             );
 
             $macFields = json_decode($macFields, true);
@@ -1758,7 +1774,7 @@ class CryptoUser extends QUI\Users\User
             }
 
             $newMac = MAC::create(
-                implode('', $macData),
+                new HiddenString(implode('', $macData)),
                 Utils::getSystemPasswordAuthKey()
             );
 

@@ -13,10 +13,12 @@ use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAuthPlugin;
 use Pcsg\GroupPasswordManager\Security\KDF;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Authentication\Cache as AuthCache;
@@ -28,26 +30,36 @@ use Pcsg\GroupPasswordManager\Security\Authentication\Cache as AuthCache;
  */
 class Authentication
 {
+    const AUTH_MODE_TIME          = 1;
+    const AUTH_MODE_SINGLE_ACTION = 2;
+
     /**
-     * Loaded plugin objects
+     * Runtime cache for Plugins
      *
      * @var array
      */
     protected static $plugins = array();
 
     /**
-     * Loaded security class objects
+     * Runtime cache for SecurityClasses
      *
      * @var array
      */
     protected static $securityClasses = array();
 
     /**
-     * Loaded authentication keypairs
+     * Runtime cache for AuthKeyPairs
      *
      * @var array
      */
     protected static $authKeyPairs = array();
+
+    /**
+     * Runtime AuthKey cache
+     *
+     * @var Key[]
+     */
+    protected static $authKeys = array();
 
     /**
      * Flag:
@@ -108,10 +120,10 @@ class Authentication
                 $AuthPlugin
             );
 
-            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin)) > 0;
+            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false)) > 0;
 
             if (!$sync) {
-                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin)) > 0;
+                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin, false)) > 0;
             }
 
             $row['sync'] = $sync;
@@ -490,17 +502,11 @@ class Authentication
     /**
      * Save derived key from authenticated plugin to user session
      *
-     * @param int $authPluginId - Auth Plugin ID
-     * @param string $authKey - derived key
-     *
-     * @return void
+     * @param int $authPluginId
+     * @param Key $AuthKey
      */
-    public static function saveAuthKeyToSession($authPluginId, $authKey)
+    public static function saveAuthKey($authPluginId, $AuthKey)
     {
-        if (!self::$sessionCache) {
-            return;
-        }
-
         $Session            = QUI::getSession();
         $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
 
@@ -513,25 +519,48 @@ class Authentication
         }
 
         $encryptedKey = SymmetricCrypto::encrypt(
-            $authKey,
+            $AuthKey->getValue(),
             self::getSessionEncryptionKey()
         );
 
         $currentAuthKeyData[$authPluginId] = base64_encode($encryptedKey);
-
         $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+
+        $Session->set(
+            'quiqqer_pwm_authmode',
+            self::$sessionCache ? self::AUTH_MODE_TIME : self::AUTH_MODE_SINGLE_ACTION
+        );
     }
 
     /**
-     * Get derived key from authenticated plugin
+     * Check if an authentication key for an AuthPlugin exists in the session
      *
-     * @param int $authPluginId - Auth Plugin ID
-     * @return false|string - false if no key set; key as string otherwise
+     * @param int $authPluginId
+     * @return bool
      */
-    public static function getAuthKeyFromSession($authPluginId)
+    public static function existsAuthKeyInSession($authPluginId)
     {
         $Session            = QUI::getSession();
         $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+        return !empty($currentAuthKeyData[$authPluginId]);
+    }
+
+    /**
+     * Retrieve derived key from session data
+     *
+     * @param $authPluginId
+     * @param int $authPluginId - Auth Plugin ID
+     * @return false|Key - false if no key set; key as string otherwise
+     */
+    public static function getAuthKey($authPluginId)
+    {
+        $Session            = QUI::getSession();
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+        $authMode           = $Session->get('quiqqer_pwm_authmode');
+
+        if (isset(self::$authKeys[$authPluginId])) {
+            return self::$authKeys[$authPluginId];
+        }
 
         if (empty($currentAuthKeyData)) {
             $currentAuthKeyData = array();
@@ -546,7 +575,7 @@ class Authentication
             );
 
             if ($timeAlive > $max) {
-                $Session->set('quiqqer_pwm_authkeys', false);
+                self::clearAuthInfoFromSession();
                 return false;
             }
         }
@@ -558,10 +587,22 @@ class Authentication
         try {
             $encryptedKey = base64_decode($currentAuthKeyData[$authPluginId]);
 
-            return SymmetricCrypto::decrypt(
+            $keyData = SymmetricCrypto::decrypt(
                 $encryptedKey,
                 self::getSessionEncryptionKey()
             );
+
+            $Key = new Key($keyData);
+
+            self::$authKeys[$authPluginId] = $Key;
+
+            // delete from Session if auth data should not be safed
+            if ($authMode === self::AUTH_MODE_SINGLE_ACTION) {
+                unset($currentAuthKeyData[$authPluginId]);
+                $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+            }
+
+            return $Key;
         } catch (\Exception $Exception) {
             self::clearAuthInfoFromSession();
             return false;
@@ -578,14 +619,14 @@ class Authentication
         $cacheName = 'pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId();
 
         try {
-            $keyValue = AuthCache::get($cacheName);
+            $keyValue = new HiddenString(AuthCache::get($cacheName));
             return new Key($keyValue);
         } catch (\Exception $Exception) {
             // generate new key
         }
 
-        $SessionKey = KDF::createKey(QUI::getSession()->getId());
-        AuthCache::set($cacheName, $SessionKey->getValue());
+        $SessionKey = KDF::createKey(new HiddenString(QUI::getSession()->getId()));
+        AuthCache::set($cacheName, $SessionKey->getValue()->getString());
 
         return $SessionKey;
     }

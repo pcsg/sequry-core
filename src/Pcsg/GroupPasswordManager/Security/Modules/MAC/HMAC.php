@@ -3,7 +3,9 @@
 namespace Pcsg\GroupPasswordManager\Security\Modules\MAC;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\IMAC;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use phpseclib\Crypt\Hash as HMACClass;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * This class provides a hashing API for the pcsg/grouppasswordmanager module
@@ -22,14 +24,14 @@ class HMAC implements IMAC
     /**
      * Creates a MAC (Message Authentication Code)
      *
-     * @param String $str - A String
-     * @param String $key - Private key for MAC generation
+     * @param HiddenString $str - A String
+     * @param Key $Key - Private key for MAC generation
      * @return String - The MAC hash
      */
-    public static function create($str, $key)
+    public static function create(HiddenString $str, Key $Key)
     {
         $HMACClass = self::getHMACClass();
-        $HMACClass->setKey($key);
+        $HMACClass->setKey($Key->getValue()->getString());
         return $HMACClass->hash($str);
     }
 

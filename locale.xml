@@ -509,6 +509,12 @@
         <locale name="message.ajax.auth.deleteSecurityClass.success" html="true">
             <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich gelöscht.]]></de>
         </locale>
+        <locale name="exception.ajax.authenticate.decode.error">
+            <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
+        </locale>
+        <locale name="exception.ajax.authenticate.decode.error">
+            <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -556,7 +562,7 @@
         <locale name="exception.events.group.delete.info">
             <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen der Gruppe.]]></de>
         </locale>
-        <locale name="exception.events.add.users.to.group.infos">
+        <locale name="exception.events.add.users.to.group.info">
             <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Gruppe authentifizieren, bevor Sie dieser Gruppe Benutzer hinzufügen können.]]></de>
         </locale>
         <locale name="exception.events.add.groups.to.user.info">
@@ -1249,6 +1255,9 @@
         </locale>
         <locale name="controls.auth.authenticate.warning.nonregistered">
             <de><![CDATA[Dieser Authentifizierungs-Faktor kann nicht verwendet werden, da Sie für ihn nicht registriert sind. Um sich für diesen Authentifizierungs-Faktor zu registrieren, gehen Sie bitte in die Authentifizierungsverwaltung.]]></de>
+        </locale>
+        <locale name="controls.auth.authenticate.show_plugin">
+            <de><![CDATA[Anzeigen]]></de>
         </locale>
 
         <!-- Control: password/Authenticate -->
