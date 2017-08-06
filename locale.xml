@@ -520,6 +520,9 @@
         <locale name="exception.system.auth.key.file.not.found">
             <de><![CDATA[Authentifizierungs-Schlüssel des Systems nicht gefunden.]]></de>
         </locale>
+        <locale name="exception.system.passwordlink.key.file.not.found">
+            <de><![CDATA[Passwort-Link-Schlüssel des Systems nicht gefunden.]]></de>
+        </locale>
 
         <!-- Class: Security\Authentication\SecurityClass -->
         <locale name="exception.securityclass.authenticate.missing.authdata">
@@ -718,9 +721,40 @@
             <de><![CDATA[Zuletzt bearbeitet: [date] von [userName] (#[userId])]]></de>
         </locale>
 
+        <!-- Class: PasswordLink -->
+        <locale name="exception.passwordlink.not_found">
+            <de><![CDATA[Password-Link nicht gefunden]]></de>
+        </locale>
+        <locale name="exception.passwordlink.no_longer_valid">
+            <de><![CDATA[Password-Link ist zeitlich nicht mehr gültig]]></de>
+        </locale>
+        <locale name="exception.passwordlink.decryption_failed'">
+            <de><![CDATA[Password-Link Entschlüsselung fehlgeschlagen]]></de>
+        </locale>
+        <locale name="exception.passwordlink.invalid_hash">
+            <de><![CDATA[Password-Link-Hash inkorrekt]]></de>
+        </locale>
+        <locale name="exception.passwordlink.max_calls_reached">
+            <de><![CDATA[Password-Link maximale Aufrufe erreicht]]></de>
+        </locale>
+        <locale name="exception.passwordlink.invalid">
+            <de><![CDATA[Password-Link ist ungültig]]></de>
+        </locale>
+        <locale name="exception.passwordlink.site_not_found">
+            <de><![CDATA[Es wurde keine aktive Passwort-Link Seite im System gefunden]]></de>
+        </locale>
+
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">
+
+        <!-- Site types -->
+        <locale name="sitetype.passwordlink.title">
+            <de><![CDATA[Passwort-Link]]></de>
+        </locale>
+        <locale name="sitetype.passwordlink.description">
+            <de><![CDATA[Dient der Anzeige von Passwort-Inhalten für mittels Passwort-Link geteilte Passwörter.]]></de>
+        </locale>
 
         <!-- Setup -->
         <locale name="setup.securityclass.title">

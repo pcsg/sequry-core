@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+    <types>
+
+        <!-- PasswordLink -->
+        <type type="types/passwordlink" icon="fa fa-link">
+            <locale group="pcsg/grouppasswordmanager" var="sitetype.passwordlink.title" />
+            <desc>
+                <locale group="pcsg/grouppasswordmanager" var="sitetype.passwordlink.description" />
+            </desc>
+        </type>
+    </types>
+
+</site>

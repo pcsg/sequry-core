@@ -1659,9 +1659,10 @@ class Password extends QUI\QDOM
     /**
      * Decrypt password sensitive data
      *
+     * @param Key $Key (optional) - Decrptyion Key; if omitted try to get Key from SessionUser
      * @throws QUI\Exception
      */
-    protected function decrypt()
+    public function decrypt($Key = null)
     {
         if ($this->decrypted) {
             return;
@@ -1669,19 +1670,11 @@ class Password extends QUI\QDOM
 
         $this->SecurityClass->checkAuthentication();
 
-//        if (!$this->SecurityClass->isAuthenticated()) {
-//            // @todo eigenen 401 error code einfügen
-//            throw new QUI\Exception(array(
-//                'pcsg/grouppasswordmanager',
-//                'exception.password.user.not.authenticated',
-//                array(
-//                    'id'     => $this->id,
-//                    'userId' => $this->getUser()->getId()
-//                )
-//            ));
-//        }
-
-        $PasswordKey = $this->getPasswordKey();
+        if (is_null($Key)) {
+            $PasswordKey = $this->getPasswordKey();
+        } else {
+            $PasswordKey = $Key;
+        }
 
         // decrypt password content
         $contentDecrypted = SymmetricCrypto::decrypt(
