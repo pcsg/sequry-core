@@ -1753,4 +1753,28 @@ class Password extends QUI\QDOM
 
         $this->setAttribute('viewCount', $currentViewCount);
     }
+
+    /**
+     * Check if a PasswordLink can be created for this Password
+     *
+     * @return bool
+     */
+    public function canBeLinked()
+    {
+        if ($this->isOwner(CryptoActors::getCryptoUser())) {
+            return true;
+        }
+
+        $ownerType = $this->getSecretAttribute('ownerType');
+
+        switch ($ownerType) {
+            case self::OWNER_TYPE_USER:
+                return true;
+                break;
+
+            case self::OWNER_TYPE_GROUP:
+                return $CryptoActor->isInGroup($ownerId);
+                break;
+        }
+    }
 }

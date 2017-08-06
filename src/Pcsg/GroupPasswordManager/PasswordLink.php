@@ -60,6 +60,7 @@ class PasswordLink
      * Create new PasswordLink
      *
      * @param int $dataId - Password ID
+     * @param array $settings
      * @return PasswordLink
      *
      * @throws \Pcsg\GroupPasswordManager\Exception\Exception
@@ -80,11 +81,14 @@ class PasswordLink
             return new PasswordLink($result[0]['id']);
         }
 
+        $Password = Passwords::get($dataId);
+
+        // check if Password is eligible for linking
+
         $hash = Hash::create(
             new HiddenString(Random::getRandomData())
         );
 
-        $Password    = Passwords::get($dataId);
         $PasswordKey = $Password->getPasswordKey();
 
         $dataAccess = array(
