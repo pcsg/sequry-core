@@ -1136,7 +1136,10 @@
         <locale name="password.create.submit.no.owner.assigned">
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
         </locale>
-        <locale name="password.create.set.owner.info">
+        <locale name="password.create.set.owner.info_group">
+            <de><![CDATA[Bitte legen Sie eine Gruppe als Passwort-Eigentümer fest.]]></de>
+        </locale>
+        <locale name="password.create.set.owner.info_all">
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
         </locale>
         <locale name="password.create.set.owner.not.eligible">
