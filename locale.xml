@@ -1567,7 +1567,7 @@
             <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.info" html="true">
-            <de><![CDATA[Sie haben Berechtigungen für Passwörter, für deren Zugriff das Authentifizierungs-Modul <b>"[authPluginTitle]"</b> verwendet werden kann. Da Sie bereits Zugriff auf diese Passwörter hatten, bevor Sie sich für dieses Authentifizierungs-Modul registriert haben, ist es nötig, sich einmalig für die Sicherheitsklassen dieser Passwörter zu authentifizieren. Dadurch wird sichergestellt, dass sie auch diesen Authentifizierungs-Faktor für den Zugriff auf diese Passwörter nutzen können.]]></de>
+            <de><![CDATA[Sie haben sich für einen neuen Authentifizierungs-Faktor registriert. Um den Zugriff auf alle Passwörter freizuschalten, die mit diesem Faktor entschlüsselt werden können, authentifizieren Sie sich bitte einmalig für die folgenden Sicherheitsklassen.]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.btn.sync.text">
             <de><![CDATA[Synchronisieren]]></de>

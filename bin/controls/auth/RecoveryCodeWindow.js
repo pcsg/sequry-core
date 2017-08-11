@@ -47,6 +47,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
         ],
 
         options: {
+            maxHeight         : 600,
             'RecoveryCodeData': false    // recovery code data
         },
 

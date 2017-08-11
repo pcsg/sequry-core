@@ -53,7 +53,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
         ],
 
         options: {
-            securityClassIds: [],   // id of all security classes the user should authenticate for
+            securityClassIds: [],   // IDs of all security classes the user should authenticate for
             title           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.title'),
             info            : false // info text that is shown in top section of popup
         },
@@ -198,7 +198,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 }
 
                 if (self.$AuthStatus[SecurityClassInfo.id].authenticated) {
-                    self.$authSuccessCount++;
                     self.$setSecurityClassSuccess(SecurityClassInfo.id);
                 }
             };
@@ -223,12 +222,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             Authentication.securityClassAuth(securityClassId).then(function () {
                 self.Loader.hide();
-                self.$authSuccessCount++;
                 self.$setSecurityClassSuccess(securityClassId);
-
-                if (self.$authSuccessCount >= self.$authSuccessCountNeeded) {
-                    self.$AuthBtn.enable();
-                }
             }, function () {
                 self.Loader.hide();
             });
@@ -256,6 +250,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             new Element('span', {
                 'class': 'fa fa-check auth-success-icon'
             }).inject(Btn.getElm(), 'after');
+
+            this.$authSuccessCount++;
+
+            if (this.$authSuccessCount >= this.$authSuccessCountNeeded) {
+                this.$AuthBtn.enable();
+            }
         }
     });
 });

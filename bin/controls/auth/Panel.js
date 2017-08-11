@@ -301,7 +301,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
                 new SyncAuthPluginWindow({
                     authPluginId    : authPluginId,
-                    securityClassIds: securityClassIds
+                    securityClassIds: securityClassIds,
+                    events          : {
+                        onSuccess: function() {
+                            self.refresh();
+                        }
+                    }
                 }).open();
             });
         },

@@ -19,9 +19,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
 
     'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
     'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'Locale',
+
     'Ajax'
 
-], function (MultiSecurityClassAuthWindow, Authentication, QUIAjax) {
+], function (MultiSecurityClassAuthWindow, Authentication, QUILocale, QUIAjax) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -39,7 +41,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
         options: {
             authPluginId: false,   // id of auth plugin that is to be synced
             title       : QUILocale.get(lg, 'auth.syncauthpluginwindow.title'),
-            info        : 'test 123'
+            info        : QUILocale.get(lg, 'auth.syncauthpluginwindow.info')
         },
 
         initialize: function (options) {
