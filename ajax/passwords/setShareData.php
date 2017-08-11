@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Password;
  * Set share data from password object
  *
  * @param integer $passwordId - ID of password
- * @param array $shareData - share users and groups
+ * @param string $shareData - share users and groups
  * @return array|false - password data or false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($passwordId, $shareData)
@@ -61,6 +61,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
             'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_setShareData -> '
             . $Exception->getMessage()
         );
+
+        QUI\System\Log::writeException($Exception);
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
