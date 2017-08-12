@@ -542,6 +542,24 @@ class Authentication
     {
         $Session            = QUI::getSession();
         $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+        $authMode           = $Session->get('quiqqer_pwm_authmode');
+
+        if ($authMode === self::AUTH_MODE_TIME
+            && isset($currentAuthKeyData['starttime'])
+        ) {
+            $start     = $currentAuthKeyData['starttime'];
+            $timeAlive = time() - $start;
+            $max       = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig()->get(
+                'settings',
+                'auth_ttl'
+            );
+
+            if ($timeAlive > $max) {
+                self::clearAuthInfoFromSession();
+                return false;
+            }
+        }
+
         return !empty($currentAuthKeyData[$authPluginId]);
     }
 
