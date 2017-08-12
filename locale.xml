@@ -1262,6 +1262,9 @@
         <locale name="controls.auth.authenticate.show_plugin">
             <de><![CDATA[Anzeigen]]></de>
         </locale>
+        <locale name="controls.auth.authenticate.info">
+            <de><![CDATA[Bitte authentifizieren Sie sich für die folgenden Authentifizierungs-Faktoren.]]></de>
+        </locale>
 
         <!-- Control: password/Authenticate -->
         <locale name="controls.password.authenticate.warning.unsynced">

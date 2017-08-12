@@ -140,7 +140,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.Loader.show();
 
-            Authentication.checkAuthStatus(
+            Authentication.checkSecurityClassAuthStatus(
                 this.getAttribute('securityClassIds')
             ).then(function (AuthStatus) {
                 self.$AuthStatus = AuthStatus;
