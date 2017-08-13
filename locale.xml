@@ -782,7 +782,7 @@
             <de><![CDATA[Legen Sie fest, welche Sicherheitsklasse beim "Neues Passwort erstellen"-Dialog vorausgewählt ist.]]></de>
         </locale>
 
-        <locale name="user.pwm.title">
+        <locale name="user.gpm.title">
             <de><![CDATA[Passwort-Manager]]></de>
         </locale>
 

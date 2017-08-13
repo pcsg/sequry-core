@@ -485,6 +485,8 @@ class CryptoGroup extends QUI\Groups\Group
             }
         }
 
+        \QUI\System\Log::writeRecursive("Refreshing meta table entries");
+
         // create meta table entries
         $AddUser->refreshPasswordMetaTableEntries();
     }

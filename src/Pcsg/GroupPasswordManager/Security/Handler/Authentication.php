@@ -508,7 +508,7 @@ class Authentication
     public static function saveAuthKey($authPluginId, $AuthKey)
     {
         $Session            = QUI::getSession();
-        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_gpm_authkeys'), true);
 
         if (empty($currentAuthKeyData)) {
             $currentAuthKeyData = array();
@@ -524,10 +524,10 @@ class Authentication
         );
 
         $currentAuthKeyData[$authPluginId] = base64_encode($encryptedKey);
-        $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+        $Session->set('quiqqer_gpm_authkeys', json_encode($currentAuthKeyData));
 
         $Session->set(
-            'quiqqer_pwm_authmode',
+            'quiqqer_gpm_authmode',
             self::$sessionCache ? self::AUTH_MODE_TIME : self::AUTH_MODE_SINGLE_ACTION
         );
     }
@@ -540,9 +540,13 @@ class Authentication
      */
     public static function existsAuthKeyInSession($authPluginId)
     {
+        if (!empty(self::$authKeys[$authPluginId])) {
+            return true;
+        }
+
         $Session            = QUI::getSession();
-        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
-        $authMode           = $Session->get('quiqqer_pwm_authmode');
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_gpm_authkeys'), true);
+        $authMode           = $Session->get('quiqqer_gpm_authmode');
 
         if ($authMode === self::AUTH_MODE_TIME
             && isset($currentAuthKeyData['starttime'])
@@ -555,8 +559,8 @@ class Authentication
             );
 
             if ($timeAlive > $max) {
-                self::clearAuthInfoFromSession();
-                return false;
+                self::clearAuthDataFromSession();
+//                return false;
             }
         }
 
@@ -573,8 +577,8 @@ class Authentication
     public static function getAuthKey($authPluginId)
     {
         $Session            = QUI::getSession();
-        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
-        $authMode           = $Session->get('quiqqer_pwm_authmode');
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_gpm_authkeys'), true);
+        $authMode           = $Session->get('quiqqer_gpm_authmode');
 
         if (isset(self::$authKeys[$authPluginId])) {
             return self::$authKeys[$authPluginId];
@@ -584,7 +588,9 @@ class Authentication
             $currentAuthKeyData = array();
         }
 
-        if (isset($currentAuthKeyData['starttime'])) {
+        if ($authMode === self::AUTH_MODE_TIME
+            && isset($currentAuthKeyData['starttime'])
+        ) {
             $start     = $currentAuthKeyData['starttime'];
             $timeAlive = time() - $start;
             $max       = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig()->get(
@@ -593,8 +599,8 @@ class Authentication
             );
 
             if ($timeAlive > $max) {
-                self::clearAuthInfoFromSession();
-                return false;
+                self::clearAuthDataFromSession();
+//                return false;
             }
         }
 
@@ -614,15 +620,15 @@ class Authentication
 
             self::$authKeys[$authPluginId] = $Key;
 
-            // delete from Session if auth data should not be safed
+            // delete from Session if auth data should not be saved
             if ($authMode === self::AUTH_MODE_SINGLE_ACTION) {
                 unset($currentAuthKeyData[$authPluginId]);
-                $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+                $Session->set('quiqqer_gpm_authkeys', json_encode($currentAuthKeyData));
             }
 
             return $Key;
         } catch (\Exception $Exception) {
-            self::clearAuthInfoFromSession();
+            self::clearAuthDataFromSession();
             return false;
         }
     }
@@ -654,9 +660,9 @@ class Authentication
      *
      * @return void
      */
-    public static function clearAuthInfoFromSession()
+    public static function clearAuthDataFromSession()
     {
-        QUI::getSession()->set('quiqqer_pwm_authkeys', false);
+        QUI::getSession()->set('quiqqer_gpm_authkeys', false);
         AuthCache::clear('pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId());
     }
 

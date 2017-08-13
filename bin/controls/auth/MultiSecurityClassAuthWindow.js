@@ -49,7 +49,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             '$onCreate',
             '$buildContent',
             '$onAuthBtnClick',
-            '$setSecurityClassSuccess'
+            '$setSecurityClassSuccess',
+            '$checkAuth'
         ],
 
         options: {
@@ -72,11 +73,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 onCreate: this.$onCreate
             });
 
-            this.$AuthData               = {}; // auth data per security class
             this.$authSuccessCount       = 0;
             this.$authSuccessCountNeeded = 0;
             this.$Table                  = null;
-            this.$AuthStatus             = null;
         },
 
         /**
@@ -97,8 +96,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 title  : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
                 events : {
                     onClick: function () {
-                        self.fireEvent('submit', [self.$AuthData, self]);
-                        self.$AuthData = {};
+                        self.fireEvent('submit', [self]);
                     }
                 }
             });
@@ -140,12 +138,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.Loader.show();
 
+            self.$buildContent();
+        },
+
+        /**
+         * (Re-)check authentication status for all SecurityClasses
+         */
+        $checkAuth: function () {
+            var self = this;
+
             Authentication.checkSecurityClassAuthStatus(
                 this.getAttribute('securityClassIds')
             ).then(function (AuthStatus) {
-                self.$AuthStatus = AuthStatus;
-                self.$buildContent();
                 self.Loader.hide();
+                self.$authSuccessCount = 0;
+
+                for (var securityClassId in AuthStatus) {
+                    if (!AuthStatus.hasOwnProperty(securityClassId)) {
+                        continue;
+                    }
+
+                    if (AuthStatus[securityClassId].authenticated) {
+                        self.$setSecurityClassSuccess(securityClassId);
+                    }
+                }
             });
         },
 
@@ -158,6 +174,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
             var securityClassIds         = this.getAttribute('securityClassIds');
             var securityClassInfosLoaded = 0;
             var TableBodyElm             = this.$Table.getElement('tbody');
+
+            TableBodyElm.set('html', '');
 
             this.$authSuccessCountNeeded = securityClassIds.length;
 
@@ -180,9 +198,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 new QUIButton({
                     'class'        : 'pcsg-gpm-auth-btn-control',
                     textimage      : 'fa fa-lock',
-                    text           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                    alt            : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
-                    title          : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.btn.unlock.text'),
+                    text           : QUILocale.get(lg,
+                        'auth.multisecurityclassauthwindow.btn.unlock.text'
+                    ),
+                    alt            : QUILocale.get(lg,
+                        'auth.multisecurityclassauthwindow.btn.unlock.text'
+                    ),
+                    title          : QUILocale.get(lg,
+                        'auth.multisecurityclassauthwindow.btn.unlock.text'
+                    ),
                     securityClassId: SecurityClassInfo.id,
                     events         : {
                         onClick: self.$onAuthBtnClick
@@ -195,10 +219,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
                 if (securityClassInfosLoaded >= securityClassIds.length) {
                     self.Loader.hide();
-                }
-
-                if (self.$AuthStatus[SecurityClassInfo.id].authenticated) {
-                    self.$setSecurityClassSuccess(SecurityClassInfo.id);
+                    self.$checkAuth();
                 }
             };
 
@@ -210,7 +231,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
         },
 
         /**
-         * onClick Event on authentication button for a SecurityClass
+         * onClick Event for authentication button for a SecurityClass
          *
          * @param {Object} Btn
          */
@@ -222,7 +243,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             Authentication.securityClassAuth(securityClassId).then(function () {
                 self.Loader.hide();
-                self.$setSecurityClassSuccess(securityClassId);
+                self.$checkAuth();
             }, function () {
                 self.Loader.hide();
             });
