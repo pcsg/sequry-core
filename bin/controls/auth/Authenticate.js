@@ -45,7 +45,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             'open',
             'close',
             '$openPopup',
-            'getAuthData'
+            'getAuthData',
+            '$checkAuth'
         ],
 
         options: {
@@ -68,7 +69,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             this.$required              = this.getAttribute('required') || 99;
             this.$AuthPluginData        = {};
             this.$authPluginControlData = [];
-            this.$authPluginControls    = [];
+            this.$AuthPluginControls    = {};
+            this.$authenticatedIds      = [];
+            this.$isSubmitting          = false;
         },
 
         /**
@@ -157,9 +160,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 }
             }));
 
-            var Content         = AuthPopup.getContent();
-            var InfoElm         = Content.getElement('.pcsg-gpm-auth-authenticate-info');
-            var securityClassId = this.getAttribute('securityClassId');
+            var Content = AuthPopup.getContent();
+            var InfoElm = Content.getElement('.pcsg-gpm-auth-authenticate-info');
 
             AuthPopup.Loader.show();
 
@@ -174,15 +176,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                 '</span>'
             );
 
+            self.$buildContent();
+        },
+
+        /**
+         * Load authentication control for every AuthPlugin and display it
+         * appropriately
+         */
+        $buildContent: function () {
+            var self       = this;
+            var Content    = this.$AuthPopup.getContent();
+            var PluginsElm = Content.getElement('.pcsg-gpm-auth-authenticate-plugins');
+
             var i, len;
             var paths         = [];
             var autoSaveCount = 0;
+
+            this.$authPluginIds    = [];
+            this.$authenticatedIds = [];
 
             for (i = 0, len = this.$authPluginControlData.length; i < len; i++) {
                 var AuthPluginControl = this.$authPluginControlData[i];
 
                 self.$AuthPluginData[AuthPluginControl.authPluginId] = AuthPluginControl;
                 paths.push(AuthPluginControl.control);
+                this.$authPluginIds.push(AuthPluginControl.authPluginId);
 
                 if (AuthPluginControl.autosave) {
                     autoSaveCount++;
@@ -191,37 +209,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
             // auto-check autosave option
             if (autoSaveCount >= self.$required) {
-                AuthPopup.getContent().getElement(
+                this.$AuthPopup.getContent().getElement(
                     '.pcsg-gpm-auth-authenticate-save-authdata'
                 ).checked = true;
             }
 
-            self.$buildContent(paths);
-        },
-
-        /**
-         * Load authentication control for every AuthPlugin and display it
-         * appropriately
-         *
-         * @param {Array} controlPaths - require paths for authentication controls
-         */
-        $buildContent: function (controlPaths) {
-            var self       = this;
-            var Content    = this.$AuthPopup.getContent();
-            var PluginsElm = Content.getElement('.pcsg-gpm-auth-authenticate-plugins');
-
             this.$AuthPopup.Loader.show();
+
+            PluginsElm.set('html', '');
 
             // load auth plugins
             require(
-                controlPaths,
+                paths,
                 function () {
+                    var i, len;
                     var controls                  = arguments;
                     var FirstControl              = false;
                     var eligibleAuthPluginsLoaded = 0;
 
                     // build controls
-                    for (var i = 0, len = controls.length; i < len; i++) {
+                    for (i = 0, len = controls.length; i < len; i++) {
                         var authPluginId   = self.$authPluginIds[i];
                         var AuthPluginData = self.$AuthPluginData[authPluginId];
                         var authenticated  = false;
@@ -236,7 +243,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                             authPluginId: authPluginId
                         });
 
-                        self.$authPluginControls.push(Control);
+                        self.$AuthPluginControls[authPluginId] = Control;
 
                         Control.addEvents({
                             onSubmit: self.$submit
@@ -249,16 +256,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         // disable it and show a check icon
                         if (authPluginId in self.$AuthStatus.authPlugins) {
                             if (self.$AuthStatus.authPlugins[authPluginId]) {
-                                Control.disable();
-                                Control.getElm().addClass(
-                                    'pcsg-gpm-auth-authenticate-plugins-plugin__hidden'
-                                );
+                                Control.hide();
 
                                 new Element('span', {
-                                    'class': 'fa fa-check pcsg-gpm-auth-authenticate-check'
+                                    'class'            : 'fa fa-check pcsg-gpm-auth-authenticate-check',
+                                    'data-authpluginid': authPluginId
                                 }).inject(PluginElm, 'top');
 
                                 authenticated = true;
+                                self.$authenticatedIds.push(authPluginId);
                             }
                         }
 
@@ -290,24 +296,27 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     if (eligibleAuthPluginsLoaded > self.$required) {
                         var FuncShowAuthPlugin = function () {
                             var controlId = this.get('data-controlid');
-                            var Control   = self.$authPluginControls[controlId];
+                            var Control   = self.$AuthPluginControls[controlId];
 
-                            Control.getElm().setStyle('display', '');
+                            Control.show();
                             Control.focus();
 
                             this.destroy();
                         };
 
-                        for (i = 0, len = self.$authPluginControls.length; i < len; i++) {
-                            if (i < self.$required) {
+                        var count = 0;
+
+                        for (i = 0, len = self.$authPluginIds.length; i < len; i++) {
+                            if (count++ < self.$required) {
                                 continue;
                             }
 
-                            var AuthPluginElm = self.$authPluginControls[i].getElm();
+                            var AuthPluginControl = self.$AuthPluginControls[self.$authPluginIds[i]];
+                            var AuthPluginElm     = AuthPluginControl.getElm();
 
                             new Element('div', {
                                 'class'         : 'pcsg-gpm-auth-authenticate-plugins-show',
-                                'data-controlid': i,
+                                'data-controlid': self.$authPluginIds[i],
                                 'html'          : '<span class="fa fa-plus"></span>' +
                                 '<span class="pcsg-gpm-auth-authenticate-plugins-show-title">' +
                                 QUILocale.get(lg, 'controls.auth.authenticate.show_plugin') +
@@ -319,13 +328,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                                 AuthPluginElm.getParent()
                             );
 
-                            AuthPluginElm.setStyle(
-                                'display',
-                                'none'
-                            );
+                            AuthPluginControl.hide();
                         }
 
-                        FirstControl = self.$authPluginControls[0];
+                        //FirstControl = self.$AuthPluginControls[
+                        //    Object.keys(self.$AuthPluginControls)[0]
+                        //    ];
                     }
 
                     if (FirstControl) {
@@ -342,13 +350,74 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
          * Submit authentication data
          */
         $submit: function () {
+            if (this.$isSubmitting) {
+                return;
+            }
+
+            this.$isSubmitting = true;
+
+            var self     = this;
             var AuthData = this.getAuthData();
 
             AuthData.sessioncache = this.$AuthPopup.getContent().getElement(
                 '.pcsg-gpm-auth-authenticate-save-authdata'
             ).checked;
 
-            this.fireEvent('submit', [AuthData]);
+            this.$AuthPopup.Loader.show();
+
+            this.$checkAuth().then(function (isAuthenticated) {
+                self.$AuthPopup.Loader.hide();
+
+                if (isAuthenticated) {
+                    self.fireEvent('submit', [AuthData]);
+                }
+
+                self.$isSubmitting = false;
+            });
+        },
+
+        /**
+         * Checks if user is still authenticated for all necessary
+         * authentication plugins
+         *
+         * @return {Promise}
+         */
+        $checkAuth: function () {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                Authentication.checkAuthStatus(self.$authPluginIds).then(function (AuthStatus) {
+                    var isAuthenticated = true;
+
+                    for (var authPluginId in AuthStatus.authPlugins) {
+                        if (!AuthStatus.authPlugins.hasOwnProperty(authPluginId)) {
+                            continue;
+                        }
+
+                        if (self.$authenticatedIds.contains(authPluginId) &&
+                            !AuthStatus.authPlugins[authPluginId]) {
+                            self.$AuthPluginControls[authPluginId].show();
+
+                            if (isAuthenticated) {
+                                self.$AuthPluginControls[authPluginId].focus();
+
+                                var CheckIcon = self.$AuthPopup.getContent().getElement(
+                                    'span[data-authpluginid="' + authPluginId + '"]'
+                                );
+
+                                if (CheckIcon) {
+                                    CheckIcon.destroy();
+                                }
+                            }
+
+                            self.$authenticatedIds.erase(authPluginId);
+                            isAuthenticated = false;
+                        }
+                    }
+
+                    resolve(isAuthenticated);
+                }, reject);
+            });
         },
 
         /**
@@ -368,11 +437,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         getAuthData: function () {
             var AuthData = {};
 
-            for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
-                var Control      = this.$authPluginControls[i];
-                var authPluginId = Control.getAttribute('authPluginId');
+            for (var id in this.$AuthPluginControls) {
+                if (!this.$AuthPluginControls.hasOwnProperty(id)) {
+                    continue;
+                }
 
-                AuthData[authPluginId] = Control.getAuthData();
+                AuthData[id] = this.$AuthPluginControls[id].getAuthData();
             }
 
             return AuthData;

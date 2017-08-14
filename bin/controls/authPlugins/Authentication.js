@@ -68,6 +68,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/authPlugins/Authenticatio
         },
 
         /**
+         * Show the element for authentication data input
+         */
+        show: function () {
+            // to be implemented by class
+        },
+
+        /**
+         * Hide the element for authentication data input
+         */
+        hide: function () {
+            // to be implemented by class
+        },
+
+        /**
          * Return authentication information
          *
          * @return {string}

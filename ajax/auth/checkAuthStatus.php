@@ -43,6 +43,8 @@ use \Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
             $authStatus['authenticatedAll'] = true;
         }
 
+        $authStatus['authenticatedCount'] = $authCounter;
+
         return $authStatus;
     },
     array('authPluginIds'),

@@ -514,7 +514,8 @@ class Authentication
             $currentAuthKeyData = array();
         }
 
-        if (!isset($currentAuthKeyData['starttime'])) {
+        if (!isset($currentAuthKeyData['starttime'])
+            && self::$sessionCache) {
             $currentAuthKeyData['starttime'] = time();
         }
 
@@ -560,7 +561,7 @@ class Authentication
 
             if ($timeAlive > $max) {
                 self::clearAuthDataFromSession();
-//                return false;
+                return false;
             }
         }
 
@@ -604,7 +605,7 @@ class Authentication
             }
         }
 
-        if (!isset($currentAuthKeyData[$authPluginId])) {
+        if (empty($currentAuthKeyData[$authPluginId])) {
             return false;
         }
 
@@ -663,6 +664,7 @@ class Authentication
     public static function clearAuthDataFromSession()
     {
         QUI::getSession()->set('quiqqer_gpm_authkeys', false);
+        QUI::getSession()->set('quiqqer_gpm_authmode', self::AUTH_MODE_SINGLE_ACTION);
         AuthCache::clear('pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId());
     }
 

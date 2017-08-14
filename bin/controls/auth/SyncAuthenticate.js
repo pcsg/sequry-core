@@ -49,8 +49,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
         $onLoaded: function () {
             var syncAuthPluginId = this.getAttribute('authPluginId');
 
-            console.log(this.$authPluginControls);
-
             for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
                 var authPluginId = this.$authPluginControls[i].getAttribute('authPluginId');
 

@@ -13,11 +13,13 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
 
     'qui/QUI',
     'qui/classes/DOM',
-    'Ajax'
+    'Ajax',
+    'Locale'
 
-], function (QUI, QUIDOM, QUIAjax) {
+], function (QUI, QUIDOM, QUIAjax, QUILocale) {
     "use strict";
 
+    var lg  = 'pcsg/grouppasswordmanager';
     var pkg = 'pcsg/grouppasswordmanager';
 
     return new Class({
@@ -45,7 +47,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                         var Popup = new AuthWindow({
                             authPluginIds: result[0][securityClassId],
                             required     : result[1].requiredFactors,
-                            info         : 'Hallo bite Autentifizierrren!',
+                            info         : QUILocale.get(lg,
+                                'classes.authentication.securityClassAuth.info', result[1]
+                            ),
                             events       : {
                                 onSubmit: function (AuthData) {
                                     self.$authenticate(
@@ -91,7 +95,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow'
                 ], function (MultiAuthWindow) {
                     new MultiAuthWindow({
-                        info            : 'Dum di dum!', // @todo Sprachvariable
+                        info            : 'Bitte für alle Sicherheitsklassen authentifizieren', // @todo Sprachvariable
                         securityClassIds: securityClassIds,
                         events          : {
                             onSubmit: function (Popup) {

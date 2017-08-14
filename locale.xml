@@ -1819,6 +1819,11 @@
             <de><![CDATA[Benutzer- und Gruppen-Auswahl]]></de>
         </locale>
 
+        <!-- Class: Authentication -->
+        <locale name="classes.authentication.securityClassAuth.info" html="true">
+            <de><![CDATA[<b>Sicherheitsklasse:</b> [title]<br><b>Benötigte Faktoren:</b> [requiredFactors]]]></de>
+        </locale>
+
     </groups>
 
 </locales>

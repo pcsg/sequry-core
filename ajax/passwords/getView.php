@@ -26,6 +26,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId)
 
         return Handler::getViewHtml($Password->getDataType(), $viewData);
     } catch (QUI\Exception $Exception) {
+        QUI\System\Log::writeException($Exception);
+
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
@@ -42,6 +44,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId)
         QUI\System\Log::addError(
             'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_getView -> ' . $Exception->getMessage()
         );
+
+        QUI\System\Log::writeException($Exception);
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(

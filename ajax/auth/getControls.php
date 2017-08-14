@@ -38,25 +38,22 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
         $User               = QUI::getUserBySession();
         $authPluginSettings = json_decode($User->getAttribute('pcsg.gpm.settings.authplugins'), true);
 
+        foreach ($controls as $k => $authPluginData) {
+            foreach ($authPluginSettings as $authPlugin) {
+                if ($authPluginData['authPluginId'] == $authPlugin['id']) {
+                    $controls[$k]['priority'] = $authPlugin['priority'];
+                    continue 2;
+                }
+            }
+        }
+
         if (!$authPluginSettings) {
             return $controls;
         }
 
-        usort($controls, function ($a, $b) use ($authPluginSettings) {
-            $priorityA = 0;
-            $idA       = $a['authPluginId'];
-            $priorityB = 0;
-            $idB       = $b['authPluginId'];
-
-            foreach ($authPluginSettings as $authPlugin) {
-                if ($authPlugin['id'] == $idA) {
-                    $priorityA = (int)$authPlugin['priority'];
-                }
-
-                if ($authPlugin['id'] == $idB) {
-                    $priorityB = (int)$authPlugin['priority'];
-                }
-            }
+        usort($controls, function ($a, $b) {
+            $priorityA = $a['priority'];
+            $priorityB = $b['priority'];
 
             if ($priorityA === $priorityB) {
                 return 0;
