@@ -39,6 +39,11 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
         $authPluginSettings = json_decode($User->getAttribute('pcsg.gpm.settings.authplugins'), true);
 
         foreach ($controls as $k => $authPluginData) {
+            if (empty($authPluginSettings)) {
+                $controls[$k]['priority'] = 1;
+                continue;
+            }
+
             foreach ($authPluginSettings as $authPlugin) {
                 if ($authPluginData['authPluginId'] == $authPlugin['id']) {
                     $controls[$k]['priority'] = $authPlugin['priority'];
