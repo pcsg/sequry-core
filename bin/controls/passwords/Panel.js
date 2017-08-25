@@ -57,6 +57,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/Link',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
@@ -71,7 +72,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
-             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
+             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLink, PasswordSearch,
              AuthenticationControl, PasswordAuthentication, RecoveryCodeWindow,
              CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
     "use strict";
@@ -231,7 +232,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.actions'),
                     dataIndex: 'permissions',
                     dataType : 'node',
-                    width    : 100
+                    width    : 120
                 }, {
                     header   : QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
@@ -563,6 +564,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 self.deletePassword(event.target.getProperty('data-pwid'));
             };
 
+            var FuncActionLink = function (event) {
+                self.linkPassword(event.target.getProperty('data-pwid'));
+            };
+
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 var Data = GridData.data[i];
 
@@ -645,6 +650,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.share'),
                     title      : QUILocale.get(lg, 'controls.gpm.passwords.action.share')
                 }).inject(Row.permissions);
+
+                var Link = new Element('span', {
+                    'class'    : 'fa fa-link',
+                    'data-pwid': Data.id,
+                    alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.link'),
+                    title      : QUILocale.get(lg, 'controls.gpm.passwords.action.link')
+                }).inject(Row.permissions);
+
+                Link.addEvent('click', FuncActionLink);
 
                 var Edit = new Element('span', {
                     'class'    : 'fa fa-edit',
@@ -1045,6 +1059,42 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     },
                     onClose: function (Sheet) {
                         self.refresh();
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        },
+
+        /**
+         * Open the link password dialog
+         *
+         * @param {Number} passwordId
+         */
+        linkPassword: function (passwordId) {
+            var self = this;
+
+            this.Loader.show();
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.passwords.panel.link.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        var Link = new PasswordLink({
+                            passwordId: passwordId,
+                            events    : {
+                                onLoaded: function () {
+                                    self.Loader.hide();
+                                },
+                                onClose : function () {
+                                    Sheet.destroy();
+                                    self.Loader.hide();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
+                    },
+                    onClose: function (Sheet) {
                         Sheet.destroy();
                     }
                 }

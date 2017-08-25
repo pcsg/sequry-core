@@ -176,6 +176,7 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
             <field type="BLOB NOT NULL">dataAccess</field>
             <field type="DATETIME NOT NULL">validUntil</field>
+            <field type="TINYINT NOT NULL DEFAULT 1">active</field>
             <primary>id</primary>
         </table>
     </global>

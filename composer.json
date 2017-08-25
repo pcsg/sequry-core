@@ -2,7 +2,7 @@
     "name": "pcsg\/grouppasswordmanager",
     "type": "quiqqer-module",
     "description": "Modul zur Verwaltung und dem Teilen von Passw\u00f6rtern f\u00fcr Benutzer\/Gruppen.",
-    "version": "authwindow",
+    "version": "linkpassword",
     "authors": [
         {
             "name": "Patrick M\u00fcller",

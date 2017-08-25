@@ -6,13 +6,11 @@
  *
  * @require qui/QUI
  * @require qui/controls/Control
- * @require Mustache
+ * @require qui/controls/buttons/Button
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Share.html
+ * @require package/pcsg/grouppasswordmanager/bin/Authentication
+ * @require package/pcsg/grouppasswordmanager/bin/Passwords
+ * @require package/pcsg/grouppasswordmanager/bin/controls/actors/Select
  * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css
  *
  * @event onLoaded
@@ -25,19 +23,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
     'qui/controls/buttons/Button',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css'
 
-], function (QUI, QUIControl, QUIButton, QUILocale, AuthHandler, PasswordHandler, ActorSelect) {
+], function (QUI, QUIControl, QUIButton, QUILocale, Passwords, ActorSelect) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Passwords      = new PasswordHandler(),
-        Authentication = new AuthHandler();
-
+    var lg = 'pcsg/grouppasswordmanager';
     return new Class({
 
         Extends: QUIControl,

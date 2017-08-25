@@ -89,11 +89,23 @@ class PasswordLink
             new HiddenString(Random::getRandomData())
         );
 
-        $PasswordKey = $Password->getPasswordKey();
+        $passwordKey = $Password->getPasswordKey()->getValue()->getString();
+        $password    = false;
+
+        // additionally encrypt password data with an access password
+        if (!empty($settings['password'])) {
+            $passwordKey = SymmetricCrypto::encrypt(
+                new HiddenString($passwordKey),
+                new Key(new HiddenString($settings['password']))
+            );
+
+            $password = true;
+        }
 
         $dataAccess = array(
+            'password' => $password,
             'hash'     => $hash,
-            'dataKey'  => $PasswordKey->getValue()->getString(),
+            'dataKey'  => $passwordKey,
             'calls'    => 0,
             'maxCalls' => 1 // default value
         );
@@ -106,12 +118,11 @@ class PasswordLink
         $dataAccess = SymmetricCrypto::encrypt($dataAccess, Utils::getSystemPasswordLinkKey());
 
         // determine how long the link is valid
-        $now = date('Y-m-d H:i:s');
-
-        if (empty($settings['validMinutes'])) {
+        if (empty($settings['validDate'])) {
+            $now        = date('Y-m-d H:i:s');
             $validUntil = strtotime($now . ' +1 hour');
         } else {
-            $validUntil = strtotime($now . ' +' . (int)$settings['validMinutes'] . ' minute');
+            $validUntil = strtotime($settings['validDate']);
         }
 
         $validUntil = date('Y-m-d H:i:s', $validUntil);

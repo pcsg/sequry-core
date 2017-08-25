@@ -1,0 +1,18 @@
+.pcsg-gpm-password-link-option {
+    clear: both;
+    float: left;
+}
+
+.field-container-field input[type="checkbox"] {
+    float: left;
+}
+
+.pcsg-gpm-password-link-active {
+    clear: both;
+    margin-top: 15px;
+    float: right;
+}
+
+.pcsg-gpm-password-link-longlabel {
+    white-space: normal !important;
+}
