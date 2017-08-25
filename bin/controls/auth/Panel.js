@@ -158,9 +158,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.$Grid.addEvents({
                 onDblClick: function () {
-                    //self.$openPortalPanel(
-                    //    self.$Grid.getSelectedData()[0].id
-                    //);
+                    var Row = self.$Grid.getSelectedData()[0];
+
+                    if (Row.isregistered) {
+                        self.changeAuthInfo();
+                        return;
+                    }
+
+                    self.registerUser();
                 },
                 onClick   : function () {
                     var selectedCount = self.$Grid.getSelectedData().length,
@@ -296,7 +301,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
                 new SyncAuthPluginWindow({
                     authPluginId    : authPluginId,
-                    securityClassIds: securityClassIds
+                    securityClassIds: securityClassIds,
+                    events          : {
+                        onSuccess: function() {
+                            self.refresh();
+                        }
+                    }
                 }).open();
             });
         },

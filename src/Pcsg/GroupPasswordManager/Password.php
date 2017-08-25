@@ -1653,7 +1653,13 @@ class Password extends QUI\QDOM
      */
     protected function getSecretAttributes()
     {
-        return $this->secretAttributes;
+        $secretAttributes = array();
+
+        foreach ($this->secretAttributes as $k => $v) {
+            $secretAttributes[$k] = $this->getSecretAttribute($k);
+        }
+
+        return $secretAttributes;
     }
 
     /**

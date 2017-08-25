@@ -84,6 +84,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$OwnerSelect           = null;
             this.$OwnerSelectElm        = null;
             this.$CurrentOwner          = null;
+            this.$groupOwner            = false;
         },
 
         /**
@@ -174,8 +175,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 type: this.$PasswordData.ownerType == 1 ? 'user' : 'group'
             };
 
+            this.$groupOwner = this.$CurrentOwner.type === 'group';
+
             this.$SecurityClassSelect = new SecurityClassSelect({
-                initialValue: this.$securityClassId,
                 events      : {
                     onLoaded: function () {
                         self.$insertData();
@@ -186,14 +188,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             }).inject(
                 SecurityClassElm
             );
-
-            // if owner is group, show warning
-            if (this.$PasswordData.ownerType == 2) {
-                new Element('div', {
-                    'class': 'pcsg-gpm-password-warning',
-                    html   : QUILocale.get(lg, 'password.edit.securityclass.change.warning')
-                }).inject(this.$OwnerSelectElm, 'top');
-            }
         },
 
         /**
@@ -229,6 +223,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                     }
                 }
             }).inject(PayloadElm);
+
+            // if owner is group, show warning
+            if (this.$PasswordData.ownerType == 2) {
+                new Element('div', {
+                    'class': 'pcsg-gpm-password-warning',
+                    styles : {
+                        marginTop: 10
+                    },
+                    html   : QUILocale.get(lg, 'password.edit.securityclass.change.warning')
+                }).inject(this.$OwnerSelectElm);
+            }
         },
 
         /**
@@ -244,6 +249,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$OwnerSelectElm.set('html', '');
 
             this.$OwnerSelect = new ActorSelect({
+                actorType      : self.$groupOwner ? 'groups' : 'all',
                 max            : 1,
                 securityClassId: securityClassId,
                 events         : {
@@ -323,7 +329,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
                 styles : {
                     marginTop: 10
                 },
-                html   : QUILocale.get(lg, 'password.create.set.owner.info')
+                html   : this.$groupOwner ?
+                    QUILocale.get(lg, 'password.create.set.owner.info_group') :
+                    QUILocale.get(lg, 'password.create.set.owner.info_all')
             }).inject(this.$OwnerSelectElm);
         },
 

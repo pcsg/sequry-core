@@ -8,17 +8,17 @@
 
     <!-- User Profil Fenster erweitern -->
     <window>
-        <tab name="pwm">
+        <tab name="gpm">
             <text>
-                <locale group="pcsg/grouppasswordmanager" var="user.pwm.title"/>
+                <locale group="pcsg/grouppasswordmanager" var="user.gpm.title"/>
             </text>
             <image>fa fa-diamond</image>
-            <template>OPT_DIR/pcsg/grouppasswordmanager/templates/pwm_user.html</template>
+            <template>OPT_DIR/pcsg/grouppasswordmanager/templates/gpm_user.html</template>
         </tab>
     </window>
 
     <profile>
-        <tab name="pwm_user_profile">
+        <tab name="gpm_user_profile">
             <text>Produkte</text>
             <image>fa fa-shopping-bag</image>
             <template>OPT_DIR/pcsg/grouppasswordmanager/templates/user_profile.html</template>

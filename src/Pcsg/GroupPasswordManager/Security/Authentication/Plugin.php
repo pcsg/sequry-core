@@ -139,9 +139,7 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        $existsKey = Authentication::existsAuthKeyInSession($this->id);
-
-        if ($existsKey) {
+        if (Authentication::existsAuthKeyInSession($this->id)) {
             return true;
         }
 
@@ -164,7 +162,7 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        Authentication::clearAuthInfoFromSession();
+        Authentication::clearAuthDataFromSession();
         
         $this->authenticate($old, $User);
 

@@ -72,7 +72,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
                         RequestParams
                     );
 
-                    Authentication.checkAuthStatus(
+                    Authentication.checkSecurityClassAuthStatus(
                         securityClassIds
                     ).then(function (AuthStatus) {
                         if (AuthStatus.authenticatedAll) {

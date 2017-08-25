@@ -1,43 +1,52 @@
 <?php
 
 use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use \Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 
 /**
- * Checks the auth status for every authentication plugin necessary
- * to authenticate for one or more SecurityClasses
+ * Checks the auth status for authentication plugins
  *
- * @param array $securityClassId - ids of SecurityClasses
+ * @param array $authPluginIds - ids of AuthPlugins
  * @return array
  */
 \QUI::$Ajax->registerFunction(
     'package_pcsg_grouppasswordmanager_ajax_auth_checkAuthStatus',
-    function ($securityClassIds) {
+    function ($authPluginIds) {
         $authStatus = array(
+            'authPlugins'      => array(),
             'authenticatedAll' => false
         );
 
-        $securityClassIds = json_decode($securityClassIds, true);
-        $authCounter      = 0;
+        $authPluginIds = json_decode($authPluginIds, true);
+        $authCounter   = 0;
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return $authStatus;
         }
 
-        foreach ($securityClassIds as $id) {
-            $id              = (int)$id;
-            $authStatus[$id] = Authentication::getSecurityClass($id)->getAuthStatus();
+        /** @var Plugin $AuthPlugin */
+        foreach ($authPluginIds as $authPluginId) {
+            try {
+                $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
+            } catch (\Exception $Exception) {
+                continue;
+            }
 
-            if ($authStatus[$id]['authenticated']) {
+            $authStatus['authPlugins'][$AuthPlugin->getId()] = $AuthPlugin->isAuthenticated();
+
+            if ($authStatus['authPlugins'][$AuthPlugin->getId()]) {
                 $authCounter++;
             }
         }
 
-        if ($authCounter === count($securityClassIds)) {
+        if ($authCounter === count($authPluginIds)) {
             $authStatus['authenticatedAll'] = true;
         }
 
+        $authStatus['authenticatedCount'] = $authCounter;
+
         return $authStatus;
     },
-    array('securityClassIds'),
+    array('authPluginIds'),
     'Permission::checkAdminUser'
 );

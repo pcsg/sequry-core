@@ -188,7 +188,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
         $parseView: function () {
             // copy elements
             var i, len, Elm, CopyBtn;
-            var copyElms = this.$Elm.getElements('.pwm-passwordtypes-copy');
+            var copyElms = this.$Elm.getElements('.gpm-passwordtypes-copy');
 
             var FuncCopyBtnClick = function (Btn) {
                 var Elm = Btn.getAttribute('Elm');
@@ -249,7 +249,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
             }
 
             // show elements (switch between show and hide)
-            var showElms = this.$Elm.getElements('.pwm-passwordtypes-show');
+            var showElms = this.$Elm.getElements('.gpm-passwordtypes-show');
 
             for (i = 0, len = showElms.length; i < len; i++) {
                 Elm = showElms[i];
