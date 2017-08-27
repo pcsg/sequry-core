@@ -175,7 +175,7 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
             <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
             <field type="BLOB NOT NULL">dataAccess</field>
-            <field type="DATETIME NOT NULL">validUntil</field>
+            <field type="DATETIME NULL">validUntil</field>
             <field type="TINYINT NOT NULL DEFAULT 1">active</field>
             <primary>id</primary>
         </table>

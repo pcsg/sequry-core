@@ -163,6 +163,34 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
+         * Create a new PasswordLink (authentication required!)
+         *
+         * @param {number} passwordId - password ID
+         * @param {Object} LinkData - PasswordLink data
+         * @returns {Promise}
+         */
+        createLink: function (passwordId, LinkData) {
+            return AuthAjax.post('package_pcsg_grouppasswordmanager_ajax_passwords_link_create', {
+                passwordId: passwordId,
+                linkData  : JSON.encode(LinkData)
+            });
+        },
+
+        /**
+         * Get list of PasswordLinks
+         *
+         * @param {number} passwordId - password ID
+         * @param {Object} LinkData - PasswordLink data
+         * @returns {Promise}
+         */
+        getLinkList: function (passwordId, LinkData) {
+            return AuthAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_link_getList', {
+                passwordId: passwordId,
+                'package' : 'pcsg/grouppasswordmanager'
+            });
+        },
+
+        /**
          * Delete a password object
          *
          * @param {number} passwordId - password ID

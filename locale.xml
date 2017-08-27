@@ -556,6 +556,9 @@
         <locale name="exception.ajax.authenticate.decode.error">
             <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
         </locale>
+        <locale name="message.passwords.link.create.error">
+            <de><![CDATA[Bei der Erstellung des Passwort-Links für das Password #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -783,10 +786,13 @@
             <de><![CDATA[Password-Link maximale Aufrufe erreicht]]></de>
         </locale>
         <locale name="exception.passwordlink.invalid">
-            <de><![CDATA[Password-Link ist ungültig]]></de>
+            <de><![CDATA[Password-Link ist ungültig:<br>[error]]]></de>
         </locale>
         <locale name="exception.passwordlink.site_not_found">
             <de><![CDATA[Es wurde keine aktive Passwort-Link Seite im System gefunden]]></de>
+        </locale>
+        <locale name="exception.passwordlink.create.no_limit_set">
+            <de><![CDATA[Es muss entweder eine maximale Anzahl an Aufrufen oder ein Ablaufdatum festgelegt werden.]]></de>
         </locale>
 
     </groups>
@@ -1396,6 +1402,9 @@
         <locale name="gpm.password.panel.btn.share">
             <de><![CDATA[Passwort-Daten teilen]]></de>
         </locale>
+        <locale name="controls.passwords.panel.linkpassword.btn.create">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
+        </locale>
 
         <!-- Control: securityclasses/Panel -->
         <locale name="securityclasses.panel.btn.add">
@@ -1936,26 +1945,29 @@
         </locale>
 
         <!-- Control: password/Link -->
-        <locale name="controls.password.link.template.tableHeader">
+        <locale name="controls.password.linkcreate.template.tableHeader">
             <de><![CDATA[Passwort-Link]]></de>
         </locale>
-        <locale name="controls.password.link.template.validDateLabel">
+        <locale name="controls.password.linkcreate.template.validDateLabel">
             <de><![CDATA[Gültig bis]]></de>
         </locale>
-        <locale name="controls.password.link.template.maxCallsLabel">
+        <locale name="controls.password.linkcreate.template.maxCallsLabel">
             <de><![CDATA[Maximale Aufrufe]]></de>
         </locale>
-        <locale name="controls.password.link.template.passwordLabel">
+        <locale name="controls.password.linkcreate.template.passwordLabel">
             <de><![CDATA[Passwort-Schutz]]></de>
         </locale>
-        <locale name="controls.password.link.template.messageLabel">
+        <locale name="controls.password.linkcreate.template.messageLabel">
             <de><![CDATA[Info-Text (optional)]]></de>
         </locale>
-        <locale name="controls.password.link.template.emailLabel">
+        <locale name="controls.password.linkcreate.template.emailLabel">
             <de><![CDATA[Link an folgende E-Mail-Adressen versenden (kommasepariert)]]></de>
         </locale>
-        <locale name="controls.password.link.template.activeLabel">
+        <locale name="controls.password.linkcreate.template.activeLabel">
             <de><![CDATA[aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.btn">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
         </locale>
 
     </groups>

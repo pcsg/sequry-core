@@ -1,4 +1,4 @@
-.pcsg-gpm-password-link-option {
+.pcsg-gpm-password-linkcreate-option {
     clear: both;
     float: left;
 }
@@ -7,12 +7,12 @@
     float: left;
 }
 
-.pcsg-gpm-password-link-active {
+.pcsg-gpm-password-linkcreate-active {
     clear: both;
     margin-top: 15px;
     float: right;
 }
 
-.pcsg-gpm-password-link-longlabel {
+.pcsg-gpm-password-linkcreate-longlabel {
     white-space: normal !important;
 }

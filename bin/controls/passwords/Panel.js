@@ -57,7 +57,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Link',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
@@ -72,7 +72,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
-             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLink, PasswordSearch,
+             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLinkCreate, PasswordSearch,
              AuthenticationControl, PasswordAuthentication, RecoveryCodeWindow,
              CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
     "use strict";
@@ -1081,7 +1081,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     onShow : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
-                        var Link = new PasswordLink({
+                        var Link = new PasswordLinkCreate({
                             passwordId: passwordId,
                             events    : {
                                 onLoaded: function () {

@@ -1,32 +1,33 @@
 /**
  * Control for creating / viewing password links
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/Link
+ * @module package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require qui/controls/buttons/Button
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
+ * @require Mustache
  * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/Select
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Link.css
+ * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.html
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.css
  *
- * @event onLoaded [this]
+ * @event onCreate [this] - fires after a new PasswordLink has been successfully created
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
+define('package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate', [
 
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
+
     'Locale',
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/Passwords',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/password/Link.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/Link.css'
+    'text!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.html',
+    'css!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.css'
 
 ], function (QUI, QUIControl, QUIButton, QUILocale, Mustache, Passwords, template) {
     "use strict";
@@ -36,26 +37,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Link',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate',
 
         Binds: [
-            'create',
-            '$onInject'
+            'create'
         ],
 
         options: {
             passwordId: false // passwordId
-        },
-
-        initialize: function (options) {
-            this.parent(options);
-
-            this.addEvents({
-                onInject : this.$onInject,
-                onDestroy: this.$onDestroy
-            });
-
-            this.$Grid = null;
         },
 
         /**
@@ -66,10 +55,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
         create: function () {
             this.$Elm = this.parent();
 
+            var self     = this;
             var lgPrefix = 'controls.password.link.template.';
 
             this.$Elm.set({
-                'class': 'pcsg-gpm-password-link',
+                'class': 'pcsg-gpm-password-linkcreate',
                 html   : Mustache.render(template, {
                     tableHeader   : QUILocale.get(lg, lgPrefix + 'tableHeader'),
                     validDateLabel: QUILocale.get(lg, lgPrefix + 'validDateLabel'),
@@ -83,7 +73,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
 
             // activate / deactivate event
             var ActiveValidDate = this.$Elm.getElement(
-                '.pcsg-gpm-password-link-validDate'
+                '.pcsg-gpm-password-linkcreate-validDate'
             );
 
             var ValidDateInput = this.$Elm.getElement(
@@ -95,7 +85,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
             });
 
             var ActiveMaxCalls = this.$Elm.getElement(
-                '.pcsg-gpm-password-link-maxCalls'
+                '.pcsg-gpm-password-linkcreate-maxCalls'
             );
 
             var MaxCallsInput = this.$Elm.getElement(
@@ -111,7 +101,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
             });
 
             var ActivePasswords = this.$Elm.getElement(
-                '.pcsg-gpm-password-link-password'
+                '.pcsg-gpm-password-linkcreate-password'
             );
 
             var PasswordInput = this.$Elm.getElement(
@@ -126,17 +116,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
                 }
             });
 
+            // creat btn
+            new QUIButton({
+                textimage: 'fa fa-link',
+                text     : QUILocale.get(lg, 'controls.password.linkcreate.btn'),
+                styles   : {
+                    margin: 'auto'
+                },
+                events   : {
+                    onClick: function (Btn) {
+                        Btn.disable();
+
+                        self.$submit.then(function() {
+                            self.fireEvent('create', [self]);
+                        }, function() {
+                            Btn.enable();
+                        });
+                    }
+                }
+            }).inject(
+                this.$Elm.getElement(
+                    'div.pcsg-gpm-password-linkcreate-createbtn'
+                )
+            );
+
             return this.$Elm;
-        },
-
-        /**
-         * event : on inject
-         */
-        $onInject: function () {
-            var self = this;
-
-            // build grid and refresh
-            self.fireEvent('loaded', [self]);
         },
 
         /**
@@ -145,7 +149,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Link', [
          * @returns {Promise}
          */
         $submit: function () {
+            var formElements = this.$Elm.getElements(
+                '.pcsg-gpm-password-linkcreate-option'
+            );
 
+            var LinkCreateData = {};
+
+            for (var i = 0, len = formElements.length; i < len; i++) {
+                var FormElm = formElements[i];
+
+                if (FormElm.disabled) {
+                    continue;
+                }
+
+                LinkCreateData[FormElm.get('name')] = FormElm.value;
+            }
+
+            return Passwords.createLink(
+                this.getAttribute('passwordId'),
+                LinkCreateData
+            );
         }
     });
 });

@@ -5,10 +5,8 @@ namespace Pcsg\GroupPasswordManager;
 use QUI;
 use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\Security\Hash;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
-use Pcsg\GroupPasswordManager\Security\Random;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use Pcsg\GroupPasswordManager\Constants\Tables;
@@ -57,89 +55,6 @@ class PasswordLink
     protected $DataKey;
 
     /**
-     * Create new PasswordLink
-     *
-     * @param int $dataId - Password ID
-     * @param array $settings
-     * @return PasswordLink
-     *
-     * @throws \Pcsg\GroupPasswordManager\Exception\Exception
-     */
-    public static function create($dataId, $settings = array())
-    {
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'id'
-            ),
-            'from'   => Tables::passwordLink(),
-            'where'  => array(
-                'dataId' => (int)$dataId
-            )
-        ));
-
-        if (!empty($result)) {
-            return new PasswordLink($result[0]['id']);
-        }
-
-        $Password = Passwords::get($dataId);
-
-        // check if Password is eligible for linking
-
-        $hash = Hash::create(
-            new HiddenString(Random::getRandomData())
-        );
-
-        $passwordKey = $Password->getPasswordKey()->getValue()->getString();
-        $password    = false;
-
-        // additionally encrypt password data with an access password
-        if (!empty($settings['password'])) {
-            $passwordKey = SymmetricCrypto::encrypt(
-                new HiddenString($passwordKey),
-                new Key(new HiddenString($settings['password']))
-            );
-
-            $password = true;
-        }
-
-        $dataAccess = array(
-            'password' => $password,
-            'hash'     => $hash,
-            'dataKey'  => $passwordKey,
-            'calls'    => 0,
-            'maxCalls' => 1 // default value
-        );
-
-        if (!empty($settings['maxCalls'])) {
-            $dataAccess['maxCalls'] = (int)$settings['maxCalls'];
-        }
-
-        $dataAccess = new HiddenString(json_encode($dataAccess));
-        $dataAccess = SymmetricCrypto::encrypt($dataAccess, Utils::getSystemPasswordLinkKey());
-
-        // determine how long the link is valid
-        if (empty($settings['validDate'])) {
-            $now        = date('Y-m-d H:i:s');
-            $validUntil = strtotime($now . ' +1 hour');
-        } else {
-            $validUntil = strtotime($settings['validDate']);
-        }
-
-        $validUntil = date('Y-m-d H:i:s', $validUntil);
-
-        QUI::getDataBase()->insert(
-            Tables::passwordLink(),
-            array(
-                'dataId'     => (int)$dataId,
-                'dataAccess' => $dataAccess,
-                'validUntil' => $validUntil
-            )
-        );
-
-        return new PasswordLink(QUI::getDataBase()->getPDO()->lastInsertId());
-    }
-
-    /**
      * PasswordLink constructor.
      *
      * @param int $id - PasswordLink ID
@@ -171,11 +86,14 @@ class PasswordLink
 
         // if PasswordLink is no longer valid -> delete it
         try {
-            $this->validate();
+            $this->decode();
         } catch (\Exception $Exception) {
             throw new Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.passwordlink.invalid'
+                'exception.passwordlink.invalid',
+                array(
+                    'error' => $Exception->getMessage()
+                )
             ));
         }
     }
@@ -208,34 +126,36 @@ class PasswordLink
         /** @var QUI\Projects\Site $Site */
         $Site = current($sites);
 
-        $url = $Project->getVHost(true) . '/';
+        $url = $Project->getVHost(true);
         $url .= $Site->getUrlRewritten(array(), array(
             'id'   => $this->id,
-            'hash' => $this->access['hash']
+            'hash' => \Sodium\bin2hex($this->access['hash'])
         ));
 
         return $url;
     }
 
     /**
-     * Check if PasswordLink is still valid
+     * Decode and validate PasswordLink data
      *
      * @return void
      *
      * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
-    protected function validate()
+    protected function decode()
     {
         // check date
-        $validUntil = strtotime($this->validUntil);
+        if (!empty($validUntil)) {
+            $validUntil = strtotime($this->validUntil);
 
-        if ($validUntil > time()) {
-            $this->delete();
+            if ($validUntil > time()) {
+                $this->delete();
 
-            throw new Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.passwordlink.no_longer_valid'
-            ));
+                throw new Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.passwordlink.no_longer_valid'
+                ));
+            }
         }
 
         // decrypt access data
@@ -263,7 +183,8 @@ class PasswordLink
             ));
         }
 
-        $access['dataKey'] = new Key(new HiddenString($access['dataKey']));
+        $access['dataKey'] = new Key(new HiddenString(\Sodium\hex2bin($access['dataKey'])));
+        $access['hash']    = \Sodium\hex2bin($access['hash']);
         $this->access      = $access;
     }
 
@@ -310,6 +231,24 @@ class PasswordLink
             Tables::passwordLink(),
             array(
                 'dataAccess' => $access
+            ),
+            array(
+                'id' => $this->id
+            )
+        );
+    }
+
+    /**
+     * Deactivate PasswordLink
+     *
+     * @return void
+     */
+    protected function deactivate()
+    {
+        QUI::getDataBase()->update(
+            Tables::passwordLink(),
+            array(
+                'active' => 0
             ),
             array(
                 'id' => $this->id
