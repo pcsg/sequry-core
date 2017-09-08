@@ -52,11 +52,14 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                             ),
                             events       : {
                                 onSubmit: function (AuthData) {
+                                    Popup.showLoader();
+
                                     self.$authenticate(
                                         securityClassId,
                                         AuthData
                                     ).then(function (success) {
                                         if (!success) {
+                                            Popup.hideLoader();
                                             return;
                                         }
 

@@ -421,6 +421,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
         },
 
         /**
+         * Show Popup Loader
+         */
+        showLoader: function () {
+            this.$AuthPopup.Loader.show();
+        },
+
+        /**
+         * Hide Popup Loader
+         */
+        hideLoader: function () {
+            this.$AuthPopup.Loader.hide();
+        },
+
+        /**
          * Close popup
          */
         close: function () {
