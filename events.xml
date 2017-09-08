@@ -9,5 +9,6 @@
     <event on="onAdminLoad" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoad" />
     <event on="onAdminLoadFooter" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoadFooter" />
     <event on="onAjaxCallBefore" fire="\Pcsg\GroupPasswordManager\Events::onAjaxCallBefore" />
+    <event on="onGroupCreate" fire="\Pcsg\GroupPasswordManager\Events::onGroupCreate" />
 
 </events>
