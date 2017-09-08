@@ -966,6 +966,9 @@
         <locale name="controls.gpm.passwords.panel.tbl.shared.no">
             <de><![CDATA[nein]]></de>
         </locale>
+        <locale name="controls.passwords.panel.tabl.shared.no_permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um zu sehen, ob und/oder mit wem dieses Passwort geteilt ist]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.panel.shareinfo.title">
             <de><![CDATA[Auflistung der Passwort-Empfänger]]></de>
         </locale>

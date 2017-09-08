@@ -32,11 +32,16 @@
     width: 100%;
 }
 
-.pcsg-gpm-passwords-panel-grid-shared {
+.pcsg-gpm-passwords-panel-grid-shared,
+.pcsg-gpm-passwords-panel-grid-shared-no-permission {
     float: left;
     height: 100%;
     text-align: center;
     width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-grid-shared-no-permission {
+    color: #aaa;
 }
 
 .pcsg-gpm-passwords-panel-grid-shared:hover,
