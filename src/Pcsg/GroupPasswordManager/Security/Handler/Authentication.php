@@ -289,16 +289,19 @@ class Authentication
      */
     public static function registerPlugin($classPath, $title, $description = null)
     {
-        $class = '\\' . $classPath;
-
+        $class     = '\\' . $classPath;
         $AuthClass = new $class();
 
         if (!($AuthClass instanceof IAuthPlugin)) {
             throw new QUI\Exception(
-                'The plugin "' . $title . '" cannot be registered. The authentication class has'
+                'The plugin "' . get_class($AuthClass) . '" cannot be registered. The authentication class has'
                 . ' to implement IAuthPlugin interface.'
             );
         }
+
+        /** @var IAuthPlugin $AuthClass */
+        $titleLocaleData = $AuthClass->getNameLocaleData();
+        $descLocaleData  = $AuthClass->getDescriptionLocaleData();
 
         if (!(self::isAuthPluginRegistered($class))) {
             QUI::getDataBase()->insert(
