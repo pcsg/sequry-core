@@ -224,7 +224,9 @@ class Password extends QUI\QDOM
      */
     public function getViewData()
     {
-        if (!$this->hasPermission(self::PERMISSION_VIEW)) {
+        if (!$this->decrypted
+            && !$this->hasPermission(self::PERMISSION_VIEW)
+        ) {
             $this->permissionDenied();
         }
 
@@ -245,9 +247,11 @@ class Password extends QUI\QDOM
         );
 
         // private category ids
-        $metaData                       = $this->User->getPasswordMetaData($this->id);
-        $viewData['categoryIdsPrivate'] = explode(',', trim($metaData['categoryIds'], ','));
-        $viewData['favorite']           = $metaData['favorite'];
+        if (!is_null($this->User)) {
+            $metaData                       = $this->User->getPasswordMetaData($this->id);
+            $viewData['categoryIdsPrivate'] = explode(',', trim($metaData['categoryIds'], ','));
+            $viewData['favorite']           = $metaData['favorite'];
+        }
 
         return $viewData;
     }
@@ -1674,7 +1678,7 @@ class Password extends QUI\QDOM
             return;
         }
 
-        $this->SecurityClass->checkAuthentication();
+//        $this->SecurityClass->checkAuthentication();
 
         if (is_null($Key)) {
             $PasswordKey = $this->getPasswordKey();

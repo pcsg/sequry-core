@@ -1,7 +1,7 @@
 /**
  * Control for creating / viewing password links
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate
+ * @module package/pcsg/grouppasswordmanager/bin/controls/password/link/Create
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -10,12 +10,12 @@
  * @require Locale
  * @require Mustache
  * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.css
+ * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.html
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.css
  *
- * @event onCreate [this] - fires after a new PasswordLink has been successfully created
+ * @event onSubmit [this] - fires after a new PasswordLink has been successfully created
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate', [
+define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -26,8 +26,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate', [
 
     'package/pcsg/grouppasswordmanager/bin/Passwords',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate.css'
+    'text!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.html',
+    'css!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.css'
 
 ], function (QUI, QUIControl, QUIButton, QUILocale, Mustache, Passwords, template) {
     "use strict";
@@ -37,14 +37,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate', [
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/link/Create',
 
         Binds: [
             'create'
         ],
 
         options: {
-            passwordId: false // passwordId
+            passwordId   : false,   // passwordId
+            showSubmitBtn: true     // show submit button in control
         },
 
         /**
@@ -116,7 +117,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate', [
                 }
             });
 
-            // creat btn
+            if (!this.getAttribute('showSubmitBtn')) {
+                return this.$Elm;
+            }
+
+            // submit btn
             new QUIButton({
                 textimage: 'fa fa-link',
                 text     : QUILocale.get(lg, 'controls.password.linkcreate.btn'),
@@ -127,9 +132,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate', [
                     onClick: function (Btn) {
                         Btn.disable();
 
-                        self.$submit.then(function() {
-                            self.fireEvent('create', [self]);
-                        }, function() {
+                        self.submit.then(function () {
+                            self.fireEvent('submit', [self]);
+                        }, function () {
                             Btn.enable();
                         });
                     }
@@ -148,7 +153,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate', [
          *
          * @returns {Promise}
          */
-        $submit: function () {
+        submit: function () {
             var formElements = this.$Elm.getElements(
                 '.pcsg-gpm-password-linkcreate-option'
             );

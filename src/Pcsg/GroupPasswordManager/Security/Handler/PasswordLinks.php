@@ -62,27 +62,37 @@ class PasswordLinks
             $password = true;
         }
 
+        $CreateUser = QUI::getUserBySession();
+
         $dataAccess = array(
-            'password' => $password,
-            'hash'     => \Sodium\bin2hex($hash),
-            'dataKey'  => \Sodium\bin2hex($passwordKey),
-            'calls'    => 0,
-            'maxCalls' => false
+            'password'       => $password,
+            'hash'           => \Sodium\bin2hex($hash),
+            'dataKey'        => \Sodium\bin2hex($passwordKey),
+            'createDate'     => date('Y-m-d H:i:s'),
+            'createUserId'   => $CreateUser->getId(),
+            'createUserName' => $CreateUser->getName(),
+            'callCount'      => 0,
+            'calls'          => array(),
+            'maxCalls'       => false,
+            'validUntil'     => false
         );
 
+        // determine how long the link is valid
+
+        // valid until a specific date
+        if (!empty($settings['validDate'])) {
+            $validUntil = strtotime($settings['validDate']);
+            $validUntil = date('Y-m-d H:i:s', $validUntil);
+
+            $dataAccess['validUntil'] = $validUntil;
+        }
+
+        // valid until a number of calls has been reached
         if (!empty($settings['maxCalls'])) {
             $dataAccess['maxCalls'] = (int)$settings['maxCalls'];
         }
 
-        // determine how long the link is valid
-        if (empty($settings['validDate'])) {
-            $validUntil = null;
-        } else {
-            $validUntil = strtotime($settings['validDate']);
-            $validUntil = date('Y-m-d H:i:s', $validUntil);
-        }
-
-        if (!$dataAccess['maxCalls'] && !$validUntil) {
+        if (!$dataAccess['maxCalls'] && !$dataAccess['validUntil']) {
             throw new Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.passwordlink.create.no_limit_set'
@@ -96,16 +106,24 @@ class PasswordLinks
             Tables::passwordLink(),
             array(
                 'dataId'     => (int)$dataId,
-                'dataAccess' => $dataAccess,
-                'validUntil' => $validUntil
+                'dataAccess' => $dataAccess
             )
         );
 
         $PasswordLink = new PasswordLink(QUI::getDataBase()->getPDO()->lastInsertId());
 
-        \QUI\System\Log::writeRecursive($PasswordLink->getUrl());
-
         return $PasswordLink;
+    }
+
+    /**
+     * Get a PasswordLink
+     *
+     * @param int $id
+     * @return PasswordLink
+     */
+    public static function get($id)
+    {
+        return new PasswordLink((int)$id);
     }
 
     /**
@@ -119,9 +137,6 @@ class PasswordLinks
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'id',
-                'dataId',
-                'validUntil',
-                'active'
             ),
             'from'   => Tables::passwordLink(),
             'where'  => array(
@@ -129,6 +144,13 @@ class PasswordLinks
             )
         ));
 
-        return $result;
+        $list = array();
+
+        foreach ($result as $row) {
+            $PasswordLink = self::get($row['id']);
+            $list[]       = $PasswordLink->toArray();
+        }
+
+        return $list;
     }
 }

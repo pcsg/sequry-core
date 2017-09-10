@@ -553,8 +553,8 @@
         <locale name="exception.ajax.authenticate.decode.error">
             <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
         </locale>
-        <locale name="exception.ajax.authenticate.decode.error">
-            <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
+        <locale name="message.passwords.link.create.success">
+            <de><![CDATA[Der Passwort-Links für das Password #[passwordId] wurde erfolgreich erstellt.]]></de>
         </locale>
         <locale name="message.passwords.link.create.error">
             <de><![CDATA[Bei der Erstellung des Passwort-Links für das Password #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
@@ -793,6 +793,9 @@
         </locale>
         <locale name="exception.passwordlink.create.no_limit_set">
             <de><![CDATA[Es muss entweder eine maximale Anzahl an Aufrufen oder ein Ablaufdatum festgelegt werden.]]></de>
+        </locale>
+        <locale name="exception.passwordlink.not_active">
+            <de><![CDATA[Der Passwort-Link ist nicht aktiv]]></de>
         </locale>
 
     </groups>
@@ -1944,7 +1947,7 @@
             <de><![CDATA[<b>Sicherheitsklasse:</b> [title]<br><b>Benötigte Faktoren:</b> [requiredFactors]]]></de>
         </locale>
 
-        <!-- Control: password/Link -->
+        <!-- Control: password/LinkCreate -->
         <locale name="controls.password.linkcreate.template.tableHeader">
             <de><![CDATA[Passwort-Link]]></de>
         </locale>
@@ -1968,6 +1971,77 @@
         </locale>
         <locale name="controls.password.linkcreate.btn">
             <de><![CDATA[Passwort-Link erstellen]]></de>
+        </locale>
+
+        <!-- Control: password/LinkList -->
+        <locale name="controls.password.linklist.tbl.validUntil.infinite">
+            <de><![CDATA[unbegrenzt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.calls.infinite">
+            <de><![CDATA[unbegrenzt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.link.text">
+            <de><![CDATA[Link]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.active">
+            <de><![CDATA[Passwort-Link ist aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.inactive">
+            <de><![CDATA[Passwort-Link ist nicht aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.password">
+            <de><![CDATA[Passwort-Link ist durch ein separates Passwort geschützt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.no_password">
+            <de><![CDATA[Passwort-Link ist nicht durch ein separates Passwort geschützt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.add.popup.btn.submit.text">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.add.popup.btn.submit">
+            <de><![CDATA[Hier klicken, um den Passwort-Link zu erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.add.popup.title">
+            <de><![CDATA[Neuen Passwort-Link erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.id">
+            <de><![CDATA[ID]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.validUntil">
+            <de><![CDATA[Gültig bis]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.callCount">
+            <de><![CDATA[Aufrufe]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.active">
+            <de><![CDATA[Aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.link">
+            <de><![CDATA[URL]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.createUser">
+            <de><![CDATA[Erstellt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.passwordProtected">
+            <de><![CDATA[Passwort-Schutz]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.btn.add">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.btn.calls">
+            <de><![CDATA[Aufrufe anzeigen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.popup.title">
+            <de><![CDATA[Aufrufe]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.tbl.header.date">
+            <de><![CDATA[Datum]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.tbl.header.ipAdress">
+            <de><![CDATA[IP-Adresse]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.tbl.header.user">
+            <de><![CDATA[Benutzer]]></de>
         </locale>
 
     </groups>

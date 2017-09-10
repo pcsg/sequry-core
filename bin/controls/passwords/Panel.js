@@ -57,7 +57,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/LinkCreate',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/link/List',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
@@ -72,7 +72,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
-             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLinkCreate, PasswordSearch,
+             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLinkList, PasswordSearch,
              AuthenticationControl, PasswordAuthentication, RecoveryCodeWindow,
              CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
     "use strict";
@@ -1081,14 +1081,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     onShow : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
-                        var Link = new PasswordLinkCreate({
+                        var LinkList = new PasswordLinkList({
                             passwordId: passwordId,
                             events    : {
                                 onLoaded: function () {
-                                    self.Loader.hide();
-                                },
-                                onClose : function () {
-                                    Sheet.destroy();
                                     self.Loader.hide();
                                 }
                             }

@@ -38,11 +38,6 @@ class PasswordLink
     protected $encryptedAccess;
 
     /**
-     * @var string
-     */
-    protected $validUntil;
-
-    /**
      * Access data
      *
      * @var array
@@ -53,6 +48,11 @@ class PasswordLink
      * @var Key
      */
     protected $DataKey;
+
+    /**
+     * @var bool
+     */
+    protected $active;
 
     /**
      * PasswordLink constructor.
@@ -82,7 +82,7 @@ class PasswordLink
         $this->id              = (int)$id;
         $this->dataId          = $data['dataId'];
         $this->encryptedAccess = $data['dataAccess'];
-        $this->validUntil      = $data['validUntil'];
+        $this->active          = boolval($data['active']);
 
         // if PasswordLink is no longer valid -> delete it
         try {
@@ -138,26 +138,15 @@ class PasswordLink
     /**
      * Decode and validate PasswordLink data
      *
+     * IMPORTANT:   If invalid data is detected the PasswordLink is automatically deactivated
+     *              If the access data is corrupted (cannot be decrypted) the PasswordLink is deleted
+     *
      * @return void
      *
      * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
     protected function decode()
     {
-        // check date
-        if (!empty($validUntil)) {
-            $validUntil = strtotime($this->validUntil);
-
-            if ($validUntil > time()) {
-                $this->delete();
-
-                throw new Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.passwordlink.no_longer_valid'
-                ));
-            }
-        }
-
         // decrypt access data
         try {
             $access = SymmetricCrypto::decrypt(
@@ -165,6 +154,8 @@ class PasswordLink
                 Utils::getSystemPasswordLinkKey()
             );
         } catch (\Exception $Exception) {
+            $this->delete();
+
             throw new Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.passwordlink.decryption_failed'
@@ -173,14 +164,28 @@ class PasswordLink
 
         $access = json_decode($access->getString(), true);
 
-        // check access count
-        if ($access['calls'] >= $access['maxCalls']) {
-            $this->delete();
+        // check date
+        if ($access['validUntil']) {
+            $validUntil = strtotime($access['validUntil']);
 
-            throw new Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.passwordlink.max_calls_reached'
-            ));
+            if ($validUntil > time()) {
+                $this->deactivate();
+
+//                throw new Exception(array(
+//                    'pcsg/grouppasswordmanager',
+//                    'exception.passwordlink.no_longer_valid'
+//                ));
+            }
+        }
+
+        // check current number of calls
+        if ($access['callCount'] >= $access['maxCalls']) {
+            $this->deactivate();
+
+//            throw new Exception(array(
+//                'pcsg/grouppasswordmanager',
+//                'exception.passwordlink.max_calls_reached'
+//            ));
         }
 
         $access['dataKey'] = new Key(new HiddenString(\Sodium\hex2bin($access['dataKey'])));
@@ -192,13 +197,20 @@ class PasswordLink
      * Get Password data
      *
      * @param string $hash - Correct hash for this PasswordLink
-     * @return array - Password view data
+     * @return Password
      *
      * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
-    public function getPasswordData($hash)
+    public function getPassword($hash)
     {
-        if (!hash_equals($hash, $this->access['hash'])) {
+        if (!$this->active) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwordlink.not_active'
+            ));
+        }
+
+        if (!hash_equals(\Sodium\hex2bin($hash), $this->access['hash'])) {
             throw new Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.passwordlink.invalid_hash'
@@ -206,13 +218,28 @@ class PasswordLink
         }
 
         $Password = Passwords::get($this->dataId);
-        $Password->decrypt($this->DataKey);
+        $Password->decrypt($this->access['dataKey']);
 
         // increase call counter
-        $this->access['calls']++;
+        $this->access['callCount']++;
+
+        // get call(er) data
+        $callData = array(
+            'userId'   => QUI::getUserBySession()->getId(),
+            'userName' => QUI::getUserBySession()->getName(),
+            'date'     => date('Y-m-d H:i:s')
+        );
+
+        if (!empty($_SERVER['REMOTE_ADDR'])) {
+            $callData['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
+        }
+
+        $this->access['calls'][] = $callData;
+
+        // save access data changes
         $this->update();
 
-        return $Password->getViewData();
+        return $Password;
     }
 
     /**
@@ -223,7 +250,8 @@ class PasswordLink
     protected function update()
     {
         $access            = $this->access;
-        $access['dataKey'] = $this->access['dataKey']->getValue()->getString();
+        $access['dataKey'] = \Sodium\bin2hex($this->access['dataKey']->getValue()->getString());
+        $access['hash']    = \Sodium\bin2hex($this->access['hash']);
         $access            = new HiddenString(json_encode($access));
         $access            = SymmetricCrypto::encrypt($access, Utils::getSystemPasswordLinkKey());
 
@@ -254,6 +282,8 @@ class PasswordLink
                 'id' => $this->id
             )
         );
+
+        $this->active = false;
     }
 
     /**
@@ -268,6 +298,38 @@ class PasswordLink
             array(
                 'id' => $this->id
             )
+        );
+    }
+
+    /**
+     * Check if this PasswordLink is active
+     *
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * Get PasswordLink attributes as array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return array(
+            'id'             => $this->id,
+            'validUntil'     => $this->access['validUntil'],
+            'callCount'      => $this->access['callCount'],
+            'maxCalls'       => $this->access['maxCalls'],
+            'password'       => $this->access['password'],
+            'createDate'     => $this->access['createDate'],
+            'createUserId'   => $this->access['createUserId'],
+            'createUserName' => $this->access['createUserName'],
+            'calls'          => $this->access['calls'],
+            'active'         => $this->isActive(),
+            'link'           => $this->getUrl()
         );
     }
 }

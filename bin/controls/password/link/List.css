@@ -1,0 +1,12 @@
+.pcsg-gpm-password-linklist {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.pcsg-gpm-password-linklist-grid,
+.pcsg-gpm-password-link-list-calls-grid {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
