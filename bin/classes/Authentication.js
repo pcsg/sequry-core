@@ -66,6 +66,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                         Popup.close();
                                         resolve();
                                     }, function () {
+                                        Popup.hideLoader();
                                         // do nothing if auth data is wrong
                                     });
                                 },
