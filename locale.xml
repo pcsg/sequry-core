@@ -90,12 +90,10 @@
             <de><![CDATA[Der Passwort-Zugriff kann nicht für einen Benutzer erstellt werden, der Eigentümer des Passworts ist oder zur Gruppe gehört, die Eigentümer des Passworts ist.]]></de>
         </locale>
         <locale name="exception.password.create.access.user.not.eligible">
-            <de>
-                <![CDATA[Der Passwort-Zugriff für Benutzer [userName] (#[userId]) kann nicht erstellt werden, da er nicht für alle Authentifizierungs-Module der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
+            <de><![CDATA[Der Passwort-Zugriff für Benutzer [userName] (#[userId]) kann nicht erstellt werden, da er nicht für alle Authentifizierungs-Faktoren der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
         </locale>
         <locale name="exception.password.create.access.group.not.eligible">
-            <de>
-                <![CDATA[Der Passwort-Zugriff für Benutzer der Gruppe [groupName] (#[groupId]) kann nicht erstellt werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
+            <de><![CDATA[Der Passwort-Zugriff für Benutzer der Gruppe [groupName] (#[groupId]) kann nicht erstellt werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Faktoren der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
         </locale>
         <locale name="exception.password.group.password.key.not.authentic">
             <de>
@@ -221,8 +219,7 @@
             <de><![CDATA[Das Schlüsselpaar der Gruppe #[groupId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer kein Zugriffsrecht für diese Gruppe hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.group.access.key.part.auth.key.error" html="true">
-            <de>
-                <![CDATA[Beim Zugriff auf das Schlüsselpaar einer Authentifizierungs-Methode (#[authKeyPairId]) zur Entschlüsselung des Schlüsselpaars der Gruppe #[groupId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+            <de><![CDATA[Beim Zugriff auf das Schlüsselpaar eines Authentifizierungs-Faktors (#[authKeyPairId]) zur Entschlüsselung des Schlüsselpaars der Gruppe #[groupId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.cryptouser.password.access.key.decrypt.user.has.no.access">
             <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer kein Zugriffsrecht für dieses Passwort hat.]]></de>
@@ -367,13 +364,13 @@
 
         <!-- Class: Security\Authentication\Plugin -->
         <locale name="exception.authentication.plugin.register.error">
-            <de><![CDATA[Die Authentifizierungsinformationen sind ungültig.]]></de>
+            <de><![CDATA[Die Zugangsdaten sind ungültig.]]></de>
         </locale>
         <locale name="exception.auth.plugin.register.database.error">
             <de><![CDATA[Bei der Registrierung ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
         </locale>
         <locale name="exception.auth.plugin.derived.key.error">
-            <de><![CDATA[Die Ableitung des Schlüssel aus Authentifizierungsinformationen für das Authentifizierungs-Plugin #[pluginId] schlug fehl:<br/><br/>[error]]]></de>
+            <de><![CDATA[Die Ableitung des Schlüssel aus Zugangsdaten für das Authentifizierungs-Plugin #[pluginId] schlug fehl:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.auth.plugin.delete.user.no.permission">
             <de><![CDATA[Das Löschen der Registrierung für ein Authentifizierungs-Plugin kann nur durch einen SuperUser oder den Benutzer selbst vorgenommen werden.]]></de>
@@ -414,20 +411,19 @@
             <de><![CDATA[Bei der Verarbeitung Ihrer Anfrage ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="success.auth.registeruser">
-            <de>
-                <![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war erfolgreich. Sie können nun Passwörter erstellen und auf Passwörter zugreifen, die diese Authentifizierungs-Methode erfordern.]]></de>
+            <de><![CDATA[Die Registrierung für diesen Authentifizierungs-Plugin war erfolgreich. Sie können nun Passwörter erstellen und auf Passwörter zugreifen, die diesen Authentifizierungs-Faktor erfordern.]]></de>
         </locale>
         <locale name="error.auth.registeruser">
             <de><![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
         <locale name="error.auth.changeauth">
-            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+            <de><![CDATA[Die Änderung von Zugangsdaten für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
         <locale name="success.auth.changeauth">
-            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war erfolgreich.]]></de>
+            <de><![CDATA[Die Änderung von Zugangsdaten für dieses Authentifizierungs-Plugin war erfolgreich.]]></de>
         </locale>
         <locale name="error.auth.changeauth">
-            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+            <de><![CDATA[Die Änderung von Zugangsdaten für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
         <locale name="error.password.edit">
             <de><![CDATA[Die Änderung der Passwort-Daten (#[passwordId]) war nicht erfolgreich:<br/><br/>[error]]]></de>
@@ -524,7 +520,7 @@
             <de><![CDATA[Beim Abruf der Passwort-Liste ist ein Fehler aufgetreten:<br><br>[error]]]></de>
         </locale>
         <locale name="exception.ajax.reEncryptAll.missing.auth.info" html="true">
-            <de><![CDATA[Bitte geben Sie die Authentifizierungs-Informationen für <b>alle</b> Authentifizierungs-Module an!]]></de>
+            <de><![CDATA[Bitte geben Sie die Zugangsdaten für <b>alle</b> Authentifizierungs-Faktoren an!]]></de>
         </locale>
         <locale name="message.ajax.reEncryptAll.error" html="true">
             <de><![CDATA[Beim Neu-Verschlüsseln ist ein Fehler aufgetreten:<br><br>[error]]]></de>
@@ -551,7 +547,7 @@
             <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich gelöscht.]]></de>
         </locale>
         <locale name="exception.ajax.authenticate.decode.error">
-            <de><![CDATA[Beim Dekodieren der Authentifizierungs-Informationen ist ein Fehler aufgetreten.]]></de>
+            <de><![CDATA[Beim Dekodieren der Zugangsdaten ist ein Fehler aufgetreten.]]></de>
         </locale>
         <locale name="message.passwords.link.create.success">
             <de><![CDATA[Der Passwort-Links für das Password #[passwordId] wurde erfolgreich erstellt.]]></de>
@@ -570,21 +566,20 @@
 
         <!-- Class: Security\Authentication\SecurityClass -->
         <locale name="exception.securityclass.authenticate.missing.authdata">
-            <de><![CDATA[Die Authentifizierungsinformationen für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] wurden nicht übergeben.]]></de>
+            <de><![CDATA[Die Zugangsdaten für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] wurden nicht übergeben.]]></de>
         </locale>
         <locale name="exception.securityclass.authenticate.authdata.not.given">
-            <de><![CDATA[Die Authentifizierungsinformationen wurden nicht übergeben.]]></de>
+            <de><![CDATA[Die Zugangsdaten wurden nicht übergeben.]]></de>
         </locale>
         <locale name="attention.securityclass.edit.groups.cannot.delete.group">
             <de>
                 <![CDATA[Die Gruppe #[groupId] kann nicht aus der Sicherheitsklasse #[securityClassId] entfernt werden. Gruppen können nur aus einer Sicherheitsklasse entfernt werden, wenn sie einer anderen Sicherheitsklasse zugeordnet oder direkt gelöscht werden.]]></de>
         </locale>
         <locale name="exception.securityclass.authenticate.wrong.authdata">
-            <de><![CDATA[Die Authentifizierungsinformationen für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] sind nicht korrekt.]]></de>
+            <de><![CDATA[Die Zugangsdaten für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] sind nicht korrekt.]]></de>
         </locale>
         <locale name="exception.securityclass.authenticate.insufficient.authentication.count">
-            <de>
-                <![CDATA[Zur Authentifizierung für die Sicherheitsklasse #[securityClassId] wurden nicht ausreichend Authentifizierungsinformationen übergeben. Sie müssen sich bei mindestens [requiredFactors] verschiedenen Faktoren authentifizieren.]]></de>
+            <de><![CDATA[Zur Authentifizierung für die Sicherheitsklasse #[securityClassId] wurden nicht ausreichend Zugangsdaten übergeben. Sie müssen sich bei mindestens [requiredFactors] verschiedenen Faktoren authentifizieren.]]></de>
         </locale>
         <locale name="exception.securityclass.create.no.permission">
             <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Sicherheitsklassen zu erstellen oder zu bearbeiten.]]></de>
@@ -620,10 +615,10 @@
 
         <!-- Recovery -->
         <locale name="exception.recovery.create.entry.wrong.authentication.information">
-            <de><![CDATA[Es kann kein Wiederherstellungs-Eintrag erzeugt werden, da die Authentifizierungsinformationen falsch sind.]]></de>
+            <de><![CDATA[Es kann kein Wiederherstellungs-Eintrag erzeugt werden, da die Zugangsdaten falsch sind.]]></de>
         </locale>
         <locale name="exception.recovery.recover.entry.not.found">
-            <de><![CDATA[Es wurde kein Wiederherstellungs-Eintrag für den Benutzer #[userId] und das Authentifizierungs-Modul #[authPluginId] gefunden.]]></de>
+            <de><![CDATA[Es wurde kein Wiederherstellungs-Eintrag für den Benutzer #[userId] und den Authentifizierungs-Faktor #[authPluginId] gefunden.]]></de>
         </locale>
         <locale name="exception.recovery.recover.entry.mac.mismatch">
             <de><![CDATA[Der Wiederherstellungs-Eintrag hat die Authentizitäts-Prüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
@@ -855,8 +850,7 @@
             <de><![CDATA[Lebensdauer v. Auth-Informationen (Sekunden)]]></de>
         </locale>
         <locale name="settings.module_settings.auth_ttl.description">
-            <de>
-                <![CDATA[Bestimmt, wie lange Authentifizierungs-Informationen in der Benutzer-Session zwischengespeichert werden, bevor der Benutzer erneut seine Authentifizierungs-Informationen zur Authentifizierung eingeben muss. Angabe in Sekunden.]]></de>
+            <de><![CDATA[Bestimmt, wie lange Zugangsdaten in der Benutzer-Session zwischengespeichert werden, bevor der Benutzer erneut seine Zugangsdaten zur Authentifizierung eingeben muss. Angabe in Sekunden.]]></de>
         </locale>
         <locale name="settings.module_settings.reEncryptEnabled.title">
             <de><![CDATA[Neu-Verschlüsselung erlauben]]></de>
@@ -894,12 +888,10 @@
 
         <!-- print recovery code -->
         <locale name="auth.recoverycodewindow.info" html="true">
-            <de>
-                <![CDATA[Mit diesem Wiederherstellungs-Code können Sie ihre Authentifizierungsinformationen ändern, wenn Sie auf die Authentifizierungsinformationen keinen Zugriff mehr haben. <b>Dieser Wiederherstellungs-Code wird nur einmalig angezeigt und nach dem Schließen dieses Fensters dauerhaft gelöscht!</b> Klicken Sie auf <b>Drucken</b>, um den Wiederherstellungs-Code auszudrucken oder schreiben Sie ihn auf und verwahren Sie ihn an einem sicheren Ort.]]></de>
+            <de><![CDATA[Mit diesem Wiederherstellungs-Code können Sie ihre Zugangsdaten ändern, wenn Sie auf die Zugangsdaten keinen Zugriff mehr haben. <b>Dieser Wiederherstellungs-Code wird nur einmalig angezeigt und nach dem Schließen dieses Fensters dauerhaft gelöscht!</b> Klicken Sie auf <b>Drucken</b>, um den Wiederherstellungs-Code auszudrucken oder schreiben Sie ihn auf und verwahren Sie ihn an einem sicheren Ort.]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.info" html="true">
-            <de>
-                <![CDATA[Wiederherstellungs-Code für den QUIQQER Passwort-Manager bei Verlust der Authentifizierungsinformationen. Mit diesem Code können Sie Ihre aktuellen Zugangsdaten für das unten genannte Authentifizierungs-Modul einmalig ändern.]]></de>
+            <de><![CDATA[Wiederherstellungs-Code für den QUIQQER Passwort-Manager bei Verlust der Zugangsdaten. Mit diesem Code können Sie Ihre aktuellen Zugangsdaten für den unten genannten Authentifizierungs-Faktor einmalig ändern.]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.warning.title">
             <de><![CDATA[ACHTUNG!]]></de>
@@ -918,7 +910,7 @@
             <de><![CDATA[Benutzer]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.authplugin">
-            <de><![CDATA[Authentifizierungs-Modul]]></de>
+            <de><![CDATA[Authentifizierungs-Faktor]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.recoveryCodeId">
             <de><![CDATA[Wiederherstellungs-ID]]></de>
@@ -960,7 +952,7 @@
 
         <!-- General messages -->
         <locale name="error.authentication.incorrect.auth.data">
-            <de><![CDATA[Der Vorgang war nicht erfolgreich, da die übergebenen Authentifizierungs-Informationen nicht korrekt waren.]]></de>
+            <de><![CDATA[Der Vorgang war nicht erfolgreich, da die übergebenen Zugangsdaten nicht korrekt waren.]]></de>
         </locale>
 
         <!-- Permissions -->
@@ -1060,6 +1052,9 @@
         </locale>
         <locale name="controls.gpm.passwords.panel.tbl.shared.no">
             <de><![CDATA[nein]]></de>
+        </locale>
+        <locale name="controls.passwords.panel.tabl.shared.no_permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um zu sehen, ob und/oder mit wem dieses Passwort geteilt ist]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.shareinfo.title">
             <de><![CDATA[Auflistung der Passwort-Empfänger]]></de>
@@ -1295,7 +1290,7 @@
             <de><![CDATA[Bestätigen]]></de>
         </locale>
         <locale name="gpm.auth.panel.change.title">
-            <de><![CDATA[Authentifizierungsinformationen für "[authPluginTitle]" ändern]]></de>
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" ändern]]></de>
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Neue Informationen senden]]></de>
@@ -1306,25 +1301,24 @@
             <de><![CDATA[Registrierung für eine Authentifizierungsmethode]]></de>
         </locale>
         <locale name="auth.template.basicData">
-            <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
+            <de><![CDATA[Eingabe der Zugangsdaten]]></de>
         </locale>
 
         <!-- Control: auth/Change -->
         <locale name="auth.change.template.title">
-            <de><![CDATA[Änderung der Authentifizierungsinformationen für eine Authentifizierungs-Methode]]></de>
+            <de><![CDATA[Änderung der Zugangsdaten für einen Authentifizierungs-Faktor]]></de>
         </locale>
         <locale name="auth.change.template.basicData">
-            <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
+            <de><![CDATA[Eingabe der Zugangsdaten]]></de>
         </locale>
         <locale name="auth.change.template.recovery">
-            <de><![CDATA[Authentifizierungsinformationen vergessen]]></de>
+            <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
         <locale name="auth.change.btn.recovery">
-            <de><![CDATA[Ich habe meine aktuellen Authentifizierungsinformationen vergessen]]></de>
+            <de><![CDATA[Ich habe meine aktuellen Zugangsdaten vergessen]]></de>
         </locale>
         <locale name="auth.recovery.information">
-            <de>
-                <![CDATA[Sie können Ihre aktuellen Authentifizierungsinformationen mit dem Wiederherstellungscode, der bei Registrierung mit dieser Authentifizierungs-Methode angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Authentifizierungsinformationen dafür leer.]]></de>
+            <de><![CDATA[Sie können Ihre aktuellen Zugangsdaten mit dem Wiederherstellungscode, der bei Registrierung mit diesem Authentifizierungs-Faktor angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Zugangsdaten dafür leer.]]></de>
         </locale>
         <locale name="auth.recovery.code">
             <de><![CDATA[Wiederherstellungs-Code #[recoveryCodeId]]]></de>
@@ -1350,7 +1344,7 @@
                 <![CDATA[Für diese Operation ist eine Authentifizierung erforderlich.<br/><br/><b>Sicherheitsklasse:</b> [securityClass]<br/><br/>Bitte authentifzieren Sie sich mit <b>mindestens [requiredFactors]</b> dafür nötigen Authentifizierungs-Faktoren.]]></de>
         </locale>
         <locale name="controls.authenticate.popup.label.save.authdata">
-            <de><![CDATA[Authentifizierungs-Informationen merken]]></de>
+            <de><![CDATA[Zugangsdaten merken]]></de>
         </locale>
         <locale name="controls.authenticate.popup.btn.text">
             <de><![CDATA[Authentifizieren]]></de>
@@ -1677,7 +1671,7 @@
 
         <!-- Control: auth/Panel -->
         <locale name="auth.panel.title">
-            <de><![CDATA[Authentifizierungs-Module]]></de>
+            <de><![CDATA[Authentifizierungs-Faktoren]]></de>
         </locale>
 
         <!-- Control: auth/RecoveryCodeWindow -->
@@ -1706,7 +1700,7 @@
             <de><![CDATA[Authentifizierung]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.authdata.incorrect">
-            <de><![CDATA[Die Authentifizierungsinformationen sind nicht korrekt.]]></de>
+            <de><![CDATA[Die Zugangsdaten sind nicht korrekt.]]></de>
         </locale>
 
         <!-- Control: passwordtypes/Edit -->
@@ -1752,7 +1746,7 @@
 
         <!-- Control: user/AuthPluginSettings -->
         <locale name="controls.user.authpluginsettings.label.autosave">
-            <de><![CDATA[Authentifizierungs-Informationen nach erstmaliger Anmeldung automatisch speichern]]></de>
+            <de><![CDATA[Zugangsdaten nach erstmaliger Anmeldung automatisch speichern]]></de>
         </locale>
         <locale name="controls.user.authpluginsettings.label.priority">
             <de><![CDATA[Anzeige-Priorität im Authentifizierungsfenster (höhere Zahl = weiter oben)]]></de>
@@ -1864,8 +1858,7 @@
 
         <!-- Control: user/ReEncryptKeys -->
         <locale name="controls.user.ReEncryptKeys.info">
-            <de>
-                <![CDATA[Neu-Verschlüsselung aller kryptografisch gesicherten Daten, auf die Sie Zugriff haben (ausgenommen Wiederherstellungs-Informationen). Benötigt die Authentifizierung für <b>alle</b> Authentifizierungs-Methoden, für die Sie registriert sind. Dieser Vorgang kann eine gewisse Zeit in Anspruch nehmen.]]></de>
+            <de><![CDATA[Neu-Verschlüsselung aller kryptografisch gesicherten Daten, auf die Sie Zugriff haben (ausgenommen Wiederherstellungs-Informationen). Benötigt die Authentifizierung für <b>alle</b> Authentifizierungs-Faktoren, für die Sie registriert sind. Dieser Vorgang kann eine gewisse Zeit in Anspruch nehmen.]]></de>
         </locale>
         <locale name="controls.user.ReEncryptKeys.info.not.enabled">
             <de><![CDATA[Diese Funktion ist z.Z. nicht freigeschaltet.]]></de>

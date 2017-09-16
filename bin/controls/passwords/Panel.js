@@ -761,9 +761,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         }).inject(Row.shared);
                     }
                 } else {
-                    Row.shared = new Element('span', {
-                        html: '&nbsp;'
+                    Row.shared = new Element('div', {
+                        'class': 'pcsg-gpm-passwords-panel-grid-shared-no-permission',
+                        title  : QUILocale.get(lg,
+                            'controls.passwords.panel.tabl.shared.no_permission'
+                        )
                     });
+
+                    new Element('span', {
+                        'class': 'fa fa-question-circle'
+                    }).inject(Row.shared);
                 }
 
                 GridData.data[i] = Row;

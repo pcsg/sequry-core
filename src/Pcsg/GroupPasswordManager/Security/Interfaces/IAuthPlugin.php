@@ -12,11 +12,18 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
 interface IAuthPlugin
 {
     /**
-     * Return internal name of auth plugin
+     * Return locale data for auth plugin name
      *
-     * @return String
+     * @return array
      */
-    public static function getName();
+    public static function getNameLocaleData();
+
+    /**
+     * Return locale data for auth plugin description
+     *
+     * @return array
+     */
+    public static function getDescriptionLocaleData();
 
     /**
      * Registers a user with this plugin
