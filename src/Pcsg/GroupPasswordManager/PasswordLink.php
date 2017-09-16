@@ -10,6 +10,8 @@ use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Security\KDF;
+use Pcsg\GroupPasswordManager\Security\Exception\InvalidKeyException;
 
 /**
  * Class PasswordLink
@@ -188,20 +190,22 @@ class PasswordLink
 //            ));
         }
 
-        $access['dataKey'] = new Key(new HiddenString(\Sodium\hex2bin($access['dataKey'])));
-        $access['hash']    = \Sodium\hex2bin($access['hash']);
-        $this->access      = $access;
+        $access['hash']           = \Sodium\hex2bin($access['hash']);
+        $access['encryptionSalt'] = \Sodium\hex2bin($access['encryptionSalt']);
+        $access['dataKey']        = new HiddenString(\Sodium\hex2bin($access['dataKey']));
+        $this->access             = $access;
     }
 
     /**
      * Get Password data
      *
      * @param string $hash - Correct hash for this PasswordLink
+     * @param string $decryptPass (optional) - decryption password (if PasswordLink is password protected)
      * @return Password
      *
      * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
-    public function getPassword($hash)
+    public function getPassword($hash, $decryptPass = null)
     {
         if (!$this->active) {
             throw new Exception(array(
@@ -217,8 +221,33 @@ class PasswordLink
             ));
         }
 
+        if ($this->isPasswordProtected() && is_null($decryptPass)) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwordlink.no_password_given'
+            ));
+        }
+
         $Password = Passwords::get($this->dataId);
-        $Password->decrypt($this->access['dataKey']);
+        $dataKey  = $this->access['dataKey']->getString();
+
+        try {
+            if ($this->isPasswordProtected()) {
+                $dataKey = SymmetricCrypto::decrypt(
+                    $dataKey,
+                    KDF::createKey(
+                        new HiddenString($decryptPass),
+                        $this->access['encryptionSalt']
+                    )
+                );
+            }
+
+            $DataKey = new Key(new HiddenString($dataKey));
+
+            $Password->decrypt($DataKey);
+        } catch (\Exception $Exception) {
+            throw new InvalidKeyException();
+        }
 
         // increase call counter
         $this->access['callCount']++;
@@ -243,17 +272,38 @@ class PasswordLink
     }
 
     /**
+     * Get message
+     *
+     * @return false|string
+     */
+    public function getContentMessage()
+    {
+        return $this->access['message'];
+    }
+
+    /**
+     * Checks if this PasswordLink is protected by a password
+     *
+     * @return bool
+     */
+    public function isPasswordProtected()
+    {
+        return $this->access['password'];
+    }
+
+    /**
      * Update PasswordLink
      *
      * @return void
      */
     protected function update()
     {
-        $access            = $this->access;
-        $access['dataKey'] = \Sodium\bin2hex($this->access['dataKey']->getValue()->getString());
-        $access['hash']    = \Sodium\bin2hex($this->access['hash']);
-        $access            = new HiddenString(json_encode($access));
-        $access            = SymmetricCrypto::encrypt($access, Utils::getSystemPasswordLinkKey());
+        $access                   = $this->access;
+        $access['dataKey']        = \Sodium\bin2hex($this->access['dataKey']->getString());
+        $access['hash']           = \Sodium\bin2hex($this->access['hash']);
+        $access['encryptionSalt'] = \Sodium\bin2hex($this->access['encryptionSalt']);
+        $access                   = new HiddenString(json_encode($access));
+        $access                   = SymmetricCrypto::encrypt($access, Utils::getSystemPasswordLinkKey());
 
         QUI::getDataBase()->update(
             Tables::passwordLink(),

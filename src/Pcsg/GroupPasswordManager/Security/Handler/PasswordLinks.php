@@ -8,6 +8,7 @@ namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Pcsg\GroupPasswordManager\Security\KDF;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
@@ -49,14 +50,20 @@ class PasswordLinks
             new HiddenString(Random::getRandomData())
         );
 
-        $passwordKey = $Password->getPasswordKey()->getValue()->getString();
-        $password    = false;
+        $passwordKey    = $Password->getPasswordKey()->getValue()->getString();
+        $password       = false;
+        $encryptionSalt = false;
 
         // additionally encrypt password data with an access password
         if (!empty($settings['password'])) {
+            $encryptionSalt = Random::getRandomData();
+
             $passwordKey = SymmetricCrypto::encrypt(
                 new HiddenString($passwordKey),
-                new Key(new HiddenString($settings['password']))
+                KDF::createKey(
+                    new HiddenString($settings['password']),
+                    $encryptionSalt
+                )
             );
 
             $password = true;
@@ -66,6 +73,7 @@ class PasswordLinks
 
         $dataAccess = array(
             'password'       => $password,
+            'encryptionSalt' => \Sodium\bin2hex($encryptionSalt),
             'hash'           => \Sodium\bin2hex($hash),
             'dataKey'        => \Sodium\bin2hex($passwordKey),
             'createDate'     => date('Y-m-d H:i:s'),
@@ -74,7 +82,8 @@ class PasswordLinks
             'callCount'      => 0,
             'calls'          => array(),
             'maxCalls'       => false,
-            'validUntil'     => false
+            'validUntil'     => false,
+            'message'        => empty($settings['message']) ? false : $settings['message']
         );
 
         // determine how long the link is valid

@@ -3,6 +3,7 @@
 use Pcsg\GroupPasswordManager\PasswordLink;
 use QUI\Utils\Security\Orthos;
 use Pcsg\GroupPasswordManager\PasswordTypes\Handler as PasswordTypesHandler;
+use Pcsg\GroupPasswordManager\Security\Exception\InvalidKeyException;
 
 function send400()
 {
@@ -19,36 +20,63 @@ if (empty($_REQUEST['id'])
     send400();
 }
 
-$error       = false;
-$payloadHtml = false;
-$data        = array();
+$error              = false;
+$payloadHtml        = false;
+$password           = false;
+$passwordProtected  = false;
+$invalidPasswordMsg = false;
+$data               = array();
+$Password           = false;
+
+if (!empty($_POST['password'])) {
+    $password = $_POST['password'];
+}
 
 try {
     $PasswordLink = new PasswordLink((int)$_REQUEST['id']);
 
-    $Password = $PasswordLink->getPassword($_REQUEST['hash']);
-    $data     = $Password->getViewData();
+    if ($PasswordLink->isPasswordProtected()) {
+        $passwordProtected = true;
 
-    foreach ($data as $k => $v) {
-        if (is_string($v)) {
-            $data[$k] = Orthos::escapeHTML($v);
+        if ($password) {
+            $Password = $PasswordLink->getPassword($_REQUEST['hash'], $password);
         }
+    } else {
+        $Password = $PasswordLink->getPassword($_REQUEST['hash']);
     }
 
-    $TypeClass   = PasswordTypesHandler::getPasswordTypeClass($Password->getDataType());
-    $payloadHtml = $TypeClass->getViewHtml($data['payload']);
+    if ($Password) {
+        $data = $Password->getViewData();
 
-    $Engine->assign(array(
-        'title'       => $data['title'],
-        'description' => $data['description'],
-        'payloadHtml' => $payloadHtml
-    ));
+        foreach ($data as $k => $v) {
+            if (is_string($v)) {
+                $data[$k] = Orthos::escapeHTML($v);
+            }
+        }
+
+        $TypeClass   = PasswordTypesHandler::getPasswordTypeClass($Password->getDataType());
+        $payloadHtml = $TypeClass->getViewHtml($data['payload']);
+
+        $Engine->assign(array(
+            'title'       => $data['title'],
+            'description' => $data['description'],
+            'payloadHtml' => $payloadHtml
+        ));
+    }
+} catch (InvalidKeyException $Exception) {
+    $invalidPasswordMsg = QUI::getLocale()->get(
+        'pcsg/grouppasswordmanager',
+        'message.sitetypes.passwordlink.wrong_password'
+    );
 } catch (\Exception $Exception) {
     QUI\System\Log::writeException($Exception);
     $error = true;
 }
 
 $Engine->assign(array(
-    'error' => $error,
+    'message'            => $PasswordLink->getContentMessage(),
+    'error'              => $error,
+    'passwordProtected'  => $passwordProtected,
+    'invalidPasswordMsg' => $invalidPasswordMsg
 ));
 

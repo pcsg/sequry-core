@@ -792,6 +792,17 @@
         <locale name="exception.passwordlink.not_active">
             <de><![CDATA[Der Passwort-Link ist nicht aktiv]]></de>
         </locale>
+        <locale name="exception.passwordlink.no_password_given">
+            <de><![CDATA[Der Passwort-Link erfordert ein Passwort zur Entschlüsselung]]></de>
+        </locale>
+
+        <!-- types/passwordlink -->
+        <locale name="message.sitetypes.passwordlink.wrong_password">
+            <de><![CDATA[Das Passwort ist nicht korrekt]]></de>
+        </locale>
+        <locale name="sitetypes.passwordlink.password_protection">
+            <de><![CDATA[Dieses Passwort ist passwort-geschützt. Bitte geben Sie das entsprechende Passwort ein.]]></de>
+        </locale>
 
     </groups>
 
