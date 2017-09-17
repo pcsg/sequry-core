@@ -48,6 +48,13 @@ class SecurityClass extends QUI\QDOM
     protected $plugins = null;
 
     /**
+     * Are PasswordLinks allowed?
+     *
+     * @var bool
+     */
+    protected $allowPasswordLinks;
+
+    /**
      * AuthPlugin constructor.
      *
      * @param integer $id - authentication plugin id
@@ -73,8 +80,9 @@ class SecurityClass extends QUI\QDOM
 
         $data = current($result);
 
-        $this->id              = $data['id'];
-        $this->requiredFactors = $data['requiredFactors'];
+        $this->id                 = $data['id'];
+        $this->requiredFactors    = $data['requiredFactors'];
+        $this->allowPasswordLinks = $data['allowPasswordLinks'] == 1 ? true : false;
 
         $this->setAttributes(array(
             'title'       => $data['title'],
@@ -767,6 +775,10 @@ class SecurityClass extends QUI\QDOM
                     }
 
                     break;
+
+                case 'allowPasswordLinks':
+                    $this->allowPasswordLinks = boolval($v);
+                    break;
             }
         }
 
@@ -814,8 +826,9 @@ class SecurityClass extends QUI\QDOM
         QUI::getDataBase()->update(
             Tables::securityClasses(),
             array(
-                'title'       => $this->getAttribute('title'),
-                'description' => $this->getAttribute('description')
+                'title'              => $this->getAttribute('title'),
+                'description'        => $this->getAttribute('description'),
+                'allowPasswordLinks' => $this->allowPasswordLinks ? 1 : 0
             ),
             array(
                 'id' => $this->getId()
@@ -930,5 +943,15 @@ class SecurityClass extends QUI\QDOM
         }
 
         return true;
+    }
+
+    /**
+     * Are PasswordLinks allowed for this SecurityClass?
+     *
+     * @return bool
+     */
+    public function isPasswordLinksAllowed()
+    {
+        return $this->allowPasswordLinks;
     }
 }

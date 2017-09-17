@@ -6,7 +6,11 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Handler;
 
+use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
+use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\KDF;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
@@ -46,6 +50,21 @@ class PasswordLinks
         // check if Password is eligible for linking
         $Password = Passwords::get($dataId);
 
+        if (!$Password->getSecurityClass()->isPasswordLinksAllowed()) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.security.handler.passwordlinks.securityclass_links_not_allowed'
+            ));
+        }
+
+        if (!self::isUserAllowedToUsePasswordLinks($Password)) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.security.handler.passwordlinks.no_permission'
+            ));
+        }
+
+        // create link data
         $hash = Hash::create(
             new HiddenString(Random::getRandomData())
         );
@@ -121,6 +140,13 @@ class PasswordLinks
 
         $PasswordLink = new PasswordLink(QUI::getDataBase()->getPDO()->lastInsertId());
 
+        if (!empty($settings['email'])) {
+            $recipients = str_replace(' ', '', $settings['email']);
+            $recipients = explode(',', $recipients);
+
+            self::sendPasswordLinkMail($PasswordLink, $recipients);
+        }
+
         return $PasswordLink;
     }
 
@@ -161,5 +187,97 @@ class PasswordLinks
         }
 
         return $list;
+    }
+
+    /**
+     * Check is a user is allowed to user PasswordLinks for a specific password
+     *
+     * @param Password $Password
+     * @param CryptoUser $User (optional) - if omitted user session user
+     * @return bool
+     */
+    public static function isUserAllowedToUsePasswordLinks(Password $Password, CryptoUser $User = null)
+    {
+        if (is_null($User)) {
+            $User = CryptoActors::getCryptoUser();
+        }
+
+        if (!$Password->getSecurityClass()->isPasswordLinksAllowed()) {
+            return false;
+        }
+
+        $PasswordOwner = $Password->getOwner();
+
+        if ($PasswordOwner instanceof CryptoUser) {
+            return $PasswordOwner->getId() === $User->getId();
+        }
+
+        /** @var CryptoGroup $PasswordOwner */
+        if (!$User->isInGroup($PasswordOwner->getId())) {
+            return false;
+        }
+
+        return QUI\Permissions\Permission::hasPermission(
+            Permissions::PASSWORDLINKS_ALLOWED,
+            $User
+        );
+    }
+
+    /**
+     * Send PasswordLink via mail(s)
+     *
+     * @param PasswordLink $PasswordLink
+     * @param array $recipients - Mail adresses
+     * @return void
+     */
+    protected static function sendPasswordLinkMail(PasswordLink $PasswordLink, $recipients)
+    {
+        if (empty($recipients)) {
+            return;
+        }
+
+        $Mailer = new QUI\Mail\Mailer();
+        $Engine = QUI::getTemplateManager()->getEngine();
+        $L      = QUI::getLocale();
+        $lg     = 'pcsg/grouppasswordmanager';
+
+        $Engine->assign(array(
+            'greeting' => $L->get($lg, 'mail.passwordlink.greeting'),
+            'body'     => $L->get($lg, 'mail.passwordlink.body', array(
+                'url' => $PasswordLink->getUrl()
+            ))
+        ));
+
+        $Mailer->setHTML($Engine->fetch(
+            QUI::getPackage($lg)->getDir() . 'templates/mail_passwordlink.html'
+        ));
+
+        $Mailer->setSubject($L->get($lg, 'mail.passwordlink.subject'));
+
+        foreach ($recipients as $recipient) {
+            $Mailer->addRecipient($recipient);
+        }
+
+        try {
+            $Mailer->send();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError($Exception->getMessage());
+
+            QUI::getMessagesHandler()->addAttention(
+                QUI::getLocale()->get(
+                    'pcsg/grouppasswordmanager',
+                    'message.security.handler.passwordlinks.mail_send_error'
+                )
+            );
+
+            return;
+        }
+
+        QUI::getMessagesHandler()->addSuccess(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.security.handler.passwordlinks.mail_send_success'
+            )
+        );
     }
 }

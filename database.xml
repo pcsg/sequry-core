@@ -92,6 +92,7 @@
             <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
             <field type="TINYINT(2)">requiredFactors</field>
+            <field type="TINYINT(1) NOT NULL DEFAULT 0">allowPasswordLinks</field>
             <primary>id</primary>
         </table>
 

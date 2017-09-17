@@ -30,4 +30,9 @@
         <defaultvalue>0</defaultvalue>
     </permission>
 
+    <!-- PasswordLinks -->
+    <permission name="gpm.passwordlinks.allowed" type="bool" area="groups">
+        <defaultvalue>0</defaultvalue>
+    </permission>
+
 </permissions>

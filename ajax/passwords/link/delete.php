@@ -3,33 +3,29 @@
 use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 
 /**
- * Create a new PasswordLink
+ * Delete a PasswordLink
  *
- * @param integer $passwordId - ID of password
- * @param array $linkData - settings for PasswordLink
+ * @param integer $linkId - ID of PasswordLink
  * @return bool - success
  *
  * @throws QUI\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_link_create',
-    function ($passwordId, $linkData) {
-        $passwordId = (int)$passwordId;
+    'package_pcsg_grouppasswordmanager_ajax_passwords_link_delete',
+    function ($linkId) {
+        $linkId = (int)$linkId;
 
-        // create password link
         try {
-            PasswordLinks::create(
-                $passwordId,
-                json_decode($linkData, true)
-            );
+            $PasswordLink = PasswordLinks::get($linkId);
+            $PasswordLink->delete();
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',
-                    'message.passwords.link.create.error',
+                    'message.passwords.link.delete.error',
                     array(
-                        'error'      => $Exception->getMessage(),
-                        'passwordId' => $passwordId
+                        'error'  => $Exception->getMessage(),
+                        'linkId' => $linkId
                     )
                 )
             );
@@ -37,7 +33,7 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_link_create'
+                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_link_delete'
             );
 
             QUI\System\Log::writeException($Exception);
@@ -55,15 +51,15 @@ QUI::$Ajax->registerFunction(
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'message.passwords.link.create.success',
+                'message.passwords.link.delete.success',
                 array(
-                    'passwordId' => $passwordId
+                    'linkId' => $linkId
                 )
             )
         );
 
         return true;
     },
-    array('passwordId', 'linkData'),
+    array('linkId'),
     'Permission::checkAdminUser'
 );

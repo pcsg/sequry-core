@@ -15,6 +15,7 @@ use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;

@@ -198,8 +198,8 @@ class Password extends QUI\QDOM
         // ownerId and ownerTye are additionally saved as secret attributes
         // because they may not be altered via public "setAttribute()"-method
         $this->setSecretAttributes(array(
-            'ownerId'   => $passwordData['ownerId'],
-            'ownerType' => $passwordData['ownerType']
+            'ownerId'   => (int)$passwordData['ownerId'],
+            'ownerType' => (int)$passwordData['ownerType']
         ));
 
         // set private attributes
@@ -1371,14 +1371,31 @@ class Password extends QUI\QDOM
      */
     public function getOwnerUserIds()
     {
-        $currentOwnerId   = (int)$this->getSecretAttribute('ownerId');
-        $currentOwnerType = (int)$this->getSecretAttribute('ownerType');
+        $currentOwnerId   = $this->getSecretAttribute('ownerId');
+        $currentOwnerType = $this->getSecretAttribute('ownerType');
 
         if ($currentOwnerType === self::OWNER_TYPE_USER) {
             return array($currentOwnerId);
         }
 
         return CryptoActors::getCryptoGroup($currentOwnerId)->getUserIds();
+    }
+
+    /**
+     * Get password owner
+     *
+     * @return CryptoUser|CryptoGroup
+     */
+    public function getOwner()
+    {
+        $currentOwnerId   = $this->getSecretAttribute('ownerId');
+        $currentOwnerType = $this->getSecretAttribute('ownerType');
+
+        if ($currentOwnerType === self::OWNER_TYPE_USER) {
+            return CryptoActors::getCryptoUser($currentOwnerId);
+        }
+
+        return CryptoActors::getCryptoGroup($currentOwnerId);
     }
 
     /**

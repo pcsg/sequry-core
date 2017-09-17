@@ -59,7 +59,6 @@ try {
 
         $Engine->assign(array(
             'title'       => $data['title'],
-            'description' => $data['description'],
             'payloadHtml' => $payloadHtml
         ));
     }

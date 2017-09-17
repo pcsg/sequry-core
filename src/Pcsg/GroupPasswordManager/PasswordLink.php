@@ -138,6 +138,16 @@ class PasswordLink
     }
 
     /**
+     * Get PasswordLink ID
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * Decode and validate PasswordLink data
      *
      * IMPORTANT:   If invalid data is detected the PasswordLink is automatically deactivated
@@ -341,7 +351,7 @@ class PasswordLink
      *
      * @return void
      */
-    protected function delete()
+    public function delete()
     {
         QUI::getDataBase()->delete(
             Tables::passwordLink(),

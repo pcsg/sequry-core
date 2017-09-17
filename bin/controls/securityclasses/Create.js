@@ -23,19 +23,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Select',
+    'qui/utils/Form',
+
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.css'
 
-], function (QUI, QUIControl, QUISelect, QUILocale, Mustache, AuthenticationHandler, template) {
+], function (QUI, QUIControl, QUISelect, QUIFormUtils, QUILocale, Mustache,
+             Authentication, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthenticationHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -78,7 +80,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
                     authPluginsWarning               : QUILocale.get(lg, lg_prefix + 'authPluginsWarning'),
                     groups                           : QUILocale.get(lg, lg_prefix + 'groups'),
                     requiredFactors                  : QUILocale.get(lg, lg_prefix + 'requiredFactors'),
-                    authPluginsRequiredFactorsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsRequiredFactorsWarning')
+                    authPluginsRequiredFactorsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsRequiredFactorsWarning'),
+                    allowPasswordLinks               : QUILocale.get(lg, lg_prefix + 'allowPasswordLinks')
                 })
             });
 
@@ -186,12 +189,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
                 }
             }
 
-            this.$SecurityClassData = {
-                title          : this.$Elm.getElement('.pcsg-gpm-securityclasses-title').value,
-                description    : this.$Elm.getElement('.pcsg-gpm-securityclasses-description').value,
-                authPluginIds  : authPluginIds,
-                requiredFactors: this.$RequiredFactorsSelect.getValue()
-            };
+            this.$SecurityClassData = QUIFormUtils.getFormData(
+                this.$Elm.getElement('form')
+            );
+
+            this.$SecurityClassData.authPluginIds   = authPluginIds;
+            this.$SecurityClassData.requiredFactors = this.$RequiredFactorsSelect.getValue();
 
             Authentication.createSecurityClass(
                 this.$SecurityClassData

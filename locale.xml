@@ -552,8 +552,14 @@
         <locale name="message.passwords.link.create.success">
             <de><![CDATA[Der Passwort-Links für das Password #[passwordId] wurde erfolgreich erstellt.]]></de>
         </locale>
-        <locale name="message.passwords.link.create.error">
+        <locale name="message.passwords.link.create.error" html="true">
             <de><![CDATA[Bei der Erstellung des Passwort-Links für das Password #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.passwords.link.delete.success">
+            <de><![CDATA[Der Passwort-Link #[linkId] wurde erfolgreich gelöscht und kann nun nicht mehr aufgerufen werden.]]></de>
+        </locale>
+        <locale name="message.passwords.link.delete.error" html="true">
+            <de><![CDATA[Der Passwort-Link #[linkId] konnte nicht gelöscht werden:<br><br>[error]]]></de>
         </locale>
 
         <!-- System -->
@@ -796,6 +802,33 @@
             <de><![CDATA[Der Passwort-Link erfordert ein Passwort zur Entschlüsselung]]></de>
         </locale>
 
+        <!-- Security/Handler/PasswordLinks -->
+        <locale name="mail.passwordlink.greeting">
+            <de><![CDATA[Hallo!]]></de>
+        </locale>
+        <locale name="mail.passwordlink.body" html="true">
+            <de><![CDATA[Folgender Passwort-Link wurde mit Ihnen geteilt:
+
+[url]
+
+Freundliche Grüße!]]></de>
+        </locale>
+        <locale name="mail.passwordlink.subject">
+            <de><![CDATA[Sequry Passwort-Link]]></de>
+        </locale>
+        <locale name="message.security.handler.passwordlinks.mail_send_error">
+            <de><![CDATA[Das Versenden des Passwort-Links an die angegebenen E-Mail-Empfänger ist fehlgeschlagen. Bitte überprüfen Sie Ihre Mail-Server-Einstellungen oder wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="message.security.handler.passwordlinks.mail_send_success">
+            <de><![CDATA[Der Passwort-Link wurde erfolgreich an die angegebenen E-Mail-Empfänger versandt.]]></de>
+        </locale>
+        <locale name="exception.security.handler.passwordlinks.securityclass_links_not_allowed">
+            <de><![CDATA[Für die Sicherheitsklasse dieses Passworts sind Passwort-Links nicht erlaubt.]]></de>
+        </locale>
+        <locale name="exception.security.handler.passwordlinks.no_permission">
+            <de><![CDATA[Der aktuelle Session-Benutzer hat nicht die nötige Berechtigung, um Passwort-Links für dieses Passwort zu erstellen.]]></de>
+        </locale>
+
         <!-- types/passwordlink -->
         <locale name="message.sitetypes.passwordlink.wrong_password">
             <de><![CDATA[Das Passwort ist nicht korrekt]]></de>
@@ -973,6 +1006,9 @@
         <locale name="permission.gpm.cryptodata._header">
             <de><![CDATA[Passwörter]]></de>
         </locale>
+        <locale name="permission.gpm.passwordlinks._header">
+            <de><![CDATA[Passwort-Links]]></de>
+        </locale>
         <locale name="permission.gpm.cryptodata.create">
             <de><![CDATA[Darf neue Passwörter anlegen]]></de>
         </locale>
@@ -1005,6 +1041,9 @@
         </locale>
         <locale name="permission.gpm.categories.edit">
             <de><![CDATA[Darf öffentliche Passwort-Kategorien erstellen, umbenennen und löschen]]></de>
+        </locale>
+        <locale name="permission.gpm.passwordlinks.allowed">
+            <de><![CDATA[Mitglieder dieser Gruppe dürfen für alle Passwörter, deren Eigentümer diese Gruppe ist, Passwort-Links erstellen]]></de>
         </locale>
 
         <locale name="passwords.panel.title">
@@ -1488,6 +1527,9 @@
         <locale name="securityclasses.create.template.groupsInfo">
             <de><![CDATA[Die Gruppen für eine Sicherheitsklasse können festgelegt werden, nachdem die Sicherheitsklasse erstellt wurde.]]></de>
         </locale>
+        <locale name="securityclasses.create.template.allowPasswordLinks">
+            <de><![CDATA[Passwort-Links erlauben]]></de>
+        </locale>
 
         <!-- Control: securityclasses/Edit -->
         <locale name="securityclasses.panel.title">
@@ -1513,6 +1555,9 @@
         </locale>
         <locale name="securityclasses.edit.template.requiredFactors">
             <de><![CDATA[Mindestens benötigte Faktoren]]></de>
+        </locale>
+        <locale name="securityclasses.edit.template.allowPasswordLinks">
+            <de><![CDATA[Passwort-Links erlauben]]></de>
         </locale>
         <locale name="securityclasses.edit.addauthfactors.none.available">
             <de><![CDATA[Dieser Sicherheitsklasse sind bereits alle verfügbaren Authentifizierungs-Faktoren zugeordnet.]]></de>
@@ -1956,7 +2001,7 @@
             <de><![CDATA[Passwort-Link]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.validDateLabel">
-            <de><![CDATA[Gültig bis]]></de>
+            <de><![CDATA[Gültig bis (Datum)]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.maxCallsLabel">
             <de><![CDATA[Maximale Aufrufe]]></de>
@@ -2012,7 +2057,7 @@
             <de><![CDATA[ID]]></de>
         </locale>
         <locale name="controls.password.linklist.tbl.header.validUntil">
-            <de><![CDATA[Gültig bis]]></de>
+            <de><![CDATA[Gültig bis (einschließlich)]]></de>
         </locale>
         <locale name="controls.password.linklist.tbl.header.callCount">
             <de><![CDATA[Aufrufe]]></de>
