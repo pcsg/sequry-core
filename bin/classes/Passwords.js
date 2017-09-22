@@ -180,13 +180,28 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get list of PasswordLinks
          *
          * @param {number} passwordId - password ID
-         * @param {Object} LinkData - PasswordLink data
          * @returns {Promise}
          */
-        getLinkList: function (passwordId, LinkData) {
+        getLinkList: function (passwordId) {
             return AuthAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_link_getList', {
                 passwordId: passwordId,
                 'package' : 'pcsg/grouppasswordmanager'
+            });
+        },
+
+        /**
+         * Get title and description of a password for Link creation
+         *
+         * @param {number} passwordId - password ID
+         * @returns {Promise}
+         */
+        getLinkPasswordData: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_link_getPasswordData', resolve, {
+                    passwordId: passwordId,
+                    'package': pkg,
+                    onError  : reject
+                });
             });
         },
 

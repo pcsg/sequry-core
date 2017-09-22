@@ -215,8 +215,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             for (var i = 0, len = list.length; i < len; i++) {
                 var Data = list[i];
 
-                console.log(Data);
-
                 Row = {
                     id: Data.id
                 };
@@ -312,7 +310,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 title      : QUILocale.get(
                     lg, 'controls.password.linklist.add.popup.title'
                 ),
-                maxHeight  : 650,
+                maxHeight  : 700,
                 maxWidth   : 700,
                 events     : {
                     onOpen: function () {

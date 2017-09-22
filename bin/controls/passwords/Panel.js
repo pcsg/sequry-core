@@ -658,7 +658,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     title      : QUILocale.get(lg, 'controls.gpm.passwords.action.link')
                 }).inject(Row.permissions);
 
-                Link.addEvent('click', FuncActionLink);
+                if (Data.canLink) {
+                    Link.addEvent('click', FuncActionLink);
+                } else {
+                    Link.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                }
 
                 var Edit = new Element('span', {
                     'class'    : 'fa fa-edit',

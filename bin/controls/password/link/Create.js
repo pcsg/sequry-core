@@ -57,18 +57,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
             this.$Elm = this.parent();
 
             var self     = this;
-            var lgPrefix = 'controls.password.link.template.';
+            var lgPrefix = 'controls.password.linkcreate.template.';
 
             this.$Elm.set({
                 'class': 'pcsg-gpm-password-linkcreate',
                 html   : Mustache.render(template, {
-                    tableHeader   : QUILocale.get(lg, lgPrefix + 'tableHeader'),
-                    validDateLabel: QUILocale.get(lg, lgPrefix + 'validDateLabel'),
-                    maxCallsLabel : QUILocale.get(lg, lgPrefix + 'maxCallsLabel'),
-                    passwordLabel : QUILocale.get(lg, lgPrefix + 'passwordLabel'),
-                    messageLabel  : QUILocale.get(lg, lgPrefix + 'messageLabel'),
-                    emailLabel    : QUILocale.get(lg, lgPrefix + 'emailLabel'),
-                    activeLabel   : QUILocale.get(lg, lgPrefix + 'activeLabel')
+                    tableHeader          : QUILocale.get(lg, lgPrefix + 'tableHeader'),
+                    validDateLabel       : QUILocale.get(lg, lgPrefix + 'validDateLabel'),
+                    maxCallsLabel        : QUILocale.get(lg, lgPrefix + 'maxCallsLabel'),
+                    passwordLabel        : QUILocale.get(lg, lgPrefix + 'passwordLabel'),
+                    titleLabel           : QUILocale.get(lg, lgPrefix + 'titleLabel'),
+                    messageLabel         : QUILocale.get(lg, lgPrefix + 'messageLabel'),
+                    emailLabel           : QUILocale.get(lg, lgPrefix + 'emailLabel'),
+                    activeLabel          : QUILocale.get(lg, lgPrefix + 'activeLabel'),
+                    validDateOption1Day  : QUILocale.get(lg, lgPrefix + 'validDateOption1Day'),
+                    validDateOption3Day  : QUILocale.get(lg, lgPrefix + 'validDateOption3Day'),
+                    validDateOption1Week : QUILocale.get(lg, lgPrefix + 'validDateOption1Week'),
+                    validDateOption1Month: QUILocale.get(lg, lgPrefix + 'validDateOption1Month'),
+                    validDateOptionDate  : QUILocale.get(lg, lgPrefix + 'validDateOptionDate')
                 })
             });
 
@@ -77,12 +83,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 '.pcsg-gpm-password-linkcreate-validDate'
             );
 
+            var ValidDateSelect = this.$Elm.getElement(
+                'select[name="validDateSelect"]'
+            );
+
             var ValidDateInput = this.$Elm.getElement(
                 'input[name="validDate"]'
             );
 
+            var ValidDateDateSelect = this.$Elm.getElement(
+                '.pcsg-gpm-password-linkcreate-date'
+            );
+
+            ValidDateDateSelect.addEvent('change', function(event) {
+                ValidDateInput.value = event.target.value;
+            });
+
+            ValidDateSelect.addEvent('change', function (event) {
+                if (event.target.value !== 'date') {
+                    ValidDateDateSelect.setStyle('display', 'none');
+                    ValidDateInput.value = event.target.value;
+                    return;
+                }
+
+                ValidDateDateSelect.setStyle('display', 'block');
+                ValidDateInput.value = ValidDateDateSelect.value;
+            });
+
             ActiveValidDate.addEvent('change', function () {
-                ValidDateInput.disabled = !ValidDateInput.disabled;
+                ValidDateSelect.disabled = !ValidDateSelect.disabled;
             });
 
             var ActiveMaxCalls = this.$Elm.getElement(
@@ -115,6 +144,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 if (!PasswordInput.disabled) {
                     PasswordInput.focus();
                 }
+            });
+
+            Passwords.getLinkPasswordData(this.getAttribute('passwordId')).then(function (Password) {
+                self.$Elm.getElement(
+                    'input[name="title"]'
+                ).value = Password.title;
+
+                self.$Elm.getElement(
+                    'textarea[name="message"]'
+                ).value = Password.description;
             });
 
             if (!this.getAttribute('showSubmitBtn')) {

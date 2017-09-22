@@ -2007,16 +2007,34 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Maximale Aufrufe]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.passwordLabel">
-            <de><![CDATA[Passwort-Schutz]]></de>
+            <de><![CDATA[PIN-Schutz]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.titleLabel">
+            <de><![CDATA[Titel]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.messageLabel">
-            <de><![CDATA[Info-Text (optional)]]></de>
+            <de><![CDATA[Beschreibung]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.emailLabel">
             <de><![CDATA[Link an folgende E-Mail-Adressen versenden (kommasepariert)]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.activeLabel">
             <de><![CDATA[aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption1Day">
+            <de><![CDATA[1 Tag]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption3Day">
+            <de><![CDATA[3 Tage]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption1Week">
+            <de><![CDATA[1 Woche]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption1Month">
+            <de><![CDATA[1 Monat]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOptionDate">
+            <de><![CDATA[Datum]]></de>
         </locale>
         <locale name="controls.password.linkcreate.btn">
             <de><![CDATA[Passwort-Link erstellen]]></de>

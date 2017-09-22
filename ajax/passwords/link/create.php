@@ -23,6 +23,9 @@ QUI::$Ajax->registerFunction(
                 json_decode($linkData, true)
             );
         } catch (QUI\Exception $Exception) {
+
+            QUI\System\Log::writeException($Exception);
+
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',

@@ -16,3 +16,8 @@
 .pcsg-gpm-password-linkcreate-longlabel {
     white-space: normal !important;
 }
+
+.pcsg-gpm-password-linkcreate-date {
+    display: none;
+    margin-top: 10px;
+}

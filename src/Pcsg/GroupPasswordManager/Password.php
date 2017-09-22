@@ -1621,12 +1621,10 @@ class Password extends QUI\QDOM
      */
     protected function setSecretAttribute($k, $v)
     {
-        if (is_string($v)) {
-            $v = new HiddenString($v);
-        }
-
         if (is_array($v)) {
             $v = new HiddenString(json_encode($v));
+        } else {
+            $v = new HiddenString($v);
         }
 
         $this->secretAttributes[$k] = $v;
@@ -1659,6 +1657,10 @@ class Password extends QUI\QDOM
         /** @var HiddenString $v */
         $v = $this->secretAttributes[$k];
         $v = $v->getString();
+
+        if (is_numeric($v)) {
+            $v = (int)$v;
+        }
 
         if (Utils::isJson($v)) {
             $v = json_decode($v, true);

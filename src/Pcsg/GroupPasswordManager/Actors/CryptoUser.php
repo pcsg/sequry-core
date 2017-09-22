@@ -756,16 +756,14 @@ class CryptoUser extends QUI\Users\User
         }
 
         // JOIN user access meta table with password data table
-        $sql .= " FROM `" . Tables::passwords(). "` data, ";
+        $sql .= " FROM `" . Tables::passwords() . "` data, ";
         $sql .= " `" . Tables::usersToPasswordMeta() . "` meta";
 
         $where[] = 'data.`id` = meta.`dataId`';
         $where[] = 'meta.`userId` = ' . $this->id;
         $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
-        if (isset($searchParams['search']['searchterm']) &&
-            !empty($searchParams['search']['searchterm'])
-        ) {
+        if (!empty($searchParams['search']['searchterm'])) {
             $whereOR    = array();
             $searchTerm = trim($searchParams['search']['searchterm']);
 
@@ -800,9 +798,7 @@ class CryptoUser extends QUI\Users\User
             }
         }
 
-        if (isset($searchParams['search']['passwordtypes'])
-            && !empty($searchParams['search']['passwordtypes'])
-        ) {
+        if (!empty($searchParams['search']['passwordtypes'])) {
             $pwTypes = $searchParams['search']['passwordtypes'];
 
             if (!in_array('all', $pwTypes)) {
@@ -818,9 +814,7 @@ class CryptoUser extends QUI\Users\User
             }
         }
 
-        if (isset($searchParams['categoryId'])
-            && !empty($searchParams['categoryId'])
-        ) {
+        if (!empty($searchParams['categoryId'])) {
             $where[]             = 'data.`categories` LIKE :categoryId';
             $binds['categoryId'] = array(
                 'value' => '%,' . (int)$searchParams['categoryId'] . ',%',
@@ -828,22 +822,16 @@ class CryptoUser extends QUI\Users\User
             );
         }
 
-        if (isset($searchParams['search']['uncategorized'])
-            && !empty($searchParams['search']['uncategorized'])
-        ) {
+        if (!empty($searchParams['search']['uncategorized'])) {
             $where[] = 'data.`categoryIds` IS NULL';
         }
 
-        if (isset($searchParams['search']['uncategorizedPrivate'])
-            && !empty($searchParams['search']['uncategorizedPrivate'])
-        ) {
+        if (!empty($searchParams['search']['uncategorizedPrivate'])) {
             $where[] = 'meta.`categoryIds` IS NULL';
         }
 
         // WHERE filters
-        if (isset($searchParams['filters'])
-            && !empty($searchParams['filters'])
-        ) {
+        if (!empty($searchParams['filters'])) {
             if (!empty($searchParams['filters']['filters'])) {
                 foreach ($searchParams['filters']['filters'] as $filter) {
                     switch ($filter) {
@@ -903,9 +891,7 @@ class CryptoUser extends QUI\Users\User
         }
 
         // Table column sort
-        if (isset($searchParams['sortOn'])
-            && !empty($searchParams['sortOn'])
-        ) {
+        if (!empty($searchParams['sortOn'])) {
             $orderPrefix = 'data.`';
 
             switch ($searchParams['sortOn']) {
@@ -933,8 +919,7 @@ class CryptoUser extends QUI\Users\User
             $sql .= " ORDER BY " . implode(',', $orderFields);
         }
 
-        if (isset($gridParams['limit'])
-            && !empty($gridParams['limit'])
+        if (!empty($gridParams['limit'])
             && !$countOnly
         ) {
             $sql .= " LIMIT " . $gridParams['limit'];
@@ -983,8 +968,14 @@ class CryptoUser extends QUI\Users\User
             $this
         );
 
+        $canLinkPassword = Permission::hasPermission(
+            Permissions::PASSWORDS_DELETE_GROUP,
+            $this
+        );
+
         foreach ($result as $row) {
-            $row['isOwner'] = in_array($row['id'], $ownerPasswordIds);
+            $isOwner        = in_array($row['id'], $ownerPasswordIds);
+            $row['isOwner'] = $isOwner;
 
             if (in_array($row['id'], $directAccessPasswordIds)) {
                 $row['access']    = 'user';
@@ -998,12 +989,14 @@ class CryptoUser extends QUI\Users\User
 
             $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
 
-            switch ($row['ownerType']) {
-                case '1':
+            switch ((int)$row['ownerType']) {
+                case Password::OWNER_TYPE_USER:
+                    $row['canLink']   = $isOwner;
                     $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getName();
                     break;
 
-                case '2':
+                case Password::OWNER_TYPE_GROUP:
+                    $row['canLink']   = $isOwner && $canLinkPassword;
                     $row['ownerName'] = QUI::getGroups()->get($row['ownerId'])->getName();
                     break;
             }
@@ -1042,7 +1035,8 @@ class CryptoUser extends QUI\Users\User
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'id',
-                'title'
+                'title',
+                'allowPasswordLinks'
             ),
             'from'   => Tables::securityClasses(),
             'where'  => array(
@@ -1057,6 +1051,10 @@ class CryptoUser extends QUI\Users\User
             foreach ($result as $row) {
                 if ($data['securityClassId'] == $row['id']) {
                     $passwords[$k]['securityClassTitle'] = $row['title'];
+
+                    if (!(int)$row['allowPasswordLinks']) {
+                        $passwords[$k]['canLink'] = false;
+                    }
                     continue 2;
                 }
             }

@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <input class="field-container-field pcsg-gpm-password-linkcreate-option"
-                               type="number" name="maxCalls" value="1" min="1">
+                               type="number" name="maxCalls" value="5" min="1">
                     </label>
                 </td>
             </tr>
@@ -38,13 +38,23 @@
                         </span>
                             <div class="pcsg-gpm-password-linkcreate-active">
                                 <input type="checkbox"
-                                       class="pcsg-gpm-password-linkcreate-validDate">
+                                       class="pcsg-gpm-password-linkcreate-validDate"
+                                       checked>
                                 <span>{{activeLabel}}</span>
                             </div>
                         </div>
-                        <input class="field-container-field pcsg-gpm-password-linkcreate-option"
-                               type="date"
-                               name="validDate" disabled>
+                        <div class="field-container-field">
+                            <input type="hidden" name="validDate" class="pcsg-gpm-password-linkcreate-option" value="1 week">
+                            <select name="validDateSelect">
+                                <option value="1 day">{{validDateOption1Day}}</option>
+                                <option value="3 day">{{validDateOption3Day}}</option>
+                                <option value="1 week" selected>{{validDateOption1Week}}</option>
+                                <option value="1 month">{{validDateOption1Month}}</option>
+                                <option value="date">{{validDateOptionDate}}</option>
+                            </select>
+                            <input type="date"
+                                   class="pcsg-gpm-password-linkcreate-date">
+                        </div>
                     </label>
                 </td>
             </tr>
@@ -63,6 +73,17 @@
                         </div>
                         <input class="field-container-field pcsg-gpm-password-linkcreate-option"
                                type="password" name="password" disabled>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="field-container">
+                    <span class="field-container-item" title="{{titleLabel}}">
+                        {{titleLabel}}
+                    </span>
+                        <input type="text" class="field-container-field"
+                               name="title">
                     </label>
                 </td>
             </tr>
