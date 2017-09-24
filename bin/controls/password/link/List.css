@@ -10,3 +10,8 @@
     height: 100%;
     width: 100%;
 }
+
+.pcsg-gpm-password-linklist-url {
+    float: left;
+    width: calc(100% - 75px);
+}

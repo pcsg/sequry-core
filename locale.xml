@@ -2001,7 +2001,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Passwort-Link]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.validDateLabel">
-            <de><![CDATA[Gültig bis (Datum)]]></de>
+            <de><![CDATA[Gültig bis]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.maxCallsLabel">
             <de><![CDATA[Maximale Aufrufe]]></de>
@@ -2090,7 +2090,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Erstellt]]></de>
         </locale>
         <locale name="controls.password.linklist.tbl.header.passwordProtected">
-            <de><![CDATA[Passwort-Schutz]]></de>
+            <de><![CDATA[PIN-Schutz]]></de>
         </locale>
         <locale name="controls.password.linklist.tbl.btn.add">
             <de><![CDATA[Passwort-Link erstellen]]></de>
@@ -2109,6 +2109,17 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="controls.password.linklist.calls.tbl.header.user">
             <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.password.linklist.showurl.title">
+            <de><![CDATA[Passwort-Link URL zum Teilen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.showurl.ok">
+            <de><![CDATA[OK]]></de>
+        </locale>
+
+        <!-- Control: utils/InputButtons -->
+        <locale name="controls.utils.inputbuttons.copy">
+            <de><![CDATA[Kopiert!]]></de>
         </locale>
 
     </groups>

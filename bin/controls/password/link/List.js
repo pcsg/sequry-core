@@ -3,17 +3,6 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/link/List
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/buttons/Button
- * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/link/List.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/link/List.css
- *
- * @event onCreate [this] - fires after a new PasswordLinkList has been successfully created
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
@@ -22,9 +11,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
     'qui/controls/loader/Loader',
     'qui/controls/buttons/Button',
     'qui/controls/windows/Popup',
+    'qui/controls/windows/Confirm',
 
     'controls/grid/Grid',
     'package/pcsg/grouppasswordmanager/bin/controls/password/link/Create',
+    'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
 
     'Locale',
     'Mustache',
@@ -33,11 +24,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/link/List.css'
 
-], function (QUI, QUIControl, QUILoader, QUIButton, QUIPopup, Grid, PasswordLinkCreate,
-             QUILocale, Mustache, Passwords) {
+], function (QUI, QUIControl, QUILoader, QUIButton, QUIPopup, QUIConfirm, Grid, PasswordLinkCreate,
+             InputButtons, QUILocale, Mustache, Passwords) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg              = 'pcsg/grouppasswordmanager';
+    var UrlButtonParser = new InputButtons({
+        openurl: true
+    });
 
     return new Class({
 
@@ -50,7 +44,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             '$setGridData',
             'refresh',
             '$addLink',
-            '$showCalls'
+            '$showCalls',
+            '$showUrl'
         ],
 
         options: {
@@ -158,8 +153,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             });
 
             this.$Grid.addEvents({
-                onRefresh: this.$listRefresh,
-                onClick  : function () {
+                onRefresh : this.$listRefresh,
+                onClick   : function () {
                     var selectedCount = self.$Grid.getSelectedData().length,
                         TableButtons  = self.$Grid.getAttribute('buttons');
 
@@ -209,8 +204,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
          * @param {Array} list
          */
         $setGridData: function (list) {
-            var Row;
-            var data = [];
+            var self      = this;
+            var Row, data = [];
 
             for (var i = 0, len = list.length; i < len; i++) {
                 var Data = list[i];
@@ -255,11 +250,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
                 if (Data.active) {
                     Row.link = new Element('a', {
-                        href  : Data.link,
-                        target: '_blank',
-                        html  : QUILocale.get(lg,
+                        href      : '#',
+                        'data-url': Data.link,
+                        html      : QUILocale.get(lg,
                             'controls.password.linklist.tbl.link.text'
-                        )
+                        ),
+                        events    : {
+                            click: function (event) {
+                                event.stop();
+                                self.$showUrl(event.target.get('data-url'));
+                            }
+                        }
                     });
                 } else {
                     Row.link = new Element('span', {
@@ -418,6 +419,38 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             });
 
             Popup.open();
+        },
+
+        $showUrl: function (url) {
+            new QUIConfirm({
+                maxHeight    : 175,
+                cancel_button: false,
+                icon         : 'fa fa-link',
+                title        : QUILocale.get(lg, 'controls.password.linklist.showurl.title'),
+                ok_button    : {
+                    text     : QUILocale.get(lg, 'controls.password.linklist.showurl.ok'),
+                    textimage: false
+                },
+                events       : {
+                    onOpen: function (Confirm) {
+                        Confirm.setContent(
+                            '<input type="text" value="' + url + '" class="pcsg-gpm-password-linklist-url">'
+                        );
+
+                        var UrlInput = Confirm.getContent().getElement(
+                            'input'
+                        );
+
+                        UrlInput.addEvent('focus', function (event) {
+                            event.target.select();
+                        });
+
+                        UrlInput.select();
+
+                        UrlButtonParser.parse(UrlInput);
+                    }
+                }
+            }).open();
         }
     });
 });
