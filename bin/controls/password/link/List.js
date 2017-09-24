@@ -373,11 +373,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                         dataIndex: 'ipAdress',
                         dataType : 'string',
                         width    : 150
-                    }, {
-                        header   : QUILocale.get(lg, 'controls.password.linklist.calls.tbl.header.user'),
-                        dataIndex: 'user',
-                        dataType : 'string',
-                        width    : 125
                     }]
                 });
 
@@ -387,8 +382,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     var Call = calls[i];
                     var Row  = {
                         date    : Call.date,
-                        ipAdress: Call.REMOTE_ADDR || '-',
-                        user    : Call.userId ? Call.userName + ' (#' + Call.userId + ')' : '-'
+                        ipAdress: Call.REMOTE_ADDR || '-'
                     };
 
                     callsData.push(Row);
@@ -411,7 +405,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     lg, 'controls.password.linklist.calls.popup.title'
                 ),
                 maxHeight  : 650,
-                maxWidth   : 700,
+                maxWidth   : 350,
                 events     : {
                     onOpen: FuncOnOpen
                 },

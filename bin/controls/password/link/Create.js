@@ -20,6 +20,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
+    'controls/email/Select',
 
     'Locale',
     'Mustache',
@@ -29,7 +30,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.css'
 
-], function (QUI, QUIControl, QUIButton, QUILocale, Mustache, Passwords, template) {
+], function (QUI, QUIControl, QUIButton, QUIMailSelect, QUILocale, Mustache, Passwords, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -146,6 +147,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 }
             });
 
+            // set default title and description
             Passwords.getLinkPasswordData(this.getAttribute('passwordId')).then(function (Password) {
                 self.$Elm.getElement(
                     'input[name="title"]'
@@ -155,6 +157,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                     'textarea[name="message"]'
                 ).value = Password.description;
             });
+
+            // emails
+            var EmailsInput = this.$Elm.getElement(
+                'input[name="email"]'
+            );
+
+            new QUIMailSelect({
+                events: {
+                    onChange: function(Control) {
+                        EmailsInput.value = Control.getValue();
+                    }
+                }
+            }).imports(this.$Elm.getElement('.pcsg-gpm-password-linkcreate-emails'));
 
             if (!this.getAttribute('showSubmitBtn')) {
                 return this.$Elm;

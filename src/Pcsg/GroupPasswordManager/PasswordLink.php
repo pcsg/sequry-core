@@ -180,24 +180,14 @@ class PasswordLink
         if ($access['validUntil']) {
             $validUntil = strtotime($access['validUntil']);
 
-            if ($validUntil > time()) {
+            if (time() > $validUntil) {
                 $this->deactivate();
-
-//                throw new Exception(array(
-//                    'pcsg/grouppasswordmanager',
-//                    'exception.passwordlink.no_longer_valid'
-//                ));
             }
         }
 
         // check current number of calls
         if ($access['callCount'] >= $access['maxCalls']) {
             $this->deactivate();
-
-//            throw new Exception(array(
-//                'pcsg/grouppasswordmanager',
-//                'exception.passwordlink.max_calls_reached'
-//            ));
         }
 
         $access['hash']           = \Sodium\hex2bin($access['hash']);
@@ -264,9 +254,7 @@ class PasswordLink
 
         // get call(er) data
         $callData = array(
-            'userId'   => QUI::getUserBySession()->getId(),
-            'userName' => QUI::getUserBySession()->getName(),
-            'date'     => date('Y-m-d H:i:s')
+            'date' => date('Y-m-d H:i:s')
         );
 
         if (!empty($_SERVER['REMOTE_ADDR'])) {
@@ -318,6 +306,7 @@ class PasswordLink
         QUI::getDataBase()->update(
             Tables::passwordLink(),
             array(
+                'active'     => $this->isActive(),
                 'dataAccess' => $access
             ),
             array(
@@ -333,17 +322,8 @@ class PasswordLink
      */
     protected function deactivate()
     {
-        QUI::getDataBase()->update(
-            Tables::passwordLink(),
-            array(
-                'active' => 0
-            ),
-            array(
-                'id' => $this->id
-            )
-        );
-
-        $this->active = false;
+        $this->access['dataKey'] = null;
+        $this->active            = false;
     }
 
     /**
