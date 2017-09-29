@@ -140,12 +140,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.createUser'),
                     dataIndex: 'createUser',
                     dataType : 'string',
-                    width    : 250
+                    width    : 275
                 }, {
                     header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.link'),
                     dataIndex: 'link',
                     dataType : 'node',
-                    width    : 100
+                    width    : 75
                 }, {
                     dataIndex: 'calls',
                     hidden   : true
@@ -207,6 +207,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             var self      = this;
             var Row, data = [];
 
+            var FuncOnUrlLinkClick = function () {
+                self.$showUrl(this.get('data-url'));
+            };
+
             for (var i = 0, len = list.length; i < len; i++) {
                 var Data = list[i];
 
@@ -249,17 +253,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 }
 
                 if (Data.active) {
-                    Row.link = new Element('a', {
-                        href      : '#',
+                    Row.link = new Element('div', {
+                        'class'   : 'pcsg-gpm-password-linklist-url-link',
                         'data-url': Data.link,
-                        html      : QUILocale.get(lg,
+                        html      : '<span class="fa fa-link"></span>' +
+                        '<span>' + QUILocale.get(lg,
                             'controls.password.linklist.tbl.link.text'
-                        ),
+                        ) + '</span>',
                         events    : {
-                            click: function (event) {
-                                event.stop();
-                                self.$showUrl(event.target.get('data-url'));
-                            }
+                            click: FuncOnUrlLinkClick
                         }
                     });
                 } else {
@@ -284,9 +286,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 }
 
                 // createUser
-                Row.createUser = Data.createDate
-                    + ' (' + Data.createUserName
-                    + ' - #' + Data.createUserId + ')';
+                Row.createUser = Data.createDate +
+                    ' (' + Data.createUserName +
+                    ' - #' + Data.createUserId + ')';
 
                 data.push(Row);
             }
@@ -311,7 +313,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 title      : QUILocale.get(
                     lg, 'controls.password.linklist.add.popup.title'
                 ),
-                maxHeight  : 700,
+                maxHeight  : 750,
                 maxWidth   : 700,
                 events     : {
                     onOpen: function () {

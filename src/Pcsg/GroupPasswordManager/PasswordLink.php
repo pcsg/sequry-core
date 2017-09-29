@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use QUI;
 use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
@@ -249,6 +250,11 @@ class PasswordLink
             throw new InvalidKeyException();
         }
 
+        // if session user has permission to view password -> do not increase counter
+        if ($Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
+            return $Password;
+        }
+
         // increase call counter
         $this->access['callCount']++;
 
@@ -296,8 +302,14 @@ class PasswordLink
      */
     protected function update()
     {
-        $access                   = $this->access;
-        $access['dataKey']        = \Sodium\bin2hex($this->access['dataKey']->getString());
+        $access = $this->access;
+
+        if (empty($this->access['dataKey'])) {
+            $access['dataKey'] = null;
+        } else {
+            $access['dataKey'] = \Sodium\bin2hex($this->access['dataKey']->getString());
+        }
+
         $access['hash']           = \Sodium\bin2hex($this->access['hash']);
         $access['encryptionSalt'] = \Sodium\bin2hex($this->access['encryptionSalt']);
         $access                   = new HiddenString(json_encode($access));

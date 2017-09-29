@@ -2016,7 +2016,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Beschreibung]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.emailLabel">
-            <de><![CDATA[Link an folgende E-Mail-Adressen versenden (kommasepariert)]]></de>
+            <de><![CDATA[Link nach dem Erstellen an folgende E-Mail-Adressen versenden]]></de>
         </locale>
         <locale name="controls.password.linkcreate.template.activeLabel">
             <de><![CDATA[aktiv]]></de>

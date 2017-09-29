@@ -15,3 +15,18 @@
     float: left;
     width: calc(100% - 75px);
 }
+
+.pcsg-gpm-password-linklist-url-link {
+    color: #0069b4;
+    height: 100%;
+    text-align: center;
+    width: 100%;
+}
+
+.pcsg-gpm-password-linklist-url-link .fa {
+    margin-right: 5px;
+}
+
+.pcsg-gpm-password-linklist-url-link:hover {
+    color: #00A0B0;
+}
