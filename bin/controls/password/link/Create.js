@@ -22,6 +22,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
     'qui/controls/buttons/Button',
     'controls/email/Select',
 
+    'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
+
+    'Ajax',
     'Locale',
     'Mustache',
 
@@ -30,7 +33,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.css'
 
-], function (QUI, QUIControl, QUIButton, QUIMailSelect, QUILocale, Mustache, Passwords, template) {
+], function (QUI, QUIControl, QUIButton, QUIMailSelect, InputButtons, QUIAjax,
+             QUILocale, Mustache, Passwords, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -41,12 +45,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
         Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/link/Create',
 
         Binds: [
-            'create'
+            'create',
+            'submit',
+            '$checkPasswordLength'
         ],
 
         options: {
             passwordId   : false,   // passwordId
             showSubmitBtn: true     // show submit button in control
+        },
+
+        initialize: function (options) {
+            this.parent(options);
+
+            this.$PasswordInput = null;
         },
 
         /**
@@ -96,7 +108,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 '.pcsg-gpm-password-linkcreate-date'
             );
 
-            ValidDateDateSelect.addEvent('change', function(event) {
+            ValidDateDateSelect.addEvent('change', function (event) {
                 ValidDateInput.value = event.target.value;
             });
 
@@ -135,17 +147,53 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 '.pcsg-gpm-password-linkcreate-password'
             );
 
-            var PasswordInput = this.$Elm.getElement(
+            this.$PasswordInput = this.$Elm.getElement(
                 'input[name="password"]'
             );
 
-            ActivePasswords.addEvent('change', function () {
-                PasswordInput.disabled = !PasswordInput.disabled;
+            var GeneratePinBtn = new QUIButton({
+                icon  : 'fa fa-random',
+                events: {
+                    onClick: function (Btn) {
+                        var Elm = Btn.getAttribute('InputElm');
 
-                if (!PasswordInput.disabled) {
-                    PasswordInput.focus();
+                        Btn.setAttribute('icon', 'fa fa-spin fa-spinner');
+                        Btn.disable();
+
+                        self.$generatePin().then(function (pin) {
+                            Elm.value = pin;
+                            Btn.setAttribute('icon', 'fa fa-random');
+                            Btn.enable();
+                        });
+                    }
                 }
             });
+
+            GeneratePinBtn.disable();
+
+            ActivePasswords.addEvent('change', function () {
+                self.$PasswordInput.disabled = !self.$PasswordInput.disabled;
+
+                if (!self.$PasswordInput.disabled) {
+                    GeneratePinBtn.enable();
+                    self.$PasswordInput.focus();
+                } else {
+                    self.$PasswordInput.value = '';
+                    GeneratePinBtn.disable();
+                }
+            });
+
+            this.$PasswordInput.addEvents({
+                blur: this.$checkPasswordLength
+            });
+
+            // add random password btn
+            var InputButtonsParser = new InputButtons({
+                copy  : false,
+                custom: [GeneratePinBtn]
+            });
+
+            InputButtonsParser.parse(self.$PasswordInput);
 
             // set default title and description
             Passwords.getLinkPasswordData(this.getAttribute('passwordId')).then(function (Password) {
@@ -165,7 +213,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
 
             new QUIMailSelect({
                 events: {
-                    onChange: function(Control) {
+                    onChange: function (Control) {
                         EmailsInput.value = Control.getValue();
                     }
                 }
@@ -203,11 +251,43 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
         },
 
         /**
+         * Check if password has minimum number of characters (if active)
+         *
+         * @return {boolean}
+         */
+        $checkPasswordLength: function () {
+            var self = this;
+
+            if (this.$PasswordInput.disabled) {
+                return true;
+            }
+
+            if (this.$PasswordInput.value.length >= 6) {
+                return true;
+            }
+
+            QUI.getMessageHandler().then(function(MH) {
+                MH.addAttention(
+                    QUILocale.get(lg, 'controls.password.linkcreate.password_min_length'),
+                    self.$PasswordInput
+                );
+            });
+
+            this.$PasswordInput.focus();
+
+            return false;
+        },
+
+        /**
          * Create new password link
          *
          * @returns {Promise}
          */
         submit: function () {
+            if (!this.$checkPasswordLength()) {
+                return Promise.reject();
+            }
+
             var formElements = this.$Elm.getElements(
                 '.pcsg-gpm-password-linkcreate-option'
             );
@@ -228,6 +308,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 this.getAttribute('passwordId'),
                 LinkCreateData
             );
+        },
+
+        /**
+         * Generate a random PIN
+         *
+         * @return {Promise}
+         */
+        $generatePin: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get(
+                    'package_pcsg_grouppasswordmanager_ajax_passwords_link_generatePin', resolve, {
+                        'package': 'pcsg/grouppasswordmanager',
+                        onError  : reject
+                    }
+                );
+            });
         }
     });
 });

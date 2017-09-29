@@ -38,7 +38,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
             copy        : true,   // add button to copy input value to clipboard
             viewtoggle  : false,  // add button to toggle between original type and "password" type
             generatepass: false,  // add button to generate a random, strong password
-            openurl     : false   // add button to open input value as url (new tab)
+            openurl     : false,  // add button to open input value as url (new tab)
+            custom      : []
         },
 
         /**
@@ -75,6 +76,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
                 if (copy) {
                     this.$addCopyBtn(InputElm);
                 }
+
+                this.$addCustomBtns(InputElm);
             }.bind(this));
         },
 
@@ -223,6 +226,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
                     }
                 }
             }).inject(InputElm, 'after');
+        },
+
+        /**
+         * Add custom buttons
+         *
+         * @param InputElm
+         */
+        $addCustomBtns: function(InputElm)
+        {
+            var customBtns = this.getAttribute('custom');
+
+            for (var i = 0, len = customBtns.length; i < len; i++) {
+                var Btn = customBtns[i];
+
+                Btn.getElm().addClass('pcsg-gpm-utils-inputbuttons-btn');
+                Btn.setAttribute('InputElm', InputElm);
+                Btn.inject(InputElm, 'after');
+            }
         }
     });
 });

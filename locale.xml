@@ -2039,6 +2039,9 @@ Freundliche Grüße!]]></de>
         <locale name="controls.password.linkcreate.btn">
             <de><![CDATA[Passwort-Link erstellen]]></de>
         </locale>
+        <locale name="controls.password.linkcreate.password_min_length">
+            <de><![CDATA[Bitte geben Sie einen PIN mit mindestens 6 Ziffern ein!]]></de>
+        </locale>
 
         <!-- Control: password/LinkList -->
         <locale name="controls.password.linklist.tbl.validUntil.infinite">

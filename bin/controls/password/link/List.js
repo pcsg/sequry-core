@@ -3,6 +3,8 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/link/List
  * @author www.pcsg.de (Patrick Müller)
+ *
+ * @event onClose [this]
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
@@ -109,6 +111,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     events   : {
                         onClick: this.$showCalls
                     }
+                }, {
+                    name     : 'deactivate',
+                    text     : QUILocale.get(lg, 'controls.password.linklist.tbl.btn.deactivate'),
+                    textimage: 'fa fa-square-o',
+                    events   : {
+                        onClick: this.$showCalls
+                    }
                 }],
 
                 columnModel: [{
@@ -160,8 +169,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
                     if (selectedCount == 1) {
                         TableButtons.calls.enable();
+                        TableButtons.deactivate.enable();
                     } else {
                         TableButtons.calls.disable();
+                        TableButtons.deactivate.disable();
                     }
                 },
                 onDblClick: this.$showCalls
@@ -195,6 +206,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             Passwords.getLinkList(this.getAttribute('passwordId')).then(function (list) {
                 self.Loader.hide();
                 self.$setGridData(list);
+            }, function () {
+                self.fireEvent('close', [self]);
             });
         },
 
@@ -313,7 +326,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 title      : QUILocale.get(
                     lg, 'controls.password.linklist.add.popup.title'
                 ),
-                maxHeight  : 750,
+                maxHeight  : 800,
                 maxWidth   : 700,
                 events     : {
                     onOpen: function () {
@@ -338,6 +351,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
                         LinkCreateControl.submit().then(function () {
                             Popup.close();
+                            self.refresh();
                         }, function () {
                             Popup.Loader.hide();
                         });
@@ -417,6 +431,37 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             Popup.open();
         },
 
+        /**
+         * Show password link URL
+         *
+         * @param {Number} linkId
+         */
+        $deactivate: function (linkId) {
+            new QUIConfirm({
+                maxHeight    : 175,
+                cancel_button: false,
+                icon         : 'fa fa-link',
+                title        : QUILocale.get(lg, 'controls.password.linklist.deactivate.title'),
+                information  : QUILocale.get(lg, 'controls.password.linklist.deactivate.information', {
+                    linkId: linkId
+                }),
+                ok_button    : {
+                    text     : QUILocale.get(lg, 'controls.password.linklist.deactivate.confirm'),
+                    textimage: false
+                },
+                events       : {
+                    onSubmit: function () {
+                        console.log(linkId);
+                    }
+                }
+            }).open();
+        },
+
+        /**
+         * Show password link URL
+         *
+         * @param {String} url
+         */
         $showUrl: function (url) {
             new QUIConfirm({
                 maxHeight    : 175,
