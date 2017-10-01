@@ -219,9 +219,38 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 }
             }).imports(this.$Elm.getElement('.pcsg-gpm-password-linkcreate-emails'));
 
+            // vhosts
+            var VHostRowElm = this.$Elm.getElement(
+                '.pcsg-gpm-password-linkcreate-vhost'
+            );
+
+            this.$getVHostList().then(function (vhosts) {
+                if (vhosts.length < 1) {
+                    VHostRowElm.destroy();
+                    return;
+                }
+
+                var VHostSelectElm = self.$Elm.getElement(
+                    '.pcsg-gpm-password-linkcreate-vhost-select'
+                );
+
+                VHostRowElm.removeClass('pcsg-gpm-password-linkcreate__hidden');
+
+                for (var i = 0, len = vhosts.length; i < len; i++) {
+                    new Element('option', {
+                        value: vhosts[i],
+                        html : vhosts[i]
+                    }).inject(VHostSelectElm);
+                }
+            });
+
             if (!this.getAttribute('showSubmitBtn')) {
                 return this.$Elm;
             }
+
+            this.$Elm.getElement(
+                '.pcsg-gpm-password-linkcreate-create'
+            ).removeClass('pcsg-gpm-password-linkcreate__hidden');
 
             // submit btn
             new QUIButton({
@@ -266,7 +295,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                 return true;
             }
 
-            QUI.getMessageHandler().then(function(MH) {
+            QUI.getMessageHandler().then(function (MH) {
                 MH.addAttention(
                     QUILocale.get(lg, 'controls.password.linkcreate.password_min_length'),
                     self.$PasswordInput
@@ -319,6 +348,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
                     'package_pcsg_grouppasswordmanager_ajax_passwords_link_generatePin', resolve, {
+                        'package': 'pcsg/grouppasswordmanager',
+                        onError  : reject
+                    }
+                );
+            });
+        },
+
+        /**
+         * Get list of virtual hosts
+         *
+         * @returns {Promise}
+         */
+        $getVHostList: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get(
+                    'package_pcsg_grouppasswordmanager_ajax_passwords_link_getVHostList', resolve, {
                         'package': 'pcsg/grouppasswordmanager',
                         onError  : reject
                     }

@@ -177,6 +177,25 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
+         * Permanently deactivate a PasswordLink (authentication required!)
+         *
+         * @param {number} linkId - PasswordLink ID
+         * @returns {Promise}
+         */
+        deactivateLink: function (linkId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_passwords_link_deactivate',
+                    resolve, {
+                        'package': pkg,
+                        onError  : reject,
+                        linkId   : linkId
+                    }
+                );
+            });
+        },
+
+        /**
          * Get list of PasswordLinks
          *
          * @param {number} passwordId - password ID
@@ -199,8 +218,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_link_getPasswordData', resolve, {
                     passwordId: passwordId,
-                    'package': pkg,
-                    onError  : reject
+                    'package' : pkg,
+                    onError   : reject
                 });
             });
         },

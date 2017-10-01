@@ -116,7 +116,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     text     : QUILocale.get(lg, 'controls.password.linklist.tbl.btn.deactivate'),
                     textimage: 'fa fa-square-o',
                     events   : {
-                        onClick: this.$showCalls
+                        onClick: function () {
+                            self.$deactivate(
+                                self.$Grid.getSelectedData()[0].id
+                            );
+                        }
                     }
                 }],
 
@@ -202,6 +206,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
             var TableButtons = self.$Grid.getAttribute('buttons');
             TableButtons.calls.disable();
+            TableButtons.deactivate.disable();
 
             Passwords.getLinkList(this.getAttribute('passwordId')).then(function (list) {
                 self.Loader.hide();
@@ -240,12 +245,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 }
 
                 // calls
+                Row.callCount = Data.callCount;
+
                 if (Data.maxCalls) {
-                    Row.callCount = Data.callCount + ' / ' + Data.maxCalls;
-                } else {
-                    Row.callCount = QUILocale.get(lg,
-                        'controls.password.linklist.tbl.calls.infinite'
-                    );
+                    Row.callCount += ' / ' + Data.maxCalls;
                 }
 
                 Row.calls = Data.calls;
@@ -437,21 +440,36 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
          * @param {Number} linkId
          */
         $deactivate: function (linkId) {
+            var self = this;
+
             new QUIConfirm({
-                maxHeight    : 175,
-                cancel_button: false,
-                icon         : 'fa fa-link',
+                maxHeight    : 225,
+                icon         : 'fa fa-square-o',
+                texticon     : 'fa fa-square-o',
                 title        : QUILocale.get(lg, 'controls.password.linklist.deactivate.title'),
                 information  : QUILocale.get(lg, 'controls.password.linklist.deactivate.information', {
                     linkId: linkId
                 }),
+                text         : QUILocale.get(lg, 'controls.password.linklist.deactivate.text'),
                 ok_button    : {
                     text     : QUILocale.get(lg, 'controls.password.linklist.deactivate.confirm'),
                     textimage: false
                 },
                 events       : {
-                    onSubmit: function () {
-                        console.log(linkId);
+                    onSubmit: function (Confirm) {
+                        Confirm.Loader.show();
+
+                        Passwords.deactivateLink(linkId).then(function(success) {
+                            if (success) {
+                                Confirm.close();
+                                self.refresh();
+                                return;
+                            }
+
+                            Confirm.Loader.hide();
+                        }, function() {
+                            Confirm.Loader.hide();
+                        });
                     }
                 }
             }).open();

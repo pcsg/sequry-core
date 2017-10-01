@@ -3,6 +3,7 @@
 namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 use QUI;
 use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
@@ -58,6 +59,13 @@ class PasswordLink
     protected $active;
 
     /**
+     * The password the link points to
+     *
+     * @var Password
+     */
+    protected $Password;
+
+    /**
      * PasswordLink constructor.
      *
      * @param int $id - PasswordLink ID
@@ -86,6 +94,7 @@ class PasswordLink
         $this->dataId          = $data['dataId'];
         $this->encryptedAccess = $data['dataAccess'];
         $this->active          = boolval($data['active']);
+        $this->Password        = Passwords::get($this->dataId);
 
         // if PasswordLink is no longer valid -> delete it
         try {
@@ -110,7 +119,16 @@ class PasswordLink
      */
     public function getUrl()
     {
-        $Project = QUI::getProjectManager()->getStandard();
+        $Project = false;
+
+        if (!empty($this->access['vhost'])) {
+            $VHostManager = new QUI\System\VhostManager();
+            $Project      = $VHostManager->getProjectByHost($this->access['vhost']);
+        }
+
+        if (!$Project) {
+            $Project = QUI::getProjectManager()->getStandard();
+        }
 
         $sites = $Project->getSites(array(
             'where' => array(
@@ -187,7 +205,9 @@ class PasswordLink
         }
 
         // check current number of calls
-        if ($access['callCount'] >= $access['maxCalls']) {
+        if ($access['maxCalls']
+            && $access['callCount'] >= $access['maxCalls']
+        ) {
             $this->deactivate();
         }
 
@@ -229,8 +249,7 @@ class PasswordLink
             ));
         }
 
-        $Password = Passwords::get($this->dataId);
-        $dataKey  = $this->access['dataKey']->getString();
+        $dataKey = $this->access['dataKey']->getString();
 
         try {
             if ($this->isPasswordProtected()) {
@@ -245,14 +264,14 @@ class PasswordLink
 
             $DataKey = new Key(new HiddenString($dataKey));
 
-            $Password->decrypt($DataKey);
+            $this->Password->decrypt($DataKey);
         } catch (\Exception $Exception) {
             throw new InvalidKeyException();
         }
 
         // if session user has permission to view password -> do not increase counter
-        if ($Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
-            return $Password;
+        if ($this->Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
+            return $this->Password;
         }
 
         // increase call counter
@@ -272,7 +291,7 @@ class PasswordLink
         // save access data changes
         $this->update();
 
-        return $Password;
+        return $this->Password;
     }
 
     /**
@@ -332,10 +351,14 @@ class PasswordLink
      *
      * @return void
      */
-    protected function deactivate()
+    public function deactivate()
     {
+        $this->checkPermission();
+
         $this->access['dataKey'] = null;
         $this->active            = false;
+
+        $this->update();
     }
 
     /**
@@ -345,6 +368,8 @@ class PasswordLink
      */
     public function delete()
     {
+        $this->checkPermission();
+
         QUI::getDataBase()->delete(
             Tables::passwordLink(),
             array(
@@ -364,6 +389,22 @@ class PasswordLink
     }
 
     /**
+     * Check if the current session user has permission to edit this PasswordLink
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function checkPermission()
+    {
+        if (!PasswordLinks::isUserAllowedToUsePasswordLinks($this->Password)) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.passwordlink.permission_denied'
+            ));
+        }
+    }
+
+    /**
      * Get PasswordLink attributes as array
      *
      * @return array
@@ -380,6 +421,7 @@ class PasswordLink
             'createUserId'   => $this->access['createUserId'],
             'createUserName' => $this->access['createUserName'],
             'calls'          => $this->access['calls'],
+            'vhost'          => $this->access['vhost'],
             'active'         => $this->isActive(),
             'link'           => $this->getUrl()
         );

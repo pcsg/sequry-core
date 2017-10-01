@@ -555,11 +555,11 @@
         <locale name="message.passwords.link.create.error" html="true">
             <de><![CDATA[Bei der Erstellung des Passwort-Links für das Password #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
         </locale>
-        <locale name="message.passwords.link.delete.success">
-            <de><![CDATA[Der Passwort-Link #[linkId] wurde erfolgreich gelöscht und kann nun nicht mehr aufgerufen werden.]]></de>
+        <locale name="message.passwords.link.deactivate.success">
+            <de><![CDATA[Der Passwort-Link #[linkId] wurde erfolgreich deaktiviert und kann nun nicht mehr aufgerufen werden.]]></de>
         </locale>
-        <locale name="message.passwords.link.delete.error" html="true">
-            <de><![CDATA[Der Passwort-Link #[linkId] konnte nicht gelöscht werden:<br><br>[error]]]></de>
+        <locale name="message.passwords.link.deactivate.error" html="true">
+            <de><![CDATA[Der Passwort-Link #[linkId] konnte nicht deaktiviert werden:<br><br>[error]]]></de>
         </locale>
 
         <!-- System -->
@@ -800,6 +800,9 @@
         </locale>
         <locale name="exception.passwordlink.no_password_given">
             <de><![CDATA[Der Passwort-Link erfordert ein Passwort zur Entschlüsselung]]></de>
+        </locale>
+        <locale name="exception.passwordlink.permission_denied">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um diesen Passwort-Link zu bearbeiten.]]></de>
         </locale>
 
         <!-- Security/Handler/PasswordLinks -->
@@ -2101,6 +2104,9 @@ Freundliche Grüße!]]></de>
         <locale name="controls.password.linklist.tbl.btn.calls">
             <de><![CDATA[Aufrufe anzeigen]]></de>
         </locale>
+        <locale name="controls.password.linklist.tbl.btn.deactivate">
+            <de><![CDATA[Deaktivieren]]></de>
+        </locale>
         <locale name="controls.password.linklist.calls.popup.title">
             <de><![CDATA[Aufrufe]]></de>
         </locale>
@@ -2118,6 +2124,18 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="controls.password.linklist.showurl.ok">
             <de><![CDATA[OK]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.title">
+            <de><![CDATA[Passwort-Link dauerhaft deaktivieren]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.text">
+            <de><![CDATA[Deaktivierung bestätigen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.information">
+            <de><![CDATA[Sind Sie sicher, dass der Passwort-Link #[linkId] dauerhaft deaktiviert werden soll? Der Passwort-Link bleibt weiterhin in der Übersichtsliste, kann aber nicht mehr aufgerufen oder wieder aktiviert werden.]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.confirm">
+            <de><![CDATA[Passwort-Link deaktivieren]]></de>
         </locale>
 
         <!-- Control: utils/InputButtons -->

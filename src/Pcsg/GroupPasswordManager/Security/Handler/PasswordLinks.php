@@ -102,8 +102,14 @@ class PasswordLinks
             'calls'          => array(),
             'maxCalls'       => false,
             'validUntil'     => false,
-            'message'        => empty($settings['message']) ? false : $settings['message']
+            'message'        => empty($settings['message']) ? false : $settings['message'],
+            'vhost'          => false
         );
+
+        // vhost
+        if (!empty($settings['vhost'])) {
+            $dataAccess['vhost'] = $settings['vhost'];
+        }
 
         // determine how long the link is valid
 
