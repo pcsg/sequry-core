@@ -2039,11 +2039,17 @@ Freundliche Grüße!]]></de>
         <locale name="controls.password.linkcreate.template.validDateOptionDate">
             <de><![CDATA[Datum]]></de>
         </locale>
+        <locale name="controls.password.linkcreate.template.vhostLabel">
+            <de><![CDATA[Layout festlegen]]></de>
+        </locale>
         <locale name="controls.password.linkcreate.btn">
             <de><![CDATA[Passwort-Link erstellen]]></de>
         </locale>
         <locale name="controls.password.linkcreate.password_min_length">
-            <de><![CDATA[Bitte geben Sie einen PIN mit mindestens 6 Ziffern ein!]]></de>
+            <de><![CDATA[Bitte geben Sie einen PIN mit mindestens 6 Zeichen ein!]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.no_password_sites" html="true">
+            <de><![CDATA[<b>Passwort-Links können z.Z. nicht erstellt werden!</b><br><p>In Ihrem Projekt befindet sich keine aktive Seite mit dem Seitentyp "Passwort-Link". Eine solche Seite ist notwendig, damit Besucher von Passwort-Links den Inhalt eines Passworts angezeigt bekommen können. Bitte legen Sie eine Seite mit dem Seitentyp "Passwort-Link" an und aktivieren Sie diese Seite.]]></de>
         </locale>
 
         <!-- Control: password/LinkList -->

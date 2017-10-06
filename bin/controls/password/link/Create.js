@@ -4,16 +4,8 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/link/Create
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/buttons/Button
- * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.css
- *
  * @event onSubmit [this] - fires after a new PasswordLink has been successfully created
+ * @event onLoaded [this] - fires after everything loaded
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
 
@@ -83,6 +75,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                     messageLabel         : QUILocale.get(lg, lgPrefix + 'messageLabel'),
                     emailLabel           : QUILocale.get(lg, lgPrefix + 'emailLabel'),
                     activeLabel          : QUILocale.get(lg, lgPrefix + 'activeLabel'),
+                    vhostLabel           : QUILocale.get(lg, lgPrefix + 'vhostLabel'),
                     validDateOption1Day  : QUILocale.get(lg, lgPrefix + 'validDateOption1Day'),
                     validDateOption3Day  : QUILocale.get(lg, lgPrefix + 'validDateOption3Day'),
                     validDateOption1Week : QUILocale.get(lg, lgPrefix + 'validDateOption1Week'),
@@ -154,7 +147,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
             var GeneratePinBtn = new QUIButton({
                 icon  : 'fa fa-random',
                 events: {
-                    onClick: function (Btn) {
+                    onClick: function (Btn, event) {
+                        event.stop();
+
                         var Elm = Btn.getAttribute('InputElm');
 
                         Btn.setAttribute('icon', 'fa fa-spin fa-spinner');
@@ -184,7 +179,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
             });
 
             this.$PasswordInput.addEvents({
-                blur: this.$checkPasswordLength
+                blur: function() {
+                    (function() {self.$checkPasswordLength();}.delay(200));
+                }
             });
 
             // add random password btn
@@ -225,8 +222,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
             );
 
             this.$getVHostList().then(function (vhosts) {
-                if (vhosts.length < 1) {
+                if (!vhosts.length) {
+                    self.$Elm.set(
+                        'html',
+                        '<div class="pcsg-gpm-password-linkcreate-info">' +
+                        QUILocale.get(lg, 'controls.password.linkcreate.no_password_sites') +
+                        '</div>'
+                    );
+
+                    self.fireEvent('loaded', [self]);
+                    return;
+                }
+
+                if (vhosts.length <= 1) {
                     VHostRowElm.destroy();
+                    self.fireEvent('loaded', [self]);
                     return;
                 }
 
@@ -242,6 +252,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                         html : vhosts[i]
                     }).inject(VHostSelectElm);
                 }
+
+                self.fireEvent('loaded', [self]);
             });
 
             if (!this.getAttribute('showSubmitBtn')) {

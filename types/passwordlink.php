@@ -40,6 +40,7 @@ try {
 
         if ($password) {
             $Password = $PasswordLink->getPassword($_REQUEST['hash'], $password);
+            $passwordProtected = false;
         }
     } else {
         $Password = $PasswordLink->getPassword($_REQUEST['hash']);
@@ -78,4 +79,3 @@ $Engine->assign(array(
     'passwordProtected'  => $passwordProtected,
     'invalidPasswordMsg' => $invalidPasswordMsg
 ));
-

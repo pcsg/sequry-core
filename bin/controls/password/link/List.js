@@ -333,9 +333,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 maxWidth   : 700,
                 events     : {
                     onOpen: function () {
+                        Popup.Loader.show();
+
                         LinkCreateControl = new PasswordLinkCreate({
                             passwordId   : self.getAttribute('passwordId'),
-                            showSubmitBtn: false
+                            showSubmitBtn: false,
+                            events: {
+                                onLoaded: function() {
+                                    Popup.Loader.hide();
+                                }
+                            }
                         }).inject(Popup.getContent());
                     }
                 },

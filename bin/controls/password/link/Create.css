@@ -30,3 +30,13 @@
 .pcsg-gpm-password-linkcreate__hidden {
     display: none;
 }
+
+.pcsg-gpm-password-linkcreate-info {
+    margin-top: 25%;
+    text-align: center;
+    width: 100%;
+}
+
+.pcsg-gpm-password-linkcreate-info p {
+    margin: 10px;
+}
