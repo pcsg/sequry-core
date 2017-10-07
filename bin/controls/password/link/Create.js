@@ -185,12 +185,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
             });
 
             // add random password btn
-            var InputButtonsParser = new InputButtons({
-                copy  : false,
-                custom: [GeneratePinBtn]
-            });
+            var InputButtonsParser = new InputButtons();
 
-            InputButtonsParser.parse(self.$PasswordInput);
+            InputButtonsParser.parse(self.$PasswordInput, [], [GeneratePinBtn]);
 
             // set default title and description
             Passwords.getLinkPasswordData(this.getAttribute('passwordId')).then(function (Password) {

@@ -1,3 +1,10 @@
+require.config({
+    paths: {
+        "ClipboardJS"  : URL_OPT_DIR + 'bin/clipboard/dist/clipboard',
+        "html5tooltips": URL_OPT_DIR + 'quiqqer/tooltips/bin/html5tooltips'
+    }
+});
+
 /**
  * Parses all inputs in a DOMNode and adds specific interaction buttons
  *
@@ -34,26 +41,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
             '$addOpenUrlBtn'
         ],
 
-        options: {
-            copy        : true,   // add button to copy input value to clipboard
-            viewtoggle  : false,  // add button to toggle between original type and "password" type
-            generatepass: false,  // add button to generate a random, strong password
-            openurl     : false,  // add button to open input value as url (new tab)
-            custom      : []
-        },
-
         /**
          * Parse Input DOMNode or all input DOMNodes in the given DOMNode
          * and add buttons
+         *
+         * @param {HTMLElement} ParseElm - The input element the buttons are added to the ParseElm
+         * @param {Array} buttonTypes - Types of buttons to be added
+         *
+         * Possible buttonTypes:
+         * - copy
+         * - viewtoggle
+         * - generatepass
+         * - openurl
+         *
+         * @param {Array} [customButtons] - List of custom buttons that are added to the ParseElm
          */
-        parse: function (ParseElm) {
+        parse: function (ParseElm, buttonTypes, customButtons) {
             var inputElms;
 
-            if (ParseElm.nodeName === 'INPUT') {
+            customButtons = customButtons || [];
+
+            //if (ParseElm.nodeName === 'INPUT') {
                 inputElms = [ParseElm];
-            } else {
-                inputElms = ParseElm.getElements('input');
-            }
+            //} else {
+            //    inputElms = ParseElm.getElements('input');
+            //}
 
             var copy         = this.getAttribute('copy'),
                 viewtoggle   = this.getAttribute('viewtoggle'),
@@ -61,23 +73,38 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
                 openurl      = this.getAttribute('openurl');
 
             inputElms.forEach(function (InputElm) {
-                if (openurl) {
-                    this.$addOpenUrlBtn(InputElm);
+                var i, len;
+
+                // pre-configured buttons
+                for (i = 0, len = buttonTypes.length; i < len; i++) {
+                    switch (buttonTypes[i])
+                    {
+                        case 'copy':
+                            this.$addCopyBtn(InputElm);
+                            break;
+
+                        case 'viewtoggle':
+                            this.$addViewToggleBtn(InputElm);
+                            break;
+
+                        case 'generatepass':
+                            this.$addGeneratePassBtn(InputElm);
+                            break;
+
+                        case 'openurl':
+                            this.$addOpenUrlBtn(InputElm);
+                            break;
+                    }
                 }
 
-                if (generatepass) {
-                    this.$addGeneratePassBtn(InputElm);
-                }
+                // custom buttons
+                for (i = 0, len = customButtons.length; i < len; i++) {
+                    var Btn = customButtons[i];
 
-                if (viewtoggle) {
-                    this.$addViewToggleBtn(InputElm);
+                    Btn.getElm().addClass('pcsg-gpm-utils-inputbuttons-btn');
+                    Btn.setAttribute('InputElm', InputElm);
+                    Btn.inject(InputElm, 'after');
                 }
-
-                if (copy) {
-                    this.$addCopyBtn(InputElm);
-                }
-
-                this.$addCustomBtns(InputElm);
             }.bind(this));
         },
 
@@ -151,7 +178,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
 
             new QUIButton({
                 'class'     : 'pcsg-gpm-utils-inputbuttons-btn',
-                originaltype: type,
+                originaltype: type === 'password' ? 'text' : type,
                 icon        : type === 'password' ? 'fa fa-eye' : 'fa fa-eye-slash',
                 action      : type === 'password' ? 'show' : 'hide',
                 events      : {
@@ -215,9 +242,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
                 'class': 'pcsg-gpm-utils-inputbuttons-btn',
                 icon   : 'fa fa-external-link',
                 events : {
-                    onClick: function (Btn) {
+                    onClick: function () {
+                        var LinkElm;
+
+                        if (InputElm.get('href')) {
+                            LinkElm = InputElm;
+                        } else {
+                            LinkElm = InputElm.getElement('a');
+                        }
+
                         var AnchorElm = new Element('a', {
-                            href  : InputElm.value,
+                            href  : LinkElm.href,
                             target: '_blank'
                         });
 
@@ -226,24 +261,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
                     }
                 }
             }).inject(InputElm, 'after');
-        },
-
-        /**
-         * Add custom buttons
-         *
-         * @param InputElm
-         */
-        $addCustomBtns: function(InputElm)
-        {
-            var customBtns = this.getAttribute('custom');
-
-            for (var i = 0, len = customBtns.length; i < len; i++) {
-                var Btn = customBtns[i];
-
-                Btn.getElm().addClass('pcsg-gpm-utils-inputbuttons-btn');
-                Btn.setAttribute('InputElm', InputElm);
-                Btn.inject(InputElm, 'after');
-            }
         }
     });
 });

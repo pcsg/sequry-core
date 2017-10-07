@@ -31,9 +31,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
     "use strict";
 
     var lg              = 'pcsg/grouppasswordmanager';
-    var UrlButtonParser = new InputButtons({
-        openurl: true
-    });
+    var UrlButtonParser = new InputButtons();
 
     return new Class({
 
@@ -513,7 +511,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
                         UrlInput.select();
 
-                        UrlButtonParser.parse(UrlInput);
+                        UrlButtonParser.parse(UrlInput, ['copy', 'openurl']);
                     }
                 }
             }).open();

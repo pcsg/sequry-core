@@ -182,7 +182,8 @@ class PasswordLinks
             'from'   => Tables::passwordLink(),
             'where'  => array(
                 'dataId' => $passwordId
-            )
+            ),
+            'order' => 'id DESC'
         ));
 
         $list = array();
