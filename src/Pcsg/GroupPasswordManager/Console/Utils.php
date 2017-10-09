@@ -14,7 +14,8 @@ use Symfony\Component\Console\Helper\Table;
 class Utils extends QUI\System\Console\Tool
 {
     protected $utils = array(
-        'deletepasswords' => 'Löscht ein Passwort und alle Referenzen aus der Datenbank'
+        'checkownermismatch' => 'Prüft, bei welchen Passwörtern der Owner in der PW-Tabelle nicht mit dem tatsächlichen Owner übereinstimmt',
+        'deletepasswords'    => 'Löscht ein Passwort und alle Referenzen aus der Datenbank'
     );
 
     /**
@@ -69,11 +70,63 @@ class Utils extends QUI\System\Console\Tool
                 $this->deletePasswords($pwIds);
                 break;
 
+            case 'checkownermismatch':
+                $this->checkOwnerMismatch();
+                break;
+
             default:
                 $this->exitFail('Keine Methode für Util gefunden.');
         }
 
         $this->exitSuccess();
+    }
+
+    /**
+     * Prüft, welche Passwörter einen falschen Owner in der Passwort-Tabelle haben
+     *
+     * @return void
+     */
+    protected function checkOwnerMismatch()
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id',
+                'title',
+                'ownerId',
+                'ownerType'
+            ),
+            'from'   => 'pcsg_gpm_password_data'
+        ));
+
+        foreach ($result as $row) {
+            switch ($row['ownerType']) {
+                case '1':
+                    $check = QUI::getDataBase()->fetch(array(
+                        'select' => array(),
+                        'from'   => 'pcsg_gpm_user_data_access',
+                        'where'  => array(
+                            'userId' => $row['ownerId'],
+                            'dataId' => $row['id']
+                        )
+                    ));
+                    break;
+
+                case '2':
+                    $check = QUI::getDataBase()->fetch(array(
+                        'select' => array(),
+                        'from'   => 'pcsg_gpm_group_data_access',
+                        'where'  => array(
+                            'groupId' => $row['ownerId'],
+                            'dataId'  => $row['id']
+                        )
+                    ));
+                    break;
+            }
+
+            if (empty($check)) {
+                $this->writeLn("MISMATCH: Passwort #" . $row['id'] . " - " . $row['title']);
+            }
+        }
     }
 
     /**
