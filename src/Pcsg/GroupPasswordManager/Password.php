@@ -357,10 +357,8 @@ class Password extends QUI\QDOM
 
                 case 'owner':
                     if (is_array($v)
-                        && isset($v['id'])
                         && !empty($v['id'])
                         && is_numeric($v['id'])
-                        && isset($v['type'])
                         && !empty($v['type'])
                     ) {
                         $newOwnerId   = (int)$v['id'];
@@ -1600,7 +1598,7 @@ class Password extends QUI\QDOM
      */
     protected function setSecretAttribute($k, $v)
     {
-        if (is_string($v)) {
+        if (is_string($v) || is_numeric($v)) {
             $v = new HiddenString($v);
         }
 
@@ -1674,18 +1672,6 @@ class Password extends QUI\QDOM
         }
 
         $this->SecurityClass->checkAuthentication();
-
-//        if (!$this->SecurityClass->isAuthenticated()) {
-//            // @todo eigenen 401 error code einfügen
-//            throw new QUI\Exception(array(
-//                'pcsg/grouppasswordmanager',
-//                'exception.password.user.not.authenticated',
-//                array(
-//                    'id'     => $this->id,
-//                    'userId' => $this->getUser()->getId()
-//                )
-//            ));
-//        }
 
         $PasswordKey = $this->getPasswordKey();
 

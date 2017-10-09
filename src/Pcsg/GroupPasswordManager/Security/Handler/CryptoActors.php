@@ -170,7 +170,7 @@ class CryptoActors
             /** @var AuthKeyPair $AuthKeyPair */
             foreach ($authKeyPairs as $AuthKeyPair) {
                 $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $groupAccessKeyParts[$i++],
+                    new HiddenString($groupAccessKeyParts[$i++]),
                     $AuthKeyPair
                 );
 
