@@ -168,6 +168,33 @@ class PasswordLinks
     }
 
     /**
+     * Get all PasswordLinks by Password ID
+     *
+     * @param int $passwordId
+     * @return PasswordLink[]
+     */
+    public static function getLinksByPasswordId($passwordId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id',
+            ),
+            'from'   => Tables::passwordLink(),
+            'where'  => array(
+                'dataId' => (int)$passwordId
+            )
+        ));
+
+        $passwordLinks = array();
+
+        foreach ($result as $row) {
+            $passwordLinks[] = self::get($row['id']);
+        }
+
+        return $passwordLinks;
+    }
+
+    /**
      * Get list of PasswordLinks for a password
      *
      * @param int $passwordId

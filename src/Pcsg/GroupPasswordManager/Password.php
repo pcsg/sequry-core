@@ -768,6 +768,11 @@ class Password extends QUI\QDOM
                     'dataId' => $this->id
                 )
             );
+
+            QUI::getEvents()->fireEvent(
+                'passwordDelete',
+                array($this)
+            );
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'Password #' . $this->id . ' delete error: ' . $Exception->getMessage()

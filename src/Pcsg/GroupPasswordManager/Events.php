@@ -8,6 +8,7 @@ namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GpmAuthPassword\AuthPlugin;
 use Pcsg\GroupPasswordManager\Constants\Crypto;
+use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI\Package\Package;
 use Pcsg\GroupPasswordManager\Constants\Tables;
@@ -526,5 +527,19 @@ class Events
             ),
             QUI::getUsers()->getSystemUser()
         );
+    }
+
+    /**
+     * pcsg/grouppasswordmanager: onPasswordDelete
+     *
+     * @param Password $Password
+     * @return void
+     */
+    public static function onPasswordDelete(Password $Password)
+    {
+        // delete password links
+        foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
+            $PasswordLink->delete();
+        }
     }
 }
