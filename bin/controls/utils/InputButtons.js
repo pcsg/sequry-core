@@ -62,7 +62,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
             customButtons = customButtons || [];
 
             //if (ParseElm.nodeName === 'INPUT') {
-                inputElms = [ParseElm];
+            inputElms = [ParseElm];
             //} else {
             //    inputElms = ParseElm.getElements('input');
             //}
@@ -77,8 +77,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
 
                 // pre-configured buttons
                 for (i = 0, len = buttonTypes.length; i < len; i++) {
-                    switch (buttonTypes[i])
-                    {
+                    switch (buttonTypes[i]) {
                         case 'copy':
                             this.$addCopyBtn(InputElm);
                             break;
@@ -235,7 +234,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
         /**
          * Add button to open input value as url (new tab)
          *
-         * @param InputElm
+         * @param {HTMLElement} InputElm
          */
         $addOpenUrlBtn: function (InputElm) {
             new QUIButton({
@@ -243,16 +242,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
                 icon   : 'fa fa-external-link',
                 events : {
                     onClick: function () {
-                        var LinkElm;
+                        var href;
 
                         if (InputElm.get('href')) {
-                            LinkElm = InputElm;
+                            href = InputElm.href;
                         } else {
-                            LinkElm = InputElm.getElement('a');
+                            var LinkElm = InputElm.getElement('a');
+
+                            if (LinkElm && LinkElm.get('href')) {
+                                href = LinkElm.href;
+                            }
+                        }
+
+                        if (!href) {
+                            href = InputElm.value;
                         }
 
                         var AnchorElm = new Element('a', {
-                            href  : LinkElm.href,
+                            href  : href,
                             target: '_blank'
                         });
 

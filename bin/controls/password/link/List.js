@@ -26,8 +26,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/link/List.css'
 
-], function (QUI, QUIControl, QUILoader, QUIButton, QUIPopup, QUIConfirm, Grid, PasswordLinkCreate,
-             InputButtons, QUILocale, Mustache, Passwords) {
+], function (QUI, QUIControl, QUILoader, QUIButton, QUIPopup,
+             QUIConfirm, Grid, PasswordLinkCreate, InputButtons, QUILocale,
+             Mustache, Passwords) {
     "use strict";
 
     var lg              = 'pcsg/grouppasswordmanager';
@@ -55,9 +56,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$Grid          = null;
-            this.$GridContainer = null;
-            this.Loader         = new QUILoader();
+            this.$Grid            = null;
+            this.$GridContainer   = null;
+            this.Loader           = new QUILoader();
+            this.$ShowInactiveBtn = null;
+            this.$SearchParams    = {};
 
             this.addEvents({
                 onResize: this.$onResize,
@@ -70,6 +73,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
          */
         $onResize: function () {
             if (this.$GridContainer && this.$Grid) {
+                this.$GridContainer.setStyle('height', '100%');
                 var size = this.$GridContainer.getSize();
 
                 this.$Grid.setHeight(size.y);
@@ -90,10 +94,27 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                 'class': 'pcsg-gpm-password-linklist-grid'
             }).inject(this.$Elm);
 
+            this.$ShowInactiveBtn = new QUIButton({
+                name     : 'toggleInactive',
+                text     : QUILocale.get(lg, 'controls.password.linklist.tbl.btn.toggleInactive'),
+                textimage: 'fa fa-eye',
+                events   : {
+                    onClick: function (Btn) {
+                        if (Btn.isActive()) {
+                            self.$SearchParams.showInactive = false;
+                        } else {
+                            self.$SearchParams.showInactive = true;
+                        }
+
+                        self.refresh();
+                    }
+                }
+            });
+
             this.$Grid = new Grid(this.$GridContainer, {
                 pagination       : true,
                 selectable       : true,
-                serverSort       : false,
+                serverSort       : true,
                 multipleSelection: true,
                 buttons          : [{
                     name     : 'add',
@@ -120,7 +141,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                             );
                         }
                     }
-                }],
+                }, this.$ShowInactiveBtn],
 
                 columnModel: [{
                     header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.id'),
@@ -195,20 +216,48 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
         /**
          * Refresh PasswordLink list
          *
+         * @param {Object} Grid
          * @returns {Promise}
          */
-        $listRefresh: function () {
+        $listRefresh: function (Grid) {
             var self = this;
-
-            this.Loader.show();
 
             var TableButtons = self.$Grid.getAttribute('buttons');
             TableButtons.calls.disable();
             TableButtons.deactivate.disable();
 
-            Passwords.getLinkList(this.getAttribute('passwordId')).then(function (list) {
+            var sortOn = Grid.getAttribute('sortOn');
+
+            if (sortOn) {
+                switch (sortOn) {
+                    case 'id':
+                    case 'active':
+                        break;
+
+                    default:
+                        sortOn = 'id';
+                }
+            }
+
+            this.$SearchParams.sortOn  = sortOn;
+            this.$SearchParams.sortBy  = Grid.getAttribute('sortBy');
+            this.$SearchParams.perPage = Grid.getAttribute('perPage');
+            this.$SearchParams.page    = Grid.getAttribute('page');
+
+            this.Loader.show();
+
+            return Passwords.getLinkList(
+                this.getAttribute('passwordId'),
+                this.$SearchParams
+            ).then(function (list) {
                 self.Loader.hide();
                 self.$setGridData(list);
+
+                if (self.$SearchParams.showInactive) {
+                    self.$ShowInactiveBtn.setActive();
+                } else {
+                    self.$ShowInactiveBtn.setNormal();
+                }
             }, function () {
                 self.fireEvent('close', [self]);
             });
@@ -217,18 +266,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
         /**
          * Set list data to grid
          *
-         * @param {Array} list
+         * @param {Array} GridData
          */
-        $setGridData: function (list) {
-            var self      = this;
-            var Row, data = [];
+        $setGridData: function (GridData) {
+            var self = this;
+            var Row;
 
             var FuncOnUrlLinkClick = function () {
                 self.$showUrl(this.get('data-url'));
             };
 
-            for (var i = 0, len = list.length; i < len; i++) {
-                var Data = list[i];
+            for (var i = 0, len = GridData.data.length; i < len; i++) {
+                var Data = GridData.data[i];
 
                 Row = {
                     id: Data.id
@@ -304,14 +353,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     ' (' + Data.createUserName +
                     ' - #' + Data.createUserId + ')';
 
-                data.push(Row);
+                GridData.data[i] = Row;
             }
 
-            this.$Grid.setData({
-                data : data,
-                page : 1,
-                total: 1
-            });
+            this.$Grid.setData(GridData);
         },
 
         /**
@@ -336,8 +381,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                         LinkCreateControl = new PasswordLinkCreate({
                             passwordId   : self.getAttribute('passwordId'),
                             showSubmitBtn: false,
-                            events: {
-                                onLoaded: function() {
+                            events       : {
+                                onLoaded: function () {
                                     Popup.Loader.hide();
                                 }
                             }
@@ -448,23 +493,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
             var self = this;
 
             new QUIConfirm({
-                maxHeight    : 225,
-                icon         : 'fa fa-square-o',
-                texticon     : 'fa fa-square-o',
-                title        : QUILocale.get(lg, 'controls.password.linklist.deactivate.title'),
-                information  : QUILocale.get(lg, 'controls.password.linklist.deactivate.information', {
+                maxHeight  : 225,
+                icon       : 'fa fa-square-o',
+                texticon   : 'fa fa-square-o',
+                title      : QUILocale.get(lg, 'controls.password.linklist.deactivate.title'),
+                information: QUILocale.get(lg, 'controls.password.linklist.deactivate.information', {
                     linkId: linkId
                 }),
-                text         : QUILocale.get(lg, 'controls.password.linklist.deactivate.text'),
-                ok_button    : {
+                text       : QUILocale.get(lg, 'controls.password.linklist.deactivate.text'),
+                ok_button  : {
                     text     : QUILocale.get(lg, 'controls.password.linklist.deactivate.confirm'),
                     textimage: false
                 },
-                events       : {
+                events     : {
                     onSubmit: function (Confirm) {
                         Confirm.Loader.show();
 
-                        Passwords.deactivateLink(linkId).then(function(success) {
+                        Passwords.deactivateLink(linkId).then(function (success) {
                             if (success) {
                                 Confirm.close();
                                 self.refresh();
@@ -472,7 +517,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                             }
 
                             Confirm.Loader.hide();
-                        }, function() {
+                        }, function () {
                             Confirm.Loader.hide();
                         });
                     }

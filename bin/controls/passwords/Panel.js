@@ -1086,25 +1086,31 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             this.Loader.show();
 
+            var LinkList = new PasswordLinkList({
+                passwordId: passwordId
+            });
+
             this.createSheet({
                 title : QUILocale.get(lg, 'gpm.passwords.panel.link.title'),
                 events: {
                     onShow : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
-                        var LinkList = new PasswordLinkList({
-                            passwordId: passwordId,
-                            events    : {
-                                onLoaded: function () {
-                                    self.Loader.hide();
-                                },
-                                onClose : function () {
-                                    self.Loader.hide();
-                                    LinkList.destroy();
-                                    Sheet.destroy();
-                                }
+                        LinkList.addEvents({
+                            onLoaded: function () {
+                                self.Loader.hide();
+                            },
+                            onClose : function () {
+                                self.Loader.hide();
+                                LinkList.destroy();
+                                Sheet.destroy();
                             }
-                        }).inject(Sheet.getContent());
+                        });
+
+                        LinkList.inject(Sheet.getContent());
+                    },
+                    onResize: function() {
+                        LinkList.resize();
                     },
                     onClose: function (Sheet) {
                         Sheet.destroy();

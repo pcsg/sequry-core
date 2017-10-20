@@ -40,3 +40,7 @@
 .pcsg-gpm-password-linkcreate-info p {
     margin: 10px;
 }
+
+.pcsg-gpm-password-linkcreate-create table {
+    margin: 0;
+}

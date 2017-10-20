@@ -14,6 +14,10 @@
                 <conf name="reEncryptEnabled">
                     <type><![CDATA[bool]]></type>
                 </conf>
+                <conf name="showPasswordLinkVHostSelect">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue>1</defaultvalue>
+                </conf>
             </section>
         </config>
 
@@ -52,6 +56,15 @@
                             </text>
                             <description>
                                 <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.defaultSecurityClassId.description" />
+                            </description>
+                        </input>
+
+                        <input conf="settings.showPasswordLinkVHostSelect" type="checkbox">
+                            <text>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.title" />
+                            </text>
+                            <description>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.description" />
                             </description>
                         </input>
 

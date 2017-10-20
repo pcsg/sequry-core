@@ -227,11 +227,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                         '</div>'
                     );
 
-                    self.fireEvent('loaded', [self]);
-                    return;
-                }
-
-                if (vhosts.length <= 1) {
                     VHostRowElm.destroy();
                     self.fireEvent('loaded', [self]);
                     return;
@@ -241,13 +236,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
                     '.pcsg-gpm-password-linkcreate-vhost-select'
                 );
 
-                VHostRowElm.removeClass('pcsg-gpm-password-linkcreate__hidden');
-
                 for (var i = 0, len = vhosts.length; i < len; i++) {
                     new Element('option', {
                         value: vhosts[i],
                         html : vhosts[i]
                     }).inject(VHostSelectElm);
+                }
+
+                if (vhosts.length > 1) {
+                    VHostRowElm.removeClass('pcsg-gpm-password-linkcreate__hidden');
                 }
 
                 self.fireEvent('loaded', [self]);

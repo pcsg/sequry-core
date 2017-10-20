@@ -912,6 +912,12 @@ Freundliche Grüße!]]></de>
         <locale name="settings.module_settings.defaultSecurityClassId.description">
             <de><![CDATA[Legen Sie fest, welche Sicherheitsklasse beim "Neues Passwort erstellen"-Dialog vorausgewählt ist.]]></de>
         </locale>
+        <locale name="settings.module_settings.showPasswordLinkVHostSelect.title">
+            <de><![CDATA[VHost-Auswahl für Passwort-Links anzeigen]]></de>
+        </locale>
+        <locale name="settings.module_settings.showPasswordLinkVHostSelect.description">
+            <de><![CDATA[Ermöglicht bei Erstellung eines Passwort-Links den VHost anzugeben, der für die Generierung der Passwort-Link URL verwendet werden soll (nur möglich, wenn mehr als ein VHost im System angelegt ist)]]></de>
+        </locale>
 
         <locale name="user.gpm.title">
             <de><![CDATA[Passwort-Manager]]></de>
@@ -2109,6 +2115,9 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="controls.password.linklist.tbl.btn.calls">
             <de><![CDATA[Aufrufe anzeigen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.btn.toggleInactive">
+            <de><![CDATA[Inaktive anzeigen]]></de>
         </locale>
         <locale name="controls.password.linklist.tbl.btn.deactivate">
             <de><![CDATA[Deaktivieren]]></de>

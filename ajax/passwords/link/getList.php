@@ -1,6 +1,8 @@
 <?php
 
 use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
+use QUI\Utils\Security\Orthos;
+use QUI\Utils\Grid;
 
 /**
  * Get list of all PasswordLinks for a specific password
@@ -13,9 +15,18 @@ use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
  */
 QUI::$Ajax->registerFunction(
     'package_pcsg_grouppasswordmanager_ajax_passwords_link_getList',
-    function ($passwordId) {
-        return PasswordLinks::getList((int)$passwordId);
+    function ($passwordId, $searchParams) {
+        $searchParams = Orthos::clearArray(
+            json_decode($searchParams, true)
+        );
+
+        $Grid = new Grid($searchParams);
+
+        return $Grid->parseResult(
+            PasswordLinks::getList((int)$passwordId, $searchParams),
+            PasswordLinks::getList((int)$passwordId, $searchParams, true)
+        );
     },
-    array('passwordId'),
+    array('passwordId', 'searchParams'),
     'Permission::checkAdminUser'
 );

@@ -199,12 +199,14 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get list of PasswordLinks
          *
          * @param {number} passwordId - password ID
+         * @param {Object} SearchParams
          * @returns {Promise}
          */
-        getLinkList: function (passwordId) {
+        getLinkList: function (passwordId, SearchParams) {
             return AuthAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_link_getList', {
-                passwordId: passwordId,
-                'package' : 'pcsg/grouppasswordmanager'
+                passwordId  : passwordId,
+                searchParams: JSON.encode(SearchParams),
+                'package'   : 'pcsg/grouppasswordmanager'
             });
         },
 

@@ -1,6 +1,7 @@
 <?php
 
 use Pcsg\GroupPasswordManager\PasswordLink;
+use Pcsg\GroupPasswordManager\Constants\Settings;
 
 /**
  * Get list of VHosts
@@ -10,6 +11,9 @@ use Pcsg\GroupPasswordManager\PasswordLink;
 QUI::$Ajax->registerFunction(
     'package_pcsg_grouppasswordmanager_ajax_passwords_link_getVHostList',
     function () {
+        // check if VHost selection is enabled
+        $Conf = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig();
+
         $VhostManager = new \QUI\System\VhostManager();
         $validVhosts  = array();
 
@@ -25,6 +29,10 @@ QUI::$Ajax->registerFunction(
 
             if (!empty($sites)) {
                 $validVhosts[] = $vhost;
+
+                if (!$Conf->get('settings', Settings::SHOW_VHOST_LIST)) {
+                    break;
+                }
             }
         }
 

@@ -13,7 +13,6 @@ use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\KDF;
-use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
 use QUI;
@@ -21,6 +20,7 @@ use Pcsg\GroupPasswordManager\PasswordLink;
 use Pcsg\GroupPasswordManager\Security\Hash;
 use Pcsg\GroupPasswordManager\Security\Random;
 use Pcsg\GroupPasswordManager\Exception\Exception;
+use QUI\Utils\Security\Orthos;
 
 /**
  * Class for for managing PasswordLinks
@@ -171,20 +171,58 @@ class PasswordLinks
      * Get list of PasswordLinks for a password
      *
      * @param int $passwordId
+     * @param array $searchParams (optional)
+     * @param bool $countOnly (optional) - get count only
      * @return array
      */
-    public static function getList($passwordId)
+    public static function getList($passwordId, $searchParams = array(), $countOnly = false)
     {
+        // ORDER BY
+        $order = '`id`';
+
+        if (!empty($searchParams['sortOn'])) {
+            $order = '`' . Orthos::clear($searchParams['sortOn']) . '`';
+        }
+
+        if (!empty($searchParams['sortBy'])) {
+            $order .= " " . Orthos::clear($searchParams['sortBy']);
+        } else {
+            $order .= " DESC";
+        }
+
+        // LIMIT
+        $limit = null;
+
+        if (!empty($gridParams['limit'])
+            && !$countOnly
+        ) {
+            $limit = $gridParams['limit'];
+        } elseif (!$countOnly) {
+            $limit = 20;
+        }
+
+        $where = array(
+            'dataId' => $passwordId,
+            'active' => 1
+        );
+
+        if (!empty($searchParams['showInactive'])) {
+            unset($where['active']);
+        }
+
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'id',
             ),
             'from'   => Tables::passwordLink(),
-            'where'  => array(
-                'dataId' => $passwordId
-            ),
-            'order' => 'id DESC'
+            'where'  => $where,
+            'order'  => $order,
+            'limit'  => $limit
         ));
+
+        if ($countOnly) {
+            return count($result);
+        }
 
         $list = array();
 
