@@ -7,7 +7,10 @@
 namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GpmAuthPassword\AuthPlugin;
+use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Crypto;
+use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI\Package\Package;
@@ -540,6 +543,40 @@ class Events
         // delete password links
         foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
             $PasswordLink->delete();
+        }
+    }
+
+    /**
+     * pcsg/grouppasswordmanager: onPasswordOwnerChange
+     *
+     * @param Password $Password
+     * @param CryptoUser|CryptoGroup $NewOwner
+     * @return void
+     */
+    public static function onPasswordOwnerChange(Password $Password, $NewOwner)
+    {
+        // deactivate all PasswordLinks if new owner is not allowed to use them
+        if (!PasswordLinks::isUserAllowedToUsePasswordLinks($Password, $NewOwner)) {
+            foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
+                $PasswordLink->deactivate(false);
+            }
+        }
+    }
+
+    /**
+     * pcsg/grouppasswordmanager: onPasswordSecurityClassChange
+     *
+     * @param Password $Password
+     * @param SecurityClass $SecurityClass
+     * @return void
+     */
+    public static function onPasswordSecurityClassChange(Password $Password, SecurityClass $SecurityClass)
+    {
+        // deactivate all PasswordLinks if new SecurityClass prohibits PasswordLinks
+        if (!$SecurityClass->isPasswordLinksAllowed()) {
+            foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
+                $PasswordLink->deactivate(false);
+            }
         }
     }
 }

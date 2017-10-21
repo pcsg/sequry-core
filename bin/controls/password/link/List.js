@@ -149,6 +149,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     dataType : 'integer',
                     width    : 75
                 }, {
+                    header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.link'),
+                    dataIndex: 'link',
+                    dataType : 'node',
+                    width    : 75
+                }, {
                     header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.validUntil'),
                     dataIndex: 'validUntil',
                     dataType : 'string',
@@ -174,10 +179,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                     dataType : 'string',
                     width    : 275
                 }, {
-                    header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.link'),
-                    dataIndex: 'link',
+                    header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.securityClass'),
+                    dataIndex: 'securityClass',
+                    dataType : 'string',
+                    width    : 150
+                }, {
+                    header   : QUILocale.get(lg, 'controls.password.linklist.tbl.header.passwordOwner'),
+                    dataIndex: 'passwordOwner',
                     dataType : 'node',
-                    width    : 75
+                    width    : 250
                 }, {
                     dataIndex: 'calls',
                     hidden   : true
@@ -346,6 +356,29 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
                         title  : QUILocale.get(lg, 'controls.password.linklist.tbl.no_password'),
                         alt    : QUILocale.get(lg, 'controls.password.linklist.tbl.no_password')
                     });
+                }
+
+                // security class
+                Row.securityClass = Data.securityClass;
+
+                // password owner
+                Row.passwordOwner = new Element('div', {
+                    'class': 'pcsg-gpm-password-linklist-owner',
+                    html   : Data.passwordOwner
+                });
+
+                switch (Data.passwordOwnerType) {
+                    case 'user':
+                        new Element('span', {
+                            'class': 'fa fa-user pcsg-gpm-password-linklist-owner-icon'
+                        }).inject(Row.passwordOwner);
+                        break;
+
+                    case 'group':
+                        new Element('span', {
+                            'class': 'fa fa-users pcsg-gpm-password-linklist-owner-icon'
+                        }).inject(Row.passwordOwner);
+                        break;
                 }
 
                 // createUser

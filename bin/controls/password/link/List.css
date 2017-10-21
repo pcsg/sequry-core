@@ -30,3 +30,14 @@
 .pcsg-gpm-password-linklist-url-link:hover {
     color: #00A0B0;
 }
+
+.pcsg-gpm-password-linklist-owner {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.pcsg-gpm-password-linklist-owner-icon {
+    float: left;
+    margin: 5px 5px 0 0;
+}

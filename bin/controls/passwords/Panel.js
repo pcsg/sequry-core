@@ -3,35 +3,6 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/desktop/Panel
- * @require qui/controls/buttons/Seperator
- * @require qui/controls/buttons/Button
- * @require qui/controls/buttons/Select
- * @require qui/controls/loader/Loader
- * @require qui/controls/windows/Popup
- * @require qui/controls/windows/Confirm
- * @require qui/controls/sitemap/Map
- * @require qui/controls/sitemap/Item
- * @require controls/grid/Grid
- * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
- * @require package/pcsg/grouppasswordmanager/bin/Actors
- * @require package/pcsg/grouppasswordmanager/bin/Categories
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Create
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/View
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Share
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Edit
- * @require package/pcsg/grouppasswordmanager/bin/controls/passwords/Search
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
- * @requrie Ajax
- * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css
- *
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 

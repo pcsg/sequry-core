@@ -306,11 +306,13 @@ class Password extends QUI\QDOM
         // handle some attributes with priority
         $SecurityClass = false;
 
-        if (isset($passwordData['securityClassId'])
-            && !empty($passwordData['securityClassId'])
+        if (!empty($passwordData['securityClassId'])
+            && (int)$passwordData['securityClassId'] !== $this->getSecurityClass()->getId()
         ) {
             $SecurityClass       = Authentication::getSecurityClass((int)$passwordData['securityClassId']);
             $this->SecurityClass = $SecurityClass;
+
+            QUI::getEvents()->fireEvent('passwordSecurityClassChange', array($this, $SecurityClass));
         }
 
         foreach ($passwordData as $k => $v) {
@@ -834,15 +836,15 @@ class Password extends QUI\QDOM
                     ));
                 }
 
-                $CryptoUser = CryptoActors::getCryptoUser($id);
+                $NewOwner = CryptoActors::getCryptoUser($id);
 
-                if (!$this->SecurityClass->isUserEligible($CryptoUser)) {
+                if (!$this->SecurityClass->isUserEligible($NewOwner)) {
                     throw new QUI\Exception(array(
                         'pcsg/grouppasswordmanager',
                         'exception.password.create.access.user.not.eligible',
                         array(
-                            'userId'             => $CryptoUser->getId(),
-                            'userName'           => $CryptoUser->getName(),
+                            'userId'             => $NewOwner->getId(),
+                            'userName'           => $NewOwner->getName(),
                             'securityClassId'    => $this->SecurityClass->getId(),
                             'securityClassTitle' => $this->SecurityClass->getAttribute('title')
                         )
@@ -865,15 +867,15 @@ class Password extends QUI\QDOM
 
             case self::OWNER_TYPE_GROUP:
             case 'group':
-                $CryptoGroup = CryptoActors::getCryptoGroup($id);
+                $NewOwner = CryptoActors::getCryptoGroup($id);
 
-                if (!$this->SecurityClass->isGroupEligible($CryptoGroup)) {
+                if (!$this->SecurityClass->isGroupEligible($NewOwner)) {
                     throw new QUI\Exception(array(
                         'pcsg/grouppasswordmanager',
                         'exception.password.create.access.group.not.eligible',
                         array(
-                            'groupId'            => $CryptoGroup->getId(),
-                            'groupName'          => $CryptoGroup->getAttribute('name'),
+                            'groupId'            => $NewOwner->getId(),
+                            'groupName'          => $NewOwner->getAttribute('name'),
                             'securityClassId'    => $this->SecurityClass->getId(),
                             'securityClassTitle' => $this->SecurityClass->getAttribute('title')
                         )
@@ -996,6 +998,8 @@ class Password extends QUI\QDOM
             'newOwnerId'   => $newOwnerId,
             'newOwnerType' => $newOwnerType
         ));
+
+        QUI::getEvents()->fireEvent('passwordOwnerChange', array($this, $NewOwner));
 
         return true;
     }
@@ -1401,6 +1405,16 @@ class Password extends QUI\QDOM
         }
 
         return CryptoActors::getCryptoGroup($currentOwnerId);
+    }
+
+    /**
+     * Get password owner type
+     *
+     * @return int - see Pcsg\GroupPasswordManager\Password::OWNER_TYPE_*
+     */
+    public function getOwnerType()
+    {
+        return $this->getSecretAttribute('ownerType');
     }
 
     /**

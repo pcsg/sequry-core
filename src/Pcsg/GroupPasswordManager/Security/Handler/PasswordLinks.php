@@ -91,19 +91,22 @@ class PasswordLinks
         $CreateUser = QUI::getUserBySession();
 
         $dataAccess = array(
-            'password'       => $password,
-            'encryptionSalt' => \Sodium\bin2hex($encryptionSalt),
-            'hash'           => \Sodium\bin2hex($hash),
-            'dataKey'        => \Sodium\bin2hex($passwordKey),
-            'createDate'     => date('Y-m-d H:i:s'),
-            'createUserId'   => $CreateUser->getId(),
-            'createUserName' => $CreateUser->getName(),
-            'callCount'      => 0,
-            'calls'          => array(),
-            'maxCalls'       => false,
-            'validUntil'     => false,
-            'message'        => empty($settings['message']) ? false : $settings['message'],
-            'vhost'          => false
+            'password'          => $password,
+            'encryptionSalt'    => \Sodium\bin2hex($encryptionSalt),
+            'hash'              => \Sodium\bin2hex($hash),
+            'dataKey'           => \Sodium\bin2hex($passwordKey),
+            'createDate'        => date('Y-m-d H:i:s'),
+            'createUserId'      => $CreateUser->getId(),
+            'createUserName'    => $CreateUser->getName(),
+            'callCount'         => 0,
+            'calls'             => array(),
+            'maxCalls'          => false,
+            'validUntil'        => false,
+            'message'           => empty($settings['message']) ? false : $settings['message'],
+            'vhost'             => false,
+            'passwordOwnerId'   => $Password->getOwner()->getId(),
+            'passwordOwnerType' => $Password->getOwnerType(),
+            'securityClassId'   => $Password->getSecurityClass()->getId()
         );
 
         // vhost

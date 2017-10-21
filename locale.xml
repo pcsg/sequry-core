@@ -2110,6 +2110,12 @@ Freundliche Grüße!]]></de>
         <locale name="controls.password.linklist.tbl.header.passwordProtected">
             <de><![CDATA[PIN-Schutz]]></de>
         </locale>
+        <locale name="controls.password.linklist.tbl.header.securityClass">
+            <de><![CDATA[Passwort-Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.passwordOwner">
+            <de><![CDATA[Passwort-Eigentümer]]></de>
+        </locale>
         <locale name="controls.password.linklist.tbl.btn.add">
             <de><![CDATA[Passwort-Link erstellen]]></de>
         </locale>

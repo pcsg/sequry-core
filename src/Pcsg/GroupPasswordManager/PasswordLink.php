@@ -2,6 +2,7 @@
 
 namespace Pcsg\GroupPasswordManager;
 
+use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 use QUI;
@@ -349,11 +350,14 @@ class PasswordLink
     /**
      * Deactivate PasswordLink
      *
+     * @param bool $checkPermission (optional) - check PasswordLink permission [default: true]
      * @return void
      */
-    public function deactivate()
+    public function deactivate($checkPermission = true)
     {
-        $this->checkPermission();
+        if ($checkPermission !== false) {
+            $this->checkPermission();
+        }
 
         $this->access['dataKey'] = null;
         $this->active            = false;
@@ -411,19 +415,56 @@ class PasswordLink
      */
     public function toArray()
     {
+        // Password owner
+        $passwordOwnerId = $this->access['passwordOwnerId'];
+
+        switch ((int)$this->access['passwordOwnerType']) {
+            case Password::OWNER_TYPE_USER:
+                try {
+                    $PasswordOwner = CryptoActors::getCryptoUser($passwordOwnerId);
+                    $passwordOwner = $PasswordOwner->getUsername() . ' (#' . $PasswordOwner->getId() . ')';
+                } catch (\Exception $Exception) {
+                    $passwordOwner = '#' . $passwordOwnerId;
+                }
+
+                $passwordOwnerType = 'user';
+                break;
+
+            default:
+                try {
+                    $PasswordOwner = CryptoActors::getCryptoGroup($passwordOwnerId);
+                    $passwordOwner = $PasswordOwner->getName() . ' (#' . $PasswordOwner->getId() . ')';
+                } catch (\Exception $Exception) {
+                    $passwordOwner = '#' . $passwordOwnerId;
+                }
+
+                $passwordOwnerType = 'group';
+        }
+
+        // SecurityClass
+        try {
+            $SecurityClass = Authentication::getSecurityClass($this->access['securityClassId']);
+            $securityClass = $SecurityClass->getAttribute('title');
+        } catch (\Exception $Exception) {
+            $securityClass = '#' . $this->access['securityClassId'];
+        }
+
         return array(
-            'id'             => $this->id,
-            'validUntil'     => $this->access['validUntil'],
-            'callCount'      => $this->access['callCount'],
-            'maxCalls'       => $this->access['maxCalls'],
-            'password'       => $this->access['password'],
-            'createDate'     => $this->access['createDate'],
-            'createUserId'   => $this->access['createUserId'],
-            'createUserName' => $this->access['createUserName'],
-            'calls'          => $this->access['calls'],
-            'vhost'          => $this->access['vhost'],
-            'active'         => $this->isActive(),
-            'link'           => $this->getUrl()
+            'id'                => $this->id,
+            'validUntil'        => $this->access['validUntil'],
+            'callCount'         => $this->access['callCount'],
+            'maxCalls'          => $this->access['maxCalls'],
+            'password'          => $this->access['password'],
+            'createDate'        => $this->access['createDate'],
+            'createUserId'      => $this->access['createUserId'],
+            'createUserName'    => $this->access['createUserName'],
+            'calls'             => $this->access['calls'],
+            'vhost'             => $this->access['vhost'],
+            'active'            => $this->isActive(),
+            'link'              => $this->getUrl(),
+            'passwordOwnerType' => $passwordOwnerType,
+            'passwordOwner'     => $passwordOwner,
+            'securityClass'     => $securityClass
         );
     }
 }
