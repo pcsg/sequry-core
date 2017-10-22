@@ -1081,6 +1081,14 @@ Freundliche Grüße!]]></de>
         <locale name="desktopsearch.group.passwords.label">
             <de><![CDATA[Passwörter]]></de>
         </locale>
+
+        <!-- Cron -->
+        <locale name="cron.delete_passwordlinks.title">
+            <de><![CDATA[Passwort-Links deaktivieren]]></de>
+        </locale>
+        <locale name="cron.delete_passwordlinks.description">
+            <de><![CDATA[Deaktiviert alle Passwort-Links, deren Ablaufdatum (sofern eingestellt) erreicht ist]]></de>
+        </locale>
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="js">

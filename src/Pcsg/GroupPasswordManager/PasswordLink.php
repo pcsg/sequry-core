@@ -316,6 +316,22 @@ class PasswordLink
     }
 
     /**
+     * Get date until the link is valid
+     *
+     * @return \DateTime|false
+     */
+    public function getValidUntil()
+    {
+        $date = $this->access['validUntil'];
+
+        if (empty($date)) {
+            return false;
+        }
+
+        return new \DateTime($date);
+    }
+
+    /**
      * Checks if this PasswordLink is protected by a password
      *
      * @return bool
