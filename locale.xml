@@ -834,10 +834,10 @@ Freundliche Grüße!]]></de>
 
         <!-- types/passwordlink -->
         <locale name="message.sitetypes.passwordlink.wrong_password">
-            <de><![CDATA[Das Passwort ist nicht korrekt]]></de>
+            <de><![CDATA[Der PIN ist nicht korrekt]]></de>
         </locale>
         <locale name="sitetypes.passwordlink.password_protection">
-            <de><![CDATA[Dieses Passwort ist passwort-geschützt. Bitte geben Sie das entsprechende Passwort ein.]]></de>
+            <de><![CDATA[Dieses Passwort ist durch einen PIN geschützt. Bitte geben Sie den entsprechenden PIN ein. Falls Sie keinen PIN erhalten haben, wenden Sie sich bitte an die Person, die Ihnen den Passwort-Link zugesendet hat.]]></de>
         </locale>
         <locale name="sitetypes.passwordlink.general_error" html="true">
             <de><![CDATA[Der Passwort-Link konnte nicht aufgerufen werden. Dies kann folgende Gründe haben:
@@ -845,6 +845,9 @@ Freundliche Grüße!]]></de>
     <li>Der Link ist nicht mehr gültig</li>
     <li>Die Link-Adresse ist fehlerhaft</li>
 </ul>]]></de>
+        </locale>
+        <locale name="sitetypes.passwordlink.password_label">
+            <de><![CDATA[PIN]]></de>
         </locale>
 
     </groups>

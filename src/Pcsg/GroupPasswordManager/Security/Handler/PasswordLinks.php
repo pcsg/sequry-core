@@ -102,6 +102,7 @@ class PasswordLinks
             'calls'             => array(),
             'maxCalls'          => false,
             'validUntil'        => false,
+            'title'             => empty($settings['title']) ? false : $settings['title'],
             'message'           => empty($settings['message']) ? false : $settings['message'],
             'vhost'             => false,
             'passwordOwnerId'   => $Password->getOwner()->getId(),

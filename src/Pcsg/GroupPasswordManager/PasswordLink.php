@@ -296,6 +296,16 @@ class PasswordLink
     }
 
     /**
+     * Get title
+     *
+     * @return false|string
+     */
+    public function getContentTitle()
+    {
+        return $this->access['title'];
+    }
+
+    /**
      * Get message
      *
      * @return false|string

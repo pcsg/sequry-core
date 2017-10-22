@@ -39,7 +39,7 @@ try {
         $passwordProtected = true;
 
         if ($password) {
-            $Password = $PasswordLink->getPassword($_REQUEST['hash'], $password);
+            $Password          = $PasswordLink->getPassword($_REQUEST['hash'], $password);
             $passwordProtected = false;
         }
     } else {
@@ -59,7 +59,8 @@ try {
         $payloadHtml = $TypeClass->getViewHtml($data['payload']);
 
         $Engine->assign(array(
-            'title'       => $data['title'],
+            'title'       => $PasswordLink->getContentTitle(),
+            'message'     => $PasswordLink->getContentMessage(),
             'payloadHtml' => $payloadHtml
         ));
     }
@@ -79,7 +80,6 @@ if ($error) {
 }
 
 $Engine->assign(array(
-    'message'            => $PasswordLink->getContentMessage(),
     'error'              => $error,
     'passwordProtected'  => $passwordProtected,
     'invalidPasswordMsg' => $invalidPasswordMsg
