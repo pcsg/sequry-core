@@ -100,7 +100,7 @@ class CryptoUser extends QUI\Users\User
      * Get all authentication key pairs of a security class the user is registered for
      *
      * @param SecurityClass $SecurityClass
-     * @return array
+     * @return AuthKeyPair[]
      */
     public function getAuthKeyPairsBySecurityClass($SecurityClass)
     {
@@ -387,6 +387,7 @@ class CryptoUser extends QUI\Users\User
         }
 
         $passwordKeyParts = array();
+        $SecurityClass    = Passwords::getSecurityClass($passwordId);
 
         foreach ($result as $row) {
             // check access data integrity/authenticity
@@ -431,6 +432,10 @@ class CryptoUser extends QUI\Users\User
                 $row['dataKey'],
                 $AuthKeyPair
             );
+
+            if (count($passwordKeyParts) >= $SecurityClass->getRequiredFactors()) {
+                break;
+            }
         }
 
         // build password key from its parts
@@ -1436,19 +1441,18 @@ class CryptoUser extends QUI\Users\User
         $i            = 0;
         $DB           = QUI::getDataBase();
 
+        // delete old access entries
+        $DB->delete(
+            Tables::usersToPasswords(),
+            array(
+                'userId' => $this->getId(),
+                'dataId' => $passwordId
+            )
+        );
+
         /** @var AuthKeyPair $UserAuthKeyPair */
         foreach ($authKeyPairs as $UserAuthKeyPair) {
             try {
-                // delete old access entry
-                $DB->delete(
-                    Tables::usersToPasswords(),
-                    array(
-                        'userId'    => $this->getId(),
-                        'keyPairId' => $UserAuthKeyPair->getId(),
-                        'dataId'    => $passwordId
-                    )
-                );
-
                 $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
                     new HiddenString($passwordKeyParts[$i++]),
                     $UserAuthKeyPair
@@ -1534,20 +1538,19 @@ class CryptoUser extends QUI\Users\User
         $authKeyPairs = $this->getAuthKeyPairsBySecurityClass($SecurityClass);
         $DB           = QUI::getDataBase();
 
+        // delete old access entries
+        $DB->delete(
+            Tables::usersToGroups(),
+            array(
+                'userId'          => $this->getId(),
+                'groupId'         => $CryptoGroup->getId(),
+                'securityClassId' => $SecurityClass->getId()
+            )
+        );
+
         /** @var AuthKeyPair $UserAuthKeyPair */
         foreach ($authKeyPairs as $UserAuthKeyPair) {
             try {
-                // delete old access entry
-                $DB->delete(
-                    Tables::usersToGroups(),
-                    array(
-                        'userId'          => $this->getId(),
-                        'userKeyPairId'   => $UserAuthKeyPair->getId(),
-                        'groupId'         => $CryptoGroup->getId(),
-                        'securityClassId' => $SecurityClass->getId()
-                    )
-                );
-
                 $payloadKeyPart = $groupAccessKeyParts[$i++];
 
                 $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
