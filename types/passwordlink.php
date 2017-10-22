@@ -73,6 +73,11 @@ try {
     $error = true;
 }
 
+if ($error) {
+    $Respone = QUI::getGlobalResponse();
+    $Respone->setStatusCode(404);
+}
+
 $Engine->assign(array(
     'message'            => $PasswordLink->getContentMessage(),
     'error'              => $error,

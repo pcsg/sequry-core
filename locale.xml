@@ -839,6 +839,13 @@ Freundliche Grüße!]]></de>
         <locale name="sitetypes.passwordlink.password_protection">
             <de><![CDATA[Dieses Passwort ist passwort-geschützt. Bitte geben Sie das entsprechende Passwort ein.]]></de>
         </locale>
+        <locale name="sitetypes.passwordlink.general_error" html="true">
+            <de><![CDATA[Der Passwort-Link konnte nicht aufgerufen werden. Dies kann folgende Gründe haben:
+<ul>
+    <li>Der Link ist nicht mehr gültig</li>
+    <li>Die Link-Adresse ist fehlerhaft</li>
+</ul>]]></de>
+        </locale>
 
     </groups>
 
