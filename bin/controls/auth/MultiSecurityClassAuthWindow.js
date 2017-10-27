@@ -75,6 +75,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
 
             this.$authSuccessCount       = 0;
             this.$authSuccessCountNeeded = 0;
+            this.$Authenticated          = {};
             this.$Table                  = null;
         },
 
@@ -255,6 +256,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
          * @param {Integer} securityClassId
          */
         $setSecurityClassSuccess: function (securityClassId) {
+            this.$authSuccessCount++;
+
+            if (this.$authSuccessCount >= this.$authSuccessCountNeeded) {
+                this.$AuthBtn.enable();
+            }
+
+            if (securityClassId in this.$Authenticated) {
+                return;
+            }
+
             var Row = this.$Elm.getElement(
                 'tr[data-sid="' + securityClassId + '"]'
             );
@@ -272,11 +283,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 'class': 'fa fa-check auth-success-icon'
             }).inject(Btn.getElm(), 'after');
 
-            this.$authSuccessCount++;
-
-            if (this.$authSuccessCount >= this.$authSuccessCountNeeded) {
-                this.$AuthBtn.enable();
-            }
+            this.$Authenticated[securityClassId] = true;
         }
     });
 });
