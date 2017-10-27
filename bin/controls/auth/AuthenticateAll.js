@@ -25,12 +25,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll', [
     'qui/controls/buttons/Button',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/classes/Actors'
+    'package/pcsg/grouppasswordmanager/bin/Authentication'
 
     //'css!package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll.css'
 
-], function (QUI, QUIControl, QUIPopup, QUIButton, QUILocale, Authentication, ActorHandler) {
+], function (QUI, QUIControl, QUIPopup, QUIButton, QUILocale, Authentication) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
