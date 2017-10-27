@@ -10,6 +10,7 @@
                 <locale group="pcsg/grouppasswordmanager" var="sitetype.passwordlink.description" />
             </desc>
         </type>
+
     </types>
 
 </site>

@@ -258,6 +258,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
                             href = InputElm.value;
                         }
 
+                        if (!href) {
+                            href = InputElm.innerHTML;
+                        }
+
+                        if (!href) {
+                            return;
+                        }
+
                         var AnchorElm = new Element('a', {
                             href  : href,
                             target: '_blank'
