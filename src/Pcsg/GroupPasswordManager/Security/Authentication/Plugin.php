@@ -64,9 +64,13 @@ class Plugin extends QUI\QDOM
         $this->AuthClass = new $data['path']();
         $this->id        = $data['id'];
 
+        $L = QUI::getLocale();
+        $t = json_decode($data['title'], true);
+        $d = json_decode($data['description'], true);
+
         $this->setAttributes(array(
-            'title'       => $data['title'],
-            'description' => $data['description']
+            'title'       => $L->get($t[0], $t[1]),
+            'description' => $L->get($d[0], $d[1])
         ));
     }
 
@@ -163,7 +167,7 @@ class Plugin extends QUI\QDOM
         }
 
         Authentication::clearAuthDataFromSession();
-        
+
         $this->authenticate($old, $User);
 
         $AuthKeyPair     = CryptoActors::getCryptoUser()->getAuthKeyPair($this);
