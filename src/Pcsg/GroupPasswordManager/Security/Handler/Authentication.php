@@ -111,6 +111,7 @@ class Authentication
         ));
 
         $CryptoUser = CryptoActors::getCryptoUser();
+        $L          = QUI::getLocale();
 
         foreach ($result as $row) {
             $AuthPlugin = self::getAuthPlugin($row['id']);
@@ -127,6 +128,24 @@ class Authentication
             }
 
             $row['sync'] = $sync;
+
+            // title
+            $t = json_decode($row['title'], true);
+
+            if (!empty($t)) {
+                $row['title'] = $L->get($t[0], $t[1]);
+            } else {
+                $row['title'] = '-';
+            }
+
+            // description
+            $d = json_decode($row['description'], true);
+
+            if (!empty($d)) {
+                $row['description'] = $L->get($d[0], $d[1]);
+            } else {
+                $row['description'] = '-';
+            }
 
             $list[] = $row;
         }
@@ -260,15 +279,15 @@ class Authentication
     /**
      * Checks if an authentication plugin is already registered
      *
-     * @param string $path
+     * @param IAuthPlugin $AuthPlugin
      * @return bool
      */
-    protected static function isAuthPluginRegistered($path)
+    protected static function isAuthPluginRegistered(IAuthPlugin $AuthPlugin)
     {
         $result = QUI::getDataBase()->fetch(array(
             'from'  => Tables::authPlugins(),
             'where' => array(
-                'path' => $path
+                'path' => '\\' . get_class($AuthPlugin)
             )
         ));
 
@@ -282,33 +301,29 @@ class Authentication
     /**
      * Register an authentication plugin
      *
-     * @param string $classPath - path to the main authentication plugin class
-     * @param string $title - title of the authentication plugin
-     * @param string $description (optional) - description of the authentication plugin
+     * @param IAuthPlugin $AuthPlugin
      * @throws QUI\Exception
      */
-    public static function registerPlugin($classPath, $title, $description = null)
+    public static function registerPlugin(IAuthPlugin $AuthPlugin)
     {
-        $class     = '\\' . $classPath;
-        $AuthClass = new $class();
+        $class = '\\' . get_class($AuthPlugin);
 
-        if (!($AuthClass instanceof IAuthPlugin)) {
+        if (!($AuthPlugin instanceof IAuthPlugin)) {
             throw new QUI\Exception(
-                'The plugin "' . get_class($AuthClass) . '" cannot be registered. The authentication class has'
+                'The plugin "' . $class . '" cannot be registered. The authentication class has'
                 . ' to implement IAuthPlugin interface.'
             );
         }
 
-        /** @var IAuthPlugin $AuthClass */
-        $titleLocaleData = $AuthClass->getNameLocaleData();
-        $descLocaleData  = $AuthClass->getDescriptionLocaleData();
+        $titleLocaleData = $AuthPlugin->getNameLocaleData();
+        $descLocaleData  = $AuthPlugin->getDescriptionLocaleData();
 
-        if (!(self::isAuthPluginRegistered($class))) {
+        if (!self::isAuthPluginRegistered($AuthPlugin)) {
             QUI::getDataBase()->insert(
                 Tables::authPlugins(),
                 array(
-                    'title'       => $title,
-                    'description' => is_null($description) ? '' : $description,
+                    'title'       => json_encode($titleLocaleData),
+                    'description' => json_encode($descLocaleData),
                     'path'        => $class
                 )
             );
@@ -316,8 +331,8 @@ class Authentication
             QUI::getDataBase()->update(
                 Tables::authPlugins(),
                 array(
-                    'title'       => $title,
-                    'description' => is_null($description) ? '' : $description,
+                    'title'       => json_encode($titleLocaleData),
+                    'description' => json_encode($descLocaleData),
                 ),
                 array(
                     'path' => $class
@@ -518,7 +533,8 @@ class Authentication
         }
 
         if (!isset($currentAuthKeyData['starttime'])
-            && self::$sessionCache) {
+            && self::$sessionCache
+        ) {
             $currentAuthKeyData['starttime'] = time();
         }
 
