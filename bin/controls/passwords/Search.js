@@ -4,17 +4,6 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Search
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.css
- *
  * @event onLoaded
  * @event onSubmit [SearchData]
  */

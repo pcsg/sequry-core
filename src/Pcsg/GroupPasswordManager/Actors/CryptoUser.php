@@ -755,7 +755,7 @@ class CryptoUser extends QUI\Users\User
         }
 
         // JOIN user access meta table with password data table
-        $sql .= " FROM `" . Tables::passwords(). "` data, ";
+        $sql .= " FROM `" . Tables::passwords() . "` data, ";
         $sql .= " `" . Tables::usersToPasswordMeta() . "` meta";
 
         $where[] = 'data.`id` = meta.`dataId`';
@@ -768,9 +768,15 @@ class CryptoUser extends QUI\Users\User
             $whereOR    = array();
             $searchTerm = trim($searchParams['search']['searchterm']);
 
-            if (isset($searchParams['title'])
-                && $searchParams['title']
-            ) {
+            $searchTitle       = !empty($searchParams['title']);
+            $searchDescription = !empty($searchParams['description']);
+
+            if (!$searchTitle && !$searchDescription) {
+                $searchTitle       = true;
+                $searchDescription = true;
+            }
+
+            if ($searchTitle) {
                 $whereOR[]      = 'data.`title` LIKE :title';
                 $binds['title'] = array(
                     'value' => '%' . $searchTerm . '%',
@@ -778,9 +784,7 @@ class CryptoUser extends QUI\Users\User
                 );
             }
 
-            if (isset($searchParams['description'])
-                && $searchParams['description']
-            ) {
+            if ($searchDescription) {
                 $whereOR[]            = 'data.`description` LIKE :description';
                 $binds['description'] = array(
                     'value' => '%' . $searchTerm . '%',
@@ -790,12 +794,6 @@ class CryptoUser extends QUI\Users\User
 
             if (!empty($whereOR)) {
                 $where[] = '(' . implode(' OR ', $whereOR) . ')';
-            } else {
-                $where[]        = 'data.`title` LIKE :title';
-                $binds['title'] = array(
-                    'value' => '%' . $searchTerm . '%',
-                    'type'  => \PDO::PARAM_STR
-                );
             }
         }
 

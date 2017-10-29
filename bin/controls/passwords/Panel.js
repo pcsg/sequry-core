@@ -3,35 +3,6 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/desktop/Panel
- * @require qui/controls/buttons/Seperator
- * @require qui/controls/buttons/Button
- * @require qui/controls/buttons/Select
- * @require qui/controls/loader/Loader
- * @require qui/controls/windows/Popup
- * @require qui/controls/windows/Confirm
- * @require qui/controls/sitemap/Map
- * @require qui/controls/sitemap/Item
- * @require controls/grid/Grid
- * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
- * @require package/pcsg/grouppasswordmanager/bin/Actors
- * @require package/pcsg/grouppasswordmanager/bin/Categories
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Create
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/View
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Share
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Edit
- * @require package/pcsg/grouppasswordmanager/bin/controls/passwords/Search
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
- * @requrie Ajax
- * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css
- *
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
@@ -317,7 +288,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             // search button
             this.$SearchInput = new Element('div', {
                 'class': 'pcsg-gpm-passwords-panel-search',
-                html   : '<input type="text" data-mode="search"/><span class="fa fa-search"></span>'
+                html   : '<input type="text" data-mode="search"/><span class="fa fa-search-plus"></span>'
             });
 
             this.$SearchInput.getElement('input').setProperty(
@@ -325,8 +296,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 QUILocale.get(lg, 'controls.gpm.passwords.panel.search.placeholder')
             );
 
+            var SearchIcon = this.$SearchInput.getElement('span');
+
             this.$SearchInput.getElement('input').addEvents({
                 keyup: function (event) {
+                    if (event.target.value.trim() === '') {
+                        SearchIcon.removeClass('fa-search');
+                        SearchIcon.addClass('fa-search-plus');
+                    } else {
+                        SearchIcon.addClass('fa-search');
+                        SearchIcon.removeClass('fa-search-plus');
+                    }
+
                     if (event.code === 13) {
                         self.$SearchParams.search.searchterm = event.target.value.trim();
 
@@ -339,7 +320,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
-            this.$SearchInput.getElement('span').addEvents({
+            SearchIcon.addEvents({
                 click: function () {
                     var Input = self.$SearchInput.getElement('input');
 
@@ -461,11 +442,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             if (this.$searchUsed) {
                 SearchIcon.removeClass('fa-search');
+                SearchIcon.removeClass('fa-search-plus');
                 SearchIcon.addClass('fa-times');
                 this.$SearchInput.getElement('input').setProperty('data-mode', 'refresh');
             } else {
                 SearchIcon.removeClass('fa-times');
-                SearchIcon.addClass('fa-search');
+                SearchIcon.addClass('fa-search-plus');
                 this.$SearchInput.getElement('input').setProperty('data-mode', 'search');
             }
 
