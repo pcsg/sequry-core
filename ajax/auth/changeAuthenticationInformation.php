@@ -10,14 +10,14 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
  * @param integer $authPluginId - ID of authentication plugin
  * @param string $oldAuthInfo - old authentication information
  * @param string $newAuthInfo - new authentication information
- * @param bool $recovery (optional) - oldAuthInfo is recovery code
+ * @param bool $recoveryToken (optional) - oldAuthInfo is recovered by recovery process
  * @return array|false - recovery code data; false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation(
     $authPluginId,
     $oldAuthInfo,
     $newAuthInfo,
-    $recovery = false
+    $recoveryToken = false
 ) {
     $oldAuthInfo = new HiddenString($oldAuthInfo);
     $newAuthInfo = new HiddenString($newAuthInfo);
@@ -25,8 +25,8 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
     try {
         $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
 
-        if ($recovery) {
-            $oldAuthInfo = Recovery::recoverEntry($AuthPlugin, $oldAuthInfo);
+        if ($recoveryToken) {
+            $oldAuthInfo = Recovery::recoverEntry($AuthPlugin, $oldAuthInfo, $recoveryToken);
         }
 
         $AuthPlugin->changeAuthenticationInformation($oldAuthInfo, $newAuthInfo);
@@ -73,6 +73,6 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation',
-    array('authPluginId', 'oldAuthInfo', 'newAuthInfo', 'recovery'),
+    array('authPluginId', 'oldAuthInfo', 'newAuthInfo', 'recoveryToken'),
     'Permission::checkAdminUser'
 );

@@ -8,6 +8,7 @@ namespace Pcsg\GroupPasswordManager\Security\Handler;
 
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
+use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\KDF;
 use Pcsg\GroupPasswordManager\Security\MAC;
@@ -155,7 +156,8 @@ class Recovery
      * Recover recovery information for specific authenticataion plugin
      *
      * @param Plugin $AuthPlugin - Authentication Plugin the recovery entry is created for
-     * @param HiddenString $recoveryCode - recovery code
+     * @param HiddenString $recoveryCode - Recovery Code (was generated upon authentication plugin registration)
+     * @param HiddenString $recoveryToken - Recovery Token (was sent via mail)
      * @param CryptoUser $CryptoUser (optional) - the user the recovery data is created for;
      * if omitted uses session user
      *
@@ -163,8 +165,12 @@ class Recovery
      *
      * @throws QUI\Exception
      */
-    public static function recoverEntry($AuthPlugin, HiddenString $recoveryCode, $CryptoUser = null)
-    {
+    public static function recoverEntry(
+        $AuthPlugin,
+        HiddenString $recoveryCode,
+        HiddenString $recoveryToken,
+        $CryptoUser = null
+    ) {
         if (is_null($CryptoUser)) {
             $CryptoUser = CryptoActors::getCryptoUser();
         }
@@ -217,6 +223,26 @@ class Recovery
             ));
         }
 
+        // check token
+        try {
+            $realToken = SymmetricCrypto::decrypt(
+                $data['recoveryToken'],
+                Utils::getSystemPasswordAuthKey()
+            );
+        } catch (\Exception $Exception) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.recovery.wrong_token'
+            ));
+        }
+
+        if ($recoveryToken->getString() !== $realToken->getString()) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.recovery.wrong_token'
+            ));
+        }
+
         // decrypt authentication information
         $RecoveryKey = KDF::createKey($recoveryCode, $data['salt']);
 
@@ -225,7 +251,7 @@ class Recovery
         } catch (\Exception $Exception) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
-                'exception.recovery.recover.wrong.code'
+                'exception.recovery.wrong_code'
             ));
         }
 
@@ -259,6 +285,81 @@ class Recovery
         QUI::getSession()->set($sessionKey, null);
 
         return json_decode($data, true);
+    }
+
+    /**
+     * Send recovery token via email
+     *
+     * @param Plugin $AuthPlugin
+     * @return void
+     *
+     * @throws Exception
+     */
+    public static function sendRecoveryToken(Plugin $AuthPlugin)
+    {
+        $User  = QUI::getUserBySession();
+        $email = $User->getAttribute('email');
+
+        if (empty($email)) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.recovery.no_email_address'
+            ));
+        }
+
+        // Token generation
+        $token          = self::generateRecoveryToken();
+        $tokenEncrypted = SymmetricCrypto::encrypt(
+            new HiddenString($token),
+            Utils::getSystemPasswordAuthKey()
+        );
+
+        QUI::getDataBase()->update(
+            Tables::recovery(),
+            array(
+                'recoveryToken' => $tokenEncrypted
+            ),
+            array(
+                'id' => self::getRecoveryCodeId($AuthPlugin)
+            )
+        );
+
+        $Mailer = new QUI\Mail\Mailer();
+
+        $Mailer->setFrom('info@pcsg.de');  // @todo als setting
+        $Mailer->setFromName('QUIQQER PasswordManager'); // @todo als setting
+
+        $Mailer->setBody(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'recovery.sendtoken.body',
+                array(
+                    'authPluginTitle' => $AuthPlugin->getAttribute('title'),
+                    'userName'        => $User->getName(),
+                    'token'           => $token
+                )
+            )
+        );
+
+        $Mailer->setSubject(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'recovery.sendtoken.subject'
+            )
+        );
+
+        $Mailer->addRecipient($email);
+
+        try {
+            $Mailer->send();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError($Exception->getMessage());
+
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.recovery.mail_send_error'
+            ));
+        }
     }
 
     /**
@@ -309,6 +410,60 @@ class Recovery
         $len  = count($chars) - 1;
 
         for ($i = 0; $i < 25; $i++) {
+            $code .= $chars[random_int(0, $len)];
+        }
+
+        return $code;
+    }
+
+    /**
+     * Generates a human-readable random recovery token
+     *
+     * @return string
+     */
+    protected static function generateRecoveryToken()
+    {
+        $chars = array(
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N',
+            'P',
+            'Q',
+            'R',
+            'S',
+            'T',
+            'U',
+            'V',
+            'W',
+            'X',
+            'Y',
+            'Z'
+        );
+
+        $code = '';
+        $len  = count($chars) - 1;
+
+        for ($i = 0; $i < 6; $i++) {
             $code .= $chars[random_int(0, $len)];
         }
 

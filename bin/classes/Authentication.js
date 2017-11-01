@@ -321,10 +321,10 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @param {number} authPluginId - ID of authentication plugin
          * @param {string} oldInfo - old (current) authentication information
          * @param {string} newInfo - new authentication information
-         * @param {boolean} recovery - change information with help of recovery code if old auth info is lost
+         * @param {string} [recoveryToken] - Recovery token (can be used instead of oldInfo)
          * @returns {Promise}
          */
-        changeAuthInformation: function (authPluginId, oldInfo, newInfo, recovery) {
+        changeAuthInformation: function (authPluginId, oldInfo, newInfo, recoveryToken) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation', resolve, {
                     'package'   : pkg,
@@ -332,7 +332,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                     authPluginId: authPluginId,
                     oldAuthInfo : oldInfo,
                     newAuthInfo : newInfo,
-                    recovery    : recovery ? 1 : 0
+                    recovery    : recoveryToken
                 });
             });
         },
@@ -535,12 +535,28 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         /**
          * Get ID of recovery code for authentication plugin for current session user
          *
-         * @param {number} authPluginId - authentication plugin
+         * @param {number} authPluginId - authentication plugin ID
          * @returns {Promise}
          */
         getRecoveryCodeId: function (authPluginId) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getRecoveryCodeId', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId
+                });
+            });
+        },
+
+        /**
+         * Send recovery token for recovery process of an authentication plugin
+         *
+         * @param {number} authPluginId - authentication plugin ID
+         * @returns {Promise}
+         */
+        sendRecoveryToken: function (authPluginId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_getRecoveryCodeId', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId

@@ -576,8 +576,17 @@
         <locale name="exception.recovery.recover.entry.mac.mismatch">
             <de><![CDATA[Der Wiederherstellungs-Eintrag hat die Authentizitäts-Prüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
-        <locale name="exception.recovery.recover.wrong.code">
+        <locale name="exception.recovery.wrong_code">
             <de><![CDATA[Der Wiederherstellungs-Code ist nicht korrekt.]]></de>
+        </locale>
+        <locale name="exception.recovery.wrong_token">
+            <de><![CDATA[Das Wiederherstellungs-Token ist nicht korrekt.]]></de>
+        </locale>
+        <locale name="exception.recovery.no_email_address">
+            <de><![CDATA[Das Wiederherstellungs-Token kann nicht versendet werden, da Sie in Ihrem Benutzerprofil keine E-Mail-Adresse hinterlegt haben.]]></de>
+        </locale>
+        <locale name="exception.recovery.mail_send_error">
+            <de><![CDATA[Beim Versenden des Wiederherstellungs-Tokens ist ein Fehler aufgetreten. Bitte wiederholen Sie den Vorgang oder wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- PasswordTypes -->
@@ -1822,6 +1831,35 @@
         <!-- Class: Authentication -->
         <locale name="classes.authentication.securityClassAuth.info" html="true">
             <de><![CDATA[<b>Sicherheitsklasse:</b> [title]<br><b>Benötigte Faktoren:</b> [requiredFactors]]]></de>
+        </locale>
+
+        <!-- Control: auth/recovery/Recovery -->
+        <locale name="controls.auth.recovery.template.title">
+            <de><![CDATA[Zugangsdaten für Authentifizierungs-Faktor "[authPluginTitle]" wiederherstellen]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step1">
+            <de><![CDATA[Schritt 1]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step1desc">
+            <de><![CDATA[Wiederherstellungs-Token per E-Mail-Adresse versenden]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step2">
+            <de><![CDATA[Schritt 2]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step2desc">
+            <de><![CDATA[Wiederherstellungs-Code eingeben]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step3">
+            <de><![CDATA[Schritt 3]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step3desc">
+            <de><![CDATA[Prüfen und neue Zugangsdaten setzen]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.btn.send_token">
+            <de><![CDATA[Wiederherstellungs-Token senden]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.btn.send_token_again">
+            <de><![CDATA[Wiederherstellungs-Token erneut senden]]></de>
         </locale>
 
     </groups>

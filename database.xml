@@ -145,6 +145,7 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL">authPluginId</field>
             <field type="BLOB NOT NULL">recoveryData</field>
             <field type="BLOB NOT NULL">salt</field>
+            <field type="BLOB NULL DEFAULT NULL">recoveryToken</field>
             <field type="BLOB NOT NULL">MAC</field>
             <primary>id</primary>
         </table>
