@@ -556,7 +556,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         sendRecoveryToken: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_getRecoveryCodeId', resolve, {
+                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_recovery_sendToken', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId

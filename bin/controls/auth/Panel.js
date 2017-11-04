@@ -3,14 +3,6 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Panel
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/buttons/Button
- * @requrie Ajax
- * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css
- *
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
@@ -21,23 +13,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'qui/controls/loader/Loader',
     'controls/grid/Grid',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery',
 
     'Ajax',
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
-], function (QUI, QUIPanel, QUIButton, QUIPopup, QUILoader, Grid, AuthHandler, AuthRegister,
-             AuthChange, RecoveryCodeWindow, SyncAuthPluginWindow, Ajax, QUILocale) {
+], function (QUI, QUIPanel, QUIButton, QUIPopup, QUILoader, Grid, Authentication, AuthRegister,
+             AuthChange, RecoveryCodeWindow, SyncAuthPluginWindow, Recovery, Ajax, QUILocale) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager';
-    var Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -98,6 +90,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 textimage: 'fa fa-edit',
                 events   : {
                     onClick: this.changeAuthInfo
+                }
+            });
+
+            this.addButton({
+                name     : 'recovery',
+                text     : QUILocale.get(lg, 'auth.panel.btn.recovery'),
+                textimage: 'fa fa-question-circle',
+                events   : {
+                    onClick: function () {
+                        self.recoverAuthData(
+                            self.$Grid.getSelectedData()[0]
+                        );
+                    }
                 }
             });
 
@@ -171,19 +176,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     var selectedCount = self.$Grid.getSelectedData().length,
                         Row           = self.$Grid.getSelectedData()[0],
                         Register      = self.getButtons('register'),
-                        Change        = self.getButtons('change');
+                        Change        = self.getButtons('change'),
+                        Recovery      = self.getButtons('recovery');
 
                     if (selectedCount == 1) {
                         if (!Row.isregistered) {
                             Register.enable();
                             Change.disable();
+                            Recovery.disable();
                         } else {
                             Register.disable();
                             Change.enable();
+                            Recovery.enable();
+
                         }
                     } else {
                         Register.disable();
                         Change.disable();
+                        Recovery.disable();
                     }
                 },
                 onRefresh : this.refresh
@@ -218,8 +228,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             return Authentication.getAuthPlugins().then(function (authPlugins) {
                 self.$setGridData(authPlugins);
+
+                // disable buttons
                 self.getButtons('register').disable();
                 self.getButtons('change').disable();
+                self.getButtons('recovery').disable();
+
                 self.Loader.hide();
             });
         },
@@ -303,7 +317,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     authPluginId    : authPluginId,
                     securityClassIds: securityClassIds,
                     events          : {
-                        onSuccess: function() {
+                        onSuccess: function () {
                             self.refresh();
                         }
                     }
@@ -462,6 +476,59 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                 }
                             })
                         );
+                    },
+                    onClose: function (Sheet) {
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        },
+
+        /**
+         * Show sheet with auth data recovery process
+         *
+         * @param {Object} AuthPluginData
+         */
+        recoverAuthData: function (AuthPluginData) {
+            var self = this;
+
+            //this.Loader.show();
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.auth.panel.recovery.title', {
+                    authPluginTitle: AuthPluginData.title
+                }),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        var Change = new Recovery({
+                            authPluginId: AuthPluginData.id,
+                            events      : {
+                                onLoaded: function () {
+                                    self.Loader.hide();
+                                },
+                                onFinish: function () {
+                                    Sheet.destroy();
+                                }
+                            }
+                        }).inject(Sheet.getContent());
+
+                        //Sheet.addButton(
+                        //    new QUIButton({
+                        //        text     : QUILocale.get(lg, 'auth.panel.change.btn.register'),
+                        //        textimage: 'fa fa-save',
+                        //        events   : {
+                        //            onClick: function () {
+                        //                if (!Change.check()) {
+                        //                    return;
+                        //                }
+                        //
+                        //                Change.submit();
+                        //            }
+                        //        }
+                        //    })
+                        //);
                     },
                     onClose: function (Sheet) {
                         Sheet.destroy();

@@ -351,7 +351,8 @@ class Recovery
         $Mailer->addRecipient($email);
 
         try {
-            $Mailer->send();
+            \QUI\System\Log::writeRecursive($token);
+//            $Mailer->send();
         } catch (\Exception $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
 

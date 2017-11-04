@@ -94,7 +94,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                 '.step-1 .pcsg-gpm-auth-recovery-step-content'
             );
 
-            var TokenInput = Step1Content.getElement('input');
+            var TokenInput  = Step1Content.getElement('input');
+            var ErrorMsgElm = new Element('span', {
+                'class': 'pcsg-gpm-auth-recovery-error pcsg-gpm__hidden'
+            }).inject(Step1Content, 'top');
 
             new QUIButton({
                 text     : QUILocale.get(lg, 'controls.auth.recovery.btn.send_token'),
@@ -103,6 +106,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                     onClick: function (Btn) {
                         Btn.disable();
                         Btn.setAttribute('textimage', 'fa fa-spin fa-spinner');
+
+                        ErrorMsgElm.addClass('pcsg-gpm__hidden');
 
                         var FuncChangeBtn = function () {
                             Btn.enable();
@@ -124,7 +129,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                             } else {
                                 TokenInput.disabled = true;
                             }
-                        }, function() {
+                        }, function (e) {
+                            // display error message
+                            ErrorMsgElm.set('html', e.getMessage());
+                            ErrorMsgElm.removeClass('pcsg-gpm__hidden');
+
                             FuncChangeBtn();
                             TokenInput.disabled = true;
                         });

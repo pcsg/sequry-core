@@ -1174,7 +1174,10 @@
             <de><![CDATA[Registrieren]]></de>
         </locale>
         <locale name="auth.panel.btn.change">
-            <de><![CDATA[Registrierungsinformationen ändern]]></de>
+            <de><![CDATA[Zugangsdaten ändern]]></de>
+        </locale>
+        <locale name="auth.panel.btn.recovery">
+            <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
         <locale name="auth.panel.tbl.header.registered">
             <de><![CDATA[registriert]]></de>
@@ -1199,6 +1202,9 @@
         </locale>
         <locale name="gpm.auth.panel.change.title">
             <de><![CDATA[Zugangsdaten für "[authPluginTitle]" ändern]]></de>
+        </locale>
+        <locale name="gpm.auth.panel.recovery.title">
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" wiederherstellen]]></de>
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Neue Informationen senden]]></de>
@@ -1835,7 +1841,7 @@
 
         <!-- Control: auth/recovery/Recovery -->
         <locale name="controls.auth.recovery.template.title">
-            <de><![CDATA[Zugangsdaten für Authentifizierungs-Faktor "[authPluginTitle]" wiederherstellen]]></de>
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" wiederherstellen]]></de>
         </locale>
         <locale name="controls.auth.recovery.template.step1">
             <de><![CDATA[Schritt 1]]></de>
