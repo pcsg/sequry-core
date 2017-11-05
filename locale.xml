@@ -1867,6 +1867,9 @@
         <locale name="controls.auth.recovery.btn.send_token_again">
             <de><![CDATA[Wiederherstellungs-Token erneut senden]]></de>
         </locale>
+        <locale name="controls.auth.recovery.btn.check_data">
+            <de><![CDATA[Wiederherstellungs-Daten prüfen]]></de>
+        </locale>
 
     </groups>
 

@@ -13,6 +13,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
 
     'Locale',
     'Mustache',
+    'Ajax',
 
     'package/pcsg/grouppasswordmanager/bin/Authentication',
 
@@ -20,7 +21,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery.css'
 
 ], function (QUI, QUIControl, QUILoader, QUIButton, QUILocale, Mustache,
-             Authentication, template) {
+             QUIAjax, Authentication, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -101,7 +102,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
 
             new QUIButton({
                 text     : QUILocale.get(lg, 'controls.auth.recovery.btn.send_token'),
-                textimage: 'fa fa-mail',
+                textimage: 'fa fa-envelope',
                 events   : {
                     onClick: function (Btn) {
                         Btn.disable();
@@ -115,7 +116,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                                 textimage: 'fa fa-mail',
                                 text     : QUILocale.get(lg, 'controls.auth.recovery.btn.send_token_again')
                             });
-                            Btn.setAttribute('textimage', 'fa fa-mail');
+                            Btn.setAttribute('textimage', 'fa fa-envelope');
                         };
 
                         Authentication.sendRecoveryToken(
@@ -189,9 +190,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                         Btn.disable();
                         Btn.setAttribute('textimage', 'fa fa-spin fa-spinner');
 
+                        self.$validateRecoveryData(
+                            self.$getRecoveryCode(),
+                            TokenInput.value
+                        ).then(function (isValid) {
+                            if (isValid) {
+                                Btn.setAttribute('textimage', 'fa fa-check');
+                                self.$showAuthDataChangeControl();
+                            }
+                        });
 
-                        Btn.enable();
-                        Btn.setAttribute('textimage', 'fa fa-mail');
+
                     }
                 }
             }).inject(
@@ -201,8 +210,72 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
             );
         },
 
-        $checkStatus: function () {
+        /**
+         * Validate recovery token and code
+         *
+         * @param {String} code
+         * @param {String} token
+         * @returns {Promise} - returns bool (success)
+         */
+        $validateRecoveryData: function (code, token) {
+            var self = this;
 
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_recovery_validate', resolve, {
+                        'package'   : 'pcsg/grouppasswordmanager',
+                        authPluginId: self.getAttribute('authPluginId'),
+                        code        : code,
+                        token       : token,
+                        onError     : reject
+                    }
+                )
+            });
+        },
+
+        /**
+         * Show control to change authentication data
+         */
+        $showAuthDataChangeControl: function () {
+            var self = this;
+
+            this.Loader.show();
+
+            Authentication.getChangeAuthenticationControl(
+                this.getAttribute('authPluginId')
+            ).then(function(control) {
+                require([control], function(ChangeAuthControl) {
+                    new ChangeAuthControl({
+                        events: {
+                            onSubmit: function(authData) {
+                                console.log(authData);
+                            }
+                        }
+                    }).inject(
+                        self.$Elm.getElement(
+                            '.step-3 .pcsg-gpm-auth-recovery-step-content'
+                        )
+                    );
+
+                    self.Loader.hide();
+                });
+            });
+        },
+
+        /**
+         * Get recovery code
+         *
+         * @return {String} - the recovery code
+         */
+        $getRecoveryCode: function () {
+            var inputs = this.$Elm.getElement('.pcsg-gpm-auth-recovery-code-input').getElements('input');
+            var code   = '';
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                code += inputs[i].value;
+            }
+
+            return code;
         }
     });
 });

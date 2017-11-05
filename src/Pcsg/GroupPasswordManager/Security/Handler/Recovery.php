@@ -112,7 +112,7 @@ class Recovery
             'date'            => date('d.m.Y')
         );
 
-        // save in session
+        // save in session so bin/recoverycode.php can show data for printing purposes
         QUI::getSession()->set(
             'pcsg_gpm_recovery_code_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId(),
             json_encode($recoveryCodeData)
@@ -161,7 +161,7 @@ class Recovery
      * @param CryptoUser $CryptoUser (optional) - the user the recovery data is created for;
      * if omitted uses session user
      *
-     * @return string - recovered secret
+     * @return void
      *
      * @throws QUI\Exception
      */
@@ -255,7 +255,10 @@ class Recovery
             ));
         }
 
-        return $recoveredSecret;
+        QUI::getSession()->set(
+            'pcsg_gpm_recovery_secret_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId(),
+            $recoveredSecret
+        );
     }
 
     /**
