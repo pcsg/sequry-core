@@ -262,6 +262,26 @@ class Recovery
     }
 
     /**
+     * Get recovered secret for an authentication plugin
+     *
+     * The secret has to be recovered by self::recoverEntry() first!
+     *
+     * @param Plugin $AuthPlugin
+     * @param CryptoUser $CryptoUser (optional) - if omitted use Session user
+     * @return HiddenString|false - Recovered secret or false if none found
+     */
+    public static function getRecoverySecret(Plugin $AuthPlugin, $CryptoUser = null)
+    {
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
+        return QUI::getSession()->get(
+            'pcsg_gpm_recovery_secret_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId()
+        );
+    }
+
+    /**
      * Get recovery data from session!
      *
      * This can be only done ONCE per recovery code. After one retrieval, the data is
@@ -355,7 +375,7 @@ class Recovery
 
         try {
             \QUI\System\Log::writeRecursive($token);
-//            $Mailer->send();
+//            $Mailer->send();  // @todo Mail-Versand wieder aktivieren
         } catch (\Exception $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
 

@@ -540,7 +540,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getRecoveryCodeId: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getRecoveryCodeId', resolve, {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_recovery_getCodeId', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId

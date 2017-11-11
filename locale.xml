@@ -1870,6 +1870,9 @@
         <locale name="controls.auth.recovery.btn.check_data">
             <de><![CDATA[Wiederherstellungs-Daten prüfen]]></de>
         </locale>
+        <locale name="controls.auth.recovery.code_info">
+            <de><![CDATA[Bitte geben Sie <b>Wiederherstellungs-Code #[codeId]</b> ein, den Sie bei der Registrierung mit diesem Authentifizierungs-Faktor erhalten haben.]]></de>
+        </locale>
 
     </groups>
 
