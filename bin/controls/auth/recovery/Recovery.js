@@ -3,6 +3,8 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery
  * @author www.pcsg.de (Patrick Müller)
+ *
+ * @event onLoaded [this]
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', [
 
@@ -79,6 +81,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                 self.$recoveryCodeId = result[1];
 
                 self.$buildContent();
+                self.fireEvent('loaded', [self]);
             });
         },
 

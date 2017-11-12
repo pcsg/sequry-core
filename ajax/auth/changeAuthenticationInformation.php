@@ -10,25 +10,18 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
  * @param integer $authPluginId - ID of authentication plugin
  * @param string $oldAuthInfo - old authentication information
  * @param string $newAuthInfo - new authentication information
- * @param bool $recoveryToken (optional) - oldAuthInfo is recovered by recovery process
  * @return array|false - recovery code data; false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation(
     $authPluginId,
     $oldAuthInfo,
-    $newAuthInfo,
-    $recoveryToken = false
+    $newAuthInfo
 ) {
     $oldAuthInfo = new HiddenString($oldAuthInfo);
     $newAuthInfo = new HiddenString($newAuthInfo);
 
     try {
         $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
-
-        if ($recoveryToken) {
-            $oldAuthInfo = Recovery::recoverEntry($AuthPlugin, $oldAuthInfo, $recoveryToken);
-        }
-
         $AuthPlugin->changeAuthenticationInformation($oldAuthInfo, $newAuthInfo);
 
         // generate recovery code

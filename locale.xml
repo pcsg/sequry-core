@@ -1220,13 +1220,13 @@
 
         <!-- Control: auth/Change -->
         <locale name="auth.change.template.title">
-            <de><![CDATA[Änderung der Zugangsdaten für einen Authentifizierungs-Faktor]]></de>
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" ändern]]></de>
         </locale>
-        <locale name="auth.change.template.basicData">
-            <de><![CDATA[Eingabe der Zugangsdaten]]></de>
+        <locale name="auth.change.template.authData">
+            <de><![CDATA[Aktuelle Zugangsdaten eingeben]]></de>
         </locale>
-        <locale name="auth.change.template.recovery">
-            <de><![CDATA[Zugangsdaten vergessen]]></de>
+        <locale name="auth.change.template.newAuthData">
+            <de><![CDATA[Neue Zugangsdaten eingeben]]></de>
         </locale>
         <locale name="auth.change.btn.recovery">
             <de><![CDATA[Ich habe meine aktuellen Zugangsdaten vergessen]]></de>
@@ -1847,7 +1847,7 @@
             <de><![CDATA[Schritt 1]]></de>
         </locale>
         <locale name="controls.auth.recovery.template.step1desc">
-            <de><![CDATA[Wiederherstellungs-Token per E-Mail-Adresse versenden]]></de>
+            <de><![CDATA[Wiederherstellungs-Token eingeben]]></de>
         </locale>
         <locale name="controls.auth.recovery.template.step2">
             <de><![CDATA[Schritt 2]]></de>
@@ -1862,7 +1862,7 @@
             <de><![CDATA[Prüfen und neue Zugangsdaten setzen]]></de>
         </locale>
         <locale name="controls.auth.recovery.btn.send_token">
-            <de><![CDATA[Wiederherstellungs-Token senden]]></de>
+            <de><![CDATA[Wiederherstellungs-Token generieren und senden]]></de>
         </locale>
         <locale name="controls.auth.recovery.btn.send_token_again">
             <de><![CDATA[Wiederherstellungs-Token erneut senden]]></de>
@@ -1871,7 +1871,7 @@
             <de><![CDATA[Wiederherstellungs-Daten prüfen]]></de>
         </locale>
         <locale name="controls.auth.recovery.code_info">
-            <de><![CDATA[Bitte geben Sie <b>Wiederherstellungs-Code #[codeId]</b> ein, den Sie bei der Registrierung mit diesem Authentifizierungs-Faktor erhalten haben.]]></de>
+            <de><![CDATA[Bitte geben Sie <b>Wiederherstellungs-Code #[codeId]</b> ein, den Sie bei der Registrierung mit diesem Authentifizierungs-Faktor oder der letzten Änderung Ihrer Zugangsdaten erhalten haben.]]></de>
         </locale>
 
     </groups>

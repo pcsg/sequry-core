@@ -16,7 +16,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery',
 
@@ -26,7 +26,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUIPopup, QUILoader, Grid, Authentication, AuthRegister,
-             AuthChange, RecoveryCodeWindow, SyncAuthPluginWindow, Recovery, Ajax, QUILocale) {
+             AuthChange, RecoveryCodePopup, SyncAuthPluginWindow, Recovery, Ajax, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -45,6 +45,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             'registerUser',
             'changeAuthInfo'
         ],
+
+        options: {
+            openRecoveryForAuthPluginId: false // immediately open recovery panel for the given AuthPlugin ID
+        },
 
         initialize: function (options) {
             this.setAttribute('title', QUILocale.get(lg, 'auth.panel.title'));
@@ -100,7 +104,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 events   : {
                     onClick: function () {
                         self.recoverAuthData(
-                            self.$Grid.getSelectedData()[0]
+                            self.$Grid.getSelectedData()[0].id
                         );
                     }
                 }
@@ -228,13 +232,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             return Authentication.getAuthPlugins().then(function (authPlugins) {
                 self.$setGridData(authPlugins);
+                self.Loader.hide();
 
                 // disable buttons
                 self.getButtons('register').disable();
                 self.getButtons('change').disable();
                 self.getButtons('recovery').disable();
 
-                self.Loader.hide();
+                if (self.getAttribute('openRecoveryForAuthPluginId')) {
+                    self.recoverAuthData(self.getAttribute('openRecoveryForAuthPluginId'));
+                }
             });
         },
 
@@ -382,7 +389,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     RegisterSheet.hide().then(function () {
                         RegisterSheet.destroy();
 
-                        new RecoveryCodeWindow({
+                        new RecoveryCodePopup({
                             RecoveryCodeData: RecoveryCodeData,
                             events          : {
                                 onClose: function () {
@@ -450,6 +457,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         Sheet.getContent().setStyle('padding', 20);
 
                         var Change = new AuthChange({
+                            Parent      : self,
                             authPluginId: AuthPluginData.id,
                             events      : {
                                 onLoaded: function () {
@@ -487,54 +495,40 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         /**
          * Show sheet with auth data recovery process
          *
-         * @param {Object} AuthPluginData
+         * @param {Number} authPluginId
          */
-        recoverAuthData: function (AuthPluginData) {
+        recoverAuthData: function (authPluginId) {
             var self = this;
 
-            //this.Loader.show();
+            this.Loader.show();
 
-            this.createSheet({
-                title : QUILocale.get(lg, 'gpm.auth.panel.recovery.title', {
-                    authPluginTitle: AuthPluginData.title
-                }),
-                events: {
-                    onShow : function (Sheet) {
-                        Sheet.getContent().setStyle('padding', 20);
+            Authentication.getAuthPluginInfo(authPluginId).then(function (AuthPluginData) {
+                this.createSheet({
+                    title : QUILocale.get(lg, 'gpm.auth.panel.recovery.title', {
+                        authPluginTitle: AuthPluginData.title
+                    }),
+                    events: {
+                        onShow : function (Sheet) {
+                            Sheet.getContent().setStyle('padding', 20);
 
-                        var Change = new Recovery({
-                            authPluginId: AuthPluginData.id,
-                            events      : {
-                                onLoaded: function () {
-                                    self.Loader.hide();
-                                },
-                                onFinish: function () {
-                                    Sheet.destroy();
+                            new Recovery({
+                                authPluginId: authPluginId,
+                                events      : {
+                                    onLoaded: function () {
+                                        self.Loader.hide();
+                                    },
+                                    onFinish: function () {
+                                        Sheet.destroy();
+                                    }
                                 }
-                            }
-                        }).inject(Sheet.getContent());
-
-                        //Sheet.addButton(
-                        //    new QUIButton({
-                        //        text     : QUILocale.get(lg, 'auth.panel.change.btn.register'),
-                        //        textimage: 'fa fa-save',
-                        //        events   : {
-                        //            onClick: function () {
-                        //                if (!Change.check()) {
-                        //                    return;
-                        //                }
-                        //
-                        //                Change.submit();
-                        //            }
-                        //        }
-                        //    })
-                        //);
-                    },
-                    onClose: function (Sheet) {
-                        Sheet.destroy();
+                            }).inject(Sheet.getContent());
+                        },
+                        onClose: function (Sheet) {
+                            Sheet.destroy();
+                        }
                     }
-                }
-            }).show();
+                }).show();
+            }.bind(this));
         }
     });
 

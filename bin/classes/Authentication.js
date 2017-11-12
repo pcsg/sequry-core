@@ -321,18 +321,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * @param {number} authPluginId - ID of authentication plugin
          * @param {string} oldInfo - old (current) authentication information
          * @param {string} newInfo - new authentication information
-         * @param {string} [recoveryToken] - Recovery token (can be used instead of oldInfo)
          * @returns {Promise}
          */
-        changeAuthInformation: function (authPluginId, oldInfo, newInfo, recoveryToken) {
+        changeAuthInformation: function (authPluginId, oldInfo, newInfo) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId,
                     oldAuthInfo : oldInfo,
-                    newAuthInfo : newInfo,
-                    recovery    : recoveryToken
+                    newAuthInfo : newInfo
                 });
             });
         },

@@ -34,15 +34,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/authPlugins/Authenticatio
             this.$Input = null;
 
             this.addEvents({
-                onImport: this.$onImport
+                onImport: this.$onImport,
+                onInject: this.$onInject
             });
+        },
+
+        /**
+         * Event: onInject
+         */
+        $onInject: function () {
+            this.$Input = new Element('input', {
+                type: 'hidden'
+            }).inject(this.$Elm);
+
+            this.$onImport();
         },
 
         /**
          * Event: onImport
          */
         $onImport: function () {
-            this.$Input      = this.getElm();
+            if (!this.$Input) {
+                this.$Input = this.getElm();
+            }
+
             this.$Input.type = 'hidden';
         },
 
