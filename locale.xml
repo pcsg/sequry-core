@@ -727,6 +727,24 @@
             <de><![CDATA[Zuletzt bearbeitet: [date] von [userName] (#[userId])]]></de>
         </locale>
 
+        <!-- Class: Security\Handler\Recovery -->
+        <locale name="recovery.sendtoken.subject">
+            <de><![CDATA[Wiederherstellung Ihrer Zugangsdaten]]></de>
+        </locale>
+        <locale name="recovery.sendtoken.body" html="true">
+            <de><![CDATA[Hallo [userName]!
+<p>
+Sie haben ein Wiederherstellungs-Token der Zugangsdaten für den Authentifizierungs-Faktor "[authPluginTitle]" angefordert.
+</p>
+<p>
+Das Token lautet: [token]
+</p>
+<p>
+Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs-Fenster ein.
+</p>
+<p><b>Hinweis:</b> Sollten Sie dieses Token nicht angefordert haben, können Sie diese E-Mail ignorieren.</p>]]></de>
+        </locale>
+
     </groups>
 
     <groups name="pcsg/grouppasswordmanager" datatype="php,js">

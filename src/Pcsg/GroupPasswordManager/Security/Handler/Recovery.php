@@ -349,9 +349,6 @@ class Recovery
 
         $Mailer = new QUI\Mail\Mailer();
 
-        $Mailer->setFrom('info@pcsg.de');  // @todo als setting
-        $Mailer->setFromName('QUIQQER PasswordManager'); // @todo als setting
-
         $Mailer->setBody(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
