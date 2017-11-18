@@ -106,6 +106,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                 var AuthDataElm    = self.$Elm.getElement('.pcsg-gpm-auth-control');
                 var NewAuthDataElm = self.$Elm.getElement('.pcsg-gpm-auth-change-control');
 
+                // recovery button
                 new QUIButton({
                     textimage: 'fa fa-question-circle',
                     text     : QUILocale.get(lg, 'auth.change.btn.recovery'),

@@ -374,8 +374,7 @@ class Recovery
         $Mailer->addRecipient($email);
 
         try {
-            \QUI\System\Log::writeRecursive($token);
-//            $Mailer->send();  // @todo Mail-Versand wieder aktivieren
+            $Mailer->send();
         } catch (\Exception $Exception) {
             QUI\System\Log::addError($Exception->getMessage());
 

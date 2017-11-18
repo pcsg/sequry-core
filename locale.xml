@@ -512,6 +512,9 @@
         <locale name="exception.ajax.authenticate.decode.error">
             <de><![CDATA[Beim Dekodieren der Zugangsdaten ist ein Fehler aufgetreten.]]></de>
         </locale>
+        <locale name="message.ajax.auth.recovery.sendToken.token_sent">
+            <de><![CDATA[Das Wiederherstellungs-Token wurde erfolgreich an Ihre E-Mail-Adresse versandt.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -1207,7 +1210,7 @@
             <de><![CDATA[Zugangsdaten für "[authPluginTitle]" wiederherstellen]]></de>
         </locale>
         <locale name="auth.panel.register.btn.register">
-            <de><![CDATA[Neue Informationen senden]]></de>
+            <de><![CDATA[Registrieren]]></de>
         </locale>
 
         <!-- Control: auth/Register -->
@@ -1229,7 +1232,7 @@
             <de><![CDATA[Neue Zugangsdaten eingeben]]></de>
         </locale>
         <locale name="auth.change.btn.recovery">
-            <de><![CDATA[Ich habe meine aktuellen Zugangsdaten vergessen]]></de>
+            <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
         <locale name="auth.recovery.information">
             <de><![CDATA[Sie können Ihre aktuellen Zugangsdaten mit dem Wiederherstellungscode, der bei Registrierung mit diesem Authentifizierungs-Faktor angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Zugangsdaten dafür leer.]]></de>
@@ -1872,6 +1875,9 @@
         </locale>
         <locale name="controls.auth.recovery.code_info">
             <de><![CDATA[Bitte geben Sie <b>Wiederherstellungs-Code #[codeId]</b> ein, den Sie bei der Registrierung mit diesem Authentifizierungs-Faktor oder der letzten Änderung Ihrer Zugangsdaten erhalten haben.]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.btn.submit">
+            <de><![CDATA[Neue Zugangsdaten speichern]]></de>
         </locale>
 
     </groups>

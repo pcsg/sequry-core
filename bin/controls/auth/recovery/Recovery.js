@@ -5,6 +5,7 @@
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded [this]
+ * @event onFinish [this]
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', [
 
@@ -53,12 +54,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                 onInject: this.$onInject
             });
 
-            this.Loader          = new QUILoader();
-            this.$AuthPlugin     = {};
-            this.$CheckBtn       = null;
-            this.$SendTokenBtn   = null;
-            this.$TokenInput     = null;
-            this.$recoveryCodeId = null;
+            this.Loader             = new QUILoader();
+            this.$AuthPlugin        = {};
+            this.$CheckBtn          = null;
+            this.$SendTokenBtn      = null;
+            this.$TokenInput        = null;
+            this.$recoveryCodeId    = null;
+            this.$ChangeAuthControl = null;
         },
 
         /**
@@ -66,6 +68,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
          */
         $onInject: function () {
             var self = this;
+
+            this.$Elm.addClass('pcsg-gpm-auth-recovery');
 
             this.Loader.inject(this.$Elm);
             this.Loader.show();
@@ -113,7 +117,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
             this.$TokenInput.addEvent('change', this.$checkStep3);
 
             var ErrorMsgElm = new Element('span', {
-                'class': 'pcsg-gpm-auth-recovery-error pcsg-gpm__hidden'
+                'class': 'pcsg-gpm-auth-recovery-error'
             }).inject(Step1Content, 'top');
 
             this.$SendTokenBtn = new QUIButton({
@@ -174,7 +178,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                 var Elm = event.target;
 
                 if (Elm.value.length < 5) {
-                    self.fireEvent('recoveryCodeUnready');
                     self.$checkStep3();
                     return;
                 }
@@ -182,7 +185,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                 var id = parseInt(Elm.getProperty('data-id'));
 
                 if (id === 5) {
-                    self.fireEvent('recoveryCodeReady');
                     self.$checkStep3();
                     return;
                 }
@@ -191,7 +193,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
             };
 
             for (var i = 0; i < 5; i++) {
-                var InputElm = new Element('input', {
+                new Element('input', {
                     'class'  : 'pcsg-gpm-auth-recovery-code-input',
                     'data-id': i + 1,
                     type     : 'text',
@@ -200,10 +202,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                         input: FuncOnCodeInput
                     }
                 }).inject(Step2Content);
-
-                if (i === 0) {
-                    InputElm.focus();
-                }
             }
 
             // step 3 (check data and change authentication information)
@@ -292,6 +290,50 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
             this.$SendTokenBtn.disable();
             this.$Elm.getElements('.pcsg-gpm-auth-recovery-code-input').disabled = true;
 
+            // submit Func
+            var FuncAuthDataSubmit = function () {
+                self.$ChangeAuthControl.disable();
+                SubmitBtn.disable();
+
+                self.Loader.show();
+
+                self.$changeAuthData(self.$ChangeAuthControl.getAuthData()).then(function (NewRecoveryCode) {
+                    self.Loader.hide();
+
+                    if (!NewRecoveryCode) {
+                        self.$ChangeAuthControl.enable();
+                        SubmitBtn.enable();
+                        return;
+                    }
+
+                    new CodePopup({
+                        RecoveryCodeData: NewRecoveryCode,
+                        events: {
+                            onClose: function() {
+                                self.fireEvent('finish', [self]);
+                            }
+                        }
+                    }).open();
+                }, function () {
+                    self.Loader.hide();
+                    self.$ChangeAuthControl.enable();
+                    SubmitBtn.enable();
+                });
+            };
+
+            // submit btn
+            var SubmitElm = this.$Elm.getElement('.pcsg-gpm-auth-recovery-submit');
+
+            SubmitElm.getParent('tr').removeClass('pcsg-gpm__hidden');
+
+            var SubmitBtn = new QUIButton({
+                text     : QUILocale.get(lg, 'controls.auth.recovery.btn.submit'),
+                textimage: 'fa fa-save',
+                events   : {
+                    onClick: FuncAuthDataSubmit
+                }
+            }).inject(SubmitElm);
+
             // load ChangeAuth control of the Authentication plugin
             this.Loader.show();
 
@@ -299,12 +341,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                 this.getAttribute('authPluginId')
             ).then(function (control) {
                 require([control], function (ChangeAuthControl) {
-                    new ChangeAuthControl({
+                    self.$ChangeAuthControl = new ChangeAuthControl({
                         events: {
-                            onSubmit: function (authData, Control) {
-                                Control.disable();
-                                self.$changeAuthData(authData);
-                            }
+                            onSubmit: FuncAuthDataSubmit
                         }
                     }).inject(
                         self.$Elm.getElement(
@@ -326,27 +365,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
         $changeAuthData: function (newAuthData) {
             var self = this;
 
-            this.Loader.show();
 
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_recovery_changeAuthData',
-                    function (NewRecoveryCode) {
-                        self.Loader.hide();
-
-                        if (!NewRecoveryCode) {
-                            // @todo display error
-                            return;
-                        }
-
-                        new CodePopup({
-                            RecoveryCodeData: NewRecoveryCode
-                        }).open();
-                    }, {
-                        'package'   : 'pcsg/grouppasswordmanager',
-                        authPluginId: self.getAttribute('authPluginId'),
-                        newAuthData : newAuthData,
-                        onError     : reject
-                    })
+                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_recovery_changeAuthData', resolve, {
+                    'package'   : 'pcsg/grouppasswordmanager',
+                    authPluginId: self.getAttribute('authPluginId'),
+                    newAuthData : newAuthData,
+                    onError     : reject
+                })
             });
         },
 

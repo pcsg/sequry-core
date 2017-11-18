@@ -475,10 +475,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                                 textimage: 'fa fa-save',
                                 events   : {
                                     onClick: function () {
-                                        if (!Change.check()) {
-                                            return;
-                                        }
-
                                         Change.submit();
                                     }
                                 }

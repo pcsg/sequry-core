@@ -37,6 +37,13 @@ QUI::$Ajax->registerFunction(
             return false;
         }
 
+        QUI::getMessagesHandler()->addSuccess(
+            QUI::getLocale()->get(
+                'pcsg/grouppasswordmanager',
+                'message.ajax.auth.recovery.sendToken.token_sent'
+            )
+        );
+
         return true;
     },
     array('authPluginId'),

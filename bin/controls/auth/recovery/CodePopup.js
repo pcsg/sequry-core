@@ -3,8 +3,6 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup
  * @author www.pcsg.de (Patrick Müller)
- *
- * @event onFinish
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup', [
 
