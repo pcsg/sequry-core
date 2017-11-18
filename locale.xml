@@ -734,7 +734,7 @@
         <locale name="recovery.sendtoken.body" html="true">
             <de><![CDATA[Hallo [userName]!
 <p>
-Sie haben ein Wiederherstellungs-Token der Zugangsdaten für den Authentifizierungs-Faktor "[authPluginTitle]" angefordert.
+Sie haben ein Wiederherstellungs-Token für den Authentifizierungs-Faktor "[authPluginTitle]" angefordert.
 </p>
 <p>
 Das Token lautet: [token]
@@ -1200,6 +1200,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="auth.panel.btn.recovery">
             <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
+        <locale name="auth.panel.btn.regenerate">
+            <de><![CDATA[Wiederherstellungs-Code neu generieren]]></de>
+        </locale>
         <locale name="auth.panel.tbl.header.registered">
             <de><![CDATA[registriert]]></de>
         </locale>
@@ -1226,6 +1229,18 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="gpm.auth.panel.recovery.title">
             <de><![CDATA[Zugangsdaten für "[authPluginTitle]" wiederherstellen]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.title">
+            <de><![CDATA[Wiederherstellungs-Code für "[authPluginTitle]" neu generieren]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.header">
+            <de><![CDATA[Sind Sie sicher, dass Sie den Wiederherstellungs-Code für den Authentifizierungs-Faktor "[authPluginTitle]" neu generieren möchten?]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.info" html="true">
+            <de><![CDATA[Der aktuell gültige <b>Wiederherstellungs-Code #[recoveryCodeId]</b> verliert dadurch seine Gültigkeit und kann nicht mehr verwendet werden. Es wird ein neuer Wiederherstellungs-Code generiert und <b>einmalig angezeigt</b>. Der neue Code muss unbedingt an einem <b>sicheren Ort aufbewahrt</b> werden!]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.btn.confirm">
+            <de><![CDATA[Neuen Wiederherstellungs-Code generieren]]></de>
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Registrieren]]></de>

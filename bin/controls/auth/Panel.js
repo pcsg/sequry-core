@@ -9,7 +9,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'qui/QUI',
     'qui/controls/desktop/Panel',
     'qui/controls/buttons/Button',
-    'qui/controls/windows/Popup',
+    'qui/controls/windows/Confirm',
     'qui/controls/loader/Loader',
     'controls/grid/Grid',
 
@@ -25,7 +25,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
-], function (QUI, QUIPanel, QUIButton, QUIPopup, QUILoader, Grid, Authentication, AuthRegister,
+], function (QUI, QUIPanel, QUIButton, QUIConfirm, QUILoader, Grid, Authentication, AuthRegister,
              AuthChange, RecoveryCodePopup, SyncAuthPluginWindow, Recovery, Ajax, QUILocale) {
     "use strict";
 
@@ -110,6 +110,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 }
             });
 
+            this.addButton({
+                name     : 'regenerate',
+                text     : QUILocale.get(lg, 'auth.panel.btn.regenerate'),
+                textimage: 'fa fa-retweet',
+                events   : {
+                    onClick: function () {
+                        self.regenerateRecoveryCode(
+                            self.$Grid.getSelectedData()[0].id
+                        );
+                    }
+                }
+            });
+
             // content
             this.$GridContainer = new Element('div', {
                 'class': 'pcsg-gpm-authpanel-container'
@@ -181,23 +194,27 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         Row           = self.$Grid.getSelectedData()[0],
                         Register      = self.getButtons('register'),
                         Change        = self.getButtons('change'),
-                        Recovery      = self.getButtons('recovery');
+                        Recovery      = self.getButtons('recovery'),
+                        Regenerate    = self.getButtons('regenerate');
 
                     if (selectedCount == 1) {
                         if (!Row.isregistered) {
                             Register.enable();
                             Change.disable();
                             Recovery.disable();
+                            Regenerate.disable();
                         } else {
                             Register.disable();
                             Change.enable();
                             Recovery.enable();
+                            Regenerate.enable();
 
                         }
                     } else {
                         Register.disable();
                         Change.disable();
                         Recovery.disable();
+                        Regenerate.disable();
                     }
                 },
                 onRefresh : this.refresh
@@ -238,6 +255,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 self.getButtons('register').disable();
                 self.getButtons('change').disable();
                 self.getButtons('recovery').disable();
+                self.getButtons('regenerate').disable();
 
                 if (self.getAttribute('openRecoveryForAuthPluginId')) {
                     self.recoverAuthData(self.getAttribute('openRecoveryForAuthPluginId'));
@@ -525,6 +543,50 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     }
                 }).show();
             }.bind(this));
+        },
+
+        /**
+         * Re-generate a recovery code
+         */
+        regenerateRecoveryCode: function () {
+            var self           = this;
+            var AuthPluginData = self.$Grid.getSelectedData()[0];
+
+            this.Loader.show();
+
+            Authentication.getRecoveryCodeId(AuthPluginData.id).then(function (recoveryCodeId) {
+                var ConfirmPopup = new QUIConfirm({
+                    icon       : 'fa fa-retweet',
+                    texticon   : 'fa fa-retweet',
+                    autoclose  : false,
+                    title      : QUILocale.get(lg, 'auth.panel.regenerate.popup.title', {
+                        authPluginTitle: AuthPluginData.title
+                    }),
+                    information: QUILocale.get(lg, 'auth.panel.regenerate.popup.info', {
+                        recoveryCodeId: recoveryCodeId
+                    }),
+                    maxHeight  : 350,
+                    maxWidth   : 850,
+                    closeButton: true,
+                    ok_button  : {
+                        text     : QUILocale.get(lg, 'auth.panel.regenerate.popup.btn.confirm'),
+                        textimage: 'fa fa-retweet'
+                    },
+                    text       : QUILocale.get(lg, 'auth.panel.regenerate.popup.header', {
+                        authPluginTitle: AuthPluginData.title
+                    }),
+                    events     : {
+                        onOpen  : function () {
+                            self.Loader.hide();
+                        },
+                        onSubmit: function () {
+                            console.log("confirmyo!");
+                        }
+                    }
+                });
+
+                ConfirmPopup.open();
+            });
         }
     });
 
