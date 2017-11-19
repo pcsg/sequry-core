@@ -563,6 +563,24 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         },
 
         /**
+         * Re-generate a Recovery Code
+         *
+         * @param {Number} authPluginId
+         * @param {String} authData
+         * @returns {Promise}
+         */
+        regenerateRecoveryCode: function (authPluginId, authData) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_recovery_regenerateCode', resolve, {
+                    'package'   : pkg,
+                    onError     : reject,
+                    authPluginId: authPluginId,
+                    authData    : authData
+                });
+            });
+        },
+
+        /**
          * Register a user with an authentication plugin
          *
          * @param {Integer} authPluginId

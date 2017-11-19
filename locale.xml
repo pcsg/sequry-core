@@ -515,6 +515,9 @@
         <locale name="message.ajax.auth.recovery.sendToken.token_sent">
             <de><![CDATA[Das Wiederherstellungs-Token wurde erfolgreich an Ihre E-Mail-Adresse versandt.]]></de>
         </locale>
+        <locale name="message.ajax.auth.recovery.regenerateCode.error">
+            <de><![CDATA[Beim Erzeugen des Wiederherstellungs-Codes ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -1911,6 +1914,11 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="controls.auth.recovery.btn.submit">
             <de><![CDATA[Neue Zugangsdaten speichern]]></de>
+        </locale>
+
+        <!-- Control: auth/Panel -->
+        <locale name="controls.auth.panel.regenerateRecoveryCode.authwindow.info">
+            <de><![CDATA[Bitte geben Sie Ihre Zugangsdaten an, um den Wiederherstellungs-Code neu zu generieren.]]></de>
         </locale>
 
     </groups>

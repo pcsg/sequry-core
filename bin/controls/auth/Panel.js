@@ -19,6 +19,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
 
     'Ajax',
     'Locale',
@@ -26,7 +27,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUIConfirm, QUILoader, Grid, Authentication, AuthRegister,
-             AuthChange, RecoveryCodePopup, SyncAuthPluginWindow, Recovery, Ajax, QUILocale) {
+             AuthChange, RecoveryCodePopup, SyncAuthPluginWindow, Recovery, AuthWindow, Ajax, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -554,6 +555,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.Loader.show();
 
+            var getAuthData = function () {
+                return new Promise(function (resolve, reject) {
+                    var Popup = new AuthWindow({
+                        authPluginIds: [AuthPluginData.id],
+                        required     : 1,
+                        info         : QUILocale.get(lg,
+                            'controls.auth.panel.regenerateRecoveryCode.authwindow.info'
+                        ),
+                        events       : {
+                            onSubmit: function (AuthData) {
+                                resolve(AuthData[AuthPluginData.id]);
+                                Popup.close();
+                            },
+                            onClose : function () {
+                                reject();
+                                Popup.close();
+                            },
+                            onAbort : function () {
+                                reject();
+                                Popup.close();
+                            }
+                        }
+                    });
+
+                    Popup.open();
+                });
+            };
+
             Authentication.getRecoveryCodeId(AuthPluginData.id).then(function (recoveryCodeId) {
                 var ConfirmPopup = new QUIConfirm({
                     icon       : 'fa fa-retweet',
@@ -580,7 +609,35 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                             self.Loader.hide();
                         },
                         onSubmit: function () {
-                            console.log("confirmyo!");
+                            ConfirmPopup.Loader.show();
+
+                            getAuthData().then(function(authData) {
+
+                                console.log(authData);
+
+                                Authentication.regenerateRecoveryCode(
+                                    AuthPluginData.id,
+                                    authData
+                                ).then(function(RecoveryCodeData) {
+                                    if (!RecoveryCodeData) {
+                                        ConfirmPopup.Loader.hide();
+                                        return;
+                                    }
+
+                                    new RecoveryCodePopup({
+                                        RecoveryCodeData: RecoveryCodeData,
+                                        events: {
+                                            onClose: function() {
+                                                ConfirmPopup.close();
+                                            }
+                                        }
+                                    }).open();
+                                }, function() {
+                                    ConfirmPopup.Loader.hide();
+                                });
+                            }, function() {
+                                ConfirmPopup.Loader.hide();
+                            });
                         }
                     }
                 });
