@@ -70,10 +70,9 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                             Popup.displayAuthDataRecoveryOption(
                                                 e.getAttribute('authPluginId')
                                             );
-
-                                            Popup.close();
                                         }
 
+                                        Popup.hideLoader();
                                         reject(e);
                                     });
                                 },

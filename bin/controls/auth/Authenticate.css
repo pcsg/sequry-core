@@ -61,7 +61,6 @@
 .pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata {
     clear: both;
     cursor: pointer;
-    display: inline-block;
     text-align: right;
     width: 100%;
 }

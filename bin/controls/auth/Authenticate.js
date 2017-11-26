@@ -235,10 +235,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         var authenticated  = false;
 
                         var PluginElm = new Element('div', {
-                            'class': 'pcsg-gpm-auth-authenticate-plugins-plugin',
-                            'html' : '<h3>' + AuthPluginData.title + '</h3>' +
+                            'data-authpluginid': authPluginId,
+                            'class'            : 'pcsg-gpm-auth-authenticate-plugins-plugin',
+                            'html'             : '<h3>' + AuthPluginData.title + '</h3>' +
                             '<input type="text">' +
-                            '<span data-authpluginid="' + authPluginId + '" class="pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata pcsg-gpm__hidden">' +
+                            '<span class="pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata pcsg-gpm__hidden">' +
                             QUILocale.get(lg, 'controls.auth.authenticate.recover_authdata') +
                             '</span>'
                         }).inject(PluginsElm);
@@ -262,7 +263,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         ).addEvent('click', function (event) {
                             event.stop();
                             self.showLoader();
-                            self.$openAuthDataRecovery(event.target.get('data-authpluginid')).then(function () {
+                            self.$openAuthDataRecovery(
+                                event.target.getParent('.pcsg-gpm-auth-authenticate-plugins-plugin').get(
+                                    'data-authpluginid'
+                                )
+                            ).then(function () {
                                 self.hideLoader();
                             }, function () {
                                 self.hideLoader();
@@ -443,13 +448,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
          * @param {Number} authPluginId
          */
         displayAuthDataRecoveryOption: function (authPluginId) {
-            var RecoverAuthDataElm = this.$AuthPopup.getContent().getElement(
-                'span.pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata[data-authpluginid="' + authPluginId + '"]'
+            var PluginElm = this.$AuthPopup.getContent().getElement(
+                'div[data-authpluginid="' + authPluginId + '"]'
             );
 
-            if (RecoverAuthDataElm) {
-                RecoverAuthDataElm.removeClass('pcsg-gpm__hidden');
+            if (!PluginElm) {
+                return;
             }
+
+            PluginElm.setStyle('border', '2px solid #ed1c24');
+
+            var RecoverAuthDataElm = PluginElm.getElement(
+                'span.pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata'
+            );
+
+            RecoverAuthDataElm.removeClass('pcsg-gpm__hidden');
+            RecoverAuthDataElm.setStyle('display', 'inline-block');
         },
 
         /**
