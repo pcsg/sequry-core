@@ -184,7 +184,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
          * appropriately
          */
         $buildContent: function () {
-            var self       = this;
+            var self = this;
+            PluginsElm
             var Content    = this.$AuthPopup.getContent();
             var PluginsElm = Content.getElement('.pcsg-gpm-auth-authenticate-plugins');
 
@@ -236,7 +237,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         var PluginElm = new Element('div', {
                             'class': 'pcsg-gpm-auth-authenticate-plugins-plugin',
                             'html' : '<h3>' + AuthPluginData.title + '</h3>' +
-                            '<input type="text">'
+                            '<input type="text">' +
+                            '<span data-authpluginid="' + authPluginId + '" class="pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata pcsg-gpm__hidden">' +
+                            QUILocale.get(lg, 'controls.auth.authenticate.recover_authdata') +
+                            '</span>'
                         }).inject(PluginsElm);
 
                         var Control = new controls[i]({
@@ -251,6 +255,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
                         Control.imports(PluginElm.getElement('input'));
                         Control.setAttribute('eligibleForAuth', true);
+
+                        // add event to "Password reset"-Link
+                        PluginElm.getElement(
+                            '.pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata'
+                        ).addEvent('click', function (event) {
+                            event.stop();
+                            self.showLoader();
+                            self.$openAuthDataRecovery(event.target.get('data-authpluginid')).then(function () {
+                                self.hideLoader();
+                            }, function () {
+                                self.hideLoader();
+                            });
+                        });
 
                         // if the user is already authenticated for a specific plugin
                         // disable it and show a check icon
@@ -417,6 +434,43 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
                     resolve(isAuthenticated);
                 }, reject);
+            });
+        },
+
+        /**
+         * Displays option to recover authdata
+         *
+         * @param {Number} authPluginId
+         */
+        displayAuthDataRecoveryOption: function (authPluginId) {
+            var RecoverAuthDataElm = this.$AuthPopup.getContent().getElement(
+                'span.pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata[data-authpluginid="' + authPluginId + '"]'
+            );
+
+            if (RecoverAuthDataElm) {
+                RecoverAuthDataElm.removeClass('pcsg-gpm__hidden');
+            }
+        },
+
+        /**
+         * Opens Authentication Panel with recovery sheet
+         *
+         * @param {Number} authPluginId
+         * @return {Promise}
+         */
+        $openAuthDataRecovery: function (authPluginId) {
+            var self = this;
+
+            return new Promise(function (resolve, reject) {
+                require([
+                    'package/pcsg/grouppasswordmanager/bin/controls/auth/Panel',
+                    'utils/Panels'
+                ], function (AuthPanelControl, QUIPanelUtils) {
+                    QUIPanelUtils.openPanelInTasks(new AuthPanelControl()).then(function (Panel) {
+                        Panel.recoverAuthData(authPluginId);
+                        self.close();
+                    }, reject);
+                });
             });
         },
 

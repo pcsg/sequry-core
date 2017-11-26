@@ -173,7 +173,7 @@ class SecurityClass extends QUI\QDOM
             try {
                 $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
             } catch (\Exception $Exception) {
-                throw new QUI\Exception(array(
+                $Exception = new InvalidAuthDataException(array(
                     'pcsg/grouppasswordmanager',
                     'exception.securityclass.authenticate.wrong.authdata',
                     array(
@@ -181,6 +181,10 @@ class SecurityClass extends QUI\QDOM
                         'authPluginTitle' => $AuthPlugin->getAttribute('title')
                     )
                 ));
+
+                $Exception->setAttribute('authPluginId', $AuthPlugin->getId());
+
+                throw $Exception;
             }
 
             $succesfulAuthenticationCount++;

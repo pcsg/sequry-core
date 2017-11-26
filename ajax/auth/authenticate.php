@@ -4,6 +4,7 @@
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
 
 /**
  * Authenticate for a security class

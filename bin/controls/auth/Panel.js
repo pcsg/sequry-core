@@ -44,12 +44,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             '$onResize',
             'refresh',
             'registerUser',
-            'changeAuthInfo'
+            'changeAuthInfo',
+            'recoverAuthData'
         ],
-
-        options: {
-            openRecoveryForAuthPluginId: false // immediately open recovery panel for the given AuthPlugin ID
-        },
 
         initialize: function (options) {
             this.setAttribute('title', QUILocale.get(lg, 'auth.panel.title'));
@@ -66,6 +63,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             this.Loader         = new QUILoader();
             this.$GridContainer = null;
             this.$Grid          = null;
+
+            this.$CurrentSheet = null;
         },
 
         /**
@@ -257,10 +256,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 self.getButtons('change').disable();
                 self.getButtons('recovery').disable();
                 self.getButtons('regenerate').disable();
-
-                if (self.getAttribute('openRecoveryForAuthPluginId')) {
-                    self.recoverAuthData(self.getAttribute('openRecoveryForAuthPluginId'));
-                }
             });
         },
 
@@ -317,6 +312,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                 data.push(Row);
             }
 
+            if (!this.$Grid) {
+                return;
+            }
+
             this.$Grid.setData({
                 data : data,
                 page : 1,
@@ -357,12 +356,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         registerUser: function () {
             var self = this;
 
+            if (this.$CurrentSheet) {
+                this.$CurrentSheet.destroy();
+                this.$CurrentSheet = null;
+            }
+
             this.Loader.show();
 
             var AuthPluginData = self.$Grid.getSelectedData()[0];
             var Register, RegisterSheet;
 
-            this.createSheet({
+            this.$CurrentSheet = this.createSheet({
                 title : QUILocale.get(lg, 'gpm.auth.panel.register.title'),
                 events: {
                     onShow : function (Sheet) {
@@ -393,7 +397,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         Sheet.destroy();
                     }
                 }
-            }).show();
+            });
+
+            this.$CurrentSheet.show();
 
             var FuncOnRegisterBtnClick = function () {
                 self.Loader.show();
@@ -463,11 +469,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
         changeAuthInfo: function () {
             var self = this;
 
+            if (this.$CurrentSheet) {
+                this.$CurrentSheet.destroy();
+                this.$CurrentSheet = null;
+            }
+
             this.Loader.show();
 
             var AuthPluginData = self.$Grid.getSelectedData()[0];
 
-            this.createSheet({
+            this.$CurrentSheet = this.createSheet({
                 title : QUILocale.get(lg, 'gpm.auth.panel.change.title', {
                     authPluginTitle: AuthPluginData.title
                 }),
@@ -504,7 +515,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         Sheet.destroy();
                     }
                 }
-            }).show();
+            });
+
+            this.$CurrentSheet.show();
         },
 
         /**
@@ -517,8 +530,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
             this.Loader.show();
 
+            if (this.$CurrentSheet) {
+                this.$CurrentSheet.destroy();
+                this.$CurrentSheet = null;
+            }
+
             Authentication.getAuthPluginInfo(authPluginId).then(function (AuthPluginData) {
-                this.createSheet({
+                self.$CurrentSheet = self.createSheet({
                     title : QUILocale.get(lg, 'gpm.auth.panel.recovery.title', {
                         authPluginTitle: AuthPluginData.title
                     }),
@@ -542,8 +560,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                             Sheet.destroy();
                         }
                     }
-                }).show();
-            }.bind(this));
+                });
+
+                self.$CurrentSheet.show();
+            });
         },
 
         /**
@@ -611,14 +631,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         onSubmit: function () {
                             ConfirmPopup.Loader.show();
 
-                            getAuthData().then(function(authData) {
-
-                                console.log(authData);
-
+                            getAuthData().then(function (authData) {
                                 Authentication.regenerateRecoveryCode(
                                     AuthPluginData.id,
                                     authData
-                                ).then(function(RecoveryCodeData) {
+                                ).then(function (RecoveryCodeData) {
                                     if (!RecoveryCodeData) {
                                         ConfirmPopup.Loader.hide();
                                         return;
@@ -626,16 +643,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
                                     new RecoveryCodePopup({
                                         RecoveryCodeData: RecoveryCodeData,
-                                        events: {
-                                            onClose: function() {
+                                        events          : {
+                                            onClose: function () {
                                                 ConfirmPopup.close();
                                             }
                                         }
                                     }).open();
-                                }, function() {
+                                }, function () {
                                     ConfirmPopup.Loader.hide();
                                 });
-                            }, function() {
+                            }, function () {
                                 ConfirmPopup.Loader.hide();
                             });
                         }

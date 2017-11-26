@@ -1319,6 +1319,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="controls.auth.authenticate.info">
             <de><![CDATA[Bitte authentifizieren Sie sich für die folgenden Authentifizierungs-Faktoren.]]></de>
         </locale>
+        <locale name="controls.auth.authenticate.recover_authdata">
+            <de><![CDATA[Zugangsdaten vergessen]]></de>
+        </locale>
 
         <!-- Control: password/Authenticate -->
         <locale name="controls.password.authenticate.warning.unsynced">
