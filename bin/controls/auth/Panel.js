@@ -6,7 +6,6 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
-    'qui/QUI',
     'qui/controls/desktop/Panel',
     'qui/controls/buttons/Button',
     'qui/controls/windows/Confirm',
@@ -26,7 +25,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
-], function (QUI, QUIPanel, QUIButton, QUIConfirm, QUILoader, Grid, Authentication, AuthRegister,
+], function (QUIPanel, QUIButton, QUIConfirm, QUILoader, Grid, Authentication, AuthRegister,
              AuthChange, RecoveryCodePopup, SyncAuthPluginWindow, Recovery, AuthWindow, Ajax, QUILocale) {
     "use strict";
 

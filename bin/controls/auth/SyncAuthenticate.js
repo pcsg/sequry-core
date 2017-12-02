@@ -15,11 +15,10 @@
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
 
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate.css'
 
-], function (AuthenticationControl, Authentication) {
+], function (AuthenticationControl) {
     "use strict";
 
     return new Class({
@@ -52,7 +51,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
             for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
                 var authPluginId = this.$authPluginControls[i].getAttribute('authPluginId');
 
-                if (authPluginId != syncAuthPluginId) {
+                if (authPluginId !== syncAuthPluginId) {
                     continue;
                 }
 

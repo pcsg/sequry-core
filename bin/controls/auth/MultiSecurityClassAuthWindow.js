@@ -4,14 +4,6 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.css
- *
  * @event onSubmit [AuthData, this]
  * @event onClose [this]
  * @event onAbort [this]
@@ -21,20 +13,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
     'qui/QUI',
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
-    'qui/utils/Form',
     'Locale',
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-
-    'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.css'
 
-], function (QUI, QUIPopup, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             Authentication, AuthenticationControl, Ajax, template) {
+], function (QUI, QUIPopup, QUIButton, QUILocale, Mustache, Authentication, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';

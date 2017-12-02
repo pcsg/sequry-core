@@ -9,25 +9,21 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
     'qui/controls/loader/Loader',
 
-    'qui/utils/Form',
     'Locale',
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
 
-    'Ajax',
-
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css'
 
-], function (QUI, QUIControl, QUIButton, QUILoader, QUIFormUtils, QUILocale, Mustache,
-             Authentication, RecoveryCodePopup, Ajax, template) {
+], function (QUIControl, QUIButton, QUILoader, QUILocale, Mustache,
+             Authentication, RecoveryCodePopup, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';

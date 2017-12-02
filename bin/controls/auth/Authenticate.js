@@ -4,14 +4,6 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.css
- *
  * @event onLoaded
  * @event onAbort - on AuthPopup user close
  * @event onClose - on AuthPopup close
@@ -19,7 +11,6 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
@@ -29,7 +20,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.css'
 
-], function (QUI, QUIControl, QUIPopup, QUIButton, QUILocale, Authentication) {
+], function (QUIControl, QUIPopup, QUIButton, QUILocale, Authentication) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -185,7 +176,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
          */
         $buildContent: function () {
             var self = this;
-            PluginsElm
+
             var Content    = this.$AuthPopup.getContent();
             var PluginsElm = Content.getElement('.pcsg-gpm-auth-authenticate-plugins');
 
@@ -218,6 +209,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
             this.$AuthPopup.Loader.show();
 
             PluginsElm.set('html', '');
+
+            var ClickPasswordRecovery = function (event) {
+                event.stop();
+                self.showLoader();
+                self.$openAuthDataRecovery(
+                    event.target.getParent('.pcsg-gpm-auth-authenticate-plugins-plugin').get(
+                        'data-authpluginid'
+                    )
+                ).then(function () {
+                    self.hideLoader();
+                }, function () {
+                    self.hideLoader();
+                });
+            };
 
             // load auth plugins
             require(
@@ -260,19 +265,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                         // add event to "Password reset"-Link
                         PluginElm.getElement(
                             '.pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata'
-                        ).addEvent('click', function (event) {
-                            event.stop();
-                            self.showLoader();
-                            self.$openAuthDataRecovery(
-                                event.target.getParent('.pcsg-gpm-auth-authenticate-plugins-plugin').get(
-                                    'data-authpluginid'
-                                )
-                            ).then(function () {
-                                self.hideLoader();
-                            }, function () {
-                                self.hideLoader();
-                            });
-                        });
+                        ).addEvent('click', ClickPasswordRecovery);
 
                         // if the user is already authenticated for a specific plugin
                         // disable it and show a check icon
@@ -483,6 +476,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                     QUIPanelUtils.openPanelInTasks(new AuthPanelControl()).then(function (Panel) {
                         Panel.recoverAuthData(authPluginId);
                         self.close();
+
+                        resolve();
                     }, reject);
                 });
             });
