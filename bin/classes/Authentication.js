@@ -73,7 +73,6 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
                                         }
 
                                         Popup.hideLoader();
-                                        reject(e);
                                     });
                                 },
                                 onClose : function () {
