@@ -89,9 +89,9 @@ require([
                 Actors.addUsersToGroup(
                     AuthInfo.groupId,
                     AuthInfo.userIds
-                ).then(function() {
+                ).then(function () {
                     // nothing
-                }, function() {
+                }, function () {
                     // nothing
                 });
             });
@@ -107,9 +107,9 @@ require([
                 Actors.addGroupsToUser(
                     AuthInfo.userId,
                     AuthInfo.groupIds
-                ).then(function() {
+                ).then(function () {
                     // nothing
-                }, function() {
+                }, function () {
                     // nothing
                 });
             });
@@ -179,6 +179,19 @@ require([
             });
 
             Confirm.open();
+        }
+    );
+
+    QUIAjax.registerGlobalJavaScriptCallback(
+        'showRecoveryCode',
+        function (response, Data) {
+            require([
+                'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup'
+            ], function (RecoveryCodePopup) {
+                new RecoveryCodePopup({
+                    RecoveryCodeData: Data.recoveryCode
+                }).open();
+            });
         }
     );
 });

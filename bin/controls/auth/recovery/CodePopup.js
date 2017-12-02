@@ -6,20 +6,15 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup', [
 
-    'qui/QUI',
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
-    'qui/utils/Form',
     'Locale',
     'Mustache',
-
-    'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup.css'
 
-], function (QUI, QUIPopup, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             Ajax, template) {
+], function (QUIPopup, QUIButton, QUILocale, Mustache, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -37,8 +32,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
         ],
 
         options: {
-            maxHeight         : 600,
-            'RecoveryCodeData': false    // recovery code data
+            maxHeight       : 650,
+            RecoveryCodeData: false    // recovery code data
         },
 
         initialize: function (options) {
@@ -68,6 +63,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
          */
         $onCreate: function () {
             var self = this;
+
+            this.$Elm.addClass('pcsg-gpm-auth-recovery-popup');
 
             this.$CloseBtn = new QUIButton({
                 textimage: 'fa fa-close',
