@@ -29,22 +29,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
 
-    'Ajax',
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
-             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
-             AuthenticationControl, PasswordAuthentication, RecoveryCodeWindow,
-             CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
+             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch, RecoveryCodePopup,
+             CategorySelect, CategorySelectPrivate, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -1612,7 +1608,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                             return;
                         }
 
-                        new RecoveryCodeWindow({
+                        new RecoveryCodePopup({
                             RecoveryCodeData: RecoveryData,
                             events          : {
                                 onClose: function () {

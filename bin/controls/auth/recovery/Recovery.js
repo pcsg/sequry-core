@@ -9,7 +9,6 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/loader/Loader',
     'qui/controls/buttons/Button',
@@ -24,7 +23,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery.css'
 
-], function (QUI, QUIControl, QUILoader, QUIButton, QUILocale, Mustache,
+], function (QUIControl, QUILoader, QUIButton, QUILocale, Mustache,
              QUIAjax, CodePopup, Authentication, template) {
     "use strict";
 
@@ -222,11 +221,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                                 Btn.destroy();
                                 self.$showAuthDataChangeControl();
                             }
-                        }, function (e) {
+                        }, function () {
                             Btn.enable();
                             Btn.setAttribute('textimage', 'fa fa-check-square-o');
-
-                            // @todo Exception message anzeigen
                         });
                     }
                 }
@@ -275,7 +272,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                         token       : token,
                         onError     : reject
                     }
-                )
+                );
             });
         },
 
@@ -372,7 +369,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
                     authPluginId: self.getAttribute('authPluginId'),
                     newAuthData : newAuthData,
                     onError     : reject
-                })
+                });
             });
         },
 
