@@ -4,17 +4,6 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/Create
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css
- *
  * @event onLoaded
  * @event onFinish
  */
@@ -33,13 +22,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
 
+    'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, Passwords, Authentication,
-             SecurityClassSelectSlider, ActorSelect,
-             PasswordTypes, CategorySelect, CategorySelectPrivate, template) {
+             SecurityClassSelectSlider, ActorSelect, PasswordTypes, CategorySelect,
+             CategorySelectPrivate, QUIAjax, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -72,6 +62,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
             this.$OwnerInfoElm          = null;
             this.$loaded                = false;
             this.$CurrentOwner          = null;
+            this.$Settings              = {};
         },
 
         /**
@@ -149,25 +140,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
         $onSecurityClassSelectLoaded: function () {
             var self = this;
 
-            // set default security class for new passwords
-            Authentication.getDefaultSecurityClassId().then(
-                function (securityClassId) {
-                    self.$SecurityClassSelect.addEvents({
-                        onChange: self.$onSecurityClassChange
-                    });
+            Promise.all([
+                Authentication.getDefaultSecurityClassId(),
+                self.$getSettings()
+            ]).then(function (result) {
+                var securityClassId = result[0];
+                self.$Settings      = result[1];
 
-                    if (securityClassId) {
-                        self.$SecurityClassSelect.setValue(
-                            securityClassId
-                        );
-                    } else {
-                        securityClassId = self.$SecurityClassSelect.getValue();
-                        self.$SecurityClassSelect.setValue(securityClassId);
-                    }
+                self.$SecurityClassSelect.addEvents({
+                    onChange: self.$onSecurityClassChange
+                });
 
-                    self.fireEvent('loaded');
+                if (securityClassId) {
+                    self.$SecurityClassSelect.setValue(
+                        securityClassId
+                    );
+                } else {
+                    securityClassId = self.$SecurityClassSelect.getValue();
+                    self.$SecurityClassSelect.setValue(securityClassId);
                 }
-            );
+
+                self.fireEvent('loaded');
+            });
         },
 
         /**
@@ -182,16 +176,41 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
 
             this.$OwnerSelectElm.set('html', '');
 
-            this.$OwnerSelect = new ActorSelect({
+            var ActorSelectAttributes = {
                 popupInfo      : QUILocale.get(lg,
                     'controls.password.create.ownerselect.info'
                 ),
                 max            : 1,
                 securityClassId: securityClassId,
-                events         : {
+
+                events: {
                     onChange: this.$onOwnerChange
                 }
-            }).inject(this.$OwnerSelectElm);
+            };
+
+            switch (this.$Settings.actorTypePasswordCreate) {
+                case 'users':
+                    ActorSelectAttributes.selectedActorType = 'users';
+                    ActorSelectAttributes.showEligibleOnly  = false;
+                    break;
+
+                case 'users_eligible':
+                    ActorSelectAttributes.selectedActorType = 'users';
+                    ActorSelectAttributes.showEligibleOnly  = true;
+                    break;
+
+                case 'groups':
+                    ActorSelectAttributes.selectedActorType = 'groups';
+                    ActorSelectAttributes.showEligibleOnly  = false;
+                    break;
+
+                case 'groups_eligible':
+                    ActorSelectAttributes.selectedActorType = 'groups';
+                    ActorSelectAttributes.showEligibleOnly  = true;
+                    break;
+            }
+
+            this.$OwnerSelect = new ActorSelect(ActorSelectAttributes).inject(this.$OwnerSelectElm);
 
             if (!this.$loaded) {
                 Authentication.isActorEligibleForSecurityClass(
@@ -347,6 +366,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
                         resolve();
                     }
                 );
+            });
+        },
+
+        /**
+         * Get Password create settings
+         *
+         * @returns {Promise}
+         */
+        $getSettings: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_create_getSettings', resolve, {
+                    'package': 'pcsg/grouppasswordmanager',
+                    onError  : reject
+                });
             });
         }
     });

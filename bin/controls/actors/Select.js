@@ -34,12 +34,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
         ],
 
         options: {
-            popupInfo      : '',    // info that is shown in the ActorSelect Popup
-            actorType      : 'all', // "users", "groups", "all"
-            securityClassId: false,  // id of security class this actors are searched for
-            Search         : false,
-            filterActorIds : []   // IDs of actors that are filtered from list (entries must have
+            popupInfo        : '',    // info that is shown in the ActorSelect Popup
+            actorType        : 'all', // "users", "groups", "all"
+            securityClassId  : false,  // id of security class this actors are searched for
+            Search           : false,
+            filterActorIds   : [],   // IDs of actors that are filtered from list (entries must have
             // prefix "u" (user) or "g" (group)
+            showEligibleOnly : false,      // show eligible only or all
+            selectedActorType: 'users' // pre-selected actor type
         },
 
         initialize: function (options) {
@@ -153,12 +155,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             }
 
             new SelectTablePopup({
-                info           : this.getAttribute('popupInfo'),
-                securityClassId: this.getAttribute('securityClassId'),
-                multiselect    : this.getAttribute('multiple'),
-                actorType      : this.getAttribute('actorType'),
-                filterActorIds : filterActorIds,
-                events         : {
+                info             : this.getAttribute('popupInfo'),
+                securityClassId  : this.getAttribute('securityClassId'),
+                multiselect      : this.getAttribute('multiple'),
+                actorType        : this.getAttribute('actorType'),
+                showEligibleOnly : this.getAttribute('showEligibleOnly'),
+                selectedActorType: this.getAttribute('selectedActorType'),
+                filterActorIds   : filterActorIds,
+                events           : {
                     onSubmit: function (ids, actorType) {
                         var prefix = 'u';
 

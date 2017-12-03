@@ -4,22 +4,12 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/controls/Control
- * @require qui/controls/loader/Loader
- * @require qui/controls/buttons/Button
- * @require Locale
- * @require controls/grid/Grid
- * @require package/pcsg/grouppasswordmanager/bin/Actors
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable.css
- *
  * @event onSubmit [selectedIds, actorType, this]
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
 
     'qui/controls/Control',
     'qui/controls/loader/Loader',
-    'qui/controls/buttons/Button',
     'Locale',
 
     'controls/grid/Grid',
@@ -29,7 +19,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable.css'
 
-], function (QUIControl, QUILoader, QUIButton, QUILocale, Grid, Actors, Authentication) {
+], function (QUIControl, QUILoader, QUILocale, Grid, Actors, Authentication) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -47,16 +37,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
             '$setGridData',
             'resize',
             'refresh',
-            '$onTypeBtnClick'
+            '$onTypeBtnClick',
+            '$switchActorType'
         ],
 
         options: {
-            info           : '',        // info text that is shown above the table
-            multiselect    : false,     // can select multiple actors
-            securityClassId: false,     // security class id the actors have to be eligible for
-            filterActorIds : [],        // IDs of actors that are filtered from list (entries must have
-                                        // prefix "u" (user) or "g" (group)
-            actorType      : 'all'      // can be "all", "users" or "groups"
+            info             : '',        // info text that is shown above the table
+            multiselect      : false,     // can select multiple actors
+            securityClassId  : false,     // security class id the actors have to be eligible for
+            filterActorIds   : [],        // IDs of actors that are filtered from list (entries must have
+                                          // prefix "u" (user) or "g" (group)
+            actorType        : 'all',     // can be "all", "users" or "groups"
+            showEligibleOnly : false,      // show eligible only or all
+            selectedActorType: 'users'   // pre-selected actor type
         },
 
         initialize: function (options) {
@@ -80,7 +73,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
             this.$search        = false;
             this.$SecurityClass = null;
             this.$SearchInput   = null;
-            this.$eligibleOnly  = false;
+            this.$eligibleOnly  = options.showEligibleOnly || false;
             this.$InfoElm       = null;
         },
 
@@ -235,7 +228,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                 }
 
                 self.resize();
-                self.refresh();
+                //self.refresh();
+
+                self.$switchActorType(self.getAttribute('selectedActorType'));
                 self.$SearchInput.focus();
             });
         },
@@ -246,18 +241,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
          * @param {Object} Btn - qui/controls/buttons/Button
          */
         $onTypeBtnClick: function (Btn) {
-            var TableButtons = this.$Grid.getAttribute('buttons');
-            var type         = Btn.getAttribute('name');
+            var type = Btn.getAttribute('name');
 
             if (type === this.$actorType) {
                 return;
             }
 
+            this.$switchActorType(type);
+        },
+
+        /**
+         * Switch shown actor type ("users" / "groups")
+         *
+         * @param {String} actorType
+         */
+        $switchActorType: function (actorType) {
             this.$search            = false;
             this.$SearchInput.value = '';
             this.$SearchInput.focus();
 
-            if (type === 'users') {
+            var TableButtons = this.$Grid.getAttribute('buttons');
+
+            if (actorType === 'users') {
                 if (TableButtons.groups) {
                     TableButtons.groups.setNormal();
                 }
@@ -267,7 +272,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                 }
             }
 
-            this.$actorType = type;
+            this.$actorType = actorType;
             this.refresh();
         },
 

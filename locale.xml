@@ -819,6 +819,24 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="settings.module_settings.defaultSecurityClassId.description">
             <de><![CDATA[Legen Sie fest, welche Sicherheitsklasse beim "Neues Passwort erstellen"-Dialog vorausgewählt ist.]]></de>
         </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.title">
+            <de><![CDATA[Vorausgewählte Eigentümer-Typ bei Passwort-Erstellung]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.description">
+            <de><![CDATA[Eigentümer-Typ, der vorausgewählt ist, wenn bei Erstellung eines neuen Passworts das Eigentümer-Auswahl-Fenster geöffnet wird.]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.users">
+            <de><![CDATA[Benutzer (alle)]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.groups">
+            <de><![CDATA[Gruppen (alle)]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.users_eligible">
+            <de><![CDATA[Benutzer (nur für die jeweilige Sicherheitsklasse geeignete)]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.groups_eligible">
+            <de><![CDATA[Gruppen (nur für die jeweilige Sicherheitsklasse geeignete)]]></de>
+        </locale>
 
         <locale name="user.gpm.title">
             <de><![CDATA[Passwort-Manager]]></de>
