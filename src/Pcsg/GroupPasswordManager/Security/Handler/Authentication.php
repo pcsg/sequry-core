@@ -365,8 +365,7 @@ class Authentication
             ));
         }
 
-        if (!isset($params['title'])
-            || empty($params['title'])
+        if (empty($params['title'])
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -374,8 +373,7 @@ class Authentication
             ));
         }
 
-        if (!isset($params['authPluginIds'])
-            || empty($params['authPluginIds']
+        if (empty($params['authPluginIds']
                      || !is_array($params['authPluginIds']))
         ) {
             throw new QUI\Exception(array(
@@ -384,8 +382,7 @@ class Authentication
             ));
         }
 
-        if (!isset($params['requiredFactors'])
-            || empty($params['requiredFactors'])
+        if (empty($params['requiredFactors'])
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -444,6 +441,15 @@ class Authentication
                 'pcsg/grouppasswordmanager',
                 'exception.securityclass.create.error'
             ));
+        }
+
+        $securityClasses = self::getSecurityClassesList();
+
+        // if the created SecurityClass is the first one -> make it the default SecurityClass
+        if (count($securityClasses) === 1) {
+            $Conf = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig();
+            $Conf->set('settings', 'defaultSecurityClassId', $securityClassId);
+            $Conf->save();
         }
 
         return $securityClassId;

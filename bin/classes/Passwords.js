@@ -274,6 +274,20 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                     onError  : reject
                 });
             });
+        },
+
+        /**
+         * Checks if system is set up to use Sequry
+         *
+         * @return {Promise}
+         */
+        isSetupComplete: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_isSetupComplete', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });

@@ -353,15 +353,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             var self = this;
 
             this.resize();
-            this.refresh().then(function () {
-                var pwId = self.getAttribute('passwordId');
 
-                if (pwId) {
-                    self.viewPassword.delay(200, self, pwId);
+            this.Loader.show();
+
+            Passwords.isSetupComplete().then(function (setupComplete) {
+                if (setupComplete) {
+                    self.refresh().then(function () {
+                        var pwId = self.getAttribute('passwordId');
+
+                        if (pwId) {
+                            self.viewPassword.delay(200, self, pwId);
+                        }
+
+                        self.fireEvent('loaded', [self]);
+                        self.$initialRegistration();
+                    });
+
+                    return;
                 }
 
-                self.fireEvent('loaded', [self]);
-                self.$initialRegistration();
+                self.getButtons('add').disable();
+
+                new Element('div', {
+                    'class': 'pcsg-gpm-passwords-panel-setupincomplete',
+                    html   : '<div>' +
+                    QUILocale.get(lg, 'controls.password.panel.setup_incomplete') +
+                    '</div>'
+                }).inject(self.$Elm);
             });
         },
 

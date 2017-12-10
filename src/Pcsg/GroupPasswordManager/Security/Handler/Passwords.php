@@ -15,7 +15,6 @@ use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
-use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
@@ -23,6 +22,7 @@ use Pcsg\GroupPasswordManager\Security\Utils;
 use Pcsg\GroupPasswordManager\Handler\Categories;
 use QUI;
 use QUI\Permissions\Permission;
+use QUI\Cache\Manager as CacheManager;
 
 /**
  * Class for for managing passwords
@@ -520,5 +520,32 @@ class Passwords
         }
 
         return array_unique($ids);
+    }
+
+    /**
+     * Checks if the system is set up to use all Sequry features
+     *
+     * @return bool
+     */
+    public static function isSetupComplete()
+    {
+        $cacheName = 'pcsg/grouppasswordmanager/setupComplete';
+
+        try {
+            return CacheManager::get($cacheName);
+        } catch (\Exception $Exception) {
+            // execute completion check
+        }
+
+        $setupComplete = true;
+
+        // check if a SecurityClass exists
+        $securityClasses = Authentication::getSecurityClassesList();
+
+        if (!count($securityClasses)) {
+            $setupComplete = false;
+        }
+
+        return $setupComplete;
     }
 }
