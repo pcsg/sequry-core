@@ -546,6 +546,11 @@ class Passwords
             $setupComplete = false;
         }
 
+        // save in cache once setup is complete
+        if ($setupComplete) {
+            CacheManager::set($cacheName, true);
+        }
+
         return $setupComplete;
     }
 }
