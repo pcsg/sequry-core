@@ -575,6 +575,7 @@ class Password extends QUI\QDOM
      * - How is the password accessed (which groups)
      *
      * @return array
+     * @throws QUI\Exception
      */
     public function getAccessInfo()
     {
@@ -1279,7 +1280,13 @@ class Password extends QUI\QDOM
         $userGroupIds     = $CryptoUser->getCryptoGroupIds();
         $passwordGroupIds = $this->getAccessGroupsIds();
 
-        return !empty(array_intersect($passwordGroupIds, $userGroupIds));
+        $hasGroupAccess = !empty(array_intersect($passwordGroupIds, $userGroupIds));
+
+        if (!$hasGroupAccess) {
+            return false;
+        }
+
+        return $this->getSecurityClass()->isUserEligible($CryptoUser);
     }
 
     /**

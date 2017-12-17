@@ -20,24 +20,19 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
-    'qui/QUI',
     'qui/controls/Control',
-    'qui/controls/buttons/Button',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css'
 
-], function (QUI, QUIControl, QUIButton, QUILocale, AuthHandler, PasswordHandler, ActorSelect) {
+], function (QUIControl, QUILocale, Actors, Passwords, ActorSelect) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Passwords      = new PasswordHandler(),
-        Authentication = new AuthHandler();
-
+    var lg = 'pcsg/grouppasswordmanager';
     return new Class({
 
         Extends: QUIControl,
@@ -153,40 +148,48 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
             var pwId = this.getAttribute('passwordId');
 
-            Passwords.getShareData(pwId).then(
-                function (ShareData) {
-                    self.$Elm.getElement(
-                        '.gpm-password-share-info'
-                    ).set(
-                        'html',
-                        QUILocale.get(
-                            lg,
-                            'controls.password.share.info', {
-                                passwordTitle: ShareData.title,
-                                passwordId   : pwId
-                            }
-                        )
-                    );
-
-                    self.$ShareData = ShareData;
-
-                    self.$ActorSelectUsers = new ActorSelect({
-                        actorType      : 'users',
-                        securityClassId: ShareData.securityClassId
-                    }).inject(ActorUsersElm);
-
-                    self.$ActorSelectGroups = new ActorSelect({
-                        actorType      : 'groups',
-                        securityClassId: ShareData.securityClassId
-                    }).inject(ActorGroupsElm);
-
-                    self.$insertData();
+            Actors.getPasswordAccessInfo(pwId).then(function (AccessInfo) {
+                if (!AccessInfo.canAccess) {
+                    Passwords.getNoAccessInfoElm(AccessInfo, self).inject(self.$Elm);
                     self.fireEvent('loaded');
-                },
-                function () {
-                    self.fireEvent('close');
+                    return;
                 }
-            );
+
+                Passwords.getShareData(pwId).then(
+                    function (ShareData) {
+                        self.$Elm.getElement(
+                            '.gpm-password-share-info'
+                        ).set(
+                            'html',
+                            QUILocale.get(
+                                lg,
+                                'controls.password.share.info', {
+                                    passwordTitle: ShareData.title,
+                                    passwordId   : pwId
+                                }
+                            )
+                        );
+
+                        self.$ShareData = ShareData;
+
+                        self.$ActorSelectUsers = new ActorSelect({
+                            actorType      : 'users',
+                            securityClassId: ShareData.securityClassId
+                        }).inject(ActorUsersElm);
+
+                        self.$ActorSelectGroups = new ActorSelect({
+                            actorType      : 'groups',
+                            securityClassId: ShareData.securityClassId
+                        }).inject(ActorGroupsElm);
+
+                        self.$insertData();
+                        self.fireEvent('loaded');
+                    },
+                    function () {
+                        self.fireEvent('close');
+                    }
+                );
+            });
         },
 
         /**

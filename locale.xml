@@ -1371,6 +1371,15 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="controls.password.view.categories.tooltip">
             <de><![CDATA[Können unter "Passwort bearbeiten" angepasst werden]]></de>
         </locale>
+        <locale name="controls.password.access_info.title">
+            <de><![CDATA[Der Zugriff auf dieses Passwort ist nicht möglich]]></de>
+        </locale>
+        <locale name="controls.password.access_info.text">
+            <de><![CDATA[Sie haben die Berechtigung, dieses Passwort anzusehen, sind jedoch noch nicht für die Sicherheitsklasse <b>[title]</b> freigeschaltet. Damit Sie auf dieses Passwort zugreifen können, registrieren Sie sich bitte für folgende Authentifizierungs-Faktoren:]]></de>
+        </locale>
+        <locale name="controls.password.access_info.btn.text">
+            <de><![CDATA[Zu den Authentifizierungs-Faktoren]]></de>
+        </locale>
 
         <!-- Control: password/Panel -->
         <locale name="gpm.password.btn.save.text">

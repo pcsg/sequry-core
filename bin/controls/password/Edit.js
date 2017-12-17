@@ -4,17 +4,6 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css
- *
  * @event onLoaded
  * @event onAuthAbort - on user authentication abort
  * @event onClose (this) - if password is closed
@@ -27,9 +16,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'Locale',
     'Mustache',
 
+    'package/pcsg/grouppasswordmanager/bin/Actors',
     'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/Categories',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
@@ -40,8 +29,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html'
     //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css'
 
-], function (QUI, QUIControl, QUILoader, QUILocale, Mustache, Authentication, Passwords,
-             Categories, SecurityClassSelect, ActorSelect, PasswordContent,
+], function (QUI, QUIControl, QUILoader, QUILocale, Mustache, Actors, Authentication, Passwords,
+             SecurityClassSelect, ActorSelect, PasswordContent,
              CategorySelect, CategorySelectPrivate, template) {
     "use strict";
 
@@ -140,20 +129,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             var self = this;
             var pwId = this.getAttribute('passwordId');
 
-            Passwords.get(pwId).then(
-                function (PasswordData) {
-                    if (!PasswordData) {
-                        return;
-                    }
-
-                    self.$PasswordData    = PasswordData;
-                    self.$securityClassId = PasswordData.securityClassId;
-                    self.$onPasswordDataLoaded();
-                },
-                function () {
-                    self.fireEvent('close');
+            Actors.getPasswordAccessInfo(pwId).then(function (AccessInfo) {
+                if (!AccessInfo.canAccess) {
+                    Passwords.getNoAccessInfoElm(AccessInfo, self).inject(self.$Elm);
+                    self.fireEvent('loaded');
+                    return;
                 }
-            );
+
+                Passwords.get(pwId).then(
+                    function (PasswordData) {
+                        if (!PasswordData) {
+                            return;
+                        }
+
+                        self.$PasswordData    = PasswordData;
+                        self.$securityClassId = PasswordData.securityClassId;
+                        self.$onPasswordDataLoaded();
+                    },
+                    function () {
+                        self.fireEvent('close');
+                    }
+                );
+            });
         },
 
         /**

@@ -207,6 +207,22 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
                     onError     : reject
                 });
             });
+        },
+
+        /**
+         * Get access info of password
+         *
+         * @param {number} passwordId
+         * @returns {Promise}
+         */
+        getPasswordAccessInfo: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_getPasswordAccessInfo', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId
+                });
+            });
         }
     });
 });

@@ -136,7 +136,8 @@ class CryptoGroup extends QUI\Groups\Group
     /**
      * Return SecurityClass that is associated with this group
      *
-     * @return array
+     * @return SecurityClass[]
+     * @throws QUI\Exception
      */
     public function getSecurityClasses()
     {
@@ -400,25 +401,12 @@ class CryptoGroup extends QUI\Groups\Group
             ));
         }
 
+        // permiossion check
         $this->checkCryptoUserPermission();
 
-        // check if user is eligible for all security classes
         $securityClasses = $this->getSecurityClasses();
-
-        /** @var SecurityClass $SecurityClass */
-        foreach ($securityClasses as $SecurityClass) {
-            if (!$SecurityClass->isUserEligible($AddUser)) {
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.cryptogroup.add.user.not.eligible',
-                    array(
-                        'userId'          => $AddUser->getId(),
-                        'groupId'         => $this->getId(),
-                        'securityClassId' => $SecurityClass->getId()
-                    )
-                ));
-            }
-        }
+        $DB              = QUI::getDataBase();
+        $tbl             = Tables::usersToGroups();
 
         // split group keys
         foreach ($securityClasses as $SecurityClass) {
@@ -430,6 +418,31 @@ class CryptoGroup extends QUI\Groups\Group
                 $SecurityClass->getAuthPluginCount(),
                 $SecurityClass->getRequiredFactors()
             );
+
+            // create empty entries if user is not eligible (yet) for SecurityClass
+            if (!$SecurityClass->isUserEligible($AddUser)) {
+                foreach ($SecurityClass->getAuthPlugins() as $AuthPlugin) {
+                    try {
+                        $AuthKeyPair = $AddUser->getAuthKeyPair($AuthPlugin);
+                        $keyPairId   = $AuthKeyPair->getId();
+                    } catch (\Exception $Exception) {
+                        $keyPairId = null;
+                    }
+
+                    $DB->insert(
+                        $tbl,
+                        array(
+                            'userId'          => $AddUser->getId(),
+                            'userKeyPairId'   => $keyPairId,
+                            'securityClassId' => $SecurityClass->getId(),
+                            'groupId'         => $this->getId(),
+                            'groupKey'        => null
+                        )
+                    );
+                }
+
+                continue;
+            }
 
             // encrypt key parts with user public keys
             $i            = 0;

@@ -296,7 +296,8 @@ class SecurityClass extends QUI\QDOM
     /**
      * Get all authentication plugins associated with this class
      *
-     * @return array
+     * @return Plugin[]
+     * @throws QUI\Exception
      */
     public function getAuthPlugins()
     {

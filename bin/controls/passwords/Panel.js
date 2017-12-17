@@ -559,10 +559,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 self.deletePassword(event.target.getProperty('data-pwid'));
             };
 
+            var noAccessRows = [];
+
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 var Data = GridData.data[i];
 
                 Row = Object.clone(Data);
+
+                if (!Data.canAccess) {
+                    noAccessRows.push(i);
+                }
 
                 // access type
                 Row.accessType = new Element('div', {
@@ -759,6 +765,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             }
 
             this.$Grid.setData(GridData);
+
+            for (i = 0, len = noAccessRows.length; i < len; i++) {
+                this.$Grid.getRowElement(i).addClass('pcsg-gpm-passwords-panel-grid-noaccess');
+            }
         },
 
         /**

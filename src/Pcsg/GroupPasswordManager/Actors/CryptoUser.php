@@ -65,7 +65,7 @@ class CryptoUser extends QUI\Users\User
      * @return AuthKeyPair
      * @throws QUI\Exception
      */
-    public function getAuthKeyPair($AuthPlugin)
+    public function getAuthKeyPair(Plugin $AuthPlugin)
     {
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
@@ -93,6 +93,29 @@ class CryptoUser extends QUI\Users\User
         $data = current($result);
 
         return Authentication::getAuthKeyPair($data['id']);
+    }
+
+    /**
+     * Checks if the User has a KeyPair for an Authentication Plugin
+     *
+     * @param Plugin $AuthPlugin
+     * @return bool
+     */
+    public function hasAuthKeyPair(Plugin $AuthPlugin)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::keyPairsUser(),
+            'where'  => array(
+                'authPluginId' => $AuthPlugin->getId(),
+                'userId'       => $this->getId()
+            ),
+            'limit'  => 1
+        ));
+
+        return !empty($result);
     }
 
     /**
@@ -361,6 +384,38 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $PasswordKey;
+    }
+
+    /**
+     * Get information about if and how this User can access a Password
+     *
+     * @param Password $Password
+     * @return array
+     * @throws QUI\Exception
+     */
+    public function getPasswordAccessInfo(Password $Password)
+    {
+        $SecurityClass = $Password->getSecurityClass();
+
+        $accessInfo = array(
+            'canAccess'          => $Password->hasPasswordAccess($this),
+            'missingAuthPlugins' => array(),
+            'securityClass'      => array(
+                'id'    => $SecurityClass->getId(),
+                'title' => $SecurityClass->getAttribute('title')
+            )
+        );
+
+        foreach ($SecurityClass->getAuthPlugins() as $AuthPlugin) {
+            if (!$this->hasAuthKeyPair($AuthPlugin)) {
+                $accessInfo['missingAuthPlugins'][] = array(
+                    'id'    => $AuthPlugin->getId(),
+                    'title' => $AuthPlugin->getAttribute('title')
+                );
+            }
+        }
+
+        return $accessInfo;
     }
 
     /**
@@ -1050,10 +1105,18 @@ class CryptoUser extends QUI\Users\User
             )
         ));
 
+        $securityClassEligibility = array();
+
+        foreach ($result as $row) {
+            $SecurityClass                                     = Authentication::getSecurityClass($row['id']);
+            $securityClassEligibility[$SecurityClass->getId()] = $SecurityClass->isUserEligible($this);
+        }
+
         foreach ($passwords as $k => $data) {
             foreach ($result as $row) {
                 if ($data['securityClassId'] == $row['id']) {
                     $passwords[$k]['securityClassTitle'] = $row['title'];
+                    $passwords[$k]['canAccess']          = $securityClassEligibility[$row['id']];
                     continue 2;
                 }
             }
