@@ -260,8 +260,8 @@
         <locale name="exception.cryptogroup.keypair.decryption.authentication.error">
             <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error]]]></de>
         </locale>
-        <locale name="exception.cryptogroup.addsecurityclass.users.not.eligible">
-            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+        <locale name="exception.cryptogroup.add_securityclass.not_all_admins_eligible">
+            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Administrator-Benutzer der Gruppe für die Sicherheitsklasse geeignet sind.]]></de>
         </locale>
         <locale name="exception.cryptogroup.setsecurityclass.users.has.no.group.access">
             <de><![CDATA[Der Benutzer #[userId] kann die Sicherheitsklasse #[securityClassId] der Gruppe #[groupId] nicht zuordnen, da der Benutzer der Gruppe nicht zugewiesen ist.]]></de>
@@ -525,6 +525,12 @@
         </locale>
         <locale name="message.ajax.auth.recovery.regenerateCode.error">
             <de><![CDATA[Beim Erzeugen des Wiederherstellungs-Codes ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.addAdminUser.error" html="true">
+            <de><![CDATA[Der Benutzer konnte nicht als Gruppen-Administrator hinzugefügt werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.addAdminUser.success">
+            <de><![CDATA[Der Benutzer wurde erfolgreich als Gruppen-Administrator hinzugefügt.]]></de>
         </locale>
 
         <!-- System -->
@@ -949,8 +955,11 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="permission.gpm.cryptogroup._header">
             <de><![CDATA[Passwort-Gruppen]]></de>
         </locale>
-        <locale name="permission.gpm.cryptogroup.edit">
+        <locale name="permission.gpm.cryptogroup.create">
             <de><![CDATA[Darf Passwort-Gruppen Sicherheitklassen zuweisen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptogroup.manage_admins">
+            <de><![CDATA[Darf Passwort-Gruppen-Administratoren hinzufügen und entfernen]]></de>
         </locale>
         <locale name="permission.gpm.securityclass._header">
             <de><![CDATA[Sicherheitsklassen]]></de>
@@ -1623,11 +1632,14 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="actors.groups.edit.template.title">
             <de><![CDATA[Passwort-Gruppe "[groupName]" (#[groupId]) bearbeiten]]></de>
         </locale>
-        <locale name="actors.groups.edit.template.basicData">
+        <locale name="actors.groups.edit.template.headerSecurityClasses">
             <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
         <locale name="actors.groups.edit.template.securityclasses">
             <de><![CDATA[Zugeordnete Sicherheitsklassen]]></de>
+        </locale>
+        <locale name="actors.groups.edit.template.headerGroupAdmins">
+            <de><![CDATA[Gruppen-Administratoren]]></de>
         </locale>
         <locale name="actors.groupedit.no.securityclass" html="true">
             <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
@@ -1874,7 +1886,7 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Name]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.header.notice">
-            <de><![CDATA[Eignung für Sicherheitsklasse "[securityClassTitle]"]]></de>
+            <de><![CDATA[Sicherheitsklasse(n): [securityClassTitles]]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.eligible">
             <de><![CDATA[geeignet]]></de>
@@ -1883,10 +1895,10 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[nicht geeignet]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.not.eligible.user" html="true">
-            <de><![CDATA[<i>(nicht für die Mindestanzahl an Authentifizierungs-Faktoren registriert)</i>]]></de>
+            <de><![CDATA[<i>(nicht für für alle nötigen Authentifizierungs-Faktoren registriert)</i>]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.not.eligible.group" html="true">
-            <de><![CDATA[<i>(nicht für die Sicherheitsklasse freigeschaltet)</i>]]></de>
+            <de><![CDATA[<i>(nicht für alle nötigen Sicherheitsklassen freigeschaltet)</i>]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.btn.users">
             <de><![CDATA[Benutzer]]></de>

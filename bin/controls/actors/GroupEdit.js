@@ -1,19 +1,8 @@
 /**
- * Control for editing a password manager groupd
+ * Settings for a Sequry Group
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.css
  *
  * @event onLoaded
  * @event onSuccess
@@ -28,16 +17,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
     'package/pcsg/grouppasswordmanager/bin/Authentication',
     'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
-
-    'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.css'
 
-], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors,
-             Authentication, ActorSelectPopup, QUIAjax, template) {
+], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors, ActorSelect,
+             Authentication, ActorSelectPopup, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -50,7 +38,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
         Binds: [
             '$onInject',
             '$addSecurityClass',
-            '$removeSecurityClass'
+            '$removeSecurityClass',
+            '$buildGroupAdminSelect'
         ],
 
         options: {
@@ -70,6 +59,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
             this.$SecurityClasses        = {};
             this.$Group                  = {};
             this.$groupId                = false;
+            this.$GroupAdminSelect       = null;
+            this.$activeSecurityClassIds = [];
         },
 
         /**
@@ -94,8 +85,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                 self.$Elm.set({
                     'class': 'pcsg-gpm-group-edit',
                     html   : Mustache.render(template, {
-                        basicData      : QUILocale.get(lg, lg_prefix + 'basicData'),
-                        securityclasses: QUILocale.get(lg, lg_prefix + 'securityclasses')
+                        headerSecurityClasses: QUILocale.get(lg, lg_prefix + 'headerSecurityClasses'),
+                        securityclasses      : QUILocale.get(lg, lg_prefix + 'securityclasses'),
+                        headerGroupAdmins    : QUILocale.get(lg, lg_prefix + 'headerGroupAdmins')
                     })
                 });
 
@@ -128,11 +120,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                 }
 
                 var FuncOnSwitchBtnClick = function (Btn) {
+                    var securityClassId = Btn.getAttribute('securityClassId');
+
                     switch (Btn.getAttribute('action')) {
                         case 'add':
-                            self.$addSecurityClass(
-                                Btn.getAttribute('securityClassId')
-                            ).then(function (success) {
+                            self.$addSecurityClass(securityClassId).then(function (success) {
                                 if (!success) {
                                     return;
                                 }
@@ -146,13 +138,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                                 if (!Btn.getAttribute('canRemove')) {
                                     Btn.disable();
                                 }
+
+                                self.$activeSecurityClassIds.push(securityClassId);
+                                self.$buildGroupAdminSelect();
                             });
                             break;
 
                         case 'remove':
-                            self.$removeSecurityClass(
-                                Btn.getAttribute('securityClassId')
-                            ).then(function (success) {
+                            self.$removeSecurityClass(securityClassId).then(function (success) {
                                 if (!success) {
                                     return;
                                 }
@@ -162,11 +155,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                                     textimage: 'fa fa-plus-square',
                                     action   : 'add'
                                 });
+
+                                self.$activeSecurityClassIds.erase(securityClassId);
+                                self.$buildGroupAdminSelect();
                             });
                             break;
                     }
                 };
 
+                // SecurityClasses
                 for (var securityClassId in SecurityClasses) {
                     if (!SecurityClasses.hasOwnProperty(securityClassId)) {
                         continue;
@@ -194,6 +191,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                         btnText   = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.remove');
                         btnIcon   = 'fa fa-minus-square';
                         btnAction = 'remove';
+
+                        self.$activeSecurityClassIds.push(securityClassId);
                     } else {
                         btnText   = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add');
                         btnIcon   = 'fa fa-plus-square';
@@ -219,9 +218,60 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                     }
                 }
 
+                // group admins
+                self.$buildGroupAdminSelect();
+
                 self.fireEvent('loaded');
-                //self.$currentSecurityClassId = Actor.securityClassId;
-                //self.$SecurityClassSelect.setValue(Actor.securityClassId);
+            });
+        },
+
+        /**
+         * Build ActorSelect to select Group administration Users
+         */
+        $buildGroupAdminSelect: function () {
+            var self = this;
+
+            if (this.$GroupAdminSelect) {
+                this.$GroupAdminSelect.destroy();
+            }
+
+            this.$GroupAdminSelect = new ActorSelect({
+                popupInfo        : QUILocale.get(lg,
+                    'controls.actors.groupselect.adminselect.info'
+                ),
+                securityClassIds : this.$activeSecurityClassIds,
+                actorType        : 'users',  // "users", "groups", "all"
+                showEligibleOnly : true,  // show eligible only or all
+                selectedActorType: 'users' // pre-selected actor type
+            }).inject(
+                this.$Elm.getElement('.pcsg-gpm-group-edit-groupamdmins')
+            );
+
+            for (var i = 0, len = this.$Group.groupAdminUserIds.length; i < len; i++) {
+                this.$GroupAdminSelect.addItem('u' + this.$Group.groupAdminUserIds[i]);
+            }
+
+            this.$GroupAdminSelect.addEvents({
+                onAddItem   : function (Control, userId) {
+                    self.$GroupAdminSelect.Loader.show();
+                    Actors.addGroupAdminUser(self.$Group.id, userId.substring(1)).then(function (success) {
+                        self.$GroupAdminSelect.Loader.hide();
+
+                        if (!success) {
+                            self.$GroupAdminSelect.removeItem(userId);
+                        }
+                    });
+                },
+                onRemoveItem: function (userId) {
+                    self.$GroupAdminSelect.Loader.show();
+                    Actors.removeGroupAdminUser(self.$Group.id, userId.substring(1)).then(function (success) {
+                        self.$GroupAdminSelect.Loader.hide();
+
+                        if (!success) {
+                            self.$GroupAdminSelect.addItem(userId);
+                        }
+                    });
+                }
             });
         },
 
@@ -248,8 +298,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                     ),
                     securityClassId: securityClassId,
                     actorType      : 'users',
-                    events: {
-                        onSubmit: function(selectedIds) {
+                    events         : {
+                        onSubmit: function (selectedIds) {
                             Actors.addGroupSecurityClass(
                                 self.$groupId,
                                 securityClassId,
@@ -270,7 +320,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
         $removeSecurityClass: function (securityClassId) {
             var self = this;
 
-            return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve) {
                 var Confirm = new QUIConfirm({
                     icon       : 'fa fa-exclamation-triangle',
                     texticon   : 'fa fa-exclamation-triangle',

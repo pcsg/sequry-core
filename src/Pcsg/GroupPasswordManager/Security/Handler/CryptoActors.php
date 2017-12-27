@@ -86,7 +86,7 @@ class CryptoActors
         SecurityClass $SecurityClass,
         QUI\Users\User $User = null
     ) {
-        if (!QUIPermissions::hasPermission(Permissions::GROUP_EDIT)) {
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_CREATE)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptogroup.no.permission'
@@ -278,11 +278,22 @@ class CryptoActors
 
         $eligibleUserIds = false;
 
-        if (!empty($searchParams['securityClassId'])) {
-            $SecurityClass   = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
-            $eligibleUserIds = $SecurityClass->getEligibleUserIds();
+        if (!empty($searchParams['securityClassIds'])
+            && is_array($searchParams['securityClassIds'])) {
+            $eligibleUserIds = array();
 
-            if (!empty($searchParams['eligibleOnly'])) {
+            foreach ($searchParams['securityClassIds'] as $securityClassId) {
+                $SecurityClass     = Authentication::getSecurityClass((int)$securityClassId);
+                $eligibleUserIds[] = $SecurityClass->getEligibleUserIds();
+            }
+
+            if (count($eligibleUserIds) > 1) {
+                $eligibleUserIds = call_user_func_array('array_intersect', $eligibleUserIds);
+            } else {
+                $eligibleUserIds = current($eligibleUserIds);
+            }
+
+            if (!empty($searchParams['eligibleOnly']) && !empty($eligibleUserIds)) {
                 $where[] = 'users.`id` IN (' . implode(',', $eligibleUserIds) . ')';
             }
         }
@@ -457,11 +468,22 @@ class CryptoActors
 
         $eligibleGroupIds = false;
 
-        if (!empty($searchParams['securityClassId'])) {
-            $SecurityClass    = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
-            $eligibleGroupIds = $SecurityClass->getGroupIds();
+        if (!empty($searchParams['securityClassIds'])
+            && is_array($searchParams['securityClassIds'])) {
+            $eligibleGroupIds = array();
 
-            if (!empty($searchParams['eligibleOnly'])) {
+            foreach ($searchParams['securityClassIds'] as $securityClassId) {
+                $SecurityClass      = Authentication::getSecurityClass((int)$securityClassId);
+                $eligibleGroupIds[] = $SecurityClass->getGroupIds();
+            }
+
+            if (count($eligibleGroupIds) > 1) {
+                $eligibleGroupIds = call_user_func_array('array_intersect', $eligibleGroupIds);
+            } else {
+                $eligibleGroupIds = current($eligibleGroupIds);
+            }
+
+            if (!empty($searchParams['eligibleOnly']) && !empty($eligibleGroupIds)) {
                 $where[] = 'groups.`id` IN (' . implode(',', $eligibleGroupIds) . ')';
             }
         }

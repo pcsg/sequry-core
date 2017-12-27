@@ -175,7 +175,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$groupOwner = this.$CurrentOwner.type === 'group';
 
             this.$SecurityClassSelect = new SecurityClassSelect({
-                events      : {
+                events: {
                     onLoaded: function () {
                         self.$insertData();
                         self.fireEvent('loaded');
@@ -246,10 +246,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
             this.$OwnerSelectElm.set('html', '');
 
             this.$OwnerSelect = new ActorSelect({
-                actorType      : self.$groupOwner ? 'groups' : 'all',
-                max            : 1,
-                securityClassId: securityClassId,
-                events         : {
+                actorType       : self.$groupOwner ? 'groups' : 'all',
+                max             : 1,
+                securityClassIds: [securityClassId],
+                events          : {
                     onChange: this.$onOwnerChange
                 }
             }).inject(this.$OwnerSelectElm);

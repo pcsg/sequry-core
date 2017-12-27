@@ -25,22 +25,22 @@ function package_pcsg_grouppasswordmanager_ajax_actors_get($id, $type)
             break;
 
         case 'group':
-            $Actor = QUI::getGroups()->get((int)$id);
+            $CryptoGroup = CryptoActors::getCryptoGroup((int)$id);
 
             $result = QUI::getDataBase()->fetch(array(
                 'count' => 1,
                 'from'  => Tables::keyPairsGroup(),
                 'where' => array(
-                    'groupId' => $Actor->getId()
+                    'groupId' => $CryptoGroup->getId()
                 )
             ));
 
             $securityClassIds             = array();
             $eligibleUserForSecurityClass = array();
-            $groupUserIds                 = $Actor->getUserIds();
+            $groupUserIds                 = $CryptoGroup->getUserIds();
 
             if (current(current($result)) > 0) {
-                $CryptoGroup      = CryptoActors::getCryptoGroup((int)$id);
+
                 $securityClassIds = $CryptoGroup->getSecurityClassIds();
             }
 
@@ -62,12 +62,19 @@ function package_pcsg_grouppasswordmanager_ajax_actors_get($id, $type)
                 $eligibleUserForSecurityClass[$secClassId] = !empty($eligibleUserIdsIntersect);
             }
 
+            $groupAdminUserIds = array();
+
+            foreach ($CryptoGroup->getAdminUsers() as $AdminUser) {
+                $groupAdminUserIds[] = $AdminUser->getId();
+            }
+
             $info = array(
-                'id'                 => $Actor->getId(),
-                'name'               => $Actor->getAttribute('name'),
+                'id'                 => $CryptoGroup->getId(),
+                'name'               => $CryptoGroup->getAttribute('name'),
                 'securityClassIds'   => $securityClassIds,
-                'sessionUserInGroup' => QUI::getUserBySession()->isInGroup($Actor->getId()),
-                'eligibleUser'       => $eligibleUserForSecurityClass
+                'sessionUserInGroup' => QUI::getUserBySession()->isInGroup($CryptoGroup->getId()),
+                'eligibleUser'       => $eligibleUserForSecurityClass,
+                'groupAdminUserIds'  => $groupAdminUserIds
             );
             break;
     }

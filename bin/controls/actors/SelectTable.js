@@ -44,7 +44,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
         options: {
             info             : '',        // info text that is shown above the table
             multiselect      : false,     // can select multiple actors
-            securityClassId  : false,     // security class id the actors have to be eligible for
+            securityClassIds : [],     // security class ids the actors have to be eligible for
             filterActorIds   : [],        // IDs of actors that are filtered from list (entries must have
                                           // prefix "u" (user) or "g" (group)
             actorType        : 'all',     // can be "all", "users" or "groups"
@@ -98,9 +98,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
 
             this.Loader.show();
 
-            Authentication.getSecurityClassInfo(this.getAttribute('securityClassId')).then(function (SecurityClass) {
-                self.$SecurityClass = SecurityClass;
+            var securityClassIds = this.getAttribute('securityClassIds');
+            var promises         = [];
 
+            for (var i = 0, len = securityClassIds.length; i < len; i++) {
+                promises.push(Authentication.getSecurityClassInfo(securityClassIds[i]));
+            }
+
+            Promise.all(promises).then(function (securityClasses) {
                 // content
                 var buttons   = [];
                 var actorType = self.getAttribute('actorType');
@@ -147,6 +152,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                     }
                 });
 
+                var securityClassTitles = [];
+
+                for (i = 0, len = securityClasses.length; i < len; i++) {
+                    securityClassTitles.push(securityClasses[i].title);
+                }
+
                 self.$Grid = new Grid(self.$GridParent, {
                     buttons          : buttons,
                     pagination       : true,
@@ -165,7 +176,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                         width    : 200
                     }, {
                         header   : QUILocale.get(lg, 'controls.actors.selecttable.tbl.header.notice', {
-                            securityClassTitle: self.$SecurityClass.title
+                            securityClassTitles: securityClassTitles.join(' / ')
                         }),
                         dataIndex: 'notice',
                         dataType : 'node',
@@ -334,10 +345,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
                 SearchParams.search = this.$search;
             }
 
-            SearchParams.eligibleOnly    = this.$eligibleOnly;
-            SearchParams.type            = this.$actorType;
-            SearchParams.securityClassId = this.getAttribute('securityClassId');
-            SearchParams.filterActorIds  = this.getAttribute('filterActorIds');
+            SearchParams.eligibleOnly     = this.$eligibleOnly;
+            SearchParams.type             = this.$actorType;
+            SearchParams.securityClassIds = this.getAttribute('securityClassIds');
+            SearchParams.filterActorIds   = this.getAttribute('filterActorIds');
 
             this.Loader.show();
 

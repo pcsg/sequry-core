@@ -1,11 +1,8 @@
 /**
+ * SelectItem for actors/Select control
+ *
  * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/elements/Select
- * @require Ajax
- * @require Locale
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem', [
 

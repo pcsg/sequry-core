@@ -223,6 +223,42 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
                     passwordId: passwordId
                 });
             });
+        },
+
+        /**
+         * Add admin user to a group
+         *
+         * @param {Number} groupId
+         * @param {Number} userId
+         * @returns {Promise}
+         */
+        addGroupAdminUser: function (groupId, userId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_groups_addAdminUser', resolve, {
+                    'package': pkg,
+                    groupId  : groupId,
+                    userId   : userId,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Remove admin user from a group
+         *
+         * @param {Number} groupId
+         * @param {Number} userId
+         * @returns {Promise}
+         */
+        removeGroupAdminUser: function (groupId, userId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_groups_removeAdminUser', resolve, {
+                    'package': pkg,
+                    groupId  : groupId,
+                    userId   : userId,
+                    onError  : reject
+                });
+            });
         }
     });
 });

@@ -520,7 +520,7 @@ class Events
                 'gpm.cryptodata.share'        => true,
                 'gpm.cryptodata.delete_group' => true,
                 'gpm.cryptodata.share_group'  => true,
-                'gpm.cryptogroup.edit'        => true,
+                'gpm.cryptogroup.create'        => true,
                 'gpm.securityclass.edit'      => true,
                 'gpm.categories.edit'         => true
             ),

@@ -8,6 +8,8 @@ namespace Pcsg\GroupPasswordManager\Actors;
 
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Events;
+use Pcsg\GroupPasswordManager\Exception\Exception;
+use Pcsg\GroupPasswordManager\Exception\PermissionDeniedException;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
@@ -16,6 +18,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
@@ -183,7 +186,7 @@ class CryptoGroup extends QUI\Groups\Group
      * @param SecurityClass $SecurityClass
      * @return bool
      */
-    public function hasSecurityClass($SecurityClass)
+    public function hasSecurityClass(SecurityClass $SecurityClass)
     {
         return in_array($SecurityClass->getId(), $this->getSecurityClassIds());
     }
@@ -192,32 +195,38 @@ class CryptoGroup extends QUI\Groups\Group
      * Create a SecurityClass key for this group
      *
      * @param SecurityClass $SecurityClass
-     * @param QUI\Users\User $User (optional) - Initial User that gets access to the group key
-     * (requires eligibility for given $SecurityClass) [default: Session user]
-     * @return CryptoGroup
+     * @return void
      *
-     * @throws QUI\Exception
+     * @throws \Exception
      */
-    public function addSecurityClass($SecurityClass, $User = null)
+    public function addSecurityClass(SecurityClass $SecurityClass)
     {
-        $this->checkCryptoUserPermission();
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_CREATE, $this->CryptoUser)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.no.permission'
+            ));
+        };
 
         // check if security class is already set to this group
         if (in_array($SecurityClass->getId(), $this->getSecurityClassIds())) {
             return;
         }
 
-        if (!$SecurityClass->checkGroupUsersForEligibility($this)) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptogroup.addsecurityclass.users.not.eligible',
-                array(
-                    'groupId'            => $this->getId(),
-                    'groupName'          => $this->getAttribute('name'),
-                    'securityClassId'    => $SecurityClass->getId(),
-                    'securityClassTitle' => $SecurityClass->getAttribute('title')
-                )
-            ));
+        // check if all admin users are eligible for the SecurityClass
+        foreach ($this->getAdminUsers() as $AdminUser) {
+            if (!$SecurityClass->isUserEligible($AdminUser)) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptogroup.add_securityclass.not_all_admins_eligible',
+                    array(
+                        'groupId'            => $this->getId(),
+                        'groupName'          => $this->getAttribute('name'),
+                        'securityClassId'    => $SecurityClass->getId(),
+                        'securityClassTitle' => $SecurityClass->getAttribute('title')
+                    )
+                ));
+            }
         }
 
         // generate new key pair and encrypt
@@ -257,10 +266,57 @@ class CryptoGroup extends QUI\Groups\Group
             $SecurityClass->getRequiredFactors()
         );
 
-        $users = $this->getCryptoUsers();
-
         /** @var CryptoUser $User */
-        foreach ($users as $User) {
+        foreach ($this->getCryptoUsers() as $User) {
+            $this->writeUserAccessEntry($User, $SecurityClass, $groupAccessKeyParts);
+        }
+    }
+
+    /**
+     * Write an access entry for a user to this group to the Database
+     *
+     * @param CryptoUser $User - The User that shall have access to the group
+     * @param SecurityClass $SecurityClass - The security class the access entry is for
+     * @param array $groupAccessKeyParts - All parts of the splitted Group Access Key
+     * @return void
+     * @throws \Exception
+     */
+    protected function writeUserAccessEntry(CryptoUser $User, SecurityClass $SecurityClass, $groupAccessKeyParts)
+    {
+        $DB  = QUI::getDataBase();
+        $tbl = Tables::usersToGroups();
+
+        try {
+            // create empty entries if user is not eligible (yet) for SecurityClass
+            if (!$SecurityClass->isUserEligible($User)) {
+                foreach ($SecurityClass->getAuthPlugins() as $AuthPlugin) {
+                    try {
+                        $AuthKeyPair = $User->getAuthKeyPair($AuthPlugin);
+                        $keyPairId   = $AuthKeyPair->getId();
+                    } catch (\Exception $Exception) {
+                        $keyPairId = null;
+                    }
+
+                    $data = array(
+                        'userId'          => $User->getId(),
+                        'userKeyPairId'   => $keyPairId,
+                        'securityClassId' => $SecurityClass->getId(),
+                        'groupId'         => $this->getId(),
+                        'groupKey'        => null
+                    );
+
+                    // calculate MAC
+                    $data['MAC'] = MAC::create(
+                        new HiddenString(implode('', $data)),
+                        Utils::getSystemKeyPairAuthKey()
+                    );
+
+                    $DB->insert($tbl, $data);
+                }
+
+                return;
+            }
+
             $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
             $i            = 0;
 
@@ -285,8 +341,25 @@ class CryptoGroup extends QUI\Groups\Group
                     Utils::getSystemKeyPairAuthKey()
                 );
 
-                $DB->insert(Tables::usersToGroups(), $data);
+                $DB->insert($tbl, $data);
             }
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError(
+                'Error writing group key parts to database.'
+            );
+
+            QUI\System\Log::writeException($Exception);
+
+            QUI::getDataBase()->delete(
+                Tables::usersToGroups(),
+                array(
+                    'userId'          => $User->getId(),
+                    'groupId'         => $this->getId(),
+                    'securityClassId' => $SecurityClass->getId()
+                )
+            );
+
+            throw $Exception;
         }
     }
 
@@ -402,11 +475,9 @@ class CryptoGroup extends QUI\Groups\Group
         }
 
         // permiossion check
-        $this->checkCryptoUserPermission();
+        $this->checkAdminPermission();
 
         $securityClasses = $this->getSecurityClasses();
-        $DB              = QUI::getDataBase();
-        $tbl             = Tables::usersToGroups();
 
         // split group keys
         foreach ($securityClasses as $SecurityClass) {
@@ -419,83 +490,17 @@ class CryptoGroup extends QUI\Groups\Group
                 $SecurityClass->getRequiredFactors()
             );
 
-            // create empty entries if user is not eligible (yet) for SecurityClass
-            if (!$SecurityClass->isUserEligible($AddUser)) {
-                foreach ($SecurityClass->getAuthPlugins() as $AuthPlugin) {
-                    try {
-                        $AuthKeyPair = $AddUser->getAuthKeyPair($AuthPlugin);
-                        $keyPairId   = $AuthKeyPair->getId();
-                    } catch (\Exception $Exception) {
-                        $keyPairId = null;
-                    }
-
-                    $DB->insert(
-                        $tbl,
-                        array(
-                            'userId'          => $AddUser->getId(),
-                            'userKeyPairId'   => $keyPairId,
-                            'securityClassId' => $SecurityClass->getId(),
-                            'groupId'         => $this->getId(),
-                            'groupKey'        => null
-                        )
-                    );
-                }
-
-                continue;
-            }
-
-            // encrypt key parts with user public keys
-            $i            = 0;
-            $authKeyPairs = $AddUser->getAuthKeyPairsBySecurityClass($SecurityClass);
-
-            /** @var AuthKeyPair $UserAuthKeyPair */
-            foreach ($authKeyPairs as $UserAuthKeyPair) {
-                try {
-                    $payloadKeyPart = $groupAccessKeyParts[$i++];
-
-                    $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                        new HiddenString($payloadKeyPart),
-                        $UserAuthKeyPair
-                    );
-
-                    $data = array(
-                        'userId'          => $AddUser->getId(),
-                        'userKeyPairId'   => $UserAuthKeyPair->getId(),
-                        'securityClassId' => $SecurityClass->getId(),
-                        'groupId'         => $this->getId(),
-                        'groupKey'        => $groupAccessKeyPartEncrypted
-                    );
-
-                    // calculate MAC
-                    $data['MAC'] = MAC::create(
-                        new HiddenString(implode('', $data)),
-                        Utils::getSystemKeyPairAuthKey()
-                    );
-
-                    QUI::getDataBase()->insert(Tables::usersToGroups(), $data);
-                } catch (\Exception $Exception) {
-                    QUI\System\Log::addError(
-                        'Error writing group key parts to database: ' . $Exception->getMessage()
-                    );
-
-                    QUI::getDataBase()->delete(
-                        Tables::usersToGroups(),
-                        array(
-                            'userId'          => $AddUser->getId(),
-                            'groupId'         => $this->getId(),
-                            'securityClassId' => $SecurityClass->getId()
-                        )
-                    );
-
-                    throw new QUI\Exception(array(
-                        'pcsg/grouppasswordmanager',
-                        'exception.cryptogroup.add.user.general.error',
-                        array(
-                            'userId'  => $AddUser->getId(),
-                            'groupId' => $this->getId()
-                        )
-                    ));
-                }
+            try {
+                $this->writeUserAccessEntry($AddUser, $SecurityClass, $groupAccessKeyParts);
+            } catch (\Exception $Exception) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.cryptogroup.add.user.general.error',
+                    array(
+                        'userId'  => $AddUser->getId(),
+                        'groupId' => $this->getId()
+                    )
+                ));
             }
         }
 
@@ -515,7 +520,7 @@ class CryptoGroup extends QUI\Groups\Group
     {
         // SU can always remove users from groups
         if (!$this->CryptoUser->isSU()) {
-            $this->checkCryptoUserPermission();
+            $this->checkAdminPermission();
         }
 
         if (!$this->hasCryptoUserAccess($RemoveUser)) {
@@ -547,6 +552,127 @@ class CryptoGroup extends QUI\Groups\Group
 
         // delete meta table entries
         $RemoveUser->refreshPasswordMetaTableEntries();
+    }
+
+    /**
+     * Add a User with administration privileges for this CryptoGroup
+     *
+     * Group admins are able to:
+     * - Add users to the group
+     * - Remove users from the group
+     * - Retrospectively grant access to users for group passwords for a specific SecurityClass
+     *
+     * @param CryptoUser $User
+     * @return void
+     * @throws PermissionDeniedException
+     * @throws QUI\Exception
+     */
+    public function addAdminUser(CryptoUser $User)
+    {
+        $this->checkAdminManagePermission();
+
+        if ($this->isAdminUser($User)) {
+            return;
+        }
+
+        // Admin users have to be eligible for all SecurityClasses of this Group
+        foreach ($this->getSecurityClasses() as $SecurityClass) {
+            if (!$SecurityClass->isUserEligible($User)) {
+                throw new Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.actors.cryptogroup.admin_user_not_eligible'
+                ));
+            }
+        }
+
+        if (!$this->hasCryptoUserAccess($User)) {
+            $this->addCryptoUser($User);
+        }
+
+        $data = array(
+            'groupId' => $this->getId(),
+            'userId'  => $User->getId()
+        );
+
+        $data['MAC'] = MAC::create(
+            new HiddenString(implode('', $data)),
+            Utils::getSystemKeyPairAuthKey()
+        );
+
+        QUI::getDataBase()->insert(
+            Tables::groupAdmins(),
+            $data
+        );
+    }
+
+    /**
+     * Remove a user as an admin of this group (does NOT remove generall access to the group!)
+     *
+     * @param CryptoUser $User
+     * @return void
+     * @throws PermissionDeniedException
+     */
+    public function removeAdminUser(CryptoUser $User)
+    {
+        $this->checkAdminManagePermission();
+
+        if (!$this->isAdminUser($User)) {
+            return;
+        }
+
+        $this->checkAdminPermission();
+
+        QUI::getDataBase()->delete(
+            Tables::groupAdmins(),
+            array(
+                'groupId' => $this->getId(),
+                'userId'  => $User->getId()
+            )
+        );
+    }
+
+    /**
+     * Check if a CryptoUser is a group admin
+     *
+     * @param CryptoUser $User
+     * @return bool
+     */
+    public function isAdminUser(CryptoUser $User)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'count' => 1,
+            'from'  => Tables::groupAdmins(),
+            'where' => array(
+                'groupId' => $this->getId(),
+                'userId'  => $User->getId()
+            )
+        ));
+
+        return (int)current(current($result)) > 0;
+    }
+
+    /**
+     * Get all admins of this group
+     *
+     * @return CryptoUser[]
+     */
+    public function getAdminUsers()
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => 'userId',
+            'from'   => Tables::groupAdmins(),
+            'where'  => array(
+                'groupId' => $this->getId()
+            )
+        ));
+
+        $users = array();
+
+        foreach ($result as $row) {
+            $users[] = CryptoActors::getCryptoUser($row['userId']);
+        }
+
+        return $users;
     }
 
     /**
@@ -705,12 +831,12 @@ class CryptoGroup extends QUI\Groups\Group
      * Checks if the current Group CryptoUser is part of this group AND has permission to edit it
      *
      * @return void
-     * @throws QUI\Exception
+     * @throws PermissionDeniedException
      */
-    protected function checkCryptoUserPermission()
+    protected function checkAdminPermission()
     {
-        if (!$this->hasCryptoUserAccess($this->CryptoUser)) {
-            throw new QUI\Exception(array(
+        if (!$this->isAdminUser($this->CryptoUser)) {
+            throw new PermissionDeniedException(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptogroup.no.group.access',
                 array(
@@ -720,8 +846,23 @@ class CryptoGroup extends QUI\Groups\Group
             ));
         }
 
-        if (!QUIPermissions::hasPermission(Permissions::GROUP_EDIT, $this->CryptoUser)) {
-            throw new QUI\Exception(array(
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_CREATE, $this->CryptoUser)) {
+            throw new PermissionDeniedException(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptogroup.no.permission'
+            ));
+        };
+    }
+
+    /**
+     * Check if the current user has the permission to manage group admins
+     *
+     * @throws PermissionDeniedException
+     */
+    protected function checkAdminManagePermission()
+    {
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_MANAGE_ADMINS, $this->CryptoUser)) {
+            throw new PermissionDeniedException(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptogroup.no.permission'
             ));
