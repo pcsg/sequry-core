@@ -39,7 +39,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
             '$onInject',
             '$addSecurityClass',
             '$removeSecurityClass',
-            '$buildGroupAdminSelect'
+            '$buildGroupAdminSelect',
+            '$showWarning',
+            '$removeWarning'
         ],
 
         options: {
@@ -61,6 +63,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
             this.$groupId                = false;
             this.$GroupAdminSelect       = null;
             this.$activeSecurityClassIds = [];
+            this.$noEventItemChange      = false;
+            this.$securityClassBtns      = [];
+            this.$WarningElm             = null;
         },
 
         /**
@@ -93,30 +98,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
                 var SecurityClassesElm = self.$Elm.getElement('.pcsg-gpm-group-edit-securityclasses');
 
-                //if (!Group.sessionUserInGroup) {
-                //    self.$canEditGroup = false;
-                //
-                //    self.$NoEditWarnElm = new Element('div', {
-                //        'class': 'pcsg-gpm-password-error',
-                //        html   : '<span>' +
-                //        QUILocale.get(lg, 'actors.groupedit.not.in.group') +
-                //        '</span>'
-                //    }).inject(SecurityClassesElm);
-                //
-                //    self.fireEvent('loaded');
-                //    return;
-                //}
-
                 if (!Group.securityClassIds.length) {
-                    new Element('div', {
-                        'class': 'pcsg-gpm-password-warning',
-                        html   : '<span>' +
-                        QUILocale.get(lg, 'actors.groupedit.no.securityclass') +
-                        '</span>'
-                    }).inject(
-                        SecurityClassesElm,
-                        'top'
-                    );
+                    self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no.securityclass'));
                 }
 
                 var FuncOnSwitchBtnClick = function (Btn) {
@@ -185,7 +168,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                     }).inject(SecurityClassesElm);
 
                     var btnText, btnIcon, btnAction;
-                    var disableBtn = false;
 
                     if (Group.securityClassIds.contains(securityClassId)) {
                         btnText   = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.remove');
@@ -197,7 +179,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                         btnText   = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add');
                         btnIcon   = 'fa fa-plus-square';
                         btnAction = 'add';
-                        //disableBtn = true;
                     }
 
                     var SwitchBtn = new QUIButton({
@@ -213,9 +194,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                         SecClassElm.getElement('.pcsg-gpm-actors-groupedit-securityclass-btn')
                     );
 
-                    if (disableBtn) {
-                        SwitchBtn.disable();
-                    }
+                    self.$securityClassBtns.push(SwitchBtn);
                 }
 
                 // group admins
@@ -226,10 +205,37 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
         },
 
         /**
+         * Show warning text
+         *
+         * @param {String} msg
+         */
+        $showWarning: function (msg) {
+            this.$removeWarning();
+
+            this.$WarningElm = new Element('div', {
+                'class': 'pcsg-gpm-password-warning',
+                html   : '<span>' + msg + '</span>'
+            }).inject(
+                this.$Elm.getElement('.pcsg-gpm-group-edit-securityclasses'),
+                'top'
+            );
+        },
+
+        /**
+         * Hide current warning text
+         */
+        $removeWarning: function () {
+            if (this.$WarningElm) {
+                this.$WarningElm.destroy();
+            }
+        },
+
+        /**
          * Build ActorSelect to select Group administration Users
          */
         $buildGroupAdminSelect: function () {
-            var self = this;
+            var self           = this;
+            var filterActorIds = [];
 
             if (this.$GroupAdminSelect) {
                 this.$GroupAdminSelect.destroy();
@@ -249,30 +255,102 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
             for (var i = 0, len = this.$Group.groupAdminUserIds.length; i < len; i++) {
                 this.$GroupAdminSelect.addItem('u' + this.$Group.groupAdminUserIds[i]);
+                filterActorIds.push('u' + this.$Group.groupAdminUserIds[i]);
             }
 
+            this.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
+
+            var enableSecurityClassBtns = function() {
+                self.$securityClassBtns.each(function(Btn) {
+                    Btn.enable();
+                });
+            };
+
+            var disableSecurityClassBtns = function() {
+                self.$securityClassBtns.each(function(Btn) {
+                    Btn.disable();
+                });
+            };
+
             this.$GroupAdminSelect.addEvents({
-                onAddItem   : function (Control, userId) {
+                onAddItem   : function (Control, userId, Item) {
+                    if (self.$noEventItemChange) {
+                        self.$noEventItemChange = false;
+                        return;
+                    }
+
+                    var realUserId = parseInt(userId.substring(1));
+
+                    if (self.$Group.groupAdminUserIds.contains(realUserId)) {
+                        return;
+                    }
+
                     self.$GroupAdminSelect.Loader.show();
-                    Actors.addGroupAdminUser(self.$Group.id, userId.substring(1)).then(function (success) {
+
+                    Actors.addGroupAdminUser(self.$Group.id, realUserId).then(function (success) {
                         self.$GroupAdminSelect.Loader.hide();
 
                         if (!success) {
-                            self.$GroupAdminSelect.removeItem(userId);
+                            self.$noEventItemChange = true;
+                            Item.destroy();
+                        } else {
+                            self.$Group.groupAdminUserIds.push(realUserId);
+
+                            filterActorIds.push(userId);
+                            self.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
+                        }
+
+                        if (!self.$Group.groupAdminUserIds.length) {
+                            disableSecurityClassBtns();
+                            self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_admins'));
+                        } else {
+                            enableSecurityClassBtns();
+                            self.$removeWarning();
                         }
                     });
                 },
                 onRemoveItem: function (userId) {
+                    if (self.$noEventItemChange) {
+                        self.$noEventItemChange = false;
+                        return;
+                    }
+
+                    var realUserId = parseInt(userId.substring(1));
+
+                    if (!self.$Group.groupAdminUserIds.contains(realUserId)) {
+                        return;
+                    }
+
                     self.$GroupAdminSelect.Loader.show();
-                    Actors.removeGroupAdminUser(self.$Group.id, userId.substring(1)).then(function (success) {
+
+                    Actors.removeGroupAdminUser(self.$Group.id, realUserId).then(function (success) {
                         self.$GroupAdminSelect.Loader.hide();
 
                         if (!success) {
+                            self.$noEventItemChange = true;
                             self.$GroupAdminSelect.addItem(userId);
+                        } else {
+                            self.$Group.groupAdminUserIds.erase(realUserId);
+
+                            filterActorIds.erase(userId);
+                            self.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
+                        }
+
+                        if (!self.$Group.groupAdminUserIds.length) {
+                            disableSecurityClassBtns();
+                            self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_admins'));
+                        } else {
+                            enableSecurityClassBtns();
+                            self.$removeWarning();
                         }
                     });
                 }
             });
+
+            if (!this.$Group.groupAdminUserIds.length) {
+                disableSecurityClassBtns();
+                this.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_admins'));
+            }
         },
 
         /**

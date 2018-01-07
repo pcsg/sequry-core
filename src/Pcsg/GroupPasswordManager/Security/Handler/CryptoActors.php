@@ -10,6 +10,7 @@ use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Events;
+use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
@@ -107,23 +108,37 @@ class CryptoActors
             $User = QUI::getUserBySession();
         }
 
-        // check eligibility for all users
-        if (!$SecurityClass->areGroupUsersEligible($Group)) {
-            // if the inital group users are not eligible, check if the given $User is
-            if (!$SecurityClass->isUserEligible($User)) {
-                throw new QUI\Exception(array(
-                    'pcsg/grouppasswordmanager',
-                    'exception.cryptoactors.addcryptogroup.users.not.eligible',
-                    array(
-                        'groupId'         => $Group->getId(),
-                        'securityClassId' => $SecurityClass->getId()
-                    )
-                ));
-            }
+        // check eligibility for all Group admin users
+        /** @var CryptoUser $AdminUser */
+        $uneligibleUsers = array();
+        $adminUsers      = $CryptoGroup->getAdminUsers();
 
-            // add user to group if he is eligible
-            $User->addToGroup($Group->getId());
-            $User->save(QUI::getUsers()->getSystemUser());
+        if (empty($adminUsers)) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptoactors.createCryptoGroupKey.group_has_no_admins',
+                array(
+                    'groupId' => $Group->getId()
+                )
+            ));
+        }
+
+        foreach ($adminUsers as $AdminUser) {
+            if (!$SecurityClass->isUserEligible($AdminUser)) {
+                $uneligibleUsers[] = $AdminUser->getUsername();
+            }
+        }
+
+        if (!empty($uneligibleUsers)) {
+            throw new QUI\Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptoactors.addcryptogroup.users.not.eligible',
+                array(
+                    'groupId'         => $Group->getId(),
+                    'securityClassId' => $SecurityClass->getId(),
+                    'users'           => implode(', ', $uneligibleUsers)
+                )
+            ));
         }
 
         // generate key pair and encrypt group key for security class
@@ -162,9 +177,10 @@ class CryptoActors
             $SecurityClass->getRequiredFactors()
         );
 
-        foreach ($Group->getUsers() as $userData) {
-            $User         = CryptoActors::getCryptoUser($userData['id']);
-            $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
+        // grant access to Group Admin Users
+        /** @var CryptoUser $AdminUser */
+        foreach ($adminUsers as $AdminUser) {
+            $authKeyPairs = $AdminUser->getAuthKeyPairsBySecurityClass($SecurityClass);
             $i            = 0;
 
             /** @var AuthKeyPair $AuthKeyPair */
@@ -175,7 +191,7 @@ class CryptoActors
                 );
 
                 $data = array(
-                    'userId'          => $User->getId(),
+                    'userId'          => $AdminUser->getId(),
                     'userKeyPairId'   => $AuthKeyPair->getId(),
                     'securityClassId' => $SecurityClass->getId(),
                     'groupId'         => $Group->getId(),

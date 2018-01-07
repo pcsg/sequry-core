@@ -55,7 +55,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          */
         addGroupSecurityClass: function (groupId, securityClassId, userId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass', resolve, {
+                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_groups_addSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     groupId        : groupId,
@@ -75,7 +75,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          */
         removeGroupSecurityClass: function (groupId, securityClassId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_removeGroupSecurityClass', resolve, {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_groups_removeSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     groupId        : groupId,

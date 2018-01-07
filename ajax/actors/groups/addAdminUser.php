@@ -32,6 +32,8 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
             return false;
         } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',

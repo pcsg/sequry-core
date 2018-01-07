@@ -467,14 +467,15 @@ class CryptoGroup extends QUI\Groups\Group
             return;
         }
 
-        if ((int)$AddUser->getId() === (int)QUI::getUserBySession()->getId()) {
-            throw new QUI\Exception(array(
-                'pcsg/grouppasswordmanager',
-                'exception.cryptogroup.add.user.cannot.add.himself'
-            ));
-        }
+//        if (!$this->isAdminUser()
+//            && (int)$AddUser->getId() === (int)QUI::getUserBySession()->getId()) {
+//            throw new QUI\Exception(array(
+//                'pcsg/grouppasswordmanager',
+//                'exception.cryptogroup.add.user.cannot.add.himself'
+//            ));
+//        }
 
-        // permiossion check
+        // permission check
         $this->checkAdminPermission();
 
         $securityClasses = $this->getSecurityClasses();
@@ -560,7 +561,7 @@ class CryptoGroup extends QUI\Groups\Group
      * Group admins are able to:
      * - Add users to the group
      * - Remove users from the group
-     * - Retrospectively grant access to users for group passwords for a specific SecurityClass
+     * - Retrospectively grant access to users to group passwords for a specific SecurityClass
      *
      * @param CryptoUser $User
      * @return void
@@ -585,10 +586,6 @@ class CryptoGroup extends QUI\Groups\Group
             }
         }
 
-        if (!$this->hasCryptoUserAccess($User)) {
-            $this->addCryptoUser($User);
-        }
-
         $data = array(
             'groupId' => $this->getId(),
             'userId'  => $User->getId()
@@ -603,6 +600,11 @@ class CryptoGroup extends QUI\Groups\Group
             Tables::groupAdmins(),
             $data
         );
+
+        // Create regular access for Admin User
+        if (!$this->hasCryptoUserAccess($User)) {
+            $this->addCryptoUser($User);
+        }
     }
 
     /**
@@ -838,7 +840,7 @@ class CryptoGroup extends QUI\Groups\Group
         if (!$this->isAdminUser($this->CryptoUser)) {
             throw new PermissionDeniedException(array(
                 'pcsg/grouppasswordmanager',
-                'exception.cryptogroup.no.group.access',
+                'exception.cryptogroup.no_admin_permission',
                 array(
                     'groupId'   => $this->getId(),
                     'groupName' => $this->getAttribute('name')

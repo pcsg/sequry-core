@@ -23,7 +23,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',
-                    'message.ajax.actors.groups.addAdminUser.error',
+                    'message.ajax.actors.groups.removeAdminUser.error',
                     array(
                         'error' => $Exception->getMessage()
                     )
@@ -32,6 +32,8 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
             return false;
         } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'pcsg/grouppasswordmanager',
@@ -45,7 +47,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
                 'pcsg/grouppasswordmanager',
-                'message.ajax.actors.groups.addAdminUser.success'
+                'message.ajax.actors.groups.removeAdminUser.success'
             )
         );
 

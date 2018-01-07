@@ -278,8 +278,8 @@
         <locale name="exception.cryptogroup.remove.user.has.no.permission">
             <de><![CDATA[Der Benutzer #[userId] kann keine anderen Benutzer aus der Gruppe #[groupId] entfernen, da er dafür nicht die nötige Berechtigung besitzt.]]></de>
         </locale>
-        <locale name="exception.cryptogroup.no.group.access">
-            <de><![CDATA[Diese Operation kann nicht ausgeführt werden, da Sie nicht Teil der Gruppe "[groupName]" (#[groupId]) sind.]]></de>
+        <locale name="exception.cryptogroup.no_admin_permission">
+            <de><![CDATA[Diese Operation darf nur von Gruppen-Administratoren der Gruppe "[groupName]" (#[groupId]) ausgeführt werden.]]></de>
         </locale>
         <locale name="exception.cryptogroup.remove.user.has.no.permission">
             <de><![CDATA[Der Benutzer #[userId] besitzt nicht die nötige Berechtigung.]]></de>
@@ -326,13 +326,16 @@
             <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindestanzahl der nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da folgende Gruppen-Administratoren nicht für die Sicherheitsklasse geeignet sind<br><br>[users].]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.user.not.eligible">
             <de><![CDATA[Die Benutzer "[userName]" (#[userId]) ist nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet.]]></de>
         </locale>
         <locale name="exception.cryptogroup.securityclass.already.assigned">
             <de><![CDATA[Die Gruppe ist der Sicherheitsklasse bereits zugeordnet.]]></de>
+        </locale>
+        <locale name="exception.cryptoactors.createCryptoGroupKey.group_has_no_admins">
+            <de><![CDATA[Der Gruppe #[groupId] kann keine Sicherheitsklasse zugeordnet werden, da Sie noch keine Gruppen-Administratoren hat. Bitte fügen Sie Gruppen-Administratoren hinzu.]]></de>
         </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
@@ -531,6 +534,12 @@
         </locale>
         <locale name="message.ajax.actors.groups.addAdminUser.success">
             <de><![CDATA[Der Benutzer wurde erfolgreich als Gruppen-Administrator hinzugefügt.]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.removeAdminUser.error" html="true">
+            <de><![CDATA[Der Benutzer konnte nicht als Gruppen-Administrator entfernt werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.removeAdminUser.success">
+            <de><![CDATA[Der Benutzer wurde erfolgreich als Gruppen-Administrator entfernt.]]></de>
         </locale>
 
         <!-- System -->
@@ -1661,6 +1670,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="controls.actors.groupedit.addsecurityclass.selectactor.info">
             <de><![CDATA[Dieser Gruppe sind momentan keine Benutzer zugewiesen, die für die gewählte Sicherheitsklasse geeignet sind. Um die Sicherheitsklasse der Gruppe hinzuzufügen, wählen Sie bitte einen geeigneten Benutzer. Dieser wird der Gruppe automatisch hinzugefügt.]]></de>
+        </locale>
+        <locale name="actors.groupedit.no_group_admins">
+            <de><![CDATA[Diese Gruppe hat <b>noch keine Gruppen-Administatoren</b>. Bitte fügen Sie mindestens einen Benutzer als Gruppen-Administrator hinzu, damit Sie der Gruppe Sicherheitsklassen zuweisen können.]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->
