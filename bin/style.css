@@ -149,3 +149,7 @@
 .pcsg-gpm-password-noaccess button {
     float: none !important;
 }
+
+.field-container-item-desc-no-padding {
+    padding: 10px !important;
+}

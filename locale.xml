@@ -238,8 +238,12 @@
             <de><![CDATA[Das Schlüsselpaar der Gruppe "[groupName]" (#[groupId]) für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptouser.getpasswordaccesskeygroup.error">
-        <de><![CDATA[Der Passwort-Schlüssel für das Passwort #[passwordId] konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de><![CDATA[Der Passwort-Schlüssel für das Passwort #[passwordId] konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.cryptouser.delete.group_admins_cannot_be_deleted" html="true">
+            <de><![CDATA[Der Benutzer kann nicht gelöscht werden, da er noch Gruppen-Administrator der folgenden Gruppen ist:<br><br>[groups].<br><br>Bitte entfernen Sie den Benutzer aus diesen Gruppen als Administrator, um ihn anschließend löschen zu können.]]></de>
+        </locale>
+
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
@@ -320,13 +324,19 @@
         <locale name="exception.cryptogroup.reencryptpasswordaccesskey.general.error">
             <de><![CDATA[Beim Verschlüsseln des Passwort-Schlüssels des Passworts #[passwordId] für die Gruppe "[groupName]" (#[groupId]) ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.actors.cryptogroup.admin_user_not_eligible" html="true">
+            <de><![CDATA[Der Benutzer <b>[username] #[userId]</b> ist nicht für alle Sicherheitsklassen der Gruppe geeignet. Der Benutzer muss sich zunächst für alle Authentifizierungs-Faktoren der jeweiligen Sicherheitsklassen registrieren.]]></de>
+        </locale>
+        <locale name="exception.actors.cryptogroup.admin_user_required" html="true">
+            <de><![CDATA[Der Benutzer kann nicht als Gruppen-Administrator entfernt werden, da eine Gruppe, der eine odere mehrere Sicherheitsklassen zugewiesen sind, immer <b>mindestens einen Gruppen-Administrator</b> benötigt.]]></de>
+        </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
         <locale name="exception.cryptoactors.addcryptogroup.no.users">
             <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da folgende Gruppen-Administratoren nicht für die Sicherheitsklasse geeignet sind<br><br>[users].]]></de>
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da folgende Gruppen-Administratoren nicht für die Sicherheitsklasse geeignet sind:<br><br>[users].]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.user.not.eligible">
             <de><![CDATA[Die Benutzer "[userName]" (#[userId]) ist nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet.]]></de>
@@ -1392,8 +1402,14 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="controls.password.access_info.title">
             <de><![CDATA[Der Zugriff auf dieses Passwort ist nicht möglich]]></de>
         </locale>
-        <locale name="controls.password.access_info.text">
-            <de><![CDATA[Sie haben die Berechtigung, dieses Passwort anzusehen, sind jedoch noch nicht für die Sicherheitsklasse <b>[title]</b> freigeschaltet. Damit Sie auf dieses Passwort zugreifen können, registrieren Sie sich bitte für folgende Authentifizierungs-Faktoren:]]></de>
+        <locale name="controls.password.access_info.text" html="true">
+            <de><![CDATA[Sie haben die Berechtigung, dieses Passwort anzusehen, sind jedoch noch nicht für die Sicherheitsklasse <b>[title]</b> freigeschaltet.]]></de>
+        </locale>
+        <locale name="controls.password.access_info.text_missing_auth_plugins">
+            <de><![CDATA[Damit Sie auf dieses Passwort zugreifen können, registrieren Sie sich bitte für folgende Authentifizierungs-Faktoren:]]></de>
+        </locale>
+        <locale name="controls.password.access_info.text_missing_authorization">
+            <de><![CDATA[Damit Sie auf dieses Passwort zugreifen können, müssen sie von einem Administrator freigeschaltet werden. Die zuständigen Administratoren wurden darüber benachrichtigt.]]></de>
         </locale>
         <locale name="controls.password.access_info.btn.text">
             <de><![CDATA[Zu den Authentifizierungs-Faktoren]]></de>
@@ -1649,6 +1665,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="actors.groups.edit.template.headerGroupAdmins">
             <de><![CDATA[Gruppen-Administratoren]]></de>
+        </locale>
+        <locale name="actors.groups.edit.template.groupAdminDesc" html="true">
+            <de><![CDATA[Hier können Benutzer als <b>Gruppen-Administratoren</b> festgelegt werden. Gruppen-Administratoren können <b>andere Benutzer zu dieser Gruppe hinzufügen</b> und <b>andere Benutzer aus der Gruppe entfernen</b>. Sie bestimmen so, wer Zugriff auf alle Passwörter hat, auf die diese Gruppe Zugriff hat.<br><br>Zudem haben Gruppen-Administratoren die Möglichkeit, Benutzer freizuschalten, die dieser Gruppe zugewiesen sind, aber erst im Nachhinein die Eignung für eine Sicherheitsklasse dieser Gruppe erhalten.]]></de>
         </locale>
         <locale name="actors.groupedit.no.securityclass" html="true">
             <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>

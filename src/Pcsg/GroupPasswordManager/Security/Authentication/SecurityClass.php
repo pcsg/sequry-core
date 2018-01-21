@@ -369,6 +369,7 @@ class SecurityClass extends QUI\QDOM
      * Get list of users that are eligible to use password with this security class
      *
      * @return array
+     * @throws QUI\Exception
      */
     public function getEligibleUserIds()
     {

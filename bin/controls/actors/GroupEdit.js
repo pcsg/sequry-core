@@ -92,7 +92,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
                     html   : Mustache.render(template, {
                         headerSecurityClasses: QUILocale.get(lg, lg_prefix + 'headerSecurityClasses'),
                         securityclasses      : QUILocale.get(lg, lg_prefix + 'securityclasses'),
-                        headerGroupAdmins    : QUILocale.get(lg, lg_prefix + 'headerGroupAdmins')
+                        headerGroupAdmins    : QUILocale.get(lg, lg_prefix + 'headerGroupAdmins'),
+                        groupAdminDesc       : QUILocale.get(lg, lg_prefix + 'groupAdminDesc')
                     })
                 });
 
@@ -260,14 +261,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
 
             this.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
 
-            var enableSecurityClassBtns = function() {
-                self.$securityClassBtns.each(function(Btn) {
+            var enableSecurityClassBtns = function () {
+                self.$securityClassBtns.each(function (Btn) {
                     Btn.enable();
                 });
             };
 
-            var disableSecurityClassBtns = function() {
-                self.$securityClassBtns.each(function(Btn) {
+            var disableSecurityClassBtns = function () {
+                self.$securityClassBtns.each(function (Btn) {
                     Btn.disable();
                 });
             };

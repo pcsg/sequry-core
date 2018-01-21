@@ -1286,7 +1286,23 @@ class Password extends QUI\QDOM
             return false;
         }
 
-        return $this->getSecurityClass()->isUserEligible($CryptoUser);
+        $isEligibleForSecurityClass = $this->getSecurityClass()->isUserEligible($CryptoUser);
+
+        if (!$isEligibleForSecurityClass) {
+            return false;
+        }
+
+        $SecurityClass = $this->getSecurityClass();
+
+        foreach ($passwordGroupIds as $passwordGroupId) {
+            $PasswordCryptoGroup = CryptoActors::getCryptoGroup($passwordGroupId);
+
+            if ($PasswordCryptoGroup->hasCryptoUserAccess($SecurityClass, $CryptoUser)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

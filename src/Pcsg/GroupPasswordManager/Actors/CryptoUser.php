@@ -8,6 +8,7 @@ namespace Pcsg\GroupPasswordManager\Actors;
 
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Events;
+use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Password;
 use Pcsg\GroupPasswordManager\PasswordTypes\Handler as PasswordTypesHandler;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
@@ -396,9 +397,10 @@ class CryptoUser extends QUI\Users\User
     public function getPasswordAccessInfo(Password $Password)
     {
         $SecurityClass = $Password->getSecurityClass();
+        $canAccess     = $Password->hasPasswordAccess($this);
 
         $accessInfo = array(
-            'canAccess'          => $Password->hasPasswordAccess($this),
+            'canAccess'          => $canAccess,
             'missingAuthPlugins' => array(),
             'securityClass'      => array(
                 'id'    => $SecurityClass->getId(),
@@ -406,6 +408,11 @@ class CryptoUser extends QUI\Users\User
             )
         );
 
+        if ($canAccess) {
+            return $accessInfo;
+        }
+
+        // determine missing registrations for authentication plugins
         foreach ($SecurityClass->getAuthPlugins() as $AuthPlugin) {
             if (!$this->hasAuthKeyPair($AuthPlugin)) {
                 $accessInfo['missingAuthPlugins'][] = array(
@@ -601,7 +608,7 @@ class CryptoUser extends QUI\Users\User
      */
     public function getGroupAccessKey($CryptoGroup, $SecurityClass)
     {
-        if (!$CryptoGroup->hasCryptoUserAccess($this)) {
+        if (!$CryptoGroup->isUserInGroup($this)) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptouser.group.access.key.decrypt.user.has.no.access',
@@ -1105,18 +1112,13 @@ class CryptoUser extends QUI\Users\User
             )
         ));
 
-        $securityClassEligibility = array();
-
-        foreach ($result as $row) {
-            $SecurityClass                                     = Authentication::getSecurityClass($row['id']);
-            $securityClassEligibility[$SecurityClass->getId()] = $SecurityClass->isUserEligible($this);
-        }
-
         foreach ($passwords as $k => $data) {
             foreach ($result as $row) {
                 if ($data['securityClassId'] == $row['id']) {
                     $passwords[$k]['securityClassTitle'] = $row['title'];
-                    $passwords[$k]['canAccess']          = $securityClassEligibility[$row['id']];
+
+                    $Password                   = Passwords::get($data['id']);
+                    $passwords[$k]['canAccess'] = $Password->hasPasswordAccess($this);
                     continue 2;
                 }
             }
@@ -1558,7 +1560,7 @@ class CryptoUser extends QUI\Users\User
      */
     public function reEncryptGroupAccessKey(CryptoGroup $CryptoGroup, SecurityClass $SecurityClass)
     {
-        if (!$CryptoGroup->hasCryptoUserAccess($this)) {
+        if (!$CryptoGroup->isUserInGroup($this)) {
             // @todo fehlermeldung
             return;
         }
@@ -1996,13 +1998,32 @@ class CryptoUser extends QUI\Users\User
      */
     public function delete()
     {
+        // user that are group admins cannot be deleted
+        $adminGroups = $this->getAdminGroups();
+
+        if (!empty($adminGroups)) {
+            $groups = array();
+
+            foreach ($adminGroups as $CryptoGroup) {
+                $groups[] = $CryptoGroup->getName() . ' (#' . $CryptoGroup->getId() . ')';
+            }
+
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.cryptouser.delete.group_admins_cannot_be_deleted',
+                array(
+                    'groups' => implode(', ', $groups)
+                )
+            ));
+        }
+
         // users can only be deleted by themselves or super users
         $SessionUser = QUI::getUserBySession();
 
         if ((int)$SessionUser->getId() !== (int)$this->getId()
             && !$SessionUser->isSU()
         ) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.cryptouser.delete.no.permission'
             ));
@@ -2016,7 +2037,7 @@ class CryptoUser extends QUI\Users\User
             $userCount = (int)$CryptoGroup->countUser();
 
             if ($userCount <= 1) {
-                throw new QUI\Exception(array(
+                throw new Exception(array(
                     'pcsg/grouppasswordmanager',
                     'exception.cryptouser.delete.last.group.member',
                     array(
@@ -2221,5 +2242,31 @@ class CryptoUser extends QUI\Users\User
                 );
             }
         }
+    }
+
+    /**
+     * Get all CryptoGroups this User is an admin of
+     *
+     * @return CryptoGroup[]
+     */
+    public function getAdminGroups()
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'groupId'
+            ),
+            'from'   => Tables::groupAdmins(),
+            'where'  => array(
+                'userId' => $this->getId()
+            )
+        ));
+
+        $groups = array();
+
+        foreach ($result as $row) {
+            $groups[] = CryptoActors::getCryptoGroup($row['groupId']);
+        }
+
+        return $groups;
     }
 }

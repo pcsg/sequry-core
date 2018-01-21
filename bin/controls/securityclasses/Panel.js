@@ -3,18 +3,9 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/buttons/Button
- * @requrie Ajax
- * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel.css
- *
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
 
-    'qui/QUI',
     'qui/controls/desktop/Panel',
     'qui/controls/buttons/Button',
     'qui/controls/loader/Loader',
@@ -25,13 +16,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create',
     'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit',
 
-    'Ajax',
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel.css'
 
-], function (QUI, QUIPanel, QUIButton, QUILoader, QUIPopup, Grid, AuthHandler,
-             SecurityClassCreate, SecurityClassEdit, Ajax, QUILocale) {
+], function (QUIPanel, QUIButton, QUILoader, QUIPopup, Grid, AuthHandler,
+             SecurityClassCreate, SecurityClassEdit, QUILocale) {
     "use strict";
 
     var lg             = 'pcsg/grouppasswordmanager';
@@ -122,8 +112,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
                 'class': 'pcsg-gpm-securityclassespanel-container'
             }).inject(Content);
 
-            this.$GridFX = moofx(this.$GridContainer);
-
             var GridContainer = new Element('div', {
                 'class': 'pcsg-gpm-securityclassespanel-grid'
             }).inject(this.$GridContainer);
@@ -170,7 +158,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
                         Delete        = self.getButtons('delete'),
                         Edit          = self.getButtons('edit');
 
-                    if (selectedCount == 1) {
+                    if (selectedCount === 1) {
                         Edit.enable();
                         Delete.enable();
                     } else {

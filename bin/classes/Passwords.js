@@ -307,12 +307,24 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
                 html   : '<div><h1>' +
                 QUILocale.get(lg, 'controls.password.access_info.title') +
                 '</h1>' +
-                '<p>' +
-                QUILocale.get(lg, 'controls.password.access_info.text', AccessInfo.securityClass) +
-                '</p></div>'
+                '<p>' + QUILocale.get(lg, 'controls.password.access_info.text', AccessInfo.securityClass) + '</p>' +
+                '</p>' +
+                '</div>'
             });
 
             var Content = NoAccessElm.getElement('div');
+
+            if (!AccessInfo.missingAuthPlugins.length) {
+                new Element('p', {
+                    html: QUILocale.get(lg, 'controls.password.access_info.text_missing_authorization')
+                }).inject(Content);
+
+                return NoAccessElm;
+            }
+
+            new Element('p', {
+                html: QUILocale.get(lg, 'controls.password.access_info.text_missing_auth_plugins')
+            }).inject(Content);
 
             // list all Authentication Plugins the user needs to register for
             // in order to access this Password
