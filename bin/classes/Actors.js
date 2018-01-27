@@ -259,6 +259,35 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
                     onError  : reject
                 });
             });
+        },
+
+        /**
+         * Get group administration information for current session user
+         *
+         * @return {Promise}
+         */
+        getGroupAdminStatus: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_users_getGroupAdminStatus', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Get group administration information for current session user
+         *
+         * @param {Object} SearchParams
+         * @return {Promise}
+         */
+        getGroupAdminList: function (SearchParams) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_users_getGroupAdminStatus', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });

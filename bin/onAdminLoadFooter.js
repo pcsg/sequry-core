@@ -10,8 +10,9 @@ require([
     'Ajax',
     'qui/controls/windows/Confirm',
     'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Actors',
     'Locale'
-], function (QUI, QUIAjax, QUIConfirm, Passwords, QUILocale) {
+], function (QUI, QUIAjax, QUIConfirm, Passwords, Actors, QUILocale) {
     "use strict";
 
     var lg  = 'pcsg/grouppasswordmanager';
@@ -194,4 +195,22 @@ require([
             });
         }
     );
+
+    window.addEvent('quiqqerLoaded', function() {
+        Actors.getGroupAdminStatus().then(function(Status) {
+            if (!Status.isGroupAdmin) {
+                return;
+            }
+
+            require([
+                'package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupAdminButton'
+            ], function(GroupAdminButton) {
+                new GroupAdminButton({
+                    openRequests: Status.openRequests
+                }).inject(
+                    document.getElement('.qui-menu-container')
+                );
+            });
+        });
+    });
 });

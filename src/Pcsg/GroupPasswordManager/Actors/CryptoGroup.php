@@ -890,6 +890,37 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
+     * Get IDs of users that are part of this group but are
+     * not yet unlocked for all group SecurityClasses
+     *
+     * @return int[]
+     */
+    public function getNoAccessUserIds()
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'userId'
+            ),
+            'from'   => Tables::usersToGroups(),
+            'where'  => array(
+                'userKeyPairId' => array(
+                    'type'  => 'NOT',
+                    'value' => null
+                ),
+                'groupKey'      => null
+            )
+        ));
+
+        $userIds = array();
+
+        foreach ($result as $row) {
+            $userIds[] = (int)$row['userId'];
+        }
+
+        return $userIds;
+    }
+
+    /**
      * Checks if the current Group CryptoUser is part of this group AND has permission to edit it
      *
      * @return void

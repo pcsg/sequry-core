@@ -4,10 +4,6 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/Actors
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/classes/DOM
- * @require Ajax
  */
 define('package/pcsg/grouppasswordmanager/bin/Actors', [
 

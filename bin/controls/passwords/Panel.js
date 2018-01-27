@@ -767,7 +767,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             this.$Grid.setData(GridData);
 
             for (i = 0, len = noAccessRows.length; i < len; i++) {
-                this.$Grid.getRowElement(i).addClass('pcsg-gpm-passwords-panel-grid-noaccess');
+                this.$Grid.getRowElement(noAccessRows[i]).addClass('pcsg-gpm-passwords-panel-grid-noaccess');
             }
         },
 

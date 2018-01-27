@@ -2006,6 +2006,11 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Bitte geben Sie Ihre Zugangsdaten an, um den Wiederherstellungs-Code neu zu generieren.]]></de>
         </locale>
 
+        <!-- Control: actors/groupadmins/GroupAdminButton -->
+        <locale name="controls.actors.groupadmins.GroupAdminButton.text">
+            <de><![CDATA[Passwort-Gruppen Administration ([openRequests] offene Anfragen)]]></de>
+        </locale>
+
     </groups>
 
 </locales>

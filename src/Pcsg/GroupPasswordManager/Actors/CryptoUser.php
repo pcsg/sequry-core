@@ -30,6 +30,7 @@ use Pcsg\GroupPasswordManager\Constants\Tables;
 use QUI\Utils\Security\Orthos;
 use QUI\Permissions\Permission;
 use QUI\Cache\Manager as CacheManager;
+use QUI\Utils\Grid;
 
 /**
  * User Class
@@ -2268,5 +2269,110 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $groups;
+    }
+
+    public function getAdminGroupsUnlockList($searchParams, $count = false)
+    {
+        $inviteCodes = array();
+        $Grid        = new Grid($searchParams);
+        $gridParams  = $Grid->parseDBParams($searchParams);
+
+        $binds = array();
+        $where = array();
+
+        if ($count) {
+            $sql = "SELECT COUNT(*)";
+        } else {
+            $sql = "SELECT id";
+        }
+
+        $sql .= " FROM `" . Tables::usersToGroups() . "`";
+
+        if (!empty($searchParams['search'])) {
+            $searchColumns = array(
+                'id',
+                'code',
+                'email'
+            );
+
+            $whereOr = array();
+
+            foreach ($searchColumns as $searchColumn) {
+                $whereOr[] = '`' . $searchColumn . '` LIKE :search';
+            }
+
+            if (!empty($whereOr)) {
+                $where[] = '(' . implode(' OR ', $whereOr) . ')';
+
+                $binds['search'] = array(
+                    'value' => '%' . $searchParams['search'] . '%',
+                    'type'  => \PDO::PARAM_STR
+                );
+            }
+        }
+
+        // build WHERE query string
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        // ORDER
+        if (!empty($searchParams['sortOn'])
+        ) {
+            $sortOn = Orthos::clear($searchParams['sortOn']);
+            $order  = "ORDER BY " . $sortOn;
+
+            if (isset($searchParams['sortBy']) &&
+                !empty($searchParams['sortBy'])
+            ) {
+                $order .= " " . Orthos::clear($searchParams['sortBy']);
+            } else {
+                $order .= " ASC";
+            }
+
+            $sql .= " " . $order;
+        } else {
+            $sql .= " ORDER BY id DESC";
+        }
+
+        // LIMIT
+        if (!empty($gridParams['limit'])
+            && !$countOnly
+        ) {
+            $sql .= " LIMIT " . $gridParams['limit'];
+        } else {
+            if (!$countOnly) {
+                $sql .= " LIMIT " . (int)20;
+            }
+        }
+
+        $Stmt = QUI::getPDO()->prepare($sql);
+
+        // bind search values
+        foreach ($binds as $var => $bind) {
+            $Stmt->bindValue(':' . $var, $bind['value'], $bind['type']);
+        }
+
+        try {
+            $Stmt->execute();
+            $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError(
+                self::class . ' :: search() -> ' . $Exception->getMessage()
+            );
+
+            return array();
+        }
+
+        if ($countOnly) {
+            return (int)current(current($result));
+        }
+
+        foreach ($result as $row) {
+            $inviteCodes[] = self::getInviteCode($row['id']);
+        }
+
+        return $inviteCodes;
+
     }
 }
