@@ -4,19 +4,14 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/classes/Actors
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/classes/DOM
- * @require Ajax
  */
 define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
 
-    'qui/QUI',
     'qui/classes/DOM',
     'Ajax',
     'package/pcsg/grouppasswordmanager/bin/AuthAjax'
 
-], function (QUI, QUIDOM, QUIAjax, AuthAjax) {
+], function (QUIDOM, QUIAjax, AuthAjax) {
     "use strict";
 
     var pkg = 'pcsg/grouppasswordmanager';
@@ -281,12 +276,30 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Actors', [
          * @param {Object} SearchParams
          * @return {Promise}
          */
-        getGroupAdminList: function (SearchParams) {
+        getGroupAdminUnlockList: function (SearchParams) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_users_getGroupAdminStatus', resolve, {
-                    'package': pkg,
-                    onError  : reject
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_groups_getUnlockList', resolve, {
+                    'package'   : pkg,
+                    searchParams: JSON.encode(SearchParams),
+                    onError     : reject
                 });
+            });
+        },
+
+        /**
+         * Authorize access for certain users for groups and securityclasses
+         *
+         * @param {Array} securityClassIds - SecurityClass IDs an authentication is required for
+         * @param {Object} unlockRequests
+         */
+        unlockUsersForGroups: function (securityClassIds, unlockRequests) {
+            return new Promise(function (resolve, reject) {
+                AuthAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_actors_groups_unlockUsers', {
+                        securityClassIds: securityClassIds,
+                        unlockRequests  : JSON.encode(unlockRequests)
+                    }
+                ).then(resolve, reject);
             });
         }
     });

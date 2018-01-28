@@ -12,6 +12,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
     'qui/controls/buttons/Button',
 
     'controls/grid/Grid',
+    'package/pcsg/grouppasswordmanager/bin/Actors',
 
     'Locale',
     'Mustache',
@@ -19,7 +20,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
     'text!package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel.css'
 
-], function (QUIPanel, QUILoader, QUIConfirm, QUIButton, Grid, QUILocale, Mustache, template) {
+], function (QUIPanel, QUILoader, QUIConfirm, QUIButton, Grid, Actors, QUILocale, Mustache, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -36,14 +37,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
             '$onRefresh',
             '$load',
             '$setGridData',
-            '$create',
-            '$toggleActiveStatus',
-            '$managePackages',
-            '$delete',
-            '$editBundle',
             'refresh',
-            '$openUserPanel',
-            '$sendMail'
+            '$unlock'
         ],
 
         options: {
@@ -75,12 +70,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
             this.Loader.inject(this.$Elm);
 
             this.addButton({
-                name     : 'unlock',
-                text     : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.btn.create'),
+                name     : 'unlockAll',
+                text     : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.btn.unlockAll'),
                 textimage: 'fa fa-unlock',
                 events   : {
                     onClick: function () {
-                        self.$create();
+                        self.$unlock(true);
+                    }
+                }
+            });
+
+            this.addButton({
+                name     : 'unlock',
+                text     : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.btn.unlock'),
+                textimage: 'fa fa-unlock-alt',
+                events   : {
+                    onClick: function () {
+                        self.$unlock();
                     }
                 }
             });
@@ -119,7 +125,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
             var Content = this.getContent();
 
             this.$GridParent = Content.getElement(
-                '.pcsg-gpm-actors-groupadmins-panel-manager-table'
+                '.pcsg-gpm-actors-groupadmins-panel-table'
             );
 
             this.$Grid = new Grid(this.$GridParent, {
@@ -127,10 +133,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
                     header   : QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'userId',
                     dataType : 'number',
-                    width    : 50
+                    width    : 75
                 }, {
-                    header   : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.header.name'),
-                    dataIndex: 'name',
+                    header   : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.header.userName'),
+                    dataIndex: 'userName',
                     dataType : 'string',
                     width    : 150
                 }, {
@@ -139,14 +145,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
                     dataType : 'string',
                     width    : 200
                 }, {
-                    header   : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.header.securityclass'),
-                    dataIndex: 'securityclass',
+                    header   : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.header.securityClass'),
+                    dataIndex: 'securityClass',
                     dataType : 'string',
-                    width    : 200
-                }, {
-                    header   : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.header.unlock'),
-                    dataIndex: 'unlock',
-                    dataType : 'node',
                     width    : 200
                 }, {
                     dataIndex: 'groupId',
@@ -226,7 +227,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
 
             this.Loader.show();
 
-            InviteCodes.getList(GridParams).then(function (ResultData) {
+            Actors.getGroupAdminUnlockList(GridParams).then(function (ResultData) {
                 self.Loader.hide();
                 self.$setGridData(ResultData);
             });
@@ -238,190 +239,55 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
          * @param {Object} GridData
          */
         $setGridData: function (GridData) {
-            var textUnused       = QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.status.unused');
-            var textUnlimited    = QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.validUntil.unlimited');
-            var textInvalid      = QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.status.invalid');
-            var textUserNotExist = QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.user.not_exist');
+            //for (var i = 0, len = GridData.data.length; i < len; i++) {
+            //    var Row = GridData.data[i];
+            //
+            //    Row.unlock = new Element('span', {
+            //
+            //    })
+            //}
 
-            for (var i = 0, len = GridData.data.length; i < len; i++) {
-                var Row = GridData.data[i];
-
-                if (!Row.email) {
-                    Row.email = '-';
-                }
-
-                var StatusElm = new Element('span', {
-                    'class': 'pcsg-gpm-actors-groupadmins-panel-manager-tbl-status'
-                });
-
-                if (!Row.valid) {
-                    StatusElm.set('html', textInvalid);
-                    StatusElm.addClass('pcsg-gpm-actors-groupadmins-panel-manager-tbl-status-invalid');
-                } else if (!Row.useDate) {
-                    StatusElm.set('html', textUnused);
-                    StatusElm.addClass('pcsg-gpm-actors-groupadmins-panel-manager-tbl-status-unused');
-                } else {
-                    StatusElm.set('html', QUILocale.get(lg, 'controls.actors.groupadmins.Panel.tbl.status.used', {
-                        useDate: Row.useDate
-                    }));
-                    StatusElm.addClass('pcsg-gpm-actors-groupadmins-panel-manager-tbl-status-used');
-                }
-
-                Row.status = StatusElm;
-
-                if (!Row.validUntilDate) {
-                    Row.validUntilDate = textUnlimited;
-                }
-
-                if (!Row.userId) {
-                    if (Row.useDate) {
-                        Row.user = new Element('span', {
-                            'class': 'pcsg-gpm-actors-groupadmins-panel-manager-tbl-user-not_exist',
-                            html   : textUserNotExist
-                        });
-                    } else {
-                        Row.user = new Element('span', {html: '-'});
-                    }
-                } else {
-                    Row.user = new Element('div', {
-                        'class': 'pcsg-gpm-actors-groupadmins-panel-manager-tbl-user',
-                        html   : Row.username
-                    });
-                }
-
-                if (!Row.title) {
-                    Row.title = '-';
-                }
-
-                var MailSentElm = new Element('span', {
-                    'class': 'fa'
-                });
-
-                if (!Row.mailSent) {
-                    MailSentElm.addClass('fa-close');
-                } else {
-                    MailSentElm.addClass('fa-check');
-                }
-
-                Row.mailSent = MailSentElm;
-            }
+            console.log(GridData);
 
             this.$Grid.setData(GridData);
         },
 
         /**
-         * Create new InviteCode
+         * Unlock users for groups
          *
-         * @param {Boolean} [quickCreate]
+         * @param {Boolean} [all] - Authorize all open requests
          */
-        $create: function (quickCreate) {
-            var self = this;
+        $unlock: function (all) {
+            var self             = this;
+            var unlockInfo       = [];
+            var unlockRequests   = [];
+            var securityClassIds = [];
+            var rows;
 
-            quickCreate = quickCreate || false;
-
-            if (quickCreate) {
-                InviteCodes.create({}).then(function (inviteCodeId) {
-                    if (!inviteCodeId) {
-                        return;
-                    }
-
-                    self.refresh();
-                });
-
-                return;
+            if (all) {
+                rows = this.$Grid.getData();
+            } else {
+                rows = this.$Grid.getSelectedData();
             }
 
-            var FuncSubmit = function () {
-                var Content = Popup.getContent();
-                var Form    = Content.getElement('form');
-
-                Popup.Loader.show();
-
-                InviteCodes.create(QUIFormUtils.getFormData(Form)).then(function (inviteCodeId) {
-                    if (!inviteCodeId) {
-                        Popup.Loader.hide();
-                        return;
-                    }
-
-                    self.refresh();
-                    Popup.close();
-                });
-            };
-
-            // open popup
-            var lgPrefix = 'controls.actors.groupadmins.Panel.create.template.';
-
-            var Popup = new QUIPopup({
-                icon       : 'fa fa-plus',
-                title      : QUILocale.get(
-                    lg, 'controls.actors.groupadmins.Panel.create.popup.title'
-                ),
-                maxHeight  : 450,
-                maxWidth   : 450,
-                events     : {
-                    onOpen: function () {
-                        var Content = Popup.getContent();
-                        var Form    = Content.getElement('form');
-
-                        Form.addEvent('submit', function (event) {
-                            event.stop();
-                            FuncSubmit();
-                        });
-
-                        var EmailInput       = Content.getElement('input[name="email"]');
-                        var SendMailCheckbox = Content.getElement('input[name="sendmail"]');
-
-                        EmailInput.addEvent('keyup', function (event) {
-                            if (event.target.value.trim() === '') {
-                                SendMailCheckbox.checked  = false;
-                                SendMailCheckbox.disabled = true;
-
-                                return;
-                            }
-
-                            SendMailCheckbox.disabled = false;
-                        });
-
-                        Content.getElement('input[name="title"]').focus();
-                    }
-                },
-                closeButton: true,
-                content    : Mustache.render(templateCreate, {
-                    labelTitle   : QUILocale.get(lg, lgPrefix + 'labelTitle'),
-                    labelEmail   : QUILocale.get(lg, lgPrefix + 'labelEmail'),
-                    labelDate    : QUILocale.get(lg, lgPrefix + 'labelDate'),
-                    labelSendMail: QUILocale.get(lg, lgPrefix + 'labelSendMail'),
-                    labelAmount  : QUILocale.get(lg, lgPrefix + 'labelAmount')
-                })
-            });
-
-            Popup.open();
-
-            Popup.addButton(new QUIButton({
-                text  : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.create.popup.btn.confirm_text'),
-                alt   : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.create.popup.btn.confirm'),
-                title : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.create.popup.btn.confirm'),
-                events: {
-                    onClick: FuncSubmit
-                }
-            }));
-        },
-
-        /**
-         * Remove all selected licenses
-         */
-        $delete: function () {
-            var self       = this;
-            var deleteData = [];
-            var deleteIds  = [];
-            var rows       = this.$Grid.getSelectedData();
-
             for (var i = 0, len = rows.length; i < len; i++) {
-                deleteData.push(
-                    rows[i].title + ' (ID: #' + rows[i].id + ')'
+                var Row = rows[i];
+
+                unlockInfo.push(
+                    Row.userName + ' (ID: #' + Row.userId + ') | ' +
+                    Row.group + ' | ' +
+                    Row.securityClass
                 );
 
-                deleteIds.push(rows[i].id);
+                if (!securityClassIds.contains(Row.securityClassId)) {
+                    securityClassIds.push(Row.securityClassId);
+                }
+
+                unlockRequests.push({
+                    userId         : Row.userId,
+                    groupId        : Row.groupId,
+                    securityClassId: Row.securityClassId
+                });
             }
 
             // open popup
@@ -431,14 +297,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
 
                 'information': QUILocale.get(
                     lg,
-                    'controls.actors.groupadmins.Panel.delete.popup.info', {
-                        codes: deleteData.join('<br/>')
+                    'controls.actors.groupadmins.Panel.unlock.popup.info', {
+                        requests: unlockInfo.join('<br/>')
                     }
                 ),
-                'title'      : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.delete.popup.title'),
-                'texticon'   : 'fa fa-trash',
-                text         : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.delete.popup.title'),
-                'icon'       : 'fa fa-trash',
+                'title'      : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.unlock.popup.title'),
+                'texticon'   : 'fa fa-unlock',
+                text         : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.unlock.popup.title'),
+                'icon'       : 'fa fa-unlock',
 
                 cancel_button: {
                     text     : false,
@@ -452,80 +318,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
                     onSubmit: function () {
                         Popup.Loader.show();
 
-                        InviteCodes.delete(deleteIds).then(function (success) {
+                        Actors.unlockUsersForGroups(
+                            securityClassIds,
+                            unlockRequests
+                        ).then(function(success) {
                             if (!success) {
                                 Popup.Loader.hide();
                                 return;
                             }
 
                             Popup.close();
-                            self.refresh();
-                        });
-                    }
-                }
-            });
-
-            Popup.open();
-        },
-
-        /**
-         * Send InviteCodes via Mail
-         */
-        $sendMail: function () {
-            var self        = this;
-            var sendMailIds = [];
-            var rows        = this.$Grid.getSelectedData();
-
-            for (var i = 0, len = rows.length; i < len; i++) {
-                sendMailIds.push(rows[i].id);
-            }
-
-            // open popup
-            var Popup = new QUIConfirm({
-                'maxHeight': 300,
-                'autoclose': false,
-
-                'information': QUILocale.get(lg, 'controls.actors.groupadmins.Panel.sendmail.popup.info'),
-                'title'      : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.sendmail.popup.title'),
-                'text'       : QUILocale.get(lg, 'controls.actors.groupadmins.Panel.sendmail.popup.title'),
-                'texticon'   : 'fa fa-envelope-o',
-                'icon'       : 'fa fa-envelope-o',
-
-                cancel_button: {
-                    text     : false,
-                    textimage: 'fa fa-remove'
-                },
-                ok_button    : {
-                    text     : false,
-                    textimage: 'fa fa-check'
-                },
-                events       : {
-                    onOpen  : function () {
-                        var Content = Popup.getContent();
-
-                        new Element('label', {
-                            'class': 'pcsg-gpm-actors-groupadmins-panel-manager-sendmail-resend',
-                            html   : '<span>' +
-                            QUILocale.get(lg, 'controls.actors.groupadmins.Panel.sendmail.popup.label.resend') +
-                            '</span>' +
-                            '<input type="checkbox" name="resend"/>'
-                        }).inject(Content);
-                    },
-                    onSubmit: function () {
-                        Popup.Loader.show();
-
-                        var SendMailInput = Popup.getContent().getElement(
-                            'input[name="resend"]'
-                        );
-
-                        InviteCodes.sendMail(sendMailIds, SendMailInput.checked).then(function (success) {
-                            if (!success) {
-                                Popup.Loader.hide();
-                                return;
-                            }
-
-                            Popup.close();
-                            self.refresh();
                         });
                     }
                 }

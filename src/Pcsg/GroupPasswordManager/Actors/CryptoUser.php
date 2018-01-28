@@ -2271,45 +2271,33 @@ class CryptoUser extends QUI\Users\User
         return $groups;
     }
 
+    /**
+     * Get list of all pending authorization processes for
+     * users that do not yet have full access to a CryptoGroup
+     *
+     * @param array $searchParams - search options
+     * @param bool $count (optional) - get count only
+     * @return array|int
+     */
     public function getAdminGroupsUnlockList($searchParams, $count = false)
     {
-        $inviteCodes = array();
-        $Grid        = new Grid($searchParams);
-        $gridParams  = $Grid->parseDBParams($searchParams);
+        $list       = array();
+        $Grid       = new Grid($searchParams);
+        $gridParams = $Grid->parseDBParams($searchParams);
 
         $binds = array();
-        $where = array();
+        $where = array(
+            '`userKeyPairId` IS NOT NULL',
+            '`groupKey` IS NULL'
+        );
 
         if ($count) {
             $sql = "SELECT COUNT(*)";
         } else {
-            $sql = "SELECT id";
+            $sql = "SELECT `userId`, `groupId`, `securityClassId`";
         }
 
         $sql .= " FROM `" . Tables::usersToGroups() . "`";
-
-        if (!empty($searchParams['search'])) {
-            $searchColumns = array(
-                'id',
-                'code',
-                'email'
-            );
-
-            $whereOr = array();
-
-            foreach ($searchColumns as $searchColumn) {
-                $whereOr[] = '`' . $searchColumn . '` LIKE :search';
-            }
-
-            if (!empty($whereOr)) {
-                $where[] = '(' . implode(' OR ', $whereOr) . ')';
-
-                $binds['search'] = array(
-                    'value' => '%' . $searchParams['search'] . '%',
-                    'type'  => \PDO::PARAM_STR
-                );
-            }
-        }
 
         // build WHERE query string
         if (!empty($where)) {
@@ -2337,11 +2325,11 @@ class CryptoUser extends QUI\Users\User
 
         // LIMIT
         if (!empty($gridParams['limit'])
-            && !$countOnly
+            && !$count
         ) {
             $sql .= " LIMIT " . $gridParams['limit'];
         } else {
-            if (!$countOnly) {
+            if (!$count) {
                 $sql .= " LIMIT " . (int)20;
             }
         }
@@ -2364,15 +2352,22 @@ class CryptoUser extends QUI\Users\User
             return array();
         }
 
-        if ($countOnly) {
+        if ($count) {
             return (int)current(current($result));
         }
 
-        foreach ($result as $row) {
-            $inviteCodes[] = self::getInviteCode($row['id']);
+        foreach ($result as $k => $row) {
+            $SecurityClass = Authentication::getSecurityClass($row['securityClassId']);
+            $CryptoGroup   = CryptoActors::getCryptoGroup($row['groupId']);
+            $CrpytoUser    = CryptoActors::getCryptoUser($row['userId']);
+
+            $row['securityClass'] = $SecurityClass->getAttribute('title') . ' (#' . $SecurityClass->getId() . ')';
+            $row['group']         = $CryptoGroup->getName() . ' (#' . $CryptoGroup->getId() . ')';
+            $row['userName']      = $CrpytoUser->getName();
+
+            $result[$k] = $row;
         }
 
-        return $inviteCodes;
-
+        return $result;
     }
 }

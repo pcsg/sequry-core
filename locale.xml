@@ -2008,7 +2008,33 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
 
         <!-- Control: actors/groupadmins/GroupAdminButton -->
         <locale name="controls.actors.groupadmins.GroupAdminButton.text">
-            <de><![CDATA[Passwort-Gruppen Administration ([openRequests] offene Anfragen)]]></de>
+            <de><![CDATA[Sequry Gruppen-Administration ([openRequests] offene Anfragen)]]></de>
+        </locale>
+
+        <!-- Control: actors/groupadmins/Panel -->
+        <locale name="controls.actors.groupadmins.Panel.title">
+            <de><![CDATA[Sequry Gruppen-Administration]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.btn.unlockAll">
+            <de><![CDATA[Alle freischalten]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.btn.unlock">
+            <de><![CDATA[Markierte(n) freischalten]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.userName">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.group">
+            <de><![CDATA[Gruppe]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.securityClass">
+            <de><![CDATA[Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.unlock.popup.title">
+            <de><![CDATA[Benutzer für Gruppen / Sicherheitsklassen freischalten]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.unlock.popup.info">
+            <de><![CDATA[Sind Sie sicher, dass sie folgenden Benutzern für die jeweilige Gruppe und Sicherheitsklasse Zugriff gewähren möchten?<br/><br>[requests]]]></de>
         </locale>
 
     </groups>

@@ -374,7 +374,7 @@ class Authentication
         }
 
         if (empty($params['authPluginIds']
-                     || !is_array($params['authPluginIds']))
+                  || !is_array($params['authPluginIds']))
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -738,5 +738,26 @@ class Authentication
         $data['iv']  = hex2bin($data['iv']);
 
         return $data;
+    }
+
+    /**
+     * Grants CryptoUsers access to CryptoGroups for specific SecurityClasses
+     *
+     * @param array $unlockRequests
+     * @return void
+     */
+    public static function unlockUsersForGroups($unlockRequests)
+    {
+        foreach ($unlockRequests as $request) {
+            if (empty($request['groupId'])
+                || empty($request['userId'])) {
+                continue;
+            }
+
+            $CryptoGroup = CryptoActors::getCryptoGroup($request['groupId']);
+            $CryptoUser  = CryptoActors::getCryptoUser($request['userId']);
+
+            $CryptoGroup->addCryptoUser($CryptoUser);
+        }
     }
 }

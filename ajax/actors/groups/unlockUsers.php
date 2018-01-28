@@ -1,31 +1,23 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use QUI\Utils\Security\Orthos;
-use QUI\Utils\Grid;
+use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
 /**
- * Get a list of all users that have to be unlocked by a group admin (session user)
+ * Authorize access for certain users for groups and securityclasses
  *
- * @param string $searchParams - search options [json]
- * @return array|false - false on error or groupadmin list otherwise
+ * @param array $unlockRequests
+ * @return bool - success
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_groups_getUnlockList',
-    function ($searchParams) {
+    'package_pcsg_grouppasswordmanager_ajax_actors_groups_unlockUsers',
+    function ($unlockRequests) {
         try {
-            $CryptoUser   = CryptoActors::getCryptoUser();
-            $searchParams = Orthos::clearArray(
-                json_decode($searchParams, true)
+            $unlockRequests = Orthos::clearArray(
+                json_decode($unlockRequests, true)
             );
 
-            $Grid = new Grid($searchParams);
-            $list = $CryptoUser->getAdminGroupsUnlockList($searchParams);
-
-            return $Grid->parseResult(
-                $list,
-                $CryptoUser->getAdminGroupsUnlockList($searchParams, true)
-            );
+            Authentication::unlockUsersForGroups($unlockRequests);
         } catch (\Pcsg\GroupPasswordManager\Exception\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
@@ -40,7 +32,7 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_actors_groups_getUnlockList'
+                'AJAX :: package_pcsg_grouppasswordmanager_ajax_actors_groups_unlockUsers'
             );
 
             QUI\System\Log::writeException($Exception);
@@ -54,7 +46,9 @@ QUI::$Ajax->registerFunction(
 
             return false;
         }
+
+        return true;
     },
-    array('searchParams'),
+    array('unlockRequests'),
     'Permission::checkAdminUser'
 );

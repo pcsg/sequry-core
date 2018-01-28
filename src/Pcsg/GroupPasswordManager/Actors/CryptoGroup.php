@@ -286,6 +286,28 @@ class CryptoGroup extends QUI\Groups\Group
         $DB  = QUI::getDataBase();
         $tbl = Tables::usersToGroups();
 
+        // get existing entries
+        $result = $DB->fetch(array(
+            'select' => array(
+                'userKeyPairId',
+                'groupKey'
+            ),
+            'from'   => Tables::usersToGroups(),
+            'where'  => array(
+                'userId'          => $User->getId(),
+                'groupId'         => $this->getId(),
+                'securityClassId' => $SecurityClass->getId()
+            )
+        ));
+
+        $access = array();
+
+        foreach ($result as $row) {
+            if (!empty($row['userKeyPairId'])) {
+                $access[$row['userKeyPairId']] = !empty($row['groupKey']);
+            }
+        }
+
         try {
             // create empty entries if user is not eligible (yet) for SecurityClass
             if (!$SecurityClass->isUserEligible($User)) {
@@ -296,6 +318,8 @@ class CryptoGroup extends QUI\Groups\Group
                     } catch (\Exception $Exception) {
                         $keyPairId = null;
                     }
+
+                    
 
                     $data = array(
                         'userId'          => $User->getId(),
@@ -453,9 +477,9 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function addCryptoUser(CryptoUser $AddUser)
     {
-        if ($this->isUserInGroup($AddUser)) {
-            return;
-        }
+//        if ($this->isUserInGroup($AddUser)) {
+//            return;
+//        }
 
         // permission check
         $this->checkAdminPermission();

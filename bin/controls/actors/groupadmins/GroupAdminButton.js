@@ -48,7 +48,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupA
          * Event: onClick
          */
         $onClick: function () {
-            console.log("open Group Admin Panel");
+            require([
+                'package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel',
+                'utils/Panels'
+            ], function (GroupAdminPanel, PanelUtils) {
+                var GroupAdminPanelInstance = new GroupAdminPanel();
+
+                PanelUtils.openPanelInTasks(GroupAdminPanelInstance).then(function (Panel) {
+                    Panel.open();
+                });
+            });
         }
     });
 });
