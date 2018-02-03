@@ -319,7 +319,7 @@ class CryptoGroup extends QUI\Groups\Group
                         $keyPairId = null;
                     }
 
-                    
+
 
                     $data = array(
                         'userId'          => $User->getId(),
@@ -477,12 +477,12 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function addCryptoUser(CryptoUser $AddUser)
     {
-//        if ($this->isUserInGroup($AddUser)) {
-//            return;
-//        }
-
         // permission check
         $this->checkAdminPermission();
+
+        if ($this->isUserInGroup($AddUser)) {
+            $this->removeCryptoUser($AddUser);
+        }
 
         $securityClasses = $this->getSecurityClasses();
 
@@ -792,7 +792,7 @@ class CryptoGroup extends QUI\Groups\Group
             return false;
         }
 
-        if ($SecurityClass->isUserEligible($User)) {
+        if (!$SecurityClass->isUserEligible($User)) {
             return false;
         }
 

@@ -2278,10 +2278,10 @@ class CryptoUser extends QUI\Users\User
      * @param array $searchParams - search options
      * @param bool $count (optional) - get count only
      * @return array|int
+     * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
     public function getAdminGroupsUnlockList($searchParams, $count = false)
     {
-        $list       = array();
         $Grid       = new Grid($searchParams);
         $gridParams = $Grid->parseDBParams($searchParams);
 
@@ -2294,7 +2294,7 @@ class CryptoUser extends QUI\Users\User
         if ($count) {
             $sql = "SELECT COUNT(*)";
         } else {
-            $sql = "SELECT `userId`, `groupId`, `securityClassId`";
+            $sql = "SELECT `userId`, `groupId`, `userKeyPairId`, `securityClassId`";
         }
 
         $sql .= " FROM `" . Tables::usersToGroups() . "`";
@@ -2356,7 +2356,17 @@ class CryptoUser extends QUI\Users\User
             return (int)current(current($result));
         }
 
+        $parsedEntries = array();
+
         foreach ($result as $k => $row) {
+            $hash = md5($row['securityClassId'] . $row['groupId'] . $row['userId']);
+
+            if (isset($parsedEntries[$hash])) {
+                continue;
+            }
+
+            $parsedEntries[$hash] = true;
+
             $SecurityClass = Authentication::getSecurityClass($row['securityClassId']);
             $CryptoGroup   = CryptoActors::getCryptoGroup($row['groupId']);
             $CrpytoUser    = CryptoActors::getCryptoUser($row['userId']);

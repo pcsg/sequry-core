@@ -239,16 +239,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
          * @param {Object} GridData
          */
         $setGridData: function (GridData) {
-            //for (var i = 0, len = GridData.data.length; i < len; i++) {
-            //    var Row = GridData.data[i];
-            //
-            //    Row.unlock = new Element('span', {
-            //
-            //    })
-            //}
-
-            console.log(GridData);
-
             this.$Grid.setData(GridData);
         },
 
@@ -321,13 +311,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
                         Actors.unlockUsersForGroups(
                             securityClassIds,
                             unlockRequests
-                        ).then(function(success) {
+                        ).then(function (success) {
                             if (!success) {
                                 Popup.Loader.hide();
                                 return;
                             }
 
                             Popup.close();
+                            self.refresh();
                         });
                     }
                 }

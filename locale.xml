@@ -1962,6 +1962,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="classes.authentication.securityClassAuth.info" html="true">
             <de><![CDATA[<b>Sicherheitsklasse:</b> [title]<br><b>Benötigte Faktoren:</b> [requiredFactors]]]></de>
         </locale>
+        <locale name="exception.security.handler.authentication.keypair_not_found" html="true">
+            <de><![CDATA[Das Benutzer-Schlüsselpaar #[$id] wurde nicht gefunden.]]></de>
+        </locale>
 
         <!-- Control: auth/recovery/Recovery -->
         <locale name="controls.auth.recovery.template.title">
@@ -2029,6 +2032,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="controls.actors.groupadmins.Panel.tbl.header.securityClass">
             <de><![CDATA[Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.authPlugin">
+            <de><![CDATA[Authentifizierungs-Faktor]]></de>
         </locale>
         <locale name="controls.actors.groupadmins.Panel.unlock.popup.title">
             <de><![CDATA[Benutzer für Gruppen / Sicherheitsklassen freischalten]]></de>

@@ -11,6 +11,7 @@ use Pcsg\GpmAuthPassword\AuthPlugin;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
+use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\HiddenString;
@@ -183,7 +184,7 @@ class Authentication
      *
      * @param $id
      * @return Plugin
-     * @throws QUI\Exception
+     * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
     public static function getAuthPlugin($id)
     {
@@ -194,6 +195,38 @@ class Authentication
         self::$plugins[$id] = new Plugin($id);
 
         return self::$plugins[$id];
+    }
+
+    /**
+     * Get Authentication Plugin by User KeyPair ID
+     *
+     * @param int $userKeyPairId
+     * @return Plugin
+     * @throws \Pcsg\GroupPasswordManager\Exception\Exception
+     */
+    public static function getAuthPluginByUserKeyPairId($userKeyPairId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'authPluginId'
+            ),
+            'from'   => Tables::keyPairsUser(),
+            'where'  => array(
+                'id' => $userKeyPairId
+            )
+        ));
+
+        if (empty($result)) {
+            throw new Exception(array(
+                'pcsg/grouppasswordmanager',
+                'exception.security.handler.authentication.keypair_not_found',
+                array(
+                    'id' => $userKeyPairId
+                )
+            ), 404);
+        }
+
+        return self::getAuthPlugin($result[0]['authPluginId']);
     }
 
     /**
@@ -510,7 +543,7 @@ class Authentication
      *
      * @param $id
      * @return SecurityClass
-     * @throws QUI\Exception
+     * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
     public static function getSecurityClass($id)
     {

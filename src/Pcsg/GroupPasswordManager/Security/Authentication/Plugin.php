@@ -4,6 +4,7 @@ namespace Pcsg\GroupPasswordManager\Security\Authentication;
 
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Exception\Exception;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
@@ -38,7 +39,7 @@ class Plugin extends QUI\QDOM
      * AuthPlugin constructor.
      *
      * @param integer $id - authentication plugin id
-     * @throws QUI\Exception
+     * @throws \Pcsg\GroupPasswordManager\Exception\Exception
      */
     public function __construct($id)
     {
@@ -50,7 +51,7 @@ class Plugin extends QUI\QDOM
         ));
 
         if (empty($result)) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'pcsg/grouppasswordmanager',
                 'exception.auth.plugin.not.found',
                 array(
