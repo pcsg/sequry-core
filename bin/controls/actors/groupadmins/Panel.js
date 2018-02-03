@@ -171,7 +171,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
                     //    self.$Grid.getSelectedData()[0].id
                     //);
                 },
-                onClick   : function (event) {
+                onClick   : function () {
                     self.getButtons('unlock').enable();
                 },
                 onRefresh : this.$listRefresh
@@ -203,6 +203,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
             var self = this;
 
             self.getButtons('unlock').disable();
+            self.getButtons('unlockAll').disable();
 
             var GridParams = {
                 sortOn : Grid.getAttribute('sortOn'),
@@ -230,6 +231,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
             Actors.getGroupAdminUnlockList(GridParams).then(function (ResultData) {
                 self.Loader.hide();
                 self.$setGridData(ResultData);
+
+                if (ResultData.total) {
+                    self.getButtons('unlockAll').enable();
+                }
             });
         },
 
