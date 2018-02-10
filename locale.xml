@@ -1406,7 +1406,7 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Sie haben die Berechtigung, dieses Passwort anzusehen, sind jedoch noch nicht für die Sicherheitsklasse <b>[title]</b> freigeschaltet.]]></de>
         </locale>
         <locale name="controls.password.access_info.text_missing_auth_plugins">
-            <de><![CDATA[Damit Sie auf dieses Passwort zugreifen können, registrieren Sie sich bitte für folgende Authentifizierungs-Faktoren:]]></de>
+            <de><![CDATA[Damit ein Administrator ihnen den Zugriff auf dieses Passwort ermöglichen kann, registrieren Sie sich bitte für folgende Authentifizierungs-Faktoren:]]></de>
         </locale>
         <locale name="controls.password.access_info.text_missing_authorization">
             <de><![CDATA[Damit Sie auf dieses Passwort zugreifen können, müssen sie von einem Administrator freigeschaltet werden. Die zuständigen Administratoren wurden darüber benachrichtigt.]]></de>

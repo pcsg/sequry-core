@@ -296,7 +296,81 @@ class Plugin extends QUI\QDOM
             ));
         }
 
+        $this->refreshGroupAccessKeyEntries(
+            CryptoActors::getCryptoUser($User->getId()),
+            QUI::getDataBase()->getPDO()->lastInsertId()
+        );
+
         return $authInformation;
+    }
+
+    /**
+     * Refresh database entries for group access
+     *
+     * @param CryptoUser $CryptoUser
+     * @param int $keyPairId
+     * @return void
+     * @throws QUI\Exception
+     */
+    protected function refreshGroupAccessKeyEntries(CryptoUser $CryptoUser, $keyPairId)
+    {
+        $groupIds     = $CryptoUser->getCryptoGroupIds();
+        $DB           = QUI::getDataBase();
+        $authPluginId = $this->getId();
+        $tbl          = Tables::usersToGroups();
+
+        foreach ($groupIds as $groupId) {
+            $CryptoGroup = CryptoActors::getCryptoGroup($groupId);
+            $isEligible  = false;
+
+            foreach ($CryptoGroup->getSecurityClasses() as $SecurityClass) {
+                if (in_array($authPluginId, $SecurityClass->getAuthPluginIds())) {
+                    $isEligible = true;
+                    break;
+                }
+            }
+
+            if (!$isEligible) {
+                continue;
+            }
+
+            $result = $DB->fetch(array(
+                'from'  => $tbl,
+                'where' => array(
+                    'groupId'       => $groupId,
+                    'groupKey'      => null,
+                    'userKeyPairId' => null
+                )
+            ));
+
+            if (empty($result)) {
+                continue;
+            }
+
+            $data = current($result);
+
+            $entry = array(
+                'userId'          => $data['userId'],
+                'userKeyPairId'   => $keyPairId,
+                'groupId'         => $groupId,
+                'securityClassId' => $data['securityClassId'],
+                'groupKey'        => null
+            );
+
+            // calculate MAC
+            $entry['MAC'] = MAC::create(
+                new HiddenString(implode('', $entry)),
+                Utils::getSystemKeyPairAuthKey()
+            );
+
+            $DB->update(
+                $tbl,
+                $entry,
+                array(
+                    'id' => $data['id']
+                )
+            );
+        }
     }
 
     /**

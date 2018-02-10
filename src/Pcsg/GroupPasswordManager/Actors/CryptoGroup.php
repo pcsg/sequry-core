@@ -319,8 +319,6 @@ class CryptoGroup extends QUI\Groups\Group
                         $keyPairId = null;
                     }
 
-
-
                     $data = array(
                         'userId'          => $User->getId(),
                         'userKeyPairId'   => $keyPairId,

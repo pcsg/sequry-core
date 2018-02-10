@@ -2357,15 +2357,16 @@ class CryptoUser extends QUI\Users\User
         }
 
         $parsedEntries = array();
+        $factorCount   = array();
 
         foreach ($result as $k => $row) {
             $hash = md5($row['securityClassId'] . $row['groupId'] . $row['userId']);
 
-            if (isset($parsedEntries[$hash])) {
-                continue;
+            if (!isset($factorCount[$hash])) {
+                $factorCount[$hash] = 0;
             }
 
-            $parsedEntries[$hash] = true;
+            $factorCount[$hash]++;
 
             $SecurityClass = Authentication::getSecurityClass($row['securityClassId']);
             $CryptoGroup   = CryptoActors::getCryptoGroup($row['groupId']);
@@ -2374,8 +2375,25 @@ class CryptoUser extends QUI\Users\User
             $row['securityClass'] = $SecurityClass->getAttribute('title') . ' (#' . $SecurityClass->getId() . ')';
             $row['group']         = $CryptoGroup->getName() . ' (#' . $CryptoGroup->getId() . ')';
             $row['userName']      = $CrpytoUser->getName();
+            $row['hash']          = $hash;
 
             $result[$k] = $row;
+        }
+
+        foreach ($result as $k => $r) {
+            if (isset($parsedEntries[$r['hash']])) {
+                unset($result[$k]);
+                continue;
+            }
+
+            $SecurityClass = Authentication::getSecurityClass($r['securityClassId']);
+
+            if ($factorCount[$r['hash']] < $SecurityClass->getRequiredFactors()) {
+                unset($result[$k]);
+                continue;
+            }
+
+            $parsedEntries[$r['hash']] = true;
         }
 
         return $result;
