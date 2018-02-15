@@ -10,7 +10,7 @@
  * @require qui/controls/sitemap/Map
  * @require qui/controls/sitemap/Item
  * @require qui/controls/contextmenu/Item
- * @require qui/controls/contextmenu/Seperator
+ * @require qui/controls/contextmenu/Separator
  * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map
  * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map
  * @require package/pcsg/grouppasswordmanager/bin/controls/categories/Filters
@@ -28,7 +28,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
     'qui/controls/sitemap/Map',
     'qui/controls/sitemap/Item',
     'qui/controls/contextmenu/Item',
-    'qui/controls/contextmenu/Seperator',
+    'qui/controls/contextmenu/Separator',
 
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
