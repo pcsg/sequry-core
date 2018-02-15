@@ -8,7 +8,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
     'qui/QUI',
     'qui/controls/desktop/Panel',
-    'qui/controls/buttons/Seperator',
+    'qui/controls/buttons/Separator',
     'qui/controls/buttons/Button',
     'qui/controls/buttons/Select',
     'qui/controls/loader/Loader',
