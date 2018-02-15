@@ -25,7 +25,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
     'qui/controls/sitemap/Map',
     'qui/controls/sitemap/Item',
     'qui/controls/contextmenu/Item',
-    'qui/controls/contextmenu/Seperator',
+    'qui/controls/contextmenu/Separator',
 
     'Ajax',
     'Locale',
