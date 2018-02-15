@@ -22,7 +22,7 @@
         "ext-bcmath": "*",
         "pcsg\/gpmauthpassword": "dev-dev",
         "npm-asset\/clipboard": "1.5.16",
-        "template-sequry": "dev-dev"
+        "pcsg\/template-sequry": "dev-dev"
     },
     "autoload": {
         "psr-0": {
