@@ -1,22 +1,11 @@
 /**
- * Control for sharing new password
+ * Control for sharing a password
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/password/Share
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Share.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css
- *
  * @event onLoaded
- * @event onAuthAbort - on user authentication abort
+ * @event onClose
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
 
@@ -173,13 +162,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
                         self.$ShareData = ShareData;
 
                         self.$ActorSelectUsers = new ActorSelect({
-                            actorType      : 'users',
-                            securityClassId: ShareData.securityClassId
+                            actorType       : 'users',
+                            securityClassIds: [ShareData.securityClassId],
+                            showEligibleOnly: true
                         }).inject(ActorUsersElm);
 
                         self.$ActorSelectGroups = new ActorSelect({
-                            actorType      : 'groups',
-                            securityClassId: ShareData.securityClassId
+                            actorType       : 'groups',
+                            securityClassIds: [ShareData.securityClassId],
+                            showEligibleOnly: true
                         }).inject(ActorGroupsElm);
 
                         self.$insertData();
