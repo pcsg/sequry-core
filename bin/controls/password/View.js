@@ -27,23 +27,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Passwords',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
     'package/pcsg/grouppasswordmanager/bin/Categories',
-
-    'ClipboardJS',
+    'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
 
-], function (QUIControl, QUIButton, QUILoader, QUILocale, AuthHandler,
-             PasswordHandler, CategorySelect, CategorySelectPrivate, Categories, Clipboard) {
+], function (QUIControl, QUIButton, QUILoader, QUILocale, Authentication,
+             Passwords, CategorySelect, CategorySelectPrivate, Categories,
+             InputButtons) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Passwords      = new PasswordHandler(),
-        Authentication = new AuthHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -186,105 +184,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
          * Parse DOM elements of the view and add specific controls (e.g. copy / show password buttons)
          */
         $parseView: function () {
+            var i, len;
+            var ButtonParser = new InputButtons();
+
             // copy elements
-            var i, len, Elm, CopyBtn;
             var copyElms = this.$Elm.getElements('.gpm-passwordtypes-copy');
 
-            var FuncCopyBtnClick = function (Btn) {
-                var Elm = Btn.getAttribute('Elm');
-
-                if (Elm.nodeName === 'INPUT') {
-                    Elm.select();
-                }
-
-                var ToolTip = new Element('div', {
-                    'class': 'pcsg-gpm-tooltip',
-                    html   : '<span>' +
-                    QUILocale.get(lg, 'controls.password.view.tooltip.copy') +
-                    '</span>'
-                }).inject(Btn.getElm(), 'after');
-
-                (function () {
-                    moofx(ToolTip).animate({
-                        opacity: 0
-                    }, {
-                        duration: 1000,
-                        callback: function () {
-                            ToolTip.destroy();
-                        }
-                    });
-                }.delay(750));
-            };
-
             for (i = 0, len = copyElms.length; i < len; i++) {
-                Elm = copyElms[i];
-
-                CopyBtn = new QUIButton({
-                    Elm   : Elm,
-                    icon  : 'fa fa-copy',
-                    events: {
-                        onClick: FuncCopyBtnClick
-                    }
-                }).inject(Elm, 'after');
-
-                new Clipboard(CopyBtn.getElm(), {
-                    text: function () {
-                        var Elm = this.getAttribute('Elm');
-
-                        if (Elm.nodeName === 'INPUT') {
-                            return Elm.value;
-                        }
-
-                        if (Elm.nodeName === 'DIV') {
-                            var children = Elm.getChildren();
-
-                            if (children.length) {
-                                return children[0].innerHTML.trim();
-                            }
-                        }
-
-                        return Elm.innerHTML.trim();
-                    }.bind(CopyBtn)
-                });
+                ButtonParser.parse(copyElms[i], ['copy']);
             }
 
             // show elements (switch between show and hide)
             var showElms = this.$Elm.getElements('.gpm-passwordtypes-show');
 
             for (i = 0, len = showElms.length; i < len; i++) {
-                Elm = showElms[i];
+                ButtonParser.parse(showElms[i], ['viewtoggle']);
+            }
 
-                new QUIButton({
-                    Elm   : Elm,
-                    icon  : 'fa fa-eye',
-                    action: 'show',
-                    events: {
-                        onClick: function (Btn) {
-                            var Elm = Btn.getAttribute('Elm');
+            // url elements
+            var urlElms = this.$Elm.getElements('.gpm-passwordtypes-url');
 
-                            if (Btn.getAttribute('action') === 'show') {
-                                Btn.setAttributes({
-                                    icon  : 'fa fa-eye-slash',
-                                    action: 'hide'
-                                });
-
-                                Elm.setProperty('type', 'text');
-                                Elm.focus();
-                                Elm.select();
-
-                                return;
-                            }
-
-                            Btn.setAttributes({
-                                icon  : 'fa fa-eye',
-                                action: 'show'
-                            });
-
-                            Elm.setProperty('type', 'password');
-                            Elm.blur();
-                        }
-                    }
-                }).inject(Elm, 'after');
+            for (i = 0, len = urlElms.length; i < len; i++) {
+                ButtonParser.parse(urlElms[i], ['openurl']);
             }
         }
     });

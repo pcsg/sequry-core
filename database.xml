@@ -92,6 +92,7 @@
             <field type="TEXT NOT NULL">title</field>
             <field type="TEXT">description</field>
             <field type="TINYINT(2)">requiredFactors</field>
+            <field type="TINYINT(1) NOT NULL DEFAULT 0">allowPasswordLinks</field>
             <primary>id</primary>
         </table>
 
@@ -168,6 +169,16 @@
             <field type="BIGINT(20) UNSIGNED NOT NULL">userId</field>
             <field type="BIGINT(20) UNSIGNED NULL">parentId</field>
             <field type="VARCHAR(255) NOT NULL">title</field>
+        </table>
+
+        <!-- Password Link -->
+        <table name="pcsg_gpm_link" no-auto-update="1"
+               no-site-reference="1">
+            <field type="BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY">id</field>
+            <field type="BIGINT(20) UNSIGNED NOT NULL">dataId</field>
+            <field type="BLOB NOT NULL">dataAccess</field>
+            <field type="TINYINT NOT NULL DEFAULT 1">active</field>
+            <primary>id</primary>
         </table>
     </global>
 

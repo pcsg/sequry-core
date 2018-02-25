@@ -409,13 +409,20 @@ class Authentication
             }
         }
 
+        $allowPasswordLinks = 0;
+
+        if (isset($params['allowPasswordLinks'])) {
+            $allowPasswordLinks = $params['allowPasswordLinks'] ? 1 : 0;
+        }
+
         try {
             QUI::getDataBase()->insert(
                 Tables::securityClasses(),
                 array(
-                    'title'           => $params['title'],
-                    'description'     => $params['description'],
-                    'requiredFactors' => (int)$params['requiredFactors']
+                    'title'              => $params['title'],
+                    'description'        => $params['description'],
+                    'requiredFactors'    => (int)$params['requiredFactors'],
+                    'allowPasswordLinks' => $allowPasswordLinks
                 )
             );
 

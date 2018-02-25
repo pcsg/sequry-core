@@ -118,4 +118,36 @@
 
 .pcsg-gpm__hidden {
     display: none;
+
+.pcsg-gpm-tooltip-left {
+    position: relative;
+    display: inline;
+}
+
+.pcsg-gpm-tooltip-left span {
+    right: 45px;
+    position: absolute;
+    /*width: 140px;*/
+    padding: 0 15px;
+    color: #FFFFFF;
+    background: #333;
+    margin-left: 10px;
+    min-height: 30px;
+    line-height: 30px;
+    text-align: center;
+    /*visibility: hidden;*/
+    border-radius: 6px;
+}
+
+.pcsg-gpm-tooltip-left span:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    margin-top: -8px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid #333;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
 }

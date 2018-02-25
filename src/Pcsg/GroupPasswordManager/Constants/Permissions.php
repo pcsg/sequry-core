@@ -21,4 +21,6 @@ class Permissions
     const GROUP_EDIT = 'gpm.cryptogroup.edit';
 
     const SECURITY_CLASS_EDIT = 'gpm.securityclass.edit';
+
+    const PASSWORDLINKS_ALLOWED = 'gpm.passwordlinks.allowed';
 }

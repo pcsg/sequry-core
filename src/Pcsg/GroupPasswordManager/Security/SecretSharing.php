@@ -40,7 +40,7 @@ class SecretSharing
     /**
      * Recover a secret from parts
      *
-     * @param array $parts - the parts to recover the secret from
+     * @param string[] $parts - the parts to recover the secret from
      * @return HiddenString - the secret
      */
     public static function recoverSecret($parts)

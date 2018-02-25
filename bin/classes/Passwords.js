@@ -163,6 +163,70 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
         },
 
         /**
+         * Create a new PasswordLink (authentication required!)
+         *
+         * @param {number} passwordId - password ID
+         * @param {Object} LinkData - PasswordLink data
+         * @returns {Promise}
+         */
+        createLink: function (passwordId, LinkData) {
+            return AuthAjax.post('package_pcsg_grouppasswordmanager_ajax_passwords_link_create', {
+                passwordId: passwordId,
+                linkData  : JSON.encode(LinkData)
+            });
+        },
+
+        /**
+         * Permanently deactivate a PasswordLink (authentication required!)
+         *
+         * @param {number} linkId - PasswordLink ID
+         * @returns {Promise}
+         */
+        deactivateLink: function (linkId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_passwords_link_deactivate',
+                    resolve, {
+                        'package': pkg,
+                        onError  : reject,
+                        linkId   : linkId
+                    }
+                );
+            });
+        },
+
+        /**
+         * Get list of PasswordLinks
+         *
+         * @param {number} passwordId - password ID
+         * @param {Object} SearchParams
+         * @returns {Promise}
+         */
+        getLinkList: function (passwordId, SearchParams) {
+            return AuthAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_link_getList', {
+                passwordId  : passwordId,
+                searchParams: JSON.encode(SearchParams),
+                'package'   : 'pcsg/grouppasswordmanager'
+            });
+        },
+
+        /**
+         * Get title and description of a password for Link creation
+         *
+         * @param {number} passwordId - password ID
+         * @returns {Promise}
+         */
+        getLinkPasswordData: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_link_getPasswordData', resolve, {
+                    passwordId: passwordId,
+                    'package' : pkg,
+                    onError   : reject
+                });
+            });
+        },
+
+        /**
          * Delete a password object
          *
          * @param {number} passwordId - password ID

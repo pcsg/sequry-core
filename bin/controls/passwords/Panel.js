@@ -28,6 +28,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/link/List',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
@@ -39,8 +40,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
-             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch, RecoveryCodePopup,
-             CategorySelect, CategorySelectPrivate, QUILocale) {
+             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLinkList, PasswordSearch,
+             AuthenticationControl, PasswordAuthentication, RecoveryCodePopup,
+             CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -198,7 +200,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.actions'),
                     dataIndex: 'permissions',
                     dataType : 'node',
-                    width    : 100
+                    width    : 120
                 }, {
                     header   : QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
@@ -559,6 +561,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 self.deletePassword(event.target.getProperty('data-pwid'));
             };
 
+            var FuncActionLink = function (event) {
+                self.linkPassword(event.target.getProperty('data-pwid'));
+            };
+
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 var Data = GridData.data[i];
 
@@ -641,6 +647,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.share'),
                     title      : QUILocale.get(lg, 'controls.gpm.passwords.action.share')
                 }).inject(Row.permissions);
+
+                var Link = new Element('span', {
+                    'class'    : 'fa fa-link',
+                    'data-pwid': Data.id,
+                    alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.link'),
+                    title      : QUILocale.get(lg, 'controls.gpm.passwords.action.link')
+                }).inject(Row.permissions);
+
+                if (Data.canLink) {
+                    Link.addEvent('click', FuncActionLink);
+                } else {
+                    Link.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                }
 
                 var Edit = new Element('span', {
                     'class'    : 'fa fa-edit',
@@ -1048,6 +1067,49 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     },
                     onClose: function (Sheet) {
                         self.refresh();
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        },
+
+        /**
+         * Open the link password dialog
+         *
+         * @param {Number} passwordId
+         */
+        linkPassword: function (passwordId) {
+            var self = this;
+
+            this.Loader.show();
+
+            var LinkList = new PasswordLinkList({
+                passwordId: passwordId
+            });
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.passwords.panel.link.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        LinkList.addEvents({
+                            onLoaded: function () {
+                                self.Loader.hide();
+                            },
+                            onClose : function () {
+                                self.Loader.hide();
+                                LinkList.destroy();
+                                Sheet.destroy();
+                            }
+                        });
+
+                        LinkList.inject(Sheet.getContent());
+                    },
+                    onResize: function() {
+                        LinkList.resize();
+                    },
+                    onClose: function (Sheet) {
                         Sheet.destroy();
                     }
                 }

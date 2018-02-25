@@ -144,6 +144,32 @@ class Utils
     }
 
     /**
+     * Get system encryption key for password links
+     *
+     * @return Key
+     * @throws \QUI\Exception
+     */
+    public static function getSystemPasswordLinkKey()
+    {
+        $keyFile = ETC_DIR . 'plugins/pcsg/gpm_password_links.key';
+
+        // if key does not exit -> create
+        if (!file_exists($keyFile)) {
+            $RandomKey = SymmetricCrypto::generateKey();
+            file_put_contents($keyFile, $RandomKey->getValue());
+
+            if (!file_exists($keyFile)) {
+                throw new QUI\Exception(array(
+                    'pcsg/grouppasswordmanager',
+                    'exception.system.passwordlink.key.file.not.found'
+                ), 404);
+            }
+        }
+
+        return new Key(new HiddenString(file_get_contents($keyFile)));
+    }
+
+    /**
      * Clear array of potentially unsafe code
      *
      * @param array $data

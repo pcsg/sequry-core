@@ -10,5 +10,8 @@
     <event on="onAdminLoadFooter" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoadFooter" />
     <event on="onAjaxCallBefore" fire="\Pcsg\GroupPasswordManager\Events::onAjaxCallBefore" />
     <event on="onGroupCreate" fire="\Pcsg\GroupPasswordManager\Events::onGroupCreate" />
+    <event on="onPasswordDelete" fire="\Pcsg\GroupPasswordManager\Events::onPasswordDelete" />
+    <event on="onPasswordOwnerChange" fire="\Pcsg\GroupPasswordManager\Events::onPasswordOwnerChange" />
+    <event on="onPasswordSecurityClassChange" fire="\Pcsg\GroupPasswordManager\Events::onPasswordSecurityClassChange" />
 
 </events>

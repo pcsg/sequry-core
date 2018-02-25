@@ -14,8 +14,14 @@
                 <conf name="reEncryptEnabled">
                     <type><![CDATA[bool]]></type>
                 </conf>
+
                 <conf name="actorTypePasswordCreate">
                     <type><![CDATA[users]]></type>
+                </conf>
+
+                <conf name="showPasswordLinkVHostSelect">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue>1</defaultvalue>
                 </conf>
             </section>
         </config>
@@ -78,6 +84,15 @@
                                 <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.groups_eligible" />
                             </option>
                         </select>
+
+                        <input conf="settings.showPasswordLinkVHostSelect" type="checkbox">
+                            <text>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.title" />
+                            </text>
+                            <description>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.description" />
+                            </description>
+                        </input>
 
                         <input conf="settings.reEncryptEnabled" type="checkbox">
                             <text>
