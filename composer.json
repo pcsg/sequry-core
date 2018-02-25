@@ -1,6 +1,6 @@
 {
-  "name": "pcsg\/grouppasswordmanager",
-  "type": "quiqqer-module",
+  "name": "sequry/core",
+  "type": "quiqqer-application",
   "description": "Modul zur Verwaltung und dem Teilen von Passw\u00f6rtern f\u00fcr Benutzer\/Gruppen.",
   "version": "dev-dev",
   "authors": [
