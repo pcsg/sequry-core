@@ -237,7 +237,7 @@ class Handler
      * @param $type
      * @return IPasswordType
      */
-    protected static function getPasswordTypeClass($type)
+    public static function getPasswordTypeClass($type)
     {
         $class = 'Pcsg\\GroupPasswordManager\\PasswordTypes\\' . $type . '\\Type';
         return new $class();

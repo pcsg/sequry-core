@@ -7,7 +7,11 @@
 namespace Pcsg\GroupPasswordManager;
 
 use Pcsg\GpmAuthPassword\AuthPlugin;
+use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
+use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Crypto;
+use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI\Package\Package;
 use Pcsg\GroupPasswordManager\Constants\Tables;
@@ -77,6 +81,7 @@ class Events
 
         Authentication::loadAuthPlugins();
         self::initialSystemSetup();
+        self::setDefaultAdminGroupPermissions();
     }
 
     /**
@@ -113,7 +118,6 @@ class Events
         }
 
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
-
             'addUsersByGroup',
             array(
                 'groupId'          => $CryptoGroup->getId(),
@@ -453,6 +457,26 @@ class Events
     }
 
     /**
+     * quiqqer/quiqqer: onGroupCreate
+     *
+     * @param QUI\Groups\Group $Group
+     * @return void
+     */
+    public static function onGroupCreate(QUI\Groups\Group $Group)
+    {
+        $Manager = QUI::getPermissionManager();
+        $Manager->setPermissions(
+            $Group,
+            array(
+                'gpm.cryptodata.create'      => true,
+                'gpm.cryptodata.share'       => true,
+                'gpm.cryptodata.share_group' => true
+            ),
+            QUI::getUsers()->getSystemUser()
+        );
+    }
+
+    /**
      * Performs an initial system setup for first time use of the
      * password manager
      *
@@ -483,5 +507,76 @@ class Events
             'authPluginIds'   => array($defaultPluginId),
             'requiredFactors' => 1
         ));
+    }
+
+    /**
+     * Set default permissions for the admin (root) group
+     *
+     * @return void
+     */
+    public static function setDefaultAdminGroupPermissions()
+    {
+        $Manager = QUI::getPermissionManager();
+        $Manager->setPermissions(
+            QUI::getGroups()->get(QUI::conf('globals', 'root')),
+            array(
+                'gpm.cryptodata.create'       => true,
+                'gpm.cryptodata.share'        => true,
+                'gpm.cryptodata.delete_group' => true,
+                'gpm.cryptodata.share_group'  => true,
+                'gpm.cryptogroup.edit'        => true,
+                'gpm.securityclass.edit'      => true,
+                'gpm.categories.edit'         => true
+            ),
+            QUI::getUsers()->getSystemUser()
+        );
+    }
+
+    /**
+     * pcsg/grouppasswordmanager: onPasswordDelete
+     *
+     * @param Password $Password
+     * @return void
+     */
+    public static function onPasswordDelete(Password $Password)
+    {
+        // delete password links
+        foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
+            $PasswordLink->delete();
+        }
+    }
+
+    /**
+     * pcsg/grouppasswordmanager: onPasswordOwnerChange
+     *
+     * @param Password $Password
+     * @param CryptoUser|CryptoGroup $NewOwner
+     * @return void
+     */
+    public static function onPasswordOwnerChange(Password $Password, $NewOwner)
+    {
+        // deactivate all PasswordLinks if new owner is not allowed to use them
+        if (!PasswordLinks::isUserAllowedToUsePasswordLinks($Password, $NewOwner)) {
+            foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
+                $PasswordLink->deactivate(false);
+            }
+        }
+    }
+
+    /**
+     * pcsg/grouppasswordmanager: onPasswordSecurityClassChange
+     *
+     * @param Password $Password
+     * @param SecurityClass $SecurityClass
+     * @return void
+     */
+    public static function onPasswordSecurityClassChange(Password $Password, SecurityClass $SecurityClass)
+    {
+        // deactivate all PasswordLinks if new SecurityClass prohibits PasswordLinks
+        if (!$SecurityClass->isPasswordLinksAllowed()) {
+            foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
+                $PasswordLink->deactivate(false);
+            }
+        }
     }
 }

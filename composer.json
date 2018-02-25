@@ -1,13 +1,13 @@
 {
-  "name": "pcsg/grouppasswordmanager",
+  "name": "pcsg\/grouppasswordmanager",
   "type": "quiqqer-module",
-  "description": "Modul zur Verwaltung und dem Teilen von Passwörtern für Benutzer/Gruppen.",
+  "description": "Modul zur Verwaltung und dem Teilen von Passw\u00f6rtern f\u00fcr Benutzer\/Gruppen.",
   "version": "dev-dev",
   "authors": [
     {
-      "name": "Patrick Müller",
+      "name": "Patrick M\u00fcller",
       "email": "p.mueller@pcsg.de",
-      "homepage": "http://www.pcsg.de",
+      "homepage": "http:\/\/www.pcsg.de",
       "role": "Developer"
     }
   ],
@@ -16,19 +16,20 @@
   },
   "require": {
     "quiqqer\/quiqqer": "*@dev",
-    "quiqqer/tooltips": "1.0.0",
+    "quiqqer\/tooltips": "1.0.0",
     "phpseclib\/phpseclib": "2.0.0",
     "paragonie\/halite": "3.2.0",
     "ext-bcmath": "*",
-    "pcsg\/gpmauthpassword": "dev-master",
-    "npm-asset\/clipboard": "1.5.16"
+    "pcsg\/gpmauthpassword": "dev-dev",
+    "npm-asset\/clipboard": "1.5.16",
+    "pcsg/template-sequry": "dev-dev"
   },
   "autoload": {
     "psr-0": {
-      "Pcsg": "src/"
+      "Pcsg": "src\/"
     },
     "psr-4": {
-      "TQ\\Shamir\\": "lib/tq/shamir/src/"
+      "TQ\\Shamir\\": "lib\/tq\/shamir\/src\/"
     }
   }
 }

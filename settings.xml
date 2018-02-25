@@ -14,6 +14,15 @@
                 <conf name="reEncryptEnabled">
                     <type><![CDATA[bool]]></type>
                 </conf>
+
+                <conf name="actorTypePasswordCreate">
+                    <type><![CDATA[users]]></type>
+                </conf>
+
+                <conf name="showPasswordLinkVHostSelect">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue>1</defaultvalue>
+                </conf>
             </section>
         </config>
 
@@ -55,6 +64,36 @@
                             </description>
                         </input>
 
+                        <select conf="settings.actorTypePasswordCreate">
+                            <text>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.title" />
+                            </text>
+                            <description>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.description" />
+                            </description>
+                            <option value="users">
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.users" />
+                            </option>
+                            <option value="users_eligible">
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.users_eligible" />
+                            </option>
+                            <option value="groups">
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.groups" />
+                            </option>
+                            <option value="groups_eligible">
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.groups_eligible" />
+                            </option>
+                        </select>
+
+                        <input conf="settings.showPasswordLinkVHostSelect" type="checkbox">
+                            <text>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.title" />
+                            </text>
+                            <description>
+                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.description" />
+                            </description>
+                        </input>
+
                         <input conf="settings.reEncryptEnabled" type="checkbox">
                             <text>
                                 <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.reEncryptEnabled.title" />
@@ -63,6 +102,7 @@
                                 <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.reEncryptEnabled.description" />
                             </description>
                         </input>
+
                     </settings>
 
                 </category>

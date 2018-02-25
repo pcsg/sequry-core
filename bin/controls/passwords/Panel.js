@@ -3,35 +3,6 @@
  *
  * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/desktop/Panel
- * @require qui/controls/buttons/Separator
- * @require qui/controls/buttons/Button
- * @require qui/controls/buttons/Select
- * @require qui/controls/loader/Loader
- * @require qui/controls/windows/Popup
- * @require qui/controls/windows/Confirm
- * @require qui/controls/sitemap/Map
- * @require qui/controls/sitemap/Item
- * @require controls/grid/Grid
- * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
- * @require package/pcsg/grouppasswordmanager/bin/Actors
- * @require package/pcsg/grouppasswordmanager/bin/Categories
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Create
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/View
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Share
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Edit
- * @require package/pcsg/grouppasswordmanager/bin/controls/passwords/Search
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
- * @requrie Ajax
- * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css
- *
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
@@ -57,23 +28,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/password/View',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
     'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
+    'package/pcsg/grouppasswordmanager/bin/controls/password/link/List',
     'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
+    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
     'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
 
-    'Ajax',
     'Locale',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
-             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordSearch,
-             AuthenticationControl, PasswordAuthentication, RecoveryCodeWindow,
-             CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
+             PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLinkList, PasswordSearch,
+             RecoveryCodePopup, CategorySelect, CategorySelectPrivate, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -231,7 +199,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.actions'),
                     dataIndex: 'permissions',
                     dataType : 'node',
-                    width    : 100
+                    width    : 120
                 }, {
                     header   : QUILocale.get('quiqqer/system', 'id'),
                     dataIndex: 'id',
@@ -317,7 +285,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             // search button
             this.$SearchInput = new Element('div', {
                 'class': 'pcsg-gpm-passwords-panel-search',
-                html   : '<input type="text" data-mode="search"/><span class="fa fa-search"></span>'
+                html   : '<input type="text" data-mode="search"/><span class="fa fa-search-plus"></span>'
             });
 
             this.$SearchInput.getElement('input').setProperty(
@@ -325,8 +293,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 QUILocale.get(lg, 'controls.gpm.passwords.panel.search.placeholder')
             );
 
+            var SearchIcon = this.$SearchInput.getElement('span');
+
             this.$SearchInput.getElement('input').addEvents({
                 keyup: function (event) {
+                    if (event.target.value.trim() === '') {
+                        SearchIcon.removeClass('fa-search');
+                        SearchIcon.addClass('fa-search-plus');
+                    } else {
+                        SearchIcon.addClass('fa-search');
+                        SearchIcon.removeClass('fa-search-plus');
+                    }
+
                     if (event.code === 13) {
                         self.$SearchParams.search.searchterm = event.target.value.trim();
 
@@ -339,7 +317,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
-            this.$SearchInput.getElement('span').addEvents({
+            SearchIcon.addEvents({
                 click: function () {
                     var Input = self.$SearchInput.getElement('input');
 
@@ -376,15 +354,33 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
             var self = this;
 
             this.resize();
-            this.refresh().then(function () {
-                var pwId = self.getAttribute('passwordId');
 
-                if (pwId) {
-                    self.viewPassword.delay(200, self, pwId);
+            this.Loader.show();
+
+            Passwords.isSetupComplete().then(function (setupComplete) {
+                if (setupComplete) {
+                    self.refresh().then(function () {
+                        var pwId = self.getAttribute('passwordId');
+
+                        if (pwId) {
+                            self.viewPassword.delay(200, self, pwId);
+                        }
+
+                        self.fireEvent('loaded', [self]);
+                        self.$initialRegistration();
+                    });
+
+                    return;
                 }
 
-                self.fireEvent('loaded', [self]);
-                self.$initialRegistration();
+                self.getButtons('add').disable();
+
+                new Element('div', {
+                    'class': 'pcsg-gpm-passwords-panel-setupincomplete',
+                    html   : '<div>' +
+                    QUILocale.get(lg, 'controls.password.panel.setup_incomplete') +
+                    '</div>'
+                }).inject(self.$Elm);
             });
         },
 
@@ -461,11 +457,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
             if (this.$searchUsed) {
                 SearchIcon.removeClass('fa-search');
+                SearchIcon.removeClass('fa-search-plus');
                 SearchIcon.addClass('fa-times');
                 this.$SearchInput.getElement('input').setProperty('data-mode', 'refresh');
             } else {
                 SearchIcon.removeClass('fa-times');
-                SearchIcon.addClass('fa-search');
+                SearchIcon.addClass('fa-search-plus');
                 this.$SearchInput.getElement('input').setProperty('data-mode', 'search');
             }
 
@@ -563,6 +560,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 self.deletePassword(event.target.getProperty('data-pwid'));
             };
 
+            var FuncActionLink = function (event) {
+                self.linkPassword(event.target.getProperty('data-pwid'));
+            };
+
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 var Data = GridData.data[i];
 
@@ -645,6 +646,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.share'),
                     title      : QUILocale.get(lg, 'controls.gpm.passwords.action.share')
                 }).inject(Row.permissions);
+
+                var Link = new Element('span', {
+                    'class'    : 'fa fa-link',
+                    'data-pwid': Data.id,
+                    alt        : QUILocale.get(lg, 'controls.gpm.passwords.action.link'),
+                    title      : QUILocale.get(lg, 'controls.gpm.passwords.action.link')
+                }).inject(Row.permissions);
+
+                if (Data.canLink) {
+                    Link.addEvent('click', FuncActionLink);
+                } else {
+                    Link.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                }
 
                 var Edit = new Element('span', {
                     'class'    : 'fa fa-edit',
@@ -747,9 +761,16 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                         }).inject(Row.shared);
                     }
                 } else {
-                    Row.shared = new Element('span', {
-                        html: '&nbsp;'
+                    Row.shared = new Element('div', {
+                        'class': 'pcsg-gpm-passwords-panel-grid-shared-no-permission',
+                        title  : QUILocale.get(lg,
+                            'controls.passwords.panel.tabl.shared.no_permission'
+                        )
                     });
+
+                    new Element('span', {
+                        'class': 'fa fa-question-circle'
+                    }).inject(Row.shared);
                 }
 
                 GridData.data[i] = Row;
@@ -847,30 +868,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 title : QUILocale.get(lg, 'gpm.passwords.panel.delete.popup.btn'),
                 events: {
                     onClick: function () {
-                        Authentication.securityClassAuth(
-                            RowData.securityClassId
-                        ).then(function (AuthData) {
-                            DeletePopup.Loader.show();
+                        DeletePopup.Loader.show();
 
-                            Passwords.deletePassword(
-                                RowData.id,
-                                AuthData
-                            ).then(
-                                function () {
-                                    DeletePopup.close();
-                                    self.refresh();
+                        Passwords.deletePassword(RowData.id).then(
+                            function () {
+                                DeletePopup.close();
+                                self.refresh();
 
-                                    if (window.PasswordCategories) {
-                                        window.PasswordCategories.refreshCategories();
-                                    }
-                                },
-                                function () {
-                                    DeletePopup.close();
+                                if (window.PasswordCategories) {
+                                    window.PasswordCategories.refreshCategories();
                                 }
-                            );
-                        }, function () {
-                            DeletePopup.close();
-                        });
+                            },
+                            function () {
+                                DeletePopup.close();
+                            }
+                        );
                     }
                 }
             }));
@@ -983,7 +995,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                     onClick: function () {
                                         self.Loader.show();
 
-                                        Share.submit().then(function() {
+                                        Share.submit().then(function () {
                                             Share.destroy();
                                             Sheet.destroy();
                                             self.Loader.hide();
@@ -1023,7 +1035,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                                 onLoaded: function () {
                                     self.Loader.hide();
                                 },
-                                onClose: function() {
+                                onClose : function () {
                                     self.Loader.hide();
                                     Edit.destroy();
                                     Sheet.destroy();
@@ -1054,6 +1066,49 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                     },
                     onClose: function (Sheet) {
                         self.refresh();
+                        Sheet.destroy();
+                    }
+                }
+            }).show();
+        },
+
+        /**
+         * Open the link password dialog
+         *
+         * @param {Number} passwordId
+         */
+        linkPassword: function (passwordId) {
+            var self = this;
+
+            this.Loader.show();
+
+            var LinkList = new PasswordLinkList({
+                passwordId: passwordId
+            });
+
+            this.createSheet({
+                title : QUILocale.get(lg, 'gpm.passwords.panel.link.title'),
+                events: {
+                    onShow : function (Sheet) {
+                        Sheet.getContent().setStyle('padding', 20);
+
+                        LinkList.addEvents({
+                            onLoaded: function () {
+                                self.Loader.hide();
+                            },
+                            onClose : function () {
+                                self.Loader.hide();
+                                LinkList.destroy();
+                                Sheet.destroy();
+                            }
+                        });
+
+                        LinkList.inject(Sheet.getContent());
+                    },
+                    onResize: function() {
+                        LinkList.resize();
+                    },
+                    onClose: function (Sheet) {
                         Sheet.destroy();
                     }
                 }
@@ -1577,31 +1632,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                 }
             });
 
-            var AuthControl = new PasswordAuthentication({
-                passwordId: Password.id,
-                events    : {
-                    onSubmit: function (AuthData) {
-                        Passwords.getShareUsersAndGroups(
-                            Password.id,
-                            AuthData
-                        ).then(
-                            function (shareUsersGroups) {
-                                AuthControl.destroy();
-                                shareActors = shareUsersGroups;
-                                Popup.open();
-                            },
-                            function () {
-                                // @todo getShareData error
-                            }
-                        );
-                    },
-                    onClose : function () {
-                        self.Loader.hide();
-                    }
+            Passwords.getShareUsersAndGroups(Password.id).then(
+                function (shareUsersGroups) {
+                    shareActors = shareUsersGroups;
+                    Popup.open();
+                },
+                function () {
+                    // @todo getShareData error
                 }
-            });
-
-            AuthControl.open();
+            );
         },
 
         /**
@@ -1648,7 +1687,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
                             return;
                         }
 
-                        new RecoveryCodeWindow({
+                        new RecoveryCodePopup({
                             RecoveryCodeData: RecoveryData,
                             events          : {
                                 onClose: function () {

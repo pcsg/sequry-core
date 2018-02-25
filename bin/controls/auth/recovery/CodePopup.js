@@ -1,35 +1,20 @@
 /**
  * Control for showing / printing recovery code information
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow
+ * @module package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow.css
- *
- * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow', [
+define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup', [
 
-    'qui/QUI',
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
-    'qui/utils/Form',
     'Locale',
     'Mustache',
 
-    'Ajax',
+    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup.html',
+    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup.css'
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow.css'
-
-], function (QUI, QUIPopup, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             Ajax, template) {
+], function (QUIPopup, QUIButton, QUILocale, Mustache, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -37,7 +22,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
     return new Class({
 
         Extends: QUIPopup,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
+        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
 
         Binds: [
             '$onInject',
@@ -47,7 +32,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
         ],
 
         options: {
-            'RecoveryCodeData': false    // recovery code data
+            maxHeight       : 650,
+            RecoveryCodeData: false    // recovery code data
         },
 
         initialize: function (options) {
@@ -77,6 +63,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/RecoveryCodeWindow',
          */
         $onCreate: function () {
             var self = this;
+
+            this.$Elm.addClass('pcsg-gpm-auth-recovery-popup');
 
             this.$CloseBtn = new QUIButton({
                 textimage: 'fa fa-close',

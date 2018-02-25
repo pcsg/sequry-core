@@ -16,21 +16,16 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
 
-    'qui/QUI',
     'qui/controls/Control',
-    'qui/utils/Form',
     'Locale',
     'Mustache',
 
     'package/pcsg/grouppasswordmanager/bin/Authentication',
 
-    'Ajax',
-
     'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css'
 
-], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, Authentication,
-             Ajax, template) {
+], function (QUIControl, QUILocale, Mustache, Authentication, template) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';

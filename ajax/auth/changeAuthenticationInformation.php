@@ -2,7 +2,7 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
-use QUI\Utils\Security\Orthos;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * Register current session user and create a keypair for an authentication plugin
@@ -10,25 +10,18 @@ use QUI\Utils\Security\Orthos;
  * @param integer $authPluginId - ID of authentication plugin
  * @param string $oldAuthInfo - old authentication information
  * @param string $newAuthInfo - new authentication information
- * @param bool $recovery (optional) - oldAuthInfo is recovery code
- * @return string - recovery code
+ * @return array|false - recovery code data; false on error
  */
 function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation(
     $authPluginId,
     $oldAuthInfo,
-    $newAuthInfo,
-    $recovery = false
+    $newAuthInfo
 ) {
-//    $oldAuthInfo = Orthos::clear($oldAuthInfo);
-//    $newAuthInfo = Orthos::clear($newAuthInfo);
+    $oldAuthInfo = new HiddenString($oldAuthInfo);
+    $newAuthInfo = new HiddenString($newAuthInfo);
 
     try {
-        $AuthPlugin = Authentication::getAuthPlugin($authPluginId);
-
-        if ($recovery) {
-            $oldAuthInfo = Recovery::recoverEntry($AuthPlugin, $oldAuthInfo);
-        }
-
+        $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
         $AuthPlugin->changeAuthenticationInformation($oldAuthInfo, $newAuthInfo);
 
         // generate recovery code
@@ -73,6 +66,6 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation',
-    array('authPluginId', 'oldAuthInfo', 'newAuthInfo', 'recovery'),
+    array('authPluginId', 'oldAuthInfo', 'newAuthInfo', 'recoveryToken'),
     'Permission::checkAdminUser'
 );

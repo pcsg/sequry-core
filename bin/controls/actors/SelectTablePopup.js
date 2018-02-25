@@ -37,13 +37,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
         ],
 
         options: {
-            icon           : 'fa fa-users',
-            info           : '',        // info text that is shown above the table
-            securityClassId: false,     // security class id the actors have to be eligible for
-            multiselect    : false,
-            actorType      : 'all',     // can be "all", "users" or "groups"
-            filterActorIds : []         // IDs of actors that are filtered from list (entries must have
-                                        // prefix "u" (user) or "g" (group)
+            icon             : 'fa fa-users',
+            info             : '',       // info text that is shown above the table
+            securityClassId  : false,    // security class id the actors have to be eligible for
+            multiselect      : false,
+            actorType        : 'all',    // can be "all", "users" or "groups"
+            filterActorIds   : [],       // IDs of actors that are filtered from list (entries must have
+                                         // prefix "u" (user) or "g" (group)
+            showEligibleOnly : false,     // show eligible only or all
+            selectedActorType: 'users' // pre-selected actor type
         },
 
         initialize: function (options) {
@@ -69,22 +71,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
                     break;
 
                 case 'groups':
-                    title = QUILocale.get(lg,'controls.actors.selecttablepopup.title.groups');
+                    title = QUILocale.get(lg, 'controls.actors.selecttablepopup.title.groups');
                     break;
 
                 default:
-                    title = QUILocale.get(lg,'controls.actors.selecttablepopup.title.all');
+                    title = QUILocale.get(lg, 'controls.actors.selecttablepopup.title.all');
             }
 
             this.setAttribute('title', title);
 
             this.$SelectTable = new SelectTable({
-                info           : this.getAttribute('info'),
-                securityClassId: this.getAttribute('securityClassId'),
-                multiselect    : this.getAttribute('multiselect'),
-                actorType      : this.getAttribute('actorType'),
-                filterActorIds : this.getAttribute('filterActorIds'),
-                events         : {
+                info             : this.getAttribute('info'),
+                securityClassId  : this.getAttribute('securityClassId'),
+                multiselect      : this.getAttribute('multiselect'),
+                actorType        : this.getAttribute('actorType'),
+                filterActorIds   : this.getAttribute('filterActorIds'),
+                showEligibleOnly : this.getAttribute('showEligibleOnly'),
+                selectedActorType: this.getAttribute('selectedActorType'),
+                events           : {
                     onSubmit: this.$submit
                 }
             }).inject(this.getContent());

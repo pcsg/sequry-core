@@ -5,6 +5,7 @@ namespace Pcsg\GroupPasswordManager\Console;
 use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
@@ -95,8 +96,8 @@ class Patch extends QUI\System\Console\Tool
             );
 
             $macFieldsEncrypted = SymmetricCrypto::encrypt(
-                json_encode($macFields),
-                new Key(Utils::getSystemPasswordAuthKey())
+                new HiddenString(json_encode($macFields)),
+                Utils::getSystemPasswordAuthKey()
             );
 
             QUI::getDataBase()->update(

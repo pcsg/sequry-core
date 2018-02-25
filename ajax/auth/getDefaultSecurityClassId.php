@@ -1,8 +1,5 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-
 /**
  * Get ID of the default security class
  *

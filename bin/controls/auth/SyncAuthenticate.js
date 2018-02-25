@@ -5,6 +5,8 @@
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
+ * @require package/pcsg/grouppasswordmanager/bin/Authentication
+ * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate.css
  *
  * @event onFinish
  * @event onAbort - on AuthPopup user close
@@ -13,14 +15,11 @@
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
 
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
 
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate.css'
 
-], function (AuthenticationControl, AuthHandler) {
+], function (AuthenticationControl) {
     "use strict";
-
-    var Authentication = new AuthHandler();
 
     return new Class({
 
@@ -52,7 +51,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
             for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
                 var authPluginId = this.$authPluginControls[i].getAttribute('authPluginId');
 
-                if (authPluginId != syncAuthPluginId) {
+                if (authPluginId !== syncAuthPluginId) {
                     continue;
                 }
 

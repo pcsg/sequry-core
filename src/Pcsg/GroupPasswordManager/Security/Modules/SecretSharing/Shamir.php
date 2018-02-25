@@ -4,6 +4,7 @@ namespace Pcsg\GroupPasswordManager\Security\Modules\SecretSharing;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\ISecretSharing;
 use TQ;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * This class provides a secret splitting API for the pcsg/grouppasswordmanager module
@@ -17,24 +18,24 @@ class Shamir implements ISecretSharing
     /**
      * Splits a secret into multiple parts
      *
-     * @param string $secret
+     * @param HiddenString $secret
      * @param integer $parts - number of parts the secret is split into
      * @param integer $required - number of minimum required parts to recover the secret
      * @return array
      */
-    public static function splitSecret($secret, $parts, $required)
+    public static function splitSecret(HiddenString $secret, $parts, $required)
     {
-        return TQ\Shamir\Secret::share($secret, $parts, $required);
+        return TQ\Shamir\Secret::share($secret->getString(), $parts, $required);
     }
 
     /**
      * Recover a secret from parts
      *
      * @param array $parts - the parts to recover the secret from
-     * @return string - the secret
+     * @return HiddenString - the secret
      */
     public static function recoverSecret($parts)
     {
-        return TQ\Shamir\Secret::recover($parts);
+        return new HiddenString(TQ\Shamir\Secret::recover($parts));
     }
 }

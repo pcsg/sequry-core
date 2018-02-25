@@ -8,23 +8,14 @@ use Pcsg\GroupPasswordManager\Password;
  * Set share data from password object
  *
  * @param integer $passwordId - ID of password
- * @param array $shareData - share users and groups
- * @param array $authData - authentication information
+ * @param string $shareData - share users and groups
  * @return array|false - password data or false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($passwordId, $shareData, $authData)
+function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($passwordId, $shareData)
 {
     $passwordId = (int)$passwordId;
-
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
-
-    $Password  = Passwords::get($passwordId);
-    $shareData = Orthos::clearArray(json_decode($shareData, true));
+    $Password   = Passwords::get($passwordId);
+    $shareData  = Orthos::clearArray(json_decode($shareData, true));
 
     foreach ($shareData as $k => $entry) {
         switch ($entry['type']) {
@@ -59,7 +50,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
                 'error.password.share',
                 array(
                     'passwordId' => $passwordId,
-                    'error'     => $Exception->getMessage()
+                    'error'      => $Exception->getMessage()
                 )
             )
         );
@@ -70,6 +61,8 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
             'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_setShareData -> '
             . $Exception->getMessage()
         );
+
+        QUI\System\Log::writeException($Exception);
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
@@ -87,6 +80,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_passwords_setShareData',
-    array('passwordId', 'shareData', 'authData'),
+    array('passwordId', 'shareData'),
     'Permission::checkAdminUser'
 );

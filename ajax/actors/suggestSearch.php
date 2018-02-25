@@ -1,7 +1,6 @@
 <?php
 
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 use QUI\Utils\Security\Orthos;
 
 /**

@@ -8,32 +8,10 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * authentication plugins he is registered with
  *
  * @param integer $authPluginId - id of auth plugin
- * @param array $authData - authentication information for all relevant security classes
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginId, $authData)
+function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginId)
 {
-    $authData = json_decode($authData, true); // @todo ggf. filtern
-
-    foreach ($authData as $securityClassId => $securityClassAuthData) {
-        try {
-            $SecurityClass = Authentication::getSecurityClass($securityClassId);
-            $SecurityClass->authenticate($securityClassAuthData);
-        } catch (\Exception $Exception) {
-            QUI::getMessagesHandler()->addError(
-                QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
-                    'error.authentication.sync.authplugin',
-                    array(
-                        'authPluginId' => $authPluginId
-                    )
-                )
-            );
-
-            return false;
-        }
-    }
-
     $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
     $CryptoUser = CryptoActors::getCryptoUser();
 
@@ -91,6 +69,6 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin',
-    array('authPluginId', 'authData'),
+    array('authPluginId'),
     'Permission::checkAdminUser'
 );

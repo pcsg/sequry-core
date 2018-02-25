@@ -1,0 +1,46 @@
+.pcsg-gpm-password-linkcreate-option {
+    clear: both;
+    float: left;
+}
+
+.field-container-field input[type="checkbox"] {
+    float: left;
+}
+
+.pcsg-gpm-password-linkcreate-active {
+    clear: both;
+    margin-top: 15px;
+    float: right;
+}
+
+.pcsg-gpm-password-linkcreate-longlabel {
+    white-space: normal !important;
+}
+
+.pcsg-gpm-password-linkcreate-date {
+    display: none;
+    margin-top: 10px;
+}
+
+.pcsg-gpm-password-linkcreate input[name="password"] {
+    font-size: 16px;
+    letter-spacing: 6px;
+}
+
+.pcsg-gpm-password-linkcreate__hidden {
+    display: none;
+}
+
+.pcsg-gpm-password-linkcreate-info {
+    margin-top: 25%;
+    text-align: center;
+    width: 100%;
+}
+
+.pcsg-gpm-password-linkcreate-info p {
+    margin: 10px;
+}
+
+.pcsg-gpm-password-linkcreate-create table {
+    margin: 0;
+}

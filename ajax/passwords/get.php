@@ -2,28 +2,22 @@
 
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
 
 /**
  * Get edit data from password object
  *
  * @param integer $passwordId - ID of password
- * @param array $authData - authentication information
  * @return array|false - password data or false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId, $authData)
+function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
 {
     $passwordId = (int)$passwordId;
 
     try {
-        // authenticate
-        Passwords::getSecurityClass(
-            $passwordId
-        )->authenticate(
-            json_decode($authData, true) // @todo diese daten ggf. filtern
-        );
-
         // get password data
         $Password = Passwords::get($passwordId);
+        $data     = $Password->getData();
 
         $Password->increasePublicViewCount();
 
@@ -31,7 +25,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId, $auth
         $CryptoUser = CryptoActors::getCryptoUser();
         $CryptoUser->increasePasswordViewCount($passwordId);
 
-        return $Password->getData();
+        return $data;
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
@@ -63,6 +57,6 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId, $auth
 
 \QUI::$Ajax->register(
     'package_pcsg_grouppasswordmanager_ajax_passwords_get',
-    array('passwordId', 'authData'),
+    array('passwordId'),
     'Permission::checkAdminUser'
 );

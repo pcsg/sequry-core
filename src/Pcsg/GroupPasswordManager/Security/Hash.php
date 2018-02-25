@@ -3,7 +3,7 @@
 namespace Pcsg\GroupPasswordManager\Security;
 
 use Pcsg\GroupPasswordManager\Security\Interfaces\IHash;
-use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 
 /**
  * This class provides a key derivation API for the pcsg/grouppasswordmanager module
@@ -22,11 +22,11 @@ class Hash
     /**
      * Creates a key from a given low entropy string
      *
-     * @param string $str - A String
+     * @param HiddenString $str - A String
      * @param string $salt (optional) - if ommitted generate random salt
      * @return string - hash
      */
-    public static function create($str, $salt = null)
+    public static function create(HiddenString $str, $salt = null)
     {
         return self::getHashModule()->create($str, $salt);
     }

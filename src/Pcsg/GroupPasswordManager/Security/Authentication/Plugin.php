@@ -12,6 +12,7 @@ use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Utils;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use QUI;
 
 /**
@@ -63,9 +64,13 @@ class Plugin extends QUI\QDOM
         $this->AuthClass = new $data['path']();
         $this->id        = $data['id'];
 
+        $L = QUI::getLocale();
+        $t = json_decode($data['title'], true);
+        $d = json_decode($data['description'], true);
+
         $this->setAttributes(array(
-            'title'       => $data['title'],
-            'description' => $data['description']
+            'title'       => $L->get($t[0], $t[1]),
+            'description' => $L->get($d[0], $d[1])
         ));
     }
 
@@ -112,12 +117,12 @@ class Plugin extends QUI\QDOM
     /**
      * Authenticates a user with a plugin
      *
-     * @param mixed $information (optional) - authentication information
+     * @param HiddenString $information (optional) - authentication information
      * @param QUI\Users\User $User (optional) - if omitted use session user
      * @return true - if authenticated
      * @throws QUI\Exception
      */
-    public function authenticate($information, $User = null)
+    public function authenticate(HiddenString $information, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
@@ -138,9 +143,7 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        $keyData = Authentication::getAuthKeyFromSession($this->id);
-
-        if ($keyData) {
+        if (Authentication::existsAuthKeyInSession($this->id)) {
             return true;
         }
 
@@ -157,14 +160,14 @@ class Plugin extends QUI\QDOM
      *
      * @throws QUI\Exception
      */
-    public function changeAuthenticationInformation($old, $new, $User = null)
+    public function changeAuthenticationInformation(HiddenString $old, HiddenString $new, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
         }
 
-        Authentication::clearAuthInfoFromSession();
-        
+        Authentication::clearAuthDataFromSession();
+
         $this->authenticate($old, $User);
 
         $AuthKeyPair     = CryptoActors::getCryptoUser()->getAuthKeyPair($this);
@@ -182,7 +185,10 @@ class Plugin extends QUI\QDOM
         // calculate new MAC
         // @todo noch mehr informationen in den MAC einfließen lassen (plugin id, user id etc.)
         $macValue = MAC::create(
-            $publicKeyValue . $encryptedPrivateKeyValue,
+            new HiddenString(
+                $publicKeyValue->getString()
+                . $encryptedPrivateKeyValue
+            ),
             Utils::getSystemKeyPairAuthKey()
         );
 
@@ -216,11 +222,11 @@ class Plugin extends QUI\QDOM
      * Registers a user with this Plugin
      *
      * @param \QUI\Users\User $User (optional) - if omitted, use current session user
-     * @param mixed $information (optional) - registration information
+     * @param HiddenString $information (optional) - registration information
      * @return mixed - authentication information that can decrypt the private key
      * @throws QUI\Exception
      */
-    public function registerUser($information, $User = null)
+    public function registerUser(HiddenString $information, $User = null)
     {
         if (is_null($User)) {
             $User = QUI::getUserBySession();
@@ -259,7 +265,10 @@ class Plugin extends QUI\QDOM
         // calculate MAC with system auth key
         // @todo noch mehr informationen in den MAC einfließen lassen (plugin id, user id etc.)
         $macValue = MAC::create(
-            $publicKeyValue . $encryptedPrivateKeyValue,
+            new HiddenString(
+                $publicKeyValue->getString()
+                . $encryptedPrivateKeyValue
+            ),
             Utils::getSystemKeyPairAuthKey()
         );
 
@@ -318,16 +327,14 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        $keyData = Authentication::getAuthKeyFromSession($this->id);
+        $Key = Authentication::getAuthKey($this->id);
 
-        if ($keyData) {
-            return new Key($keyData);
+        if ($Key) {
+            return $Key;
         }
 
         try {
             $DerivedKey = $this->AuthClass->getDerivedKey($User);
-            Authentication::saveAuthKeyToSession($this->id, $DerivedKey->getValue());
-
             return $DerivedKey;
         } catch (\Exception $Exception) {
             throw new QUI\Exception(array(

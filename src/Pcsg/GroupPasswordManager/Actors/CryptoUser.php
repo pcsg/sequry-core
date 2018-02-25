@@ -15,7 +15,9 @@ use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
 use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
@@ -98,7 +100,7 @@ class CryptoUser extends QUI\Users\User
      * Get all authentication key pairs of a security class the user is registered for
      *
      * @param SecurityClass $SecurityClass
-     * @return array
+     * @return AuthKeyPair[]
      */
     public function getAuthKeyPairsBySecurityClass($SecurityClass)
     {
@@ -385,12 +387,13 @@ class CryptoUser extends QUI\Users\User
         }
 
         $passwordKeyParts = array();
+        $SecurityClass    = Passwords::getSecurityClass($passwordId);
 
         foreach ($result as $row) {
             // check access data integrity/authenticity
             $accessDataMAC      = $row['MAC'];
             $accessDataMACCheck = MAC::create(
-                implode(
+                new HiddenString(implode(
                     '',
                     array(
                         $row['userId'],
@@ -398,7 +401,7 @@ class CryptoUser extends QUI\Users\User
                         $row['dataKey'],
                         $row['keyPairId']
                     )
-                ),
+                )),
                 Utils::getSystemKeyPairAuthKey()
             );
 
@@ -429,6 +432,10 @@ class CryptoUser extends QUI\Users\User
                 $row['dataKey'],
                 $AuthKeyPair
             );
+
+            if (count($passwordKeyParts) >= $SecurityClass->getRequiredFactors()) {
+                break;
+            }
         }
 
         // build password key from its parts
@@ -491,7 +498,7 @@ class CryptoUser extends QUI\Users\User
 
         $MACExpected = $data['MAC'];
         $MACActual   = MAC::create(
-            implode('', $MACData),
+            new HiddenString(implode('', $MACData)),
             Utils::getSystemKeyPairAuthKey()
         );
 
@@ -595,7 +602,7 @@ class CryptoUser extends QUI\Users\User
 
             $MACExcpected = $row['MAC'];
             $MACActual    = MAC::create(
-                implode('', $MACData),
+                new HiddenString(implode('', $MACData)),
                 Utils::getSystemKeyPairAuthKey()
             );
 
@@ -678,7 +685,7 @@ class CryptoUser extends QUI\Users\User
 
         try {
             $groupPrivateKeyDecrypted = SymmetricCrypto::decrypt(
-                $GroupKeyPair->getPrivateKey()->getValue(),
+                $GroupKeyPair->getPrivateKey()->getValue()->getString(),
                 $GroupAccessKey
             );
 
@@ -754,22 +761,26 @@ class CryptoUser extends QUI\Users\User
         }
 
         // JOIN user access meta table with password data table
-        $sql .= " FROM `" . Tables::passwords(). "` data, ";
+        $sql .= " FROM `" . Tables::passwords() . "` data, ";
         $sql .= " `" . Tables::usersToPasswordMeta() . "` meta";
 
         $where[] = 'data.`id` = meta.`dataId`';
         $where[] = 'meta.`userId` = ' . $this->id;
         $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
-        if (isset($searchParams['search']['searchterm']) &&
-            !empty($searchParams['search']['searchterm'])
-        ) {
+        if (!empty($searchParams['search']['searchterm'])) {
             $whereOR    = array();
             $searchTerm = trim($searchParams['search']['searchterm']);
 
-            if (isset($searchParams['title'])
-                && $searchParams['title']
-            ) {
+            $searchTitle       = !empty($searchParams['title']);
+            $searchDescription = !empty($searchParams['description']);
+
+            if (!$searchTitle && !$searchDescription) {
+                $searchTitle       = true;
+                $searchDescription = true;
+            }
+
+            if ($searchTitle) {
                 $whereOR[]      = 'data.`title` LIKE :title';
                 $binds['title'] = array(
                     'value' => '%' . $searchTerm . '%',
@@ -777,9 +788,7 @@ class CryptoUser extends QUI\Users\User
                 );
             }
 
-            if (isset($searchParams['description'])
-                && $searchParams['description']
-            ) {
+            if ($searchDescription) {
                 $whereOR[]            = 'data.`description` LIKE :description';
                 $binds['description'] = array(
                     'value' => '%' . $searchTerm . '%',
@@ -789,18 +798,10 @@ class CryptoUser extends QUI\Users\User
 
             if (!empty($whereOR)) {
                 $where[] = '(' . implode(' OR ', $whereOR) . ')';
-            } else {
-                $where[]        = 'data.`title` LIKE :title';
-                $binds['title'] = array(
-                    'value' => '%' . $searchTerm . '%',
-                    'type'  => \PDO::PARAM_STR
-                );
             }
         }
 
-        if (isset($searchParams['search']['passwordtypes'])
-            && !empty($searchParams['search']['passwordtypes'])
-        ) {
+        if (!empty($searchParams['search']['passwordtypes'])) {
             $pwTypes = $searchParams['search']['passwordtypes'];
 
             if (!in_array('all', $pwTypes)) {
@@ -816,9 +817,7 @@ class CryptoUser extends QUI\Users\User
             }
         }
 
-        if (isset($searchParams['categoryId'])
-            && !empty($searchParams['categoryId'])
-        ) {
+        if (!empty($searchParams['categoryId'])) {
             $where[]             = 'data.`categories` LIKE :categoryId';
             $binds['categoryId'] = array(
                 'value' => '%,' . (int)$searchParams['categoryId'] . ',%',
@@ -826,22 +825,16 @@ class CryptoUser extends QUI\Users\User
             );
         }
 
-        if (isset($searchParams['search']['uncategorized'])
-            && !empty($searchParams['search']['uncategorized'])
-        ) {
+        if (!empty($searchParams['search']['uncategorized'])) {
             $where[] = 'data.`categoryIds` IS NULL';
         }
 
-        if (isset($searchParams['search']['uncategorizedPrivate'])
-            && !empty($searchParams['search']['uncategorizedPrivate'])
-        ) {
+        if (!empty($searchParams['search']['uncategorizedPrivate'])) {
             $where[] = 'meta.`categoryIds` IS NULL';
         }
 
         // WHERE filters
-        if (isset($searchParams['filters'])
-            && !empty($searchParams['filters'])
-        ) {
+        if (!empty($searchParams['filters'])) {
             if (!empty($searchParams['filters']['filters'])) {
                 foreach ($searchParams['filters']['filters'] as $filter) {
                     switch ($filter) {
@@ -901,9 +894,7 @@ class CryptoUser extends QUI\Users\User
         }
 
         // Table column sort
-        if (isset($searchParams['sortOn'])
-            && !empty($searchParams['sortOn'])
-        ) {
+        if (!empty($searchParams['sortOn'])) {
             $orderPrefix = 'data.`';
 
             switch ($searchParams['sortOn']) {
@@ -931,8 +922,7 @@ class CryptoUser extends QUI\Users\User
             $sql .= " ORDER BY " . implode(',', $orderFields);
         }
 
-        if (isset($gridParams['limit'])
-            && !empty($gridParams['limit'])
+        if (!empty($gridParams['limit'])
             && !$countOnly
         ) {
             $sql .= " LIMIT " . $gridParams['limit'];
@@ -981,8 +971,14 @@ class CryptoUser extends QUI\Users\User
             $this
         );
 
+        $canLinkPassword = Permission::hasPermission(
+            Permissions::PASSWORDS_DELETE_GROUP,
+            $this
+        );
+
         foreach ($result as $row) {
-            $row['isOwner'] = in_array($row['id'], $ownerPasswordIds);
+            $isOwner        = in_array($row['id'], $ownerPasswordIds);
+            $row['isOwner'] = $isOwner;
 
             if (in_array($row['id'], $directAccessPasswordIds)) {
                 $row['access']    = 'user';
@@ -996,12 +992,14 @@ class CryptoUser extends QUI\Users\User
 
             $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
 
-            switch ($row['ownerType']) {
-                case '1':
+            switch ((int)$row['ownerType']) {
+                case Password::OWNER_TYPE_USER:
+                    $row['canLink']   = $isOwner;
                     $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getName();
                     break;
 
-                case '2':
+                case Password::OWNER_TYPE_GROUP:
+                    $row['canLink']   = $isOwner && $canLinkPassword;
                     $row['ownerName'] = QUI::getGroups()->get($row['ownerId'])->getName();
                     break;
             }
@@ -1040,7 +1038,8 @@ class CryptoUser extends QUI\Users\User
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
                 'id',
-                'title'
+                'title',
+                'allowPasswordLinks'
             ),
             'from'   => Tables::securityClasses(),
             'where'  => array(
@@ -1055,6 +1054,10 @@ class CryptoUser extends QUI\Users\User
             foreach ($result as $row) {
                 if ($data['securityClassId'] == $row['id']) {
                     $passwords[$k]['securityClassTitle'] = $row['title'];
+
+                    if (!(int)$row['allowPasswordLinks']) {
+                        $passwords[$k]['canLink'] = false;
+                    }
                     continue 2;
                 }
             }
@@ -1212,9 +1215,10 @@ class CryptoUser extends QUI\Users\User
      * registration this method can be used to get all password IDs that need such a re-encryption.
      *
      * @param Plugin $AuthPlugin
+     * @param bool $useCache (optional) - get results from cache [default: true]
      * @return array - password IDs
      */
-    public function getNonFullyAccessiblePasswordIds(Plugin $AuthPlugin)
+    public function getNonFullyAccessiblePasswordIds(Plugin $AuthPlugin, $useCache = true)
     {
         if (!$AuthPlugin->isRegistered($this)) {
             return array();
@@ -1222,10 +1226,12 @@ class CryptoUser extends QUI\Users\User
 
         $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblepasswordids/' . $AuthPlugin->getId();
 
-        try {
-            return QUI\Cache\Manager::get($cname);
-        } catch (\Exception $Exception) {
-            // nothing, determine ids
+        if ($useCache !== false) {
+            try {
+                return QUI\Cache\Manager::get($cname);
+            } catch (\Exception $Exception) {
+                // nothing, determine ids
+            }
         }
 
         $passwordIds = array();
@@ -1304,9 +1310,10 @@ class CryptoUser extends QUI\Users\User
      * authentication plugin
      *
      * @param Plugin $AuthPlugin
+     * @param bool $useCache (optional) - Get results from cache (data may be outdated) [default: true]
      * @return array
      */
-    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin)
+    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin, $useCache = true)
     {
         if (!$AuthPlugin->isRegistered($this)) {
             return array();
@@ -1314,10 +1321,12 @@ class CryptoUser extends QUI\Users\User
 
         $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblegroupandsecurityclassids/' . $AuthPlugin->getId();
 
-        try {
-            return QUI\Cache\Manager::get($cname);
-        } catch (\Exception $Exception) {
-            // nothing, determine ids
+        if (!$useCache !== false) {
+            try {
+                return QUI\Cache\Manager::get($cname);
+            } catch (\Exception $Exception) {
+                // nothing, determine ids
+            }
         }
 
         $AuthKeyPair = $this->getAuthKeyPair($AuthPlugin);
@@ -1430,21 +1439,20 @@ class CryptoUser extends QUI\Users\User
         $i            = 0;
         $DB           = QUI::getDataBase();
 
+        // delete old access entries
+        $DB->delete(
+            Tables::usersToPasswords(),
+            array(
+                'userId' => $this->getId(),
+                'dataId' => $passwordId
+            )
+        );
+
         /** @var AuthKeyPair $UserAuthKeyPair */
         foreach ($authKeyPairs as $UserAuthKeyPair) {
             try {
-                // delete old access entry
-                $DB->delete(
-                    Tables::usersToPasswords(),
-                    array(
-                        'userId'    => $this->getId(),
-                        'keyPairId' => $UserAuthKeyPair->getId(),
-                        'dataId'    => $passwordId
-                    )
-                );
-
                 $encryptedPasswordKeyPart = AsymmetricCrypto::encrypt(
-                    $passwordKeyParts[$i++],
+                    new HiddenString($passwordKeyParts[$i++]),
                     $UserAuthKeyPair
                 );
 
@@ -1456,7 +1464,7 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 $dataAccessEntry['MAC'] = MAC::create(
-                    implode('', $dataAccessEntry),
+                    new HiddenString(implode('', $dataAccessEntry)),
                     Utils::getSystemKeyPairAuthKey()
                 );
 
@@ -1528,24 +1536,23 @@ class CryptoUser extends QUI\Users\User
         $authKeyPairs = $this->getAuthKeyPairsBySecurityClass($SecurityClass);
         $DB           = QUI::getDataBase();
 
+        // delete old access entries
+        $DB->delete(
+            Tables::usersToGroups(),
+            array(
+                'userId'          => $this->getId(),
+                'groupId'         => $CryptoGroup->getId(),
+                'securityClassId' => $SecurityClass->getId()
+            )
+        );
+
         /** @var AuthKeyPair $UserAuthKeyPair */
         foreach ($authKeyPairs as $UserAuthKeyPair) {
             try {
-                // delete old access entry
-                $DB->delete(
-                    Tables::usersToGroups(),
-                    array(
-                        'userId'          => $this->getId(),
-                        'userKeyPairId'   => $UserAuthKeyPair->getId(),
-                        'groupId'         => $CryptoGroup->getId(),
-                        'securityClassId' => $SecurityClass->getId()
-                    )
-                );
-
                 $payloadKeyPart = $groupAccessKeyParts[$i++];
 
                 $groupAccessKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    $payloadKeyPart,
+                    new HiddenString($payloadKeyPart),
                     $UserAuthKeyPair
                 );
 
@@ -1558,7 +1565,10 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 // calculate MAC
-                $data['MAC'] = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                $data['MAC'] = MAC::create(
+                    new HiddenString(implode('', $data)),
+                    Utils::getSystemKeyPairAuthKey()
+                );
 
                 $DB->insert(Tables::usersToGroups(), $data);
             } catch (\Exception $Exception) {
@@ -1639,7 +1649,10 @@ class CryptoUser extends QUI\Users\User
             );
 
             $macValue = MAC::create(
-                $AuthKeyPair->getPublicKey()->getValue() . $privateKeyEncrypted,
+                new HiddenString(
+                    $AuthKeyPair->getPublicKey()->getValue()->getString()
+                    . $privateKeyEncrypted
+                ),
                 Utils::getSystemKeyPairAuthKey()
             );
 
@@ -1682,7 +1695,10 @@ class CryptoUser extends QUI\Users\User
                 );
 
                 // calculate group key MAC
-                $mac = MAC::create(implode('', $data), Utils::getSystemKeyPairAuthKey());
+                $mac = MAC::create(
+                    new HiddenString(implode('', $data)),
+                    Utils::getSystemKeyPairAuthKey()
+                );
 
                 QUI::getDataBase()->update(
                     Tables::keyPairsGroup(),
@@ -1737,12 +1753,12 @@ class CryptoUser extends QUI\Users\User
 
             $macFields = SymmetricCrypto::decrypt(
                 $pw['MACFields'],
-                new Key(Utils::getSystemPasswordAuthKey())
+                Utils::getSystemPasswordAuthKey()
             );
 
             $macFieldsEncrypted = SymmetricCrypto::encrypt(
                 $macFields,
-                new Key(Utils::getSystemPasswordAuthKey())
+                Utils::getSystemPasswordAuthKey()
             );
 
             $macFields = json_decode($macFields, true);
@@ -1758,7 +1774,7 @@ class CryptoUser extends QUI\Users\User
             }
 
             $newMac = MAC::create(
-                implode('', $macData),
+                new HiddenString(implode('', $macData)),
                 Utils::getSystemPasswordAuthKey()
             );
 

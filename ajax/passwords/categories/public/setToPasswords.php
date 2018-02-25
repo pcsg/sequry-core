@@ -1,7 +1,6 @@
 <?php
 
 use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -9,31 +8,11 @@ use QUI\Utils\Security\Orthos;
  *
  * @param array $passwordIds
  * @param array $categoryIds
- * @param array $authData - Authentication data (for all passwords!)
  * @return bool - success
  */
 QUI::$Ajax->registerFunction(
     'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_setToPasswords',
-    function ($passwordIds, $categoryIds, $authData) {
-        // Authentication
-        $authData = json_decode($authData, true); // @todo ggf. filtern
-
-        foreach ($authData as $securityClassId => $securityClassAuthData) {
-            try {
-                $SecurityClass = Authentication::getSecurityClass($securityClassId);
-                $SecurityClass->authenticate($securityClassAuthData);
-            } catch (\Exception $Exception) {
-                QUI::getMessagesHandler()->addError(
-                    QUI::getLocale()->get(
-                        'pcsg/grouppasswordmanager',
-                        'error.authentication.incorrect.auth.data'
-                    )
-                );
-
-                return false;
-            }
-        }
-
+    function ($passwordIds, $categoryIds) {
         $passwordIds = Orthos::clearArray(json_decode($passwordIds, true));
         $categoryIds = Orthos::clearArray(json_decode($categoryIds, true));
 
@@ -73,6 +52,6 @@ QUI::$Ajax->registerFunction(
 
         return true;
     },
-    array('passwordIds', 'categoryIds', 'authData'),
+    array('passwordIds', 'categoryIds'),
     'Permission::checkAdminUser'
 );

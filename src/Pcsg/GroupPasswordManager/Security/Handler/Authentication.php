@@ -13,10 +13,12 @@ use Pcsg\GroupPasswordManager\Constants\Tables;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
 use Pcsg\GroupPasswordManager\Security\Authentication\SecurityClass;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Interfaces\IAuthPlugin;
 use Pcsg\GroupPasswordManager\Security\KDF;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
 use Pcsg\GroupPasswordManager\Security\Keys\Key;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
 use QUI;
 use Pcsg\GroupPasswordManager\Security\Authentication\Cache as AuthCache;
@@ -28,26 +30,36 @@ use Pcsg\GroupPasswordManager\Security\Authentication\Cache as AuthCache;
  */
 class Authentication
 {
+    const AUTH_MODE_TIME          = 1;
+    const AUTH_MODE_SINGLE_ACTION = 2;
+
     /**
-     * Loaded plugin objects
+     * Runtime cache for Plugins
      *
      * @var array
      */
     protected static $plugins = array();
 
     /**
-     * Loaded security class objects
+     * Runtime cache for SecurityClasses
      *
      * @var array
      */
     protected static $securityClasses = array();
 
     /**
-     * Loaded authentication keypairs
+     * Runtime cache for AuthKeyPairs
      *
      * @var array
      */
     protected static $authKeyPairs = array();
+
+    /**
+     * Runtime AuthKey cache
+     *
+     * @var Key[]
+     */
+    protected static $authKeys = array();
 
     /**
      * Flag:
@@ -99,6 +111,7 @@ class Authentication
         ));
 
         $CryptoUser = CryptoActors::getCryptoUser();
+        $L          = QUI::getLocale();
 
         foreach ($result as $row) {
             $AuthPlugin = self::getAuthPlugin($row['id']);
@@ -108,13 +121,31 @@ class Authentication
                 $AuthPlugin
             );
 
-            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin)) > 0;
+            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false)) > 0;
 
             if (!$sync) {
-                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin)) > 0;
+                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin, false)) > 0;
             }
 
             $row['sync'] = $sync;
+
+            // title
+            $t = json_decode($row['title'], true);
+
+            if (!empty($t)) {
+                $row['title'] = $L->get($t[0], $t[1]);
+            } else {
+                $row['title'] = '-';
+            }
+
+            // description
+            $d = json_decode($row['description'], true);
+
+            if (!empty($d)) {
+                $row['description'] = $L->get($d[0], $d[1]);
+            } else {
+                $row['description'] = '-';
+            }
 
             $list[] = $row;
         }
@@ -248,15 +279,15 @@ class Authentication
     /**
      * Checks if an authentication plugin is already registered
      *
-     * @param string $path
+     * @param IAuthPlugin $AuthPlugin
      * @return bool
      */
-    protected static function isAuthPluginRegistered($path)
+    protected static function isAuthPluginRegistered(IAuthPlugin $AuthPlugin)
     {
         $result = QUI::getDataBase()->fetch(array(
             'from'  => Tables::authPlugins(),
             'where' => array(
-                'path' => $path
+                'path' => '\\' . get_class($AuthPlugin)
             )
         ));
 
@@ -270,30 +301,29 @@ class Authentication
     /**
      * Register an authentication plugin
      *
-     * @param string $classPath - path to the main authentication plugin class
-     * @param string $title - title of the authentication plugin
-     * @param string $description (optional) - description of the authentication plugin
+     * @param IAuthPlugin $AuthPlugin
      * @throws QUI\Exception
      */
-    public static function registerPlugin($classPath, $title, $description = null)
+    public static function registerPlugin(IAuthPlugin $AuthPlugin)
     {
-        $class = '\\' . $classPath;
+        $class = '\\' . get_class($AuthPlugin);
 
-        $AuthClass = new $class();
-
-        if (!($AuthClass instanceof IAuthPlugin)) {
+        if (!($AuthPlugin instanceof IAuthPlugin)) {
             throw new QUI\Exception(
-                'The plugin "' . $title . '" cannot be registered. The authentication class has'
+                'The plugin "' . $class . '" cannot be registered. The authentication class has'
                 . ' to implement IAuthPlugin interface.'
             );
         }
 
-        if (!(self::isAuthPluginRegistered($class))) {
+        $titleLocaleData = $AuthPlugin->getNameLocaleData();
+        $descLocaleData  = $AuthPlugin->getDescriptionLocaleData();
+
+        if (!self::isAuthPluginRegistered($AuthPlugin)) {
             QUI::getDataBase()->insert(
                 Tables::authPlugins(),
                 array(
-                    'title'       => $title,
-                    'description' => is_null($description) ? '' : $description,
+                    'title'       => json_encode($titleLocaleData),
+                    'description' => json_encode($descLocaleData),
                     'path'        => $class
                 )
             );
@@ -301,8 +331,8 @@ class Authentication
             QUI::getDataBase()->update(
                 Tables::authPlugins(),
                 array(
-                    'title'       => $title,
-                    'description' => is_null($description) ? '' : $description,
+                    'title'       => json_encode($titleLocaleData),
+                    'description' => json_encode($descLocaleData),
                 ),
                 array(
                     'path' => $class
@@ -335,8 +365,7 @@ class Authentication
             ));
         }
 
-        if (!isset($params['title'])
-            || empty($params['title'])
+        if (empty($params['title'])
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -344,8 +373,7 @@ class Authentication
             ));
         }
 
-        if (!isset($params['authPluginIds'])
-            || empty($params['authPluginIds']
+        if (empty($params['authPluginIds']
                      || !is_array($params['authPluginIds']))
         ) {
             throw new QUI\Exception(array(
@@ -354,8 +382,7 @@ class Authentication
             ));
         }
 
-        if (!isset($params['requiredFactors'])
-            || empty($params['requiredFactors'])
+        if (empty($params['requiredFactors'])
         ) {
             throw new QUI\Exception(array(
                 'pcsg/grouppasswordmanager',
@@ -382,13 +409,20 @@ class Authentication
             }
         }
 
+        $allowPasswordLinks = 0;
+
+        if (isset($params['allowPasswordLinks'])) {
+            $allowPasswordLinks = $params['allowPasswordLinks'] ? 1 : 0;
+        }
+
         try {
             QUI::getDataBase()->insert(
                 Tables::securityClasses(),
                 array(
-                    'title'           => $params['title'],
-                    'description'     => $params['description'],
-                    'requiredFactors' => (int)$params['requiredFactors']
+                    'title'              => $params['title'],
+                    'description'        => $params['description'],
+                    'requiredFactors'    => (int)$params['requiredFactors'],
+                    'allowPasswordLinks' => $allowPasswordLinks
                 )
             );
 
@@ -414,6 +448,15 @@ class Authentication
                 'pcsg/grouppasswordmanager',
                 'exception.securityclass.create.error'
             ));
+        }
+
+        $securityClasses = self::getSecurityClassesList();
+
+        // if the created SecurityClass is the first one -> make it the default SecurityClass
+        if (count($securityClasses) === 1) {
+            $Conf = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig();
+            $Conf->set('settings', 'defaultSecurityClassId', $securityClassId);
+            $Conf->save();
         }
 
         return $securityClassId;
@@ -490,54 +533,57 @@ class Authentication
     /**
      * Save derived key from authenticated plugin to user session
      *
-     * @param int $authPluginId - Auth Plugin ID
-     * @param string $authKey - derived key
-     *
-     * @return void
+     * @param int $authPluginId
+     * @param Key $AuthKey
      */
-    public static function saveAuthKeyToSession($authPluginId, $authKey)
+    public static function saveAuthKey($authPluginId, $AuthKey)
     {
-        if (!self::$sessionCache) {
-            return;
-        }
-
         $Session            = QUI::getSession();
-        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_gpm_authkeys'), true);
 
         if (empty($currentAuthKeyData)) {
             $currentAuthKeyData = array();
         }
 
-        if (!isset($currentAuthKeyData['starttime'])) {
+        if (!isset($currentAuthKeyData['starttime'])
+            && self::$sessionCache
+        ) {
             $currentAuthKeyData['starttime'] = time();
         }
 
         $encryptedKey = SymmetricCrypto::encrypt(
-            $authKey,
+            $AuthKey->getValue(),
             self::getSessionEncryptionKey()
         );
 
         $currentAuthKeyData[$authPluginId] = base64_encode($encryptedKey);
+        $Session->set('quiqqer_gpm_authkeys', json_encode($currentAuthKeyData));
 
-        $Session->set('quiqqer_pwm_authkeys', json_encode($currentAuthKeyData));
+        $Session->set(
+            'quiqqer_gpm_authmode',
+            self::$sessionCache ? self::AUTH_MODE_TIME : self::AUTH_MODE_SINGLE_ACTION
+        );
     }
 
     /**
-     * Get derived key from authenticated plugin
+     * Check if an authentication key for an AuthPlugin exists in the session
      *
-     * @param int $authPluginId - Auth Plugin ID
-     * @return false|string - false if no key set; key as string otherwise
+     * @param int $authPluginId
+     * @return bool
      */
-    public static function getAuthKeyFromSession($authPluginId)
+    public static function existsAuthKeyInSession($authPluginId)
     {
-        $Session            = QUI::getSession();
-        $currentAuthKeyData = json_decode($Session->get('quiqqer_pwm_authkeys'), true);
-
-        if (empty($currentAuthKeyData)) {
-            $currentAuthKeyData = array();
+        if (!empty(self::$authKeys[$authPluginId])) {
+            return true;
         }
 
-        if (isset($currentAuthKeyData['starttime'])) {
+        $Session            = QUI::getSession();
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_gpm_authkeys'), true);
+        $authMode           = $Session->get('quiqqer_gpm_authmode');
+
+        if ($authMode === self::AUTH_MODE_TIME
+            && isset($currentAuthKeyData['starttime'])
+        ) {
             $start     = $currentAuthKeyData['starttime'];
             $timeAlive = time() - $start;
             $max       = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig()->get(
@@ -546,24 +592,76 @@ class Authentication
             );
 
             if ($timeAlive > $max) {
-                $Session->set('quiqqer_pwm_authkeys', false);
+                self::clearAuthDataFromSession();
                 return false;
             }
         }
 
-        if (!isset($currentAuthKeyData[$authPluginId])) {
+        return !empty($currentAuthKeyData[$authPluginId]);
+    }
+
+    /**
+     * Retrieve derived key from session data
+     *
+     * @param $authPluginId
+     * @param int $authPluginId - Auth Plugin ID
+     * @return false|Key - false if no key set; key as string otherwise
+     */
+    public static function getAuthKey($authPluginId)
+    {
+        $Session            = QUI::getSession();
+        $currentAuthKeyData = json_decode($Session->get('quiqqer_gpm_authkeys'), true);
+        $authMode           = $Session->get('quiqqer_gpm_authmode');
+
+        if (isset(self::$authKeys[$authPluginId])) {
+            return self::$authKeys[$authPluginId];
+        }
+
+        if (empty($currentAuthKeyData)) {
+            $currentAuthKeyData = array();
+        }
+
+        if ($authMode === self::AUTH_MODE_TIME
+            && isset($currentAuthKeyData['starttime'])
+        ) {
+            $start     = $currentAuthKeyData['starttime'];
+            $timeAlive = time() - $start;
+            $max       = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig()->get(
+                'settings',
+                'auth_ttl'
+            );
+
+            if ($timeAlive > $max) {
+                self::clearAuthDataFromSession();
+//                return false;
+            }
+        }
+
+        if (empty($currentAuthKeyData[$authPluginId])) {
             return false;
         }
 
         try {
             $encryptedKey = base64_decode($currentAuthKeyData[$authPluginId]);
 
-            return SymmetricCrypto::decrypt(
+            $keyData = SymmetricCrypto::decrypt(
                 $encryptedKey,
                 self::getSessionEncryptionKey()
             );
+
+            $Key = new Key($keyData);
+
+            self::$authKeys[$authPluginId] = $Key;
+
+            // delete from Session if auth data should not be saved
+            if ($authMode === self::AUTH_MODE_SINGLE_ACTION) {
+                unset($currentAuthKeyData[$authPluginId]);
+                $Session->set('quiqqer_gpm_authkeys', json_encode($currentAuthKeyData));
+            }
+
+            return $Key;
         } catch (\Exception $Exception) {
-            self::clearAuthInfoFromSession();
+            self::clearAuthDataFromSession();
             return false;
         }
     }
@@ -578,14 +676,14 @@ class Authentication
         $cacheName = 'pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId();
 
         try {
-            $keyValue = AuthCache::get($cacheName);
+            $keyValue = new HiddenString(AuthCache::get($cacheName));
             return new Key($keyValue);
         } catch (\Exception $Exception) {
             // generate new key
         }
 
-        $SessionKey = KDF::createKey(QUI::getSession()->getId());
-        AuthCache::set($cacheName, $SessionKey->getValue());
+        $SessionKey = KDF::createKey(new HiddenString(QUI::getSession()->getId()));
+        AuthCache::set($cacheName, $SessionKey->getValue()->getString());
 
         return $SessionKey;
     }
@@ -595,9 +693,10 @@ class Authentication
      *
      * @return void
      */
-    public static function clearAuthInfoFromSession()
+    public static function clearAuthDataFromSession()
     {
-        QUI::getSession()->set('quiqqer_pwm_authkeys', false);
+        QUI::getSession()->set('quiqqer_gpm_authkeys', false);
+        QUI::getSession()->set('quiqqer_gpm_authmode', self::AUTH_MODE_SINGLE_ACTION);
         AuthCache::clear('pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId());
     }
 

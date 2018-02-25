@@ -8,10 +8,13 @@ use Pcsg\GroupPasswordManager\Actors\CryptoGroup;
 use Pcsg\GroupPasswordManager\Actors\CryptoUser;
 use Pcsg\GroupPasswordManager\Constants\Permissions;
 use Pcsg\GroupPasswordManager\Constants\Tables;
+use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
 use Pcsg\GroupPasswordManager\Security\AsymmetricCrypto;
 use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Pcsg\GroupPasswordManager\Security\HiddenString;
 use Pcsg\GroupPasswordManager\Security\Keys\AuthKeyPair;
+use Pcsg\GroupPasswordManager\Security\Keys\KeyPair;
 use Pcsg\GroupPasswordManager\Security\MAC;
 use Pcsg\GroupPasswordManager\Security\SecretSharing;
 use Pcsg\GroupPasswordManager\Security\SymmetricCrypto;
@@ -45,6 +48,13 @@ class SecurityClass extends QUI\QDOM
     protected $plugins = null;
 
     /**
+     * Are PasswordLinks allowed?
+     *
+     * @var bool
+     */
+    protected $allowPasswordLinks;
+
+    /**
      * AuthPlugin constructor.
      *
      * @param integer $id - authentication plugin id
@@ -70,8 +80,9 @@ class SecurityClass extends QUI\QDOM
 
         $data = current($result);
 
-        $this->id              = $data['id'];
-        $this->requiredFactors = $data['requiredFactors'];
+        $this->id                 = $data['id'];
+        $this->requiredFactors    = $data['requiredFactors'];
+        $this->allowPasswordLinks = $data['allowPasswordLinks'] == 1 ? true : false;
 
         $this->setAttributes(array(
             'title'       => $data['title'],
@@ -90,25 +101,32 @@ class SecurityClass extends QUI\QDOM
     }
 
     /**
-     * Checks if the authentication information for this security class
-     * is saved in the session
+     * Checks the auth status of every auth plugin of this security class
      *
-     * @return bool
+     * @return array
      */
-    public function isAuthenticatedBySession()
+    public function getAuthStatus()
     {
-        $plugins   = $this->getAuthPlugins();
+        $status = array(
+            'authenticated' => false,
+            'authPlugins'   => array()
+        );
+
         $authCount = 0;
 
         /** @var Plugin $AuthPlugin */
-        foreach ($plugins as $AuthPlugin) {
+        foreach ($this->getAuthPlugins() as $AuthPlugin) {
             if ($AuthPlugin->isAuthenticated()) {
+                $status['authPlugins'][$AuthPlugin->getId()] = true;
                 $authCount++;
-                continue;
+            } else {
+                $status['authPlugins'][$AuthPlugin->getId()] = false;
             }
         }
 
-        return $authCount >= $this->requiredFactors;
+        $status['authenticated'] = $authCount >= $this->requiredFactors;
+
+        return $status;
     }
 
     /**
@@ -121,7 +139,7 @@ class SecurityClass extends QUI\QDOM
      */
     public function authenticate($authData, $CryptoUser = null)
     {
-        if ($this->isAuthenticatedBySession()) {
+        if ($this->isAuthenticated()) {
             return true;
         }
 
@@ -156,16 +174,14 @@ class SecurityClass extends QUI\QDOM
                 continue;
             }
 
-            $pluginAuthData = $authData[$AuthPlugin->getId()];
-
-            if (empty($pluginAuthData)) {
+            if (empty($authData[$AuthPlugin->getId()])) {
                 continue;
             }
 
             try {
                 $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
             } catch (\Exception $Exception) {
-                throw new QUI\Exception(array(
+                $Exception = new InvalidAuthDataException(array(
                     'pcsg/grouppasswordmanager',
                     'exception.securityclass.authenticate.wrong.authdata',
                     array(
@@ -173,9 +189,16 @@ class SecurityClass extends QUI\QDOM
                         'authPluginTitle' => $AuthPlugin->getAttribute('title')
                     )
                 ));
+
+                $Exception->setAttribute('authPluginId', $AuthPlugin->getId());
+
+                throw $Exception;
             }
 
             $succesfulAuthenticationCount++;
+
+            // On successful authentication, save derived key in session data
+            Authentication::saveAuthKey($AuthPlugin->getId(), $AuthPlugin->getDerivedKey());
         }
 
         if ($succesfulAuthenticationCount < $this->requiredFactors) {
@@ -190,6 +213,37 @@ class SecurityClass extends QUI\QDOM
         }
 
         return true;
+    }
+
+    /**
+     * Checks if a user is authenticated for this security class
+     *
+     * @param CryptoUser $CryptoUser (optional) - if omitted, use session user
+     * @return void
+     *
+     * @throws InvalidAuthDataException
+     */
+    public function checkAuthentication($CryptoUser = null)
+    {
+        if (is_null($CryptoUser)) {
+            $CryptoUser = CryptoActors::getCryptoUser();
+        }
+
+        $plugins     = $this->getAuthPlugins();
+        $isAuthCount = 0;
+
+        /** @var Plugin $AuthPlugin */
+        foreach ($plugins as $AuthPlugin) {
+            if ($AuthPlugin->isAuthenticated($CryptoUser)) {
+                $isAuthCount++;
+            }
+        }
+
+        if ($isAuthCount >= $this->requiredFactors) {
+            return;
+        }
+
+        throw new InvalidAuthDataException(array());
     }
 
     /**
@@ -725,6 +779,10 @@ class SecurityClass extends QUI\QDOM
                     }
 
                     break;
+
+                case 'allowPasswordLinks':
+                    $this->allowPasswordLinks = boolval($v);
+                    break;
             }
         }
 
@@ -772,8 +830,9 @@ class SecurityClass extends QUI\QDOM
         QUI::getDataBase()->update(
             Tables::securityClasses(),
             array(
-                'title'       => $this->getAttribute('title'),
-                'description' => $this->getAttribute('description')
+                'title'              => $this->getAttribute('title'),
+                'description'        => $this->getAttribute('description'),
+                'allowPasswordLinks' => $this->allowPasswordLinks ? 1 : 0
             ),
             array(
                 'id' => $this->getId()
@@ -888,5 +947,15 @@ class SecurityClass extends QUI\QDOM
         }
 
         return true;
+    }
+
+    /**
+     * Are PasswordLinks allowed for this SecurityClass?
+     *
+     * @return bool
+     */
+    public function isPasswordLinksAllowed()
+    {
+        return $this->allowPasswordLinks;
     }
 }

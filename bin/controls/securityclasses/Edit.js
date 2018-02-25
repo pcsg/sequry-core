@@ -22,24 +22,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
 
     'qui/QUI',
     'qui/controls/Control',
+    'qui/utils/Form',
+
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Actors',
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/pcsg/grouppasswordmanager/bin/Authentication',
 
     'Ajax',
 
     'text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.html',
     'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, ActorHandler,
-             AuthenticationHandler, QUIAjax, template) {
+], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, Actors,
+             Authentication, QUIAjax, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthenticationHandler(),
-        Actors         = new ActorHandler();
+    var lg = 'pcsg/grouppasswordmanager';
 
     return new Class({
 
@@ -80,13 +80,14 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
             this.$Elm.set({
                 'class': 'pcsg-gpm-securityclasses-create',
                 html   : Mustache.render(template, {
-                    edittitle      : QUILocale.get(lg, lg_prefix + 'edittitle'),
-                    title          : QUILocale.get(lg, lg_prefix + 'title'),
-                    description    : QUILocale.get(lg, lg_prefix + 'description'),
-                    authPlugins    : QUILocale.get(lg, lg_prefix + 'authPlugins'),
-                    authPluginsAdd : QUILocale.get(lg, lg_prefix + 'authPluginsAdd'),
-                    groups         : QUILocale.get(lg, lg_prefix + 'groups'),
-                    requiredFactors: QUILocale.get(lg, lg_prefix + 'requiredFactors')
+                    edittitle         : QUILocale.get(lg, lg_prefix + 'edittitle'),
+                    title             : QUILocale.get(lg, lg_prefix + 'title'),
+                    description       : QUILocale.get(lg, lg_prefix + 'description'),
+                    authPlugins       : QUILocale.get(lg, lg_prefix + 'authPlugins'),
+                    authPluginsAdd    : QUILocale.get(lg, lg_prefix + 'authPluginsAdd'),
+                    groups            : QUILocale.get(lg, lg_prefix + 'groups'),
+                    requiredFactors   : QUILocale.get(lg, lg_prefix + 'requiredFactors'),
+                    allowPasswordLinks: QUILocale.get(lg, lg_prefix + 'allowPasswordLinks')
                 })
             });
 
@@ -97,8 +98,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
             Authentication.getSecurityClassInfo(
                 this.getAttribute('securityClassId')
             ).then(function (Info) {
-                self.$Elm.getElement('.pcsg-gpm-securityclasses-title').value       = Info.title;
-                self.$Elm.getElement('.pcsg-gpm-securityclasses-description').value = Info.description;
+                QUIFormUtils.setDataToForm(Info, self.$Elm.getElement('form'));
 
                 for (var i = 0, len = Info.authPlugins.length; i < len; i++) {
                     var Plugin = Info.authPlugins[i];
@@ -172,12 +172,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                 if (!available) {
                     new Element('div', {
                         'class': 'pcsg-gpm-password-warning',
-                        html: QUILocale.get(lg, 'securityclasses.edit.addauthfactors.none.available')
+                        html   : QUILocale.get(lg, 'securityclasses.edit.addauthfactors.none.available')
                     }).inject(AuthPluginsAddElm);
                 } else {
                     new Element('div', {
                         'class': 'pcsg-gpm-password-warning',
-                        html: QUILocale.get(lg, 'securityclasses.edit.addauthfactors.not.removable')
+                        html   : QUILocale.get(lg, 'securityclasses.edit.addauthfactors.not.removable')
                     }).inject(AuthPluginsAddElm, 'top');
                 }
 
@@ -232,11 +232,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
                 }
             }
 
-            this.$SecurityClassData = {
-                title           : this.$Elm.getElement('.pcsg-gpm-securityclasses-title').value,
-                description     : this.$Elm.getElement('.pcsg-gpm-securityclasses-description').value,
-                newAuthPluginIds: newAuthPluginIds
-            };
+            this.$SecurityClassData = QUIFormUtils.getFormData(
+                this.$Elm.getElement('form')
+            );
+
+            this.$SecurityClassData.newAuthPluginIds = newAuthPluginIds;
 
             return Authentication.editSecurityClass(
                 this.getAttribute('securityClassId'),

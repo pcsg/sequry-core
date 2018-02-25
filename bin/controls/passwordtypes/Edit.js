@@ -139,7 +139,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
             // show/hide elements
             var self         = this;
             var Elm;
-            var showHideElms = this.$Elm.getElements('.pwm-passwordtypes-show');
+            var showHideElms = this.$Elm.getElements('.gpm-passwordtypes-show');
 
             var FuncOnShowBtnClick = function (Btn) {
                 var Elm = Btn.getAttribute('Elm');
@@ -181,7 +181,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                 }).inject(Elm.getParent());
             }
 
-            var rndPassElms = this.$Elm.getElements('.pwm-passwordtypes-randompassword');
+            var rndPassElms = this.$Elm.getElements('.gpm-passwordtypes-randompassword');
 
             var FuncOnRndBtnClick = function (Btn) {
                 var Elm = Btn.getAttribute('Elm');

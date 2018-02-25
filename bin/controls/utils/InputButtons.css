@@ -1,0 +1,3 @@
+.pcsg-gpm-utils-inputbuttons-btn:not(:first-of-type) {
+    margin-left: 3px;
+}

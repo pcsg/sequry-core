@@ -4,14 +4,6 @@
  * @module package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll.css
- *
  * @event onLoaded
  * @event onAbort - on AuthPopup user close
  * @event onClose - on AuthPopup close
@@ -19,18 +11,16 @@
  */
 define('package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/classes/Actors'
+    'package/pcsg/grouppasswordmanager/bin/Authentication'
 
     //'css!package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll.css'
 
-], function (QUI, QUIControl, QUIPopup, QUIButton, QUILocale, Authentication, ActorHandler) {
+], function (QUIControl, QUIPopup, QUIButton, QUILocale, Authentication) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';

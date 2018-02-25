@@ -66,7 +66,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
         create: function () {
             this.$Elm = new Element('div', {
                 'class': 'pcsg-gpm-categories-filters',
-                'html': '<div class="pcsg-gpm-categories-filters-filter"></div>' +
+                'html' : '<div class="pcsg-gpm-categories-filters-filter"></div>' +
                 '<div class="pcsg-gpm-categories-filters-types"></div>'
             });
 
@@ -82,6 +82,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
             this.$buildFilters();
 
             this.$TypeSelect = new PasswordTypesSelect({
+                menuTop              : true,
                 multiple             : true,
                 showIcons            : false,
                 checkable            : true,
@@ -178,8 +179,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
         /**
          * Fire onChange event with selects data
          */
-        $change: function()
-        {
+        $change: function () {
             this.fireEvent('change', [{
                 filters: this.$selectedFilters,
                 types  : this.$TypeSelect.getValue()

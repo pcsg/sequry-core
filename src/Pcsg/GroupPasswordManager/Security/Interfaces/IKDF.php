@@ -2,6 +2,9 @@
 
 namespace Pcsg\GroupPasswordManager\Security\Interfaces;
 
+use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Pcsg\GroupPasswordManager\Security\Keys\Key;
+
 /**
  * This class provides a KDF API for the pcsg/grouppasswordmanager module
  */
@@ -10,9 +13,9 @@ interface IKDF
     /**
      * Creates a symmetric key with a key derivation function (KDF)
      *
-     * @param string $str - A String
+     * @param HiddenString $str - A String
      * @param string $salt (optional) - if omitted genereate random salt
-     * @return string - The MAC hash
+     * @return Key
      */
-    public static function createKey($str, $salt = null);
+    public static function createKey(HiddenString $str, $salt = null);
 }

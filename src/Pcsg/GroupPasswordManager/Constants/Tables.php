@@ -32,6 +32,8 @@ class Tables
 
     const USER_TO_PASSWORDS_META = 'pcsg_gpm_user_data_access_meta';
 
+    const PASSWORD_LINK = 'pcsg_gpm_link';
+
     /**
      * Auth plugins table
      *
@@ -140,5 +142,15 @@ class Tables
     public static function usersToPasswordMeta()
     {
         return QUI::getDBTableName(self::USER_TO_PASSWORDS_META);
+    }
+
+    /**
+     * Get table for password link data
+     *
+     * @return string
+     */
+    public static function passwordLink()
+    {
+        return QUI::getDBTableName(self::PASSWORD_LINK);
     }
 }

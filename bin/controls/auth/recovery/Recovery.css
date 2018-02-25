@@ -1,0 +1,17 @@
+.pcsg-gpm-auth-recovery-code-input {
+    max-width: 100px;
+    text-align: center;
+}
+
+.pcsg-gpm-auth-recovery-code-input:not(:last-of-type) {
+    margin-right: 5px;
+}
+
+.pcsg-gpm-auth-recovery-submit-row {
+    border-top: 1px solid #dedede;
+}
+
+.pcsg-gpm-auth-recovery .step-1 input {
+    float: left;
+    margin-left: 10px;
+}

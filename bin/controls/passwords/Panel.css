@@ -32,11 +32,16 @@
     width: 100%;
 }
 
-.pcsg-gpm-passwords-panel-grid-shared {
+.pcsg-gpm-passwords-panel-grid-shared,
+.pcsg-gpm-passwords-panel-grid-shared-no-permission {
     float: left;
     height: 100%;
     text-align: center;
     width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-grid-shared-no-permission {
+    color: #aaa;
 }
 
 .pcsg-gpm-passwords-panel-grid-shared:hover,
@@ -173,4 +178,30 @@
 
 .pcsg-passwords-panel-initialRegistration input {
     width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-setupincomplete {
+    cursor: not-allowed;
+    height: 100%;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.pcsg-gpm-passwords-panel-setupincomplete > div {
+    background-color: #FAF6D4;
+    border: 1px solid #E6C26E;
+    border-radius: 5px;
+    color: #000;
+    line-height: 20px;
+    margin: 200px auto;
+    max-width: 600px;
+    padding: 10px 15px;
+}
+
+.pcsg-gpm-passwords-panel-setupincomplete > div h1 {
+    font-size: 20px;
 }
