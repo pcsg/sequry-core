@@ -26,7 +26,7 @@
   },
   "autoload": {
     "psr-0": {
-      "Pcsg": "src\/"
+      "Sequry": "src\/"
     },
     "psr-4": {
       "TQ\\Shamir\\": "lib\/tq\/shamir\/src\/"
