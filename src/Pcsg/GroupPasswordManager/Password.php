@@ -425,7 +425,6 @@ class Password extends QUI\QDOM
             'title'           => $this->getAttribute('title'),
             'description'     => $this->getAttribute('description'),
             'dataType'        => $this->getAttribute('dataType'),
-            'sharedWith'      => $this->getSecretAttribute('sharedWith'),
             'securityClassId' => $this->SecurityClass->getId(),
             'ownerUserIds'    => $this->getOwnerUserIds(),
             'ownerGroupIds'   => array()
@@ -445,6 +444,104 @@ class Password extends QUI\QDOM
         foreach ($data['ownerGroupIds'] as $k => $v) {
             $data['ownerGroupIds'][$k] = 'g' . $v;
         }
+
+        // check if share users / groups stil exist
+        $Users       = QUI::getUsers();
+        $Groups      = QUI::getGroups();
+        $shareChange = false;
+
+        $sharedWith = $this->getSecretAttribute('sharedWith');
+
+        foreach ($sharedWith['users'] as $k => $userId) {
+            try {
+                $Users->get($userId);
+            } catch (\Exception $Exception) {
+                if ($Exception->getCode() === 404) {
+                    QUI\System\Log::addNotice(
+                        'User #' . $userId . ' was removed from password #' . $this->getId()
+                        . ' because user could not be found.'
+                    );
+
+                    QUI::getMessagesHandler()->addAttention(
+                        QUI::getLocale()->get(
+                            'pcsg/grouppasswordmanager',
+                            'message.password.share_user_not_found',
+                            array(
+                                'userId' => $userId
+                            )
+                        )
+                    );
+                } else {
+                    QUI\System\Log::addWarning(
+                        'User #' . $userId . ' was removed from password #' . $this->getId()
+                        . ' because an error occurred when the user was loaded: '
+                        . $Exception->getMessage()
+                    );
+
+                    QUI::getMessagesHandler()->addAttention(
+                        QUI::getLocale()->get(
+                            'pcsg/grouppasswordmanager',
+                            'message.password.share_user_error',
+                            array(
+                                'userId' => $userId
+                            )
+                        )
+                    );
+                }
+
+                unset($sharedWith['users'][$k]);
+                $shareChange = true;
+            }
+        }
+
+        foreach ($sharedWith['groups'] as $k => $groupId) {
+            try {
+                $Groups->get($groupId);
+            } catch (\Exception $Exception) {
+                if ($Exception->getCode() === 404) {
+                    QUI\System\Log::addNotice(
+                        'Group #' . $groupId . ' was removed from password #' . $this->getId()
+                        . ' because group could not be found.'
+                    );
+
+                    QUI::getMessagesHandler()->addAttention(
+                        QUI::getLocale()->get(
+                            'pcsg/grouppasswordmanager',
+                            'message.password.share_group_not_found',
+                            array(
+                                'groupId' => $groupId
+                            )
+                        )
+                    );
+                } else {
+                    QUI\System\Log::addWarning(
+                        'Group #' . $groupId . ' was removed from password #' . $this->getId()
+                        . ' because an error occurred when the group was loaded: '
+                        . $Exception->getMessage()
+                    );
+
+                    QUI::getMessagesHandler()->addAttention(
+                        QUI::getLocale()->get(
+                            'pcsg/grouppasswordmanager',
+                            'message.password.share_group_error',
+                            array(
+                                'groupId' => $groupId
+                            )
+                        )
+                    );
+                }
+
+                unset($sharedWith['groups'][$k]);
+                $shareChange = true;
+            }
+        }
+
+        if ($shareChange) {
+            $this->setSecretAttribute('sharedWith', $sharedWith);
+            $this->save();
+        }
+
+        $data['sharedWith'] = $sharedWith;
 
         return $data;
     }
@@ -469,9 +566,7 @@ class Password extends QUI\QDOM
         $newShareGroupIds = array();
 
         foreach ($shareData as $shareActor) {
-            if (!isset($shareActor['type'])
-                || empty($shareActor['type'])
-                || !isset($shareActor['id'])
+            if (empty($shareActor['type'])
                 || empty($shareActor['id'])
             ) {
                 continue;
