@@ -267,7 +267,7 @@
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
-            <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] wurde nicht gefunden. Die Gruppe kann nicht für den Passwort-Manager verwendet werden.]]></de>
+            <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] wurde nicht gefunden. Die Gruppe kann nicht mit Sequry verwendet werden.]]></de>
         </locale>
         <locale name="exception.cryptogroup.keypair.not.authentic">
             <de>
@@ -921,7 +921,7 @@ Freundliche Grüße!]]></de>
 
         <!-- User profile -->
         <locale name="user.profile.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="user.profile.authplugins.label">
             <de><![CDATA[Auth.-Faktoren]]></de>
@@ -932,12 +932,12 @@ Freundliche Grüße!]]></de>
 
         <!-- QUIQQER Group Panel -->
         <locale name="group.category.grouppasswordmanager">
-            <de><![CDATA[Einstellungen Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
 
         <!-- Settings -->
         <locale name="settings.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="settings.category.module_settings.title">
             <de><![CDATA[Einstellungen]]></de>
@@ -990,14 +990,14 @@ Freundliche Grüße!]]></de>
         </locale>
 
         <locale name="user.gpm.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
 
         <locale name="menu.apps.gpm.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="menu.extras.gpm.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="menu.extras.gpm.auth.title">
             <de><![CDATA[Authentifizierung]]></de>
@@ -1014,7 +1014,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Mit diesem Wiederherstellungs-Code können Sie ihre Zugangsdaten ändern, wenn Sie auf die Zugangsdaten keinen Zugriff mehr haben. <b>Dieser Wiederherstellungs-Code wird nur einmalig angezeigt und nach dem Schließen dieses Fensters dauerhaft gelöscht!</b> Klicken Sie auf <b>Drucken</b>, um den Wiederherstellungs-Code auszudrucken oder schreiben Sie ihn auf und verwahren Sie ihn an einem sicheren Ort.]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.info" html="true">
-            <de><![CDATA[Wiederherstellungs-Code für den QUIQQER Passwort-Manager bei Verlust der Zugangsdaten. Mit diesem Code können Sie Ihre aktuellen Zugangsdaten für den unten genannten Authentifizierungs-Faktor einmalig ändern.]]></de>
+            <de><![CDATA[Wiederherstellungs-Code für den Sequry bei Verlust der Zugangsdaten. Mit diesem Code können Sie Ihre aktuellen Zugangsdaten für den unten genannten Authentifizierungs-Faktor einmalig ändern.]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.warning.title">
             <de><![CDATA[ACHTUNG!]]></de>
@@ -1024,7 +1024,7 @@ Freundliche Grüße!]]></de>
                 <![CDATA[Bewahren Sie diesen Wiederherstellungs-Code an einem sicheren Ort auf. Geben Sie ihn nicht an Dritte weiter. Mit Zugriff auf diesen Code können u.U. alle Passwörter eingesehen werden, auf die Sie Zugriff haben!]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.title">
-            <de><![CDATA[QUIQQER Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.basicData">
             <de><![CDATA[Wiederherstellungs-Informationen]]></de>
@@ -1080,7 +1080,7 @@ Freundliche Grüße!]]></de>
 
         <!-- Permissions -->
         <locale name="permission.gpm._header">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata._header">
             <de><![CDATA[Passwörter]]></de>
@@ -1126,7 +1126,7 @@ Freundliche Grüße!]]></de>
         </locale>
 
         <locale name="passwords.panel.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
 
         <!-- Categories Panel -->
@@ -1325,7 +1325,7 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.initialRegistration.info" html="true">
             <de>
-                <![CDATA[Es scheint, als würden Sie den Passwort-Manager zum ersten Mal benutzen. Damit Sie Ihre ersten Passwörter einpflegen und verwalten können, ist es notwendig, sich mit Ihrem QUIQQER Login-Passwort beim Passwort-Manager zu registrieren. So wird sichergestellt, dass nur Sie Zugriff auf Ihre Passwörter haben. Geben Sie dazu bitte Ihr QUIQQER Login-Passwort in das Eingabefeld ein und klicken anschließend auf <b>Registrieren</b>.]]></de>
+                <![CDATA[Es scheint, als würden Sie <b>Sequry</b> zum ersten Mal benutzen. Damit Sie Ihre ersten Passwörter einpflegen und verwalten können, ist es notwendig, sich mit Ihrem Login-Passwort beim Sequry zu registrieren. So wird sichergestellt, dass nur Sie Zugriff auf Ihre Passwörter haben. Geben Sie dazu bitte Ihr Login-Passwort in das Eingabefeld ein und klicken anschließend auf <b>Registrieren</b>.]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.initialRegistration.btn">
             <de><![CDATA[Registrieren]]></de>
@@ -1798,7 +1798,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Passwort-Gruppe bearbeiten]]></de>
         </locale>
         <locale name="gpm.groups.panel.table.nosecurityclass">
-            <de><![CDATA[keine (Gruppe kann nicht für den Passwort-Manager verwendet werden)]]></de>
+            <de><![CDATA[keine (Gruppe kann nicht mit Sequry verwendet werden)]]></de>
         </locale>
         <locale name="group.panel.tbl.header.name">
             <de><![CDATA[Gruppe]]></de>
@@ -1817,7 +1817,7 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="actors.groupedit.no.securityclass" html="true">
             <de>
-                <![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
+                <![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen von Sequry verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
         </locale>
         <locale name="actors.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>

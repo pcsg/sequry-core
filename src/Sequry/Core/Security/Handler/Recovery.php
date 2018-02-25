@@ -114,7 +114,7 @@ class Recovery
 
         // save in session so bin/recoverycode.php can show data for printing purposes
         QUI::getSession()->set(
-            'pcsg_gpm_recovery_code_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId(),
+            'sequry_core_recovery_code_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId(),
             json_encode($recoveryCodeData)
         );
 
@@ -256,7 +256,7 @@ class Recovery
         }
 
         QUI::getSession()->set(
-            'pcsg_gpm_recovery_secret_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId(),
+            'sequry_core_recovery_secret_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId(),
             $recoveredSecret
         );
     }
@@ -277,7 +277,7 @@ class Recovery
         }
 
         return QUI::getSession()->get(
-            'pcsg_gpm_recovery_secret_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId()
+            'sequry_core_recovery_secret_' . $CryptoUser->getId() . '_' . $AuthPlugin->getId()
         );
     }
 
@@ -297,7 +297,7 @@ class Recovery
             $CryptoUser = CryptoActors::getCryptoUser();
         }
 
-        $sessionKey = 'pcsg_gpm_recovery_code_' . $CryptoUser->getId() . '_' . $authPluginId;
+        $sessionKey = 'sequry_core_recovery_code_' . $CryptoUser->getId() . '_' . $authPluginId;
 
         $data = QUI::getSession()->get($sessionKey);
 
