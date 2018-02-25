@@ -16,7 +16,6 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery',
     'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
 
@@ -26,7 +25,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
 
 ], function (QUIPanel, QUIButton, QUIConfirm, QUILoader, Grid, Authentication, AuthRegister,
-             AuthChange, RecoveryCodePopup, SyncAuthPluginWindow, Recovery, AuthWindow, Ajax, QUILocale) {
+             AuthChange, RecoveryCodePopup, Recovery, AuthWindow, QUIAjax,
+             QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
@@ -196,7 +196,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                         Recovery      = self.getButtons('recovery'),
                         Regenerate    = self.getButtons('regenerate');
 
-                    if (selectedCount == 1) {
+                    if (selectedCount === 1) {
                         if (!Row.isregistered) {
                             Register.enable();
                             Change.disable();
@@ -268,6 +268,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
             var data = [];
             var self = this;
 
+            var showSyncWindow = function (Btn) {
+                self.$syncAuthPlugin(
+                    Btn.getAttribute('authPluginId')
+                );
+            };
+
             for (var i = 0, len = authPlugins.length; i < len; i++) {
                 var Data = authPlugins[i];
 
@@ -295,11 +301,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                             'line-height': 0
                         },
                         events      : {
-                            onClick: function (Btn) {
-                                self.$showSyncAuthPluginWindow(
-                                    Btn.getAttribute('authPluginId')
-                                );
-                            }
+                            onClick: showSyncWindow
                         }
                     }).create();
                 } else {
@@ -327,25 +329,36 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
          *
          * @param {Number} authPluginId
          */
-        $showSyncAuthPluginWindow: function (authPluginId) {
+        $syncAuthPlugin: function (authPluginId) {
             var self = this;
 
-            this.Loader.show();
+            var startSync = function() {
+                self.Loader.show();
+
+                QUIAjax.post(
+                    'package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin',
+                    function () {
+                        self.Loader.hide();
+                        self.refresh();
+                    }, {
+                        'package'   : 'pcsg/grouppasswordmanager',
+                        authPluginId: authPluginId
+                    }
+                );
+            };
 
             Authentication.getNonFullyAccessibleSecurityClassIds(
                 authPluginId
             ).then(function (securityClassIds) {
-                self.Loader.hide();
-
-                new SyncAuthPluginWindow({
-                    authPluginId    : authPluginId,
-                    securityClassIds: securityClassIds,
-                    events          : {
-                        onSuccess: function () {
-                            self.refresh();
-                        }
+                Authentication.multiSecurityClassAuth(
+                    securityClassIds,
+                    QUILocale.get(lg, 'auth.panel.sync_info')
+                ).then(
+                    startSync,
+                    function() {
+                        self.refresh();
                     }
-                }).open();
+                );
             });
         },
 
@@ -447,18 +460,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
                     return;
                 }
 
-                new SyncAuthPluginWindow({
-                    authPluginId: authPluginId,
-                    events      : {
-                        onSuccess: function (SyncWindow) {
-                            SyncWindow.close();
-                            self.refresh();
-                        },
-                        onClose  : function () {
-                            self.refresh();
-                        }
-                    }
-                }).open();
+                self.$syncAuthPlugin(authPluginId);
             });
         },
 

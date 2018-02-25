@@ -146,6 +146,18 @@
         <locale name="exception.password.meta.entry.user.has.no.access">
             <de><![CDATA[Der Meta-Tabellen-Eintrag für den Benutzer "[userName]" (#[userId]) für das Passwort #[passwordId] kann nicht gelöscht werden, da der Benutzer noch Zugriff auf das Passwort hat.]]></de>
         </locale>
+        <locale name="message.password.share_user_not_found">
+            <de><![CDATA[Das Password ist mit Benutzer <b>#[userId]</b> geteilt. Der Benutzer konnte jedoch nicht gefunden werden und wurde daher aus dem Pool der Benutzer, mit denen das Passwort geteilt ist, entfernt.]]></de>
+        </locale>
+        <locale name="message.password.share_user_error">
+            <de><![CDATA[Das Password ist mit Benutzer <b>#[userId]</b> geteilt. Der Benutzer konnte jedoch nicht geladen werden und wurde daher aus dem Pool der Benutzer, mit denen das Passwort geteilt ist, entfernt. Bitte wenden Sie sich zur Prüfung an einen Administrator.]]></de>
+        </locale>
+        <locale name="message.password.share_group_not_found">
+            <de><![CDATA[Das Password ist mit der Gruppe <b>#[groupId]</b> geteilt. Die Gruppe konnte jedoch nicht gefunden werden und wurde daher aus dem Pool der Gruppen, mit denen das Passwort geteilt ist, entfernt.]]></de>
+        </locale>
+        <locale name="message.password.share_group_error">
+            <de><![CDATA[Das Password ist mit der Gruppe <b>#[groupId]</b> geteilt. Die Gruppe konnte jedoch nicht geladen werden und wurde daher aus dem Pool der Gruppen, mit denen das Passwort geteilt ist, entfernt. Bitte wenden Sie sich zur Prüfung an einen Administrator.]]></de>
+        </locale>
 
         <!-- Class: Handler/Passwords -->
         <locale name="exception.passwords.create.missing.data">
@@ -1305,6 +1317,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Registrieren]]></de>
+        </locale>
+        <locale name="auth.panel.sync_info">
+            <de><![CDATA[Sie haben sich für einen neuen Authentifizierungs-Faktor registriert. Um den Zugriff auf alle Passwörter freizuschalten, die mit diesem Faktor entschlüsselt werden können, authentifizieren Sie sich bitte einmalig für die folgenden Sicherheitsklassen.]]></de>
         </locale>
 
         <!-- Control: auth/Register -->

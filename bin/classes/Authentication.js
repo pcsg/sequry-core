@@ -96,15 +96,16 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          * Authenticate for multiple security classes
          *
          * @param {Array} securityClassIds
+         * @param {String} [info] - Info text that is shown in the authentication popup (top)
          * @return {Promise}
          */
-        multiSecurityClassAuth: function (securityClassIds) {
+        multiSecurityClassAuth: function (securityClassIds, info) {
             return new Promise(function (resolve, reject) {
                 require([
                     'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow'
                 ], function (MultiAuthWindow) {
                     new MultiAuthWindow({
-                        info            : 'Bitte für alle Sicherheitsklassen authentifizieren', // @todo Sprachvariable
+                        info            : info ? info : false,
                         securityClassIds: securityClassIds,
                         events          : {
                             onSubmit: function (Popup) {

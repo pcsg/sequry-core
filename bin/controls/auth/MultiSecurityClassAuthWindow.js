@@ -97,7 +97,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
                 title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
                 events: {
                     onClick: function () {
-                        self.fireEvent('abort');
+                        self.fireEvent('abort', [self]);
                         self.close();
                     }
                 }

@@ -1317,29 +1317,6 @@ class CryptoUser extends QUI\Users\User
             $authPluginAccessDirect[$row['dataId']] = true;
         }
 
-        // group access
-//        $authPluginAccessGroup = array();
-
-//        $result = QUI::getDataBase()->fetch(array(
-//            'select' => array(
-//                'groupId'
-//            ),
-//            'from'   => Tables::usersToGroups(),
-//            'where'  => array(
-//                'userId'        => $this->getId(),
-//                'userKeyPairId' => $AuthKeyPair->getId()
-//            )
-//        ));
-//
-//        foreach ($result as $row) {
-//            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId']);
-//            $groupPasswordIds = $CryptoGroup->getPasswordIds();
-//
-//            foreach ($groupPasswordIds as $groupPasswordId) {
-//                $authPluginAccessGroup[$groupPasswordId] = true;
-//            }
-//        }
-
         // check which password ids apply
         $accessPasswordIds       = $this->getPasswordIds();
         $accessPasswordIdsDirect = $this->getPasswordIdsDirectAccess();
@@ -1365,87 +1342,6 @@ class CryptoUser extends QUI\Users\User
         QUI\Cache\Manager::set($cname, $passwordIds);
 
         return $passwordIds;
-    }
-
-    /**
-     * Get IDs of groups and security classes that are NOT encrypted with a specific
-     * authentication plugin
-     *
-     * @param Plugin $AuthPlugin
-     * @param bool $useCache (optional) - Get results from cache (data may be outdated) [default: true]
-     * @return array
-     */
-    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin, $useCache = true)
-    {
-        if (!$AuthPlugin->isRegistered($this)) {
-            return array();
-        }
-
-        $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblegroupandsecurityclassids/' . $AuthPlugin->getId();
-
-        if (!$useCache !== false) {
-            try {
-                return QUI\Cache\Manager::get($cname);
-            } catch (\Exception $Exception) {
-                // nothing, determine ids
-            }
-        }
-
-        $AuthKeyPair = $this->getAuthKeyPair($AuthPlugin);
-
-        // group access
-        $groupAccess   = array();
-        $limitedAccess = array();
-
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'groupId',
-                'securityClassId'
-            ),
-            'from'   => Tables::usersToGroups(),
-            'where'  => array(
-                'userId'        => $this->getId(),
-                'userKeyPairId' => $AuthKeyPair->getId()
-            )
-        ));
-
-        foreach ($result as $row) {
-            $groupId = $row['groupId'];
-
-            if (!isset($groupAccess[$groupId])) {
-                $groupAccess[$groupId] = array();
-            }
-
-            $groupAccess[$groupId][] = $row['securityClassId'];
-        }
-
-        $allAccessGroupIds = $this->getCryptoGroupIds();
-
-        foreach ($allAccessGroupIds as $groupId) {
-            $CryptoGroup          = CryptoActors::getCryptoGroup($groupId);
-            $groupSecurityClasses = $CryptoGroup->getSecurityClasses();
-
-            /** @var SecurityClass $SecurityClass */
-            foreach ($groupSecurityClasses as $SecurityClass) {
-                if (!in_array($AuthPlugin->getId(), $SecurityClass->getAuthPluginIds())) {
-                    continue;
-                }
-
-                if (!isset($groupAccess[$groupId])
-                    || !in_array($SecurityClass->getId(), $groupAccess[$groupId])
-                ) {
-                    if (!isset($limitedAccess[$groupId])) {
-                        $limitedAccess[$groupId] = array();
-                    }
-
-                    $limitedAccess[$groupId][] = $SecurityClass->getId();
-                }
-            }
-        }
-
-        QUI\Cache\Manager::set($cname, $limitedAccess);
-
-        return $limitedAccess;
     }
 
     /**

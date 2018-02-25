@@ -1,6 +1,7 @@
 /**
  * Password Handler
- * Create and edit categories
+ *
+ * All methods for (authenticated) password handling
  *
  * @module package/pcsg/grouppasswordmanager/bin/classes/Passwords
  * @author www.pcsg.de (Patrick Müller)

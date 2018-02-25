@@ -294,10 +294,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
                                 '</span>'
                             }).inject(
                                 PluginElm,
-                                'top'
+                                'bottom'
                             );
 
                             Control.setAttribute('eligibleForAuth', false);
+                            Control.hide();
                         } else {
                             eligibleAuthPluginsLoaded++;
                         }
