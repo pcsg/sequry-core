@@ -2311,7 +2311,6 @@ Freundliche Grüße!]]></de>
         <!-- Control: utils/InputButtons -->
         <locale name="controls.utils.inputbuttons.copy">
             <de><![CDATA[Kopiert!]]></de>
->>>>>>> linkpassword
         </locale>
 
     </groups>

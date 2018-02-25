@@ -41,8 +41,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
              PasswordCreate, PasswordView, PasswordShare, PasswordEdit, PasswordLinkList, PasswordSearch,
-             AuthenticationControl, PasswordAuthentication, RecoveryCodePopup,
-             CategorySelect, CategorySelectPrivate, Ajax, QUILocale) {
+             RecoveryCodePopup, CategorySelect, CategorySelectPrivate, QUILocale) {
     "use strict";
 
     var lg = 'pcsg/grouppasswordmanager';
