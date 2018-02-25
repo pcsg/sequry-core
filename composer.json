@@ -15,14 +15,14 @@
     "email": "support@pcsg.de"
   },
   "require": {
-    "quiqqer\/quiqqer": "*@dev",
-    "quiqqer\/tooltips": "1.0.0",
+    "quiqqer\/quiqqer": ">=1.1|dev-master|dev-dev",
+    "quiqqer\/tooltips": ">=1.0|dev-master|dev-dev",
     "phpseclib\/phpseclib": "2.0.0",
     "paragonie\/halite": "3.2.0",
     "ext-bcmath": "*",
     "pcsg\/gpmauthpassword": "dev-dev",
     "npm-asset\/clipboard": "1.5.16",
-    "pcsg/template-sequry": "dev-dev"
+    "pcsg/template-sequry": ">=1.0|dev-master|dev-dev"
   },
   "autoload": {
     "psr-0": {
