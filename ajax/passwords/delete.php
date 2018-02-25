@@ -1,25 +1,16 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Delete a password object
  *
  * @param integer $passwordId - ID of password
- * @param array $authData - authentication information
- * @return true - on success
+ * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $authData)
+function package_sequry_core_ajax_passwords_delete($passwordId)
 {
     $passwordId = (int)$passwordId;
-
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
 
     // delete password
     try {
@@ -27,17 +18,17 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'success.password.delete',
                 array(
                     'passwordId' => $passwordId
                 )
             )
         );
-    } catch (\Exception $Exception) {
+    } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.password.delete',
                 array(
                     'passwordId' => $passwordId,
@@ -45,13 +36,29 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_delete($passwordId, $a
                 )
             )
         );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_sequry_core_ajax_passwords_delete -> '
+            . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'sequry/core',
+                'message.general.error'
+            )
+        );
+
+        return false;
     }
 
     return true;
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_delete',
-    array('passwordId', 'authData'),
+    'package_sequry_core_ajax_passwords_delete',
+    array('passwordId'),
     'Permission::checkAdminUser'
 );

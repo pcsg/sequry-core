@@ -2,28 +2,25 @@
  * Password Handler
  * Create and edit categories
  *
- * @module package/pcsg/grouppasswordmanager/bin/classes/Passwords
+ * @module package/sequry/core/bin/classes/Passwords
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/classes/DOM
  * @require Ajax
+ * @require package/sequry/core/bin/AuthAjax
  */
-define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
+define('package/sequry/core/bin/classes/Passwords', [
 
-    'qui/QUI',
-    'qui/classes/DOM',
-    'Ajax'
+    'Ajax',
+    'package/sequry/core/bin/AuthAjax'
 
-], function (QUI, QUIDOM, Ajax) {
+], function (QUIAjax, AuthAjax) {
     "use strict";
 
-    var pkg = 'pcsg/grouppasswordmanager';
+    var pkg = 'sequry/core';
 
     return new Class({
 
-        Extends: QUIDOM,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
+        Type: 'package/sequry/core/bin/classes/Passwords',
 
         /**
          * Search categories
@@ -33,7 +30,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         getPasswords: function (SearchParams) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getList', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_passwords_getList', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     searchParams: JSON.encode(SearchParams)
@@ -45,17 +42,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get all data of single password object (authentication required!)
          *
          * @param {number} passwordId
-         * @param {object} AuthData
-         * @returns {*}
+         * @returns {Promise}
          */
-        get: function (passwordId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_get', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId,
-                    authData  : JSON.encode(AuthData)
-                });
+        get: function (passwordId) {
+            return AuthAjax.get('package_sequry_core_ajax_passwords_get', {
+                passwordId: passwordId
             });
         },
 
@@ -63,17 +54,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get view data of single password object (authentication required!)
          *
          * @param {number} passwordId
-         * @param {object} AuthData
-         * @returns {*}
+         * @returns {Promise}
          */
-        getView: function (passwordId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getView', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId,
-                    authData  : JSON.encode(AuthData)
-                });
+        getView: function (passwordId) {
+            return AuthAjax.get('package_sequry_core_ajax_passwords_getView', {
+                passwordId: passwordId
             });
         },
 
@@ -81,17 +66,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get all users and groups a password is shared with (authentication required!)
          *
          * @param {number} passwordId
-         * @param {object} AuthData
          * @returns {Promise}
          */
-        getShareUsersAndGroups: function (passwordId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId,
-                    authData  : JSON.encode(AuthData)
-                });
+        getShareUsersAndGroups: function (passwordId) {
+            return AuthAjax.get('package_sequry_core_ajax_passwords_getShareUsersAndGroups', {
+                passwordId: passwordId
             });
         },
 
@@ -99,17 +78,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Get share data of single password object (authentication required!)
          *
          * @param {number} passwordId
-         * @param {object} AuthData
          * @returns {Promise}
          */
-        getShareData: function (passwordId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getShareData', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId,
-                    authData  : JSON.encode(AuthData)
-                });
+        getShareData: function (passwordId) {
+            return AuthAjax.get('package_sequry_core_ajax_passwords_getShareData', {
+                passwordId: passwordId
             });
         },
 
@@ -118,33 +91,27 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          *
          * @param {number} passwordId
          * @param {array} shareData
-         * @param {object} AuthData
-         * @returns {*}
+         * @returns {Promise}
          */
-        setShareData: function (passwordId, shareData, AuthData) {
-            return new Promise(function (resolve, reject) {
-                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_setShareData', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId,
-                    shareData : JSON.encode(shareData),
-                    authData  : JSON.encode(AuthData)
-                });
+        setShareData: function (passwordId, shareData) {
+            return AuthAjax.post('package_sequry_core_ajax_passwords_setShareData', {
+                passwordId: passwordId,
+                shareData : JSON.encode(shareData)
             });
         },
 
         /**
-         * Get ID of current security class of a password
+         * Get security class IDs of multiple passwords
          *
-         * @param {number} passwordId
+         * @param {Array} passwordIds
          * @returns {Promise}
          */
-        getSecurityClassId: function (passwordId) {
+        getSecurityClassIds: function (passwordIds) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassId', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId
+                QUIAjax.get('package_sequry_core_ajax_passwords_getSecurityClassIds', resolve, {
+                    'package'  : pkg,
+                    onError    : reject,
+                    passwordIds: JSON.encode(passwordIds)
                 });
             });
         },
@@ -157,7 +124,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         getAccessInfo: function (passwordId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getAccessInfo', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_passwords_getAccessInfo', resolve, {
                     'package' : pkg,
                     onError   : reject,
                     passwordId: passwordId
@@ -173,7 +140,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         createPassword: function (PasswordData) {
             return new Promise(function (resolve, reject) {
-                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_create', resolve, {
+                QUIAjax.post('package_sequry_core_ajax_passwords_create', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     passwordData: JSON.encode(PasswordData)
@@ -186,17 +153,75 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          *
          * @param {number} passwordId - password ID
          * @param {Object} PasswordData - password data
-         * @param {Object} AuthData - Authentication data
          * @returns {Promise}
          */
-        editPassword: function (passwordId, PasswordData, AuthData) {
+        editPassword: function (passwordId, PasswordData) {
+            return AuthAjax.post('package_sequry_core_ajax_passwords_edit', {
+                passwordId  : passwordId,
+                passwordData: JSON.encode(PasswordData)
+            });
+        },
+
+        /**
+         * Create a new PasswordLink (authentication required!)
+         *
+         * @param {number} passwordId - password ID
+         * @param {Object} LinkData - PasswordLink data
+         * @returns {Promise}
+         */
+        createLink: function (passwordId, LinkData) {
+            return AuthAjax.post('package_sequry_core_ajax_passwords_link_create', {
+                passwordId: passwordId,
+                linkData  : JSON.encode(LinkData)
+            });
+        },
+
+        /**
+         * Permanently deactivate a PasswordLink (authentication required!)
+         *
+         * @param {number} linkId - PasswordLink ID
+         * @returns {Promise}
+         */
+        deactivateLink: function (linkId) {
             return new Promise(function (resolve, reject) {
-                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_edit', resolve, {
-                    'package'   : pkg,
-                    onError     : reject,
-                    passwordId  : passwordId,
-                    passwordData: JSON.encode(PasswordData),
-                    authData    : JSON.encode(AuthData)
+                QUIAjax.post(
+                    'package_sequry_core_ajax_passwords_link_deactivate',
+                    resolve, {
+                        'package': pkg,
+                        onError  : reject,
+                        linkId   : linkId
+                    }
+                );
+            });
+        },
+
+        /**
+         * Get list of PasswordLinks
+         *
+         * @param {number} passwordId - password ID
+         * @param {Object} SearchParams
+         * @returns {Promise}
+         */
+        getLinkList: function (passwordId, SearchParams) {
+            return AuthAjax.get('package_sequry_core_ajax_passwords_link_getList', {
+                passwordId  : passwordId,
+                searchParams: JSON.encode(SearchParams),
+                'package'   : 'sequry/core'
+            });
+        },
+
+        /**
+         * Get title and description of a password for Link creation
+         *
+         * @param {number} passwordId - password ID
+         * @returns {Promise}
+         */
+        getLinkPasswordData: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_passwords_link_getPasswordData', resolve, {
+                    passwordId: passwordId,
+                    'package' : pkg,
+                    onError   : reject
                 });
             });
         },
@@ -205,17 +230,11 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          * Delete a password object
          *
          * @param {number} passwordId - password ID
-         * @param {Object} AuthData - Authentication data
          * @returns {Promise}
          */
-        deletePassword: function (passwordId, AuthData) {
-            return new Promise(function (resolve, reject) {
-                Ajax.post('package_pcsg_grouppasswordmanager_ajax_passwords_delete', resolve, {
-                    'package' : pkg,
-                    onError   : reject,
-                    passwordId: passwordId,
-                    authData  : JSON.encode(AuthData)
-                });
+        deletePassword: function (passwordId) {
+            return AuthAjax.post('package_sequry_core_ajax_passwords_delete', {
+                passwordId: passwordId
             });
         },
 
@@ -226,7 +245,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         getTypes: function () {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwordtypes_getList', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_passwordtypes_getList', resolve, {
                     'package': pkg,
                     onError  : reject
                 });
@@ -241,10 +260,96 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Passwords', [
          */
         getAvailableAuthPluginsInfo: function (passwordId) {
             return new Promise(function (resolve, reject) {
-                Ajax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPluginsInfo', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_passwords_getAvailableAuthPluginsInfo', resolve, {
                     'package' : pkg,
                     onError   : reject,
                     passwordId: passwordId
+                });
+            });
+        },
+
+        /**
+         * Set password favorite status
+         *
+         * @param {number} passwordId
+         * @param {bool} status
+         * @return {Promise}
+         */
+        setFavoriteStatus: function (passwordId, status) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post(
+                    'package_sequry_core_ajax_passwords_setFavoriteStatus',
+                    resolve, {
+                        'package' : pkg,
+                        onError   : reject,
+                        passwordId: passwordId,
+                        status    : status ? 1 : 0
+                    }
+                );
+            });
+        },
+
+        /**
+         * Opens the password list panel
+         *
+         * @return {Promise}
+         */
+        openPasswordListPanel: function () {
+            return new Promise(function (resolve) {
+                require([
+                    'package/sequry/core/bin/controls/passwords/Panel',
+                    'utils/Panels'
+                ], function (PasswordManager, PanelUtils) {
+                    var PasswordManagerPanel = new PasswordManager({
+                        events: {
+                            onLoaded: function (Panel) {
+                                resolve(Panel);
+                                window.PasswordList = Panel;
+                            }
+                        }
+                    });
+
+                    PanelUtils.openPanelInTasks(PasswordManagerPanel).then(function (Panel) {
+                        Panel.open();
+                        Panel.addEvents({
+                            onDestroy: function () {
+                                window.PasswordList = null;
+                            }
+                        });
+
+                        if (window.PasswordList) {
+                            window.PasswordList = Panel;
+                            resolve(window.PasswordList);
+                        }
+                    });
+                });
+            });
+        },
+
+        /**
+         * Generate a random password
+         *
+         * @returns {Promise}
+         */
+        generateRandomPassword: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_passwords_generateRandom', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Checks if system is set up to use Sequry
+         *
+         * @return {Promise}
+         */
+        isSetupComplete: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_isSetupComplete', resolve, {
+                    'package': pkg,
+                    onError  : reject
                 });
             });
         }

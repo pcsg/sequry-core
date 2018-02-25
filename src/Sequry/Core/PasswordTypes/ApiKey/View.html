@@ -1,0 +1,45 @@
+<table class="data-table data-table-flexbox">
+    <thead>
+    <tr>
+        <th>
+            {{labelTitle}}
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelUrl}}">
+                    {{labelUrl}}
+                </span>
+                <div class="field-container-field">
+                    <a href="{{url}}" target="_blank">{{url}}</a>
+                </div>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelKey}}">
+                    {{labelKey}}
+                </span>
+                <input value="{{key}}" type="text" class="gpm-passwordtypes-copy field-container-field" readonly>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
+                <span class="field-container-item" title="{{labelNote}}">
+                    {{labelNote}}
+                </span>
+                <div class="field-container-field gpm-passwordtypes-textarea gpm-passwordtypes-copy">
+                    {{note}}
+                </div>
+            </label>
+        </td>
+    </tr>
+    </tbody>
+</table>

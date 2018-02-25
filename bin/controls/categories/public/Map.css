@@ -1,0 +1,9 @@
+.pcsg-gpm-passwords-categories-map {
+    float: left;
+    /*height: 100%;*/
+    width: 100%;
+}
+
+.pcsg-gpm-categories-map-empty {
+    color: #94928c;
+}

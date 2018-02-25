@@ -30,21 +30,30 @@
                 <span class="field-container-item" title="{{passwordTitle}}">
                     {{passwordTitle}}
                 </span>
-                <span class="field-container-field">
-                    <input type="text" class="pcsg-gpm-password-title"/>
-                </span>
+                <input type="text"
+                       class="field-container-field pcsg-gpm-password-title"/>
             </label>
         </td>
     </tr>
     <tr>
         <td>
             <label class="field-container">
-                <span class="field-container-item" title="{{passwordDescription}}">
+                <span class="field-container-item"
+                      title="{{passwordDescription}}">
                     {{passwordDescription}}
                 </span>
-                <span class="field-container-field">
-                    <input type="text" class="pcsg-gpm-password-description"/>
+                <input type="text"
+                       class="field-container-field pcsg-gpm-password-description"/>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
+                <span class="field-container-item" title="{{passwordOwner}}">
+                    {{{passwordOwner}}}
                 </span>
+                <div class="field-container-field pcsg-gpm-password-owner"></div>
             </label>
         </td>
     </tr>
@@ -63,13 +72,10 @@
     <tbody>
     <tr>
         <td>
-            <label class="field-container">
-                <span class="field-container-item" title="{{passwordPayload}}">
-                    {{passwordPayload}}
-                </span>
+            <div class="field-container">
                 <span class="field-container-field pcsg-gpm-password-payload">
                 </span>
-            </label>
+            </div>
         </td>
     </tr>
     </tbody>
@@ -79,7 +85,7 @@
     <thead>
     <tr>
         <th>
-            {{owner}}
+            {{extra}}
         </th>
     </tr>
     </thead>
@@ -88,12 +94,23 @@
     <tr>
         <td>
             <label class="field-container">
-                <span class="field-container-item" title="{{passwordOwner}}">
-                    {{passwordOwner}}
+                <span class="field-container-item" title="{{passwordCategory}}">
+                    {{passwordCategory}}
                 </span>
-                <span class="field-container-field pcsg-gpm-password-owner">
-
+                <div class="field-container-field pcsg-gpm-password-edit-category">
+                </div>
+            </label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label class="field-container">
+                <span class="field-container-item"
+                      title="{{passwordCategoryPrivate}}">
+                    {{passwordCategoryPrivate}}
                 </span>
+                <div class="field-container-field pcsg-gpm-password-edit-category-private">
+                </div>
             </label>
         </td>
     </tr>

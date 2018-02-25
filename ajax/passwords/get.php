@@ -1,31 +1,62 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Exception\InvalidAuthDataException;
 
 /**
  * Get edit data from password object
  *
  * @param integer $passwordId - ID of password
- * @param array $authData - authentication information
- * @return array - password data
+ * @return array|false - password data or false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId, $authData)
+function package_sequry_core_ajax_passwords_get($passwordId)
 {
     $passwordId = (int)$passwordId;
 
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
+    try {
+        // get password data
+        $Password = Passwords::get($passwordId);
+        $data     = $Password->getData();
 
-    // get password data
-    return Passwords::get($passwordId)->getData();
+        $Password->increasePublicViewCount();
+
+        // increase personal view count
+        $CryptoUser = CryptoActors::getCryptoUser();
+        $CryptoUser->increasePasswordViewCount($passwordId);
+
+        return $data;
+    } catch (QUI\Exception $Exception) {
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'sequry/core',
+                'message.ajax.passwords.get.error',
+                array(
+                    'error'      => $Exception->getMessage(),
+                    'passwordId' => $passwordId
+                )
+            )
+        );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_sequry_core_ajax_passwords_get -> ' . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'sequry/core',
+                'message.general.error'
+            )
+        );
+
+        return false;
+    }
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_get',
-    array('passwordId', 'authData'),
+    'package_sequry_core_ajax_passwords_get',
+    array('passwordId'),
     'Permission::checkAdminUser'
 );

@@ -5,7 +5,7 @@ Passwort-Manager für Gruppen und Benutzer
 
 Paketname:
 
-    pcsg/grouppasswordmanager
+    sequry/core
 
 
 Features (Funktionen)
@@ -23,25 +23,37 @@ Passwort-Manager zur Verwaltung von Passwörtern bzw. geheimen Daten:
 Installation
 ------------
 
-Der Paketname ist: pcsg/grouppasswordmanager
+Der Paketname ist: sequry/core
 
 
 Abhängigkeiten
 ------------
 
-* PHP >= 5.6
+* PHP >= 7.0
 * PHP-Modul `bcmath` -> `sudo apt-get install php-bcmath`
 * libsodium (**Reihenfolge beachten!**) [s. auch: https://paragonie.com/book/pecl-libsodium/read/00-intro.md#installing-libsodium]
   1. `sudo apt-get install php-dev`
-  2. `sudo apt-get install libsodium-dev`
-  3. `sudo pecl install libsodium`
-* scrypt (`sudo pecl install scrypt`) [s. auch: https://github.com/DomBlack/php-scrypt]
+  2. libsodium library installieren: Es wird **mindestens** Version `1.0.9` vorausgesetzt!
+    * Bei Ubuntu >= `16.10`: `sudo apt-get install libsodium-dev`
+    * Bei Ubuntu <= `16.04` muss selbst kompiliert werden:
+        * `sudo apt-get install build-essential`
+        * `git clone -b stable https://github.com/jedisct1/libsodium.git`
+        * `cd libsodium`
+        * `sudo ./configure && make check && make install`
+        * `cd /usr/lib/x86_64-linux-gnu/`
+        * Wenn der symlink `libsodium.so` schon existiert: `sudo rm libsodium.so`
+        * Wenn der symlink `libsodium.so.18` schon existiert: `sudo rm libsodium.so.18`
+        * `sudo ln -s /usr/local/lib/libsodium.so libsodium.so`
+        * `sudo ln -s /usr/local/lib/libsodium.so libsodium.so.18`
+        * `sudo pecl install libsodium`
+    * Alternativ können für die Installation von `libsodium-dev` für Ubuntu `16.04` zwei `.deb`-Pakete <a href="#">heruntergeladen werden</a>
+       * Nach dem Download: `sudo dpkg -i libsodium18-1.0.11.deb libsodium-dev-1.0.11.deb`
 
 Mitwirken
 ----------
 
-- Issue Tracker:    https://dev.quiqqer.com/pcsg/grouppasswordmanager/issues
-- Source Code:      https://dev.quiqqer.com/pcsg/grouppasswordmanager/tree/dev
+- Issue Tracker:    https://dev.quiqqer.com/sequry/core/issues
+- Source Code:      https://dev.quiqqer.com/sequry/core/tree/dev
 
 
 Support

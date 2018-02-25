@@ -6,7 +6,7 @@
  * @param integer $userId - ID of user
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
+function package_sequry_core_ajax_actors_sendInstructions($userId)
 {
     $User = QUI::getUsers()->get($userId);
 
@@ -15,11 +15,11 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
     if (empty($emailAddress)) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'exception.actors.sendinstructions.no.email.address',
                 array(
                     'userId'   => $User->getId(),
-                    'userName' => $User->getUsername()
+                    'userName' => $User->getName()
                 )
             )
         );
@@ -36,18 +36,18 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
 
     $Mailer->setBody(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'actors.sendinstructions.instructions',
             array(
-                'userName' => $User->getUsername(),
-                'url'      => $_SERVER['HTTP_ORIGIN'] . '/admin/'
+                'userName' => $User->getName(),
+                'url'      => 'https://' . $_SERVER['SERVER_NAME'] . '/admin/'
             )
         )
     );
 
     $Mailer->setSubject(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'actors.sendinstructions.subject'
         )
     );
@@ -61,7 +61,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.actors.sendinstructions'
             )
         );
@@ -71,7 +71,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'success.actors.sendinstructions'
         )
     );
@@ -83,7 +83,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions($userId)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions',
+    'package_sequry_core_ajax_actors_sendInstructions',
     array('userId'),
     'Permission::checkAdminUser'
 );

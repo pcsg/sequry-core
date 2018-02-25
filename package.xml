@@ -1,0 +1,18 @@
+
+
+<quiqqer>
+    <package>
+        <title>
+            <locale group="sequry/core" var="package.title"/>
+        </title>
+
+        <description>
+            <locale group="sequry/core" var="package.description"/>
+        </description>
+
+        <provider>
+            <desktopSearch src="\Sequry\Core\DesktopSearch" />
+        </provider>
+
+    </package>
+</quiqqer>

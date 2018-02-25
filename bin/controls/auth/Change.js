@@ -1,46 +1,37 @@
 /**
  * Control for changing authentication information
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Change
+ * @module package/sequry/core/bin/controls/auth/Change
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css
- *
- * @event onFinish
+ * @event onLoaded [this] - fires when control has finished loading
+ * @event onFinish [this] - fires if the user successfully committed new auth information
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
+define('package/sequry/core/bin/controls/auth/Change', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
-    'qui/utils/Form',
+    'qui/controls/loader/Loader',
+
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/controls/auth/recovery/CodePopup',
 
-    'Ajax',
+    'text!package/sequry/core/bin/controls/auth/Change.html',
+    'css!package/sequry/core/bin/controls/auth/Change.css'
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css'
-
-], function (QUI, QUIControl, QUIButton, QUIFormUtils, QUILocale, Mustache,
-             AuthHandler, Ajax, template) {
+], function (QUIControl, QUIButton, QUILoader, QUILocale, Mustache,
+             Authentication, RecoveryCodePopup, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler();
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
+        Type   : 'package/sequry/core/bin/controls/auth/Change',
 
         Binds: [
             '$onInject',
@@ -62,8 +53,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
                 onInject: this.$onInject
             });
 
-            this.$Parent       = this.getAttribute('Parent');
-            this.$recoveryMode = false;
+            this.Loader             = new QUILoader();
+            this.$Parent            = this.getAttribute('Parent');
+            this.$AuthControl       = null;
+            this.$ChangeAuthControl = null;
 
             if (this.$Parent) {
                 this.$Parent.addEvents({
@@ -78,51 +71,68 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
          * @return {HTMLDivElement}
          */
         create: function () {
-            var self      = this,
-                lg_prefix = 'auth.change.template.';
+            var self         = this,
+                lg_prefix    = 'auth.change.template.',
+                authPluginId = self.getAttribute('authPluginId');
 
             this.$Elm = this.parent();
 
-            this.$Elm.set({
-                'class': 'pcsg-gpm-auth-register',
-                html   : Mustache.render(template, {
-                    title    : QUILocale.get(lg, lg_prefix + 'title'),
-                    basicData: QUILocale.get(lg, lg_prefix + 'basicData'),
-                    recovery : QUILocale.get(lg, lg_prefix + 'recovery')
-                })
-            });
+            this.Loader.inject(this.$Elm);
+            this.Loader.show();
 
-            new QUIButton({
-                textimage: 'fa fa-question-circle',
-                text     : QUILocale.get(lg, 'auth.change.btn.recovery'),
-                events   : {
-                    onClick: this.$showRecovery
-                }
-            }).inject(
-                this.$Elm.getElement(
-                    '.pcsg-gpm-auth-change-recovery'
-                )
-            );
+            Promise.all([
+                Authentication.getAuthPluginInfo(authPluginId),
+                Authentication.getAuthenticationControl(authPluginId),
+                Authentication.getChangeAuthenticationControl(authPluginId)
+            ]).then(function (result) {
+                var AuthPlugin = result[0];
 
-            var AuthPluginControlElm = this.$Elm.getElement(
-                '.pcsg-gpm-auth-change-control'
-            );
+                // set template data
+                self.$Elm.set({
+                    'class': 'pcsg-gpm-auth-register',
+                    html   : Mustache.render(template, {
+                        title      : QUILocale.get(lg, lg_prefix + 'title', {
+                            authPluginTitle: AuthPlugin.title
+                        }),
+                        authData   : QUILocale.get(lg, lg_prefix + 'authData'),
+                        newAuthData: QUILocale.get(lg, lg_prefix + 'newAuthData')
+                    })
+                });
 
-            Authentication.getChangeAuthenticationControl(
-                this.getAttribute('authPluginId')
-            ).then(function (authPluginControlPath) {
-                require([
-                    authPluginControlPath
-                ], function (Control) {
-                    self.$AuthPluginControl = new Control({
+                var AuthDataElm    = self.$Elm.getElement('.pcsg-gpm-auth-control');
+                var NewAuthDataElm = self.$Elm.getElement('.pcsg-gpm-auth-change-control');
+
+                // recovery button
+                new QUIButton({
+                    textimage: 'fa fa-question-circle',
+                    text     : QUILocale.get(lg, 'auth.change.btn.recovery'),
+                    events   : {
+                        onClick: self.$showRecovery
+                    }
+                }).inject(
+                    self.$Elm.getElement('.pcsg-gpm-auth-recovery')
+                );
+
+                // load controls
+                var controlPaths = [result[1], result[2]];
+
+                require(controlPaths, function (AuthControl, ChangeAuthControl) {
+                    self.$AuthControl = new AuthControl({
                         events: {
                             onSubmit: self.submit
                         }
-                    }).inject(
-                        AuthPluginControlElm
-                    );
+                    }).inject(AuthDataElm, 'top');
 
-                    self.fireEvent('finish');
+                    self.$AuthControl.focus();
+
+                    self.$ChangeAuthControl = new ChangeAuthControl({
+                        events: {
+                            onSubmit: self.submit
+                        }
+                    }).inject(NewAuthDataElm);
+
+                    self.Loader.hide();
+                    self.fireEvent('loaded', [self]);
                 });
             });
 
@@ -133,84 +143,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
          * Show recovery information and input
          */
         $showRecovery: function () {
-            var self = this;
-
-            Authentication.getRecoveryCodeId(
-                this.getAttribute('authPluginId')
-            ).then(function(recoveryCodeId) {
-                if (!recoveryCodeId) {
-                    return;
-                }
-
-                self.$recoveryMode = true;
-
-                var RecoveryElm = self.$Elm.getElement(
-                    '.pcsg-gpm-auth-change-recovery'
-                );
-
-                RecoveryElm.set(
-                    'html',
-                    '<span class="pcsg-gpm-auth-change-recovery-info">' + QUILocale.get(lg, 'auth.recovery.information') + '</span>' +
-                    '<span class="pcsg-gpm-auth-change-recovery-code">' +
-                        QUILocale.get(lg, 'auth.recovery.code', {
-                            recoveryCodeId: recoveryCodeId
-                        }) +
-                    '</span>' +
-                    '<div class="pcsg-gpm-auth-change-recovery-inputs"></div>'
-                );
-
-                var InputsElm = RecoveryElm.getElement('.pcsg-gpm-auth-change-recovery-inputs');
-
-                for (var i = 0; i < 5; i++) {
-                    var InputElm = new Element('input', {
-                        'class'  : 'pcsg-gpm-auth-change-recovery-input',
-                        'data-id': i + 1,
-                        type     : 'text',
-                        maxlength: 5,
-                        events   : {
-                            input: function (event) {
-                                var Elm = event.target;
-
-                                if (Elm.value.length < 5) {
-                                    return;
-                                }
-
-                                var id = parseInt(Elm.getProperty('data-id'));
-
-                                if (id === 5) {
-                                    return;
-                                }
-
-                                RecoveryElm.getElement('input[data-id="' + (id + 1) + '"]').focus();
-                            }
-                        }
-                    }).inject(InputsElm);
-
-                    if (i === 0) {
-                        InputElm.focus();
-                    }
-                }
-            });
-        },
-
-        /**
-         * Get recovery code
-         *
-         * @return {string} - the recovery code
-         */
-        $getRecoveryCode: function () {
-            if (!this.$recoveryMode) {
-                return;
-            }
-
-            var inputs = this.$Elm.getElement('.pcsg-gpm-auth-change-recovery-inputs').getElements('input');
-            var code   = '';
-
-            for (var i = 0, len = inputs.length; i < len; i++) {
-                code += inputs[i].value;
-            }
-
-            return code;
+            this.$Parent.recoverAuthData(this.getAttribute('authPluginId'));
+            this.fireEvent('finish', [this]);
         },
 
         /**
@@ -221,36 +155,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
         },
 
         /**
-         * Check validity of changes
-         *
-         * @return {boolean}
-         */
-        check: function () {
-            if (!this.$recoveryMode) {
-                return this.$AuthPluginControl.check();
-            }
-
-            return true;
-        },
-
-        /**
-         * Change current user with plugin
-         *
-         * @returns {Promise}
+         * Submit new authentication information
          */
         submit: function () {
-            var OldAuthData = this.$AuthPluginControl.getOldAuthData();
+            var self         = this;
+            var authPluginId = this.getAttribute('authPluginId');
 
-            if (this.$recoveryMode) {
-                OldAuthData = this.$getRecoveryCode();
-            }
+            Authentication.changeAuthInformation(
+                authPluginId,
+                self.$AuthControl.getAuthData(),
+                self.$ChangeAuthControl.getAuthData()
+            ).then(function (RecoveryCodeData) {
+                if (!RecoveryCodeData) {
+                    return;
+                }
 
-            return Authentication.changeAuthInformation(
-                this.getAttribute('authPluginId'),
-                OldAuthData,
-                this.$AuthPluginControl.getNewAuthData(),
-                this.$recoveryMode
-            );
+                new RecoveryCodePopup({
+                    RecoveryCodeData: RecoveryCodeData,
+                    events          : {
+                        onClose: function () {
+                            self.fireEvent('finish', [self]);
+                        }
+                    }
+                }).open();
+            });
         }
     });
 });

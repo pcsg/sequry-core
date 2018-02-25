@@ -1,43 +1,45 @@
 /**
  * Control for password content input with different types
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit
+ * @module package/sequry/core/bin/controls/passwordtypes/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/passwordtypes/Edit.html
+ * @require css!package/sequry/core/bin/controls/passwordtypes/Edit.css
  *
  * @event onLoaded [this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
+define('package/sequry/core/bin/controls/passwordtypes/Edit', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
+    'qui/controls/loader/Loader',
 
     'Ajax',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
+    'package/sequry/core/bin/controls/passwordtypes/Select',
+    'package/sequry/core/bin/Passwords',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.css'
+    'css!package/sequry/core/bin/controls/passwordtypes/Edit.css'
 
-], function (QUIControl, QUIButton, QUIAjax, QUILocale, TypeSelect) {
+], function (QUIControl, QUIButton, QUILoader, QUIAjax, QUILocale, TypeSelect, Passwords) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit',
+        Type   : 'package/sequry/core/bin/controls/passwordtypes/Edit',
 
         Binds: [
             '$onInject',
@@ -52,6 +54,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
         initialize: function (options) {
             this.parent(options);
             this.$TypeSelect = null;
+
+            this.Loader = new QUILoader();
 
             this.addEvents({
                 onInject: this.$onInject
@@ -71,6 +75,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                 html   : '<div class="pcsg-gpm-password-types-edit-select"></div>' +
                 '<div class="pcsg-gpm-password-types-edit-content"></div>'
             });
+
+            this.Loader.inject(this.$Elm);
 
             this.$EditContent = this.$Elm.getElement('.pcsg-gpm-password-types-edit-content');
 
@@ -105,12 +111,15 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
             var self = this;
 
             QUIAjax.get(
-                'package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml',
+                'package_sequry_core_ajax_passwordtypes_getEditHtml',
                 function (templateHtml) {
                     self.$EditContent.set('html', templateHtml);
+                    //self.$EditContent.getElement('table').addClass(
+                    //    'pcsg-gpm-password-payload-table'
+                    //);
                     self.$parseTemplate();
                 }, {
-                    'package': 'pcsg/grouppasswordmanager',
+                    'package': 'sequry/core',
                     type     : this.getAttribute('type')
                 }
             );
@@ -128,8 +137,34 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
          */
         $parseTemplate: function () {
             // show/hide elements
+            var self         = this;
             var Elm;
-            var showHideElms = this.$Elm.getElements('.pwm-passwordtypes-show');
+            var showHideElms = this.$Elm.getElements('.gpm-passwordtypes-show');
+
+            var FuncOnShowBtnClick = function (Btn) {
+                var Elm = Btn.getAttribute('Elm');
+
+                if (Btn.getAttribute('action') === 'show') {
+                    Btn.setAttributes({
+                        icon  : 'fa fa-eye-slash',
+                        action: 'hide'
+                    });
+
+                    Elm.setProperty('type', 'text');
+                    Elm.focus();
+                    Elm.select();
+
+                    return;
+                }
+
+                Btn.setAttributes({
+                    icon  : 'fa fa-eye',
+                    action: 'show'
+                });
+
+                Elm.setProperty('type', 'password');
+                Elm.blur();
+            };
 
             for (var i = 0, len = showHideElms.length; i < len; i++) {
                 Elm = showHideElms[i];
@@ -141,35 +176,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                     title : QUILocale.get(lg, 'controls.passwordtypes.edit.show.btn'),
                     action: 'show',
                     events: {
-                        onClick: function (Btn) {
-                            var Elm = Btn.getAttribute('Elm');
-
-                            if (Btn.getAttribute('action') === 'show') {
-                                Btn.setAttributes({
-                                    icon  : 'fa fa-eye-slash',
-                                    action: 'hide'
-                                });
-
-                                Elm.setProperty('type', 'text');
-                                Elm.focus();
-                                Elm.select();
-
-                                return;
-                            }
-
-                            Btn.setAttributes({
-                                icon  : 'fa fa-eye',
-                                action: 'show'
-                            });
-
-                            Elm.setProperty('type', 'password');
-                            Elm.blur();
-                        }
+                        onClick: FuncOnShowBtnClick
                     }
-                }).inject(Elm.getParent(), 'after');
+                }).inject(Elm.getParent());
             }
 
-            var rndPassElms = this.$Elm.getElements('.pwm-passwordtypes-randompassword');
+            var rndPassElms = this.$Elm.getElements('.gpm-passwordtypes-randompassword');
+
+            var FuncOnRndBtnClick = function (Btn) {
+                var Elm = Btn.getAttribute('Elm');
+
+                self.Loader.show();
+
+                Passwords.generateRandomPassword().then(function (rndPassword) {
+                    Elm.value = rndPassword;
+                    self.Loader.hide();
+                });
+            };
 
             for (i = 0, len = rndPassElms.length; i < len; i++) {
                 Elm = rndPassElms[i];
@@ -180,12 +203,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                     title : QUILocale.get(lg, 'controls.passwordtypes.edit.rnd.btn'),
                     icon  : 'fa fa-random',
                     events: {
-                        onClick: function (Btn) {
-                            var Elm   = Btn.getAttribute('Elm');
-                            Elm.value = Math.random().toString(36).slice(-16);
-                        }
+                        onClick: FuncOnRndBtnClick
                     }
-                }).inject(Elm.getParent(), 'after');
+                }).inject(Elm.getParent());
             }
 
             this.fireEvent('loaded', [this]);

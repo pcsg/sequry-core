@@ -41,7 +41,7 @@ class PhpGenerator implements Generator
      */
     public function getRandomInt()
     {
-        $random = mt_rand($this->min, $this->max);
+        $random = random_int($this->min, $this->max);
         if ($random === false ) {
             throw new \RuntimeException(
                 'Random number generator algorithm failed.'

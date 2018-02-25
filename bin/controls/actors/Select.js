@@ -1,37 +1,47 @@
 /**
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/Select
+ * @module package/sequry/core/bin/controls/actors/Select
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/elements/Select
+ * @require package/sequry/core/bin/controls/actors/SelectTablePopup
  * @require Ajax
  * @require Locale
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
+define('package/sequry/core/bin/controls/actors/Select', [
 
     'qui/QUI',
     'qui/controls/elements/Select',
+
+    'package/sequry/core/bin/controls/actors/SelectTablePopup',
+
     'Ajax',
     'Locale'
 
-], function (QUI, QUIElementSelect, QUIAjax, QUILocale) {
+], function (QUI, QUIElementSelect, SelectTablePopup, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIElementSelect,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
+        Type   : 'package/sequry/core/bin/controls/actors/Select',
 
         Binds: [
-            'actorSearch'
+            'actorSearch',
+            '$onSearchButtonClick'
         ],
 
         options: {
-            actorType      : 'all', // "users", "groups", "all"
-            securityClassId: false,  // id of security class this actors are searched for
-            Search         : false
+            popupInfo        : '',    // info that is shown in the ActorSelect Popup
+            actorType        : 'all', // "users", "groups", "all"
+            securityClassId  : false,  // id of security class this actors are searched for
+            Search           : false,
+            filterActorIds   : [],   // IDs of actors that are filtered from list (entries must have
+            // prefix "u" (user) or "g" (group)
+            showEligibleOnly : false,      // show eligible only or all
+            selectedActorType: 'users' // pre-selected actor type
         },
 
         initialize: function (options) {
@@ -66,8 +76,11 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
                 this.setAttribute('Search', this.actorSearch);
             }
 
-            this.setAttribute('child', 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem');
-            this.setAttribute('searchbutton', false);
+            this.setAttribute('child', 'package/sequry/core/bin/controls/actors/SelectItem');
+
+            this.addEvents({
+                onSearchButtonClick: this.$onSearchButtonClick
+            });
         },
 
         /**
@@ -80,8 +93,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             var self = this;
 
             return new Promise(function (resolve) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_search', resolve, {
-                    'package'      : 'pcsg/grouppasswordmanager',
+                QUIAjax.get('package_sequry_core_ajax_actors_suggestSearch', resolve, {
+                    'package'      : 'sequry/core',
                     type           : self.getAttribute('actorType'),
                     search         : value,
                     securityClassId: self.getAttribute('securityClassId'),
@@ -108,7 +121,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             actorIds = actorIds.split(',');
 
             for (var i = 0, len = actorIds.length; i < len; i++) {
-                var id = actorIds[0];
+                var id = actorIds[i];
 
                 // is user
                 if (id.charAt(0) === 'u') {
@@ -128,6 +141,41 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             }
 
             return actors;
+        },
+
+        /**
+         * Event: onSearchButtonClick
+         */
+        $onSearchButtonClick: function () {
+            var self           = this;
+            var filterActorIds = Array.clone(this.getAttribute('filterActorIds'));
+
+            if (this.getValue() !== '') {
+                filterActorIds.combine(this.getValue().split(','));
+            }
+
+            new SelectTablePopup({
+                info             : this.getAttribute('popupInfo'),
+                securityClassId  : this.getAttribute('securityClassId'),
+                multiselect      : this.getAttribute('multiple'),
+                actorType        : this.getAttribute('actorType'),
+                showEligibleOnly : this.getAttribute('showEligibleOnly'),
+                selectedActorType: this.getAttribute('selectedActorType'),
+                filterActorIds   : filterActorIds,
+                events           : {
+                    onSubmit: function (ids, actorType) {
+                        var prefix = 'u';
+
+                        if (actorType === 'groups') {
+                            prefix = 'g';
+                        }
+
+                        for (var i = 0, len = ids.length; i < len; i++) {
+                            self.addItem(prefix + ids[i]);
+                        }
+                    }
+                }
+            }).open();
         }
     });
 });

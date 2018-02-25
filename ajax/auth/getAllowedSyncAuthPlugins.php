@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Constants\Tables;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Constants\Tables;
 
 /**
  * Get IDs of authentication plugins that are allowed to be used for a sync operation
@@ -10,7 +10,7 @@ use Pcsg\GroupPasswordManager\Constants\Tables;
  * @param integer $authPluginId - id of auth plugin
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins($authPluginId)
+function package_sequry_core_ajax_auth_getAllowedSyncAuthPlugins($authPluginId)
 {
     $AuthPlugin                   = Authentication::getAuthPlugin((int)$authPluginId);
     $CryptoUser                   = CryptoActors::getCryptoUser();
@@ -31,7 +31,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins($
                 'groupId',
                 'userKeyPairId'
             ),
-            'from'   => Tables::USER_TO_GROUPS,
+            'from'   => Tables::usersToGroups(),
             'where'  => array(
                 'groupId'         => $CryptoGroup->getId(),
                 'userId'          => $CryptoUser->getId(),
@@ -66,7 +66,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins($
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins',
+    'package_sequry_core_ajax_auth_getAllowedSyncAuthPlugins',
     array('authPluginId'),
     'Permission::checkAdminUser'
 );

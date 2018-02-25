@@ -1,0 +1,133 @@
+<div class="pcsg-gpm-password-linkcreate-create">
+    <form class="pcsg-gpm-password-linkcreate-create-form">
+        <table class="data-table data-table-flexbox">
+            <thead>
+            <tr>
+                <th>
+                    {{tableHeader}}
+                </th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>
+                    <label class="field-container">
+                        <div class="field-container-item">
+                        <span title="{{maxCallsLabel}}">
+                            {{maxCallsLabel}}
+                        </span>
+                            <div class="pcsg-gpm-password-linkcreate-active">
+                                <input type="checkbox"
+                                       class="pcsg-gpm-password-linkcreate-maxCalls"
+                                       checked>
+                                <span>{{activeLabel}}</span>
+                            </div>
+                        </div>
+                        <input class="field-container-field pcsg-gpm-password-linkcreate-option"
+                               type="number" name="maxCalls" value="5" min="1">
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="field-container">
+                        <div class="field-container-item">
+                        <span title="{{validDateLabel}}">
+                            {{validDateLabel}}
+                        </span>
+                            <div class="pcsg-gpm-password-linkcreate-active">
+                                <input type="checkbox"
+                                       class="pcsg-gpm-password-linkcreate-validDate"
+                                       checked>
+                                <span>{{activeLabel}}</span>
+                            </div>
+                        </div>
+                        <div class="field-container-field">
+                            <input type="hidden" name="validDate" class="pcsg-gpm-password-linkcreate-option" value="1 week">
+                            <select name="validDateSelect">
+                                <option value="1 day">{{validDateOption1Day}}</option>
+                                <option value="3 day">{{validDateOption3Day}}</option>
+                                <option value="1 week" selected>{{validDateOption1Week}}</option>
+                                <option value="1 month">{{validDateOption1Month}}</option>
+                                <option value="date">{{validDateOptionDate}}</option>
+                            </select>
+                            <input type="date"
+                                   class="pcsg-gpm-password-linkcreate-date">
+                        </div>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="field-container">
+                        <div class="field-container-item">
+                        <span title="{{passwordLabel}}">
+                            {{passwordLabel}}
+                        </span>
+                            <div class="pcsg-gpm-password-linkcreate-active">
+                                <input type="checkbox"
+                                       class="pcsg-gpm-password-linkcreate-password">
+                                <span>{{activeLabel}}</span>
+                            </div>
+                        </div>
+                        <input class="field-container-field pcsg-gpm-password-linkcreate-option"
+                               type="text" name="password" disabled>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="field-container">
+                    <span class="field-container-item" title="{{titleLabel}}">
+                        {{titleLabel}}
+                    </span>
+                        <input type="text" class="field-container-field pcsg-gpm-password-linkcreate-option"
+                               name="title">
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="field-container">
+                    <span class="field-container-item" title="{{messageLabel}}">
+                        {{messageLabel}}
+                    </span>
+                        <textarea class="field-container-field pcsg-gpm-password-linkcreate-option"
+                                  name="message" rows="7"></textarea>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label class="field-container">
+                    <span class="field-container-item pcsg-gpm-password-linkcreate-longlabel"
+                          title="{{emailLabel}}">
+                        {{emailLabel}}
+                    </span>
+                        <input type="text" class="pcsg-gpm-password-linkcreate-emails">
+                        <input type="hidden" name="email" class="pcsg-gpm-password-linkcreate-option">
+                    </label>
+                </td>
+            </tr>
+            <tr class="pcsg-gpm-password-linkcreate-vhost pcsg-gpm-password-linkcreate__hidden">
+                <td>
+                    <label class="field-container">
+                    <span class="field-container-item"
+                          title="{{vhostLabel}}">
+                        {{vhostLabel}}
+                    </span>
+                    <select name="vhost" class="field-container-field pcsg-gpm-password-linkcreate-vhost-select pcsg-gpm-password-linkcreate-option"></select>
+                    </label>
+                </td>
+            </tr>
+            <tr class="pcsg-gpm-password-linkcreate-create pcsg-gpm-password-linkcreate__hidden">
+                <td>
+                    <div class="field-container pcsg-gpm-password-linkcreate-createbtn"></div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="pcsg-gpm-password-linkcreate-list"></div>

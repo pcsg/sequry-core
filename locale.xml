@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <locales>
 
-    <groups name="pcsg/grouppasswordmanager" datatype="php">
+    <groups name="sequry/core" datatype="php">
+
+        <!-- Package -->
+        <locale name="package.title">
+            <de><![CDATA[Sequry Passwort-Manager]]></de>
+        </locale>
+        <locale name="package.description">
+            <de><![CDATA[Passwort-Manager für Teams zum sicheren Speichern und Teilen von geheimen Daten.]]></de>
+        </locale>
 
         <!-- Class: Manager -->
         <locale name="exception.manager.create.password.missing.title.description">
@@ -22,7 +30,8 @@
             <de><![CDATA[Sie können Benutzern für das Passwort mit der ID #[passwordId] keine Ansichtsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
         </locale>
         <locale name="exception.password.addviewuser.error">
-            <de><![CDATA[Beim Hinzufügen des Ansichtsrechts für das Passwort mit der ID #[passwordId] für Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Beim Hinzufügen des Ansichtsrechts für das Passwort mit der ID #[passwordId] für Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.password.removviewtuser.no.rights">
             <de><![CDATA[Sie können Benutzern für das Passwort mit der ID #[passwordId] keine Ansichtsrechte entziehen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
@@ -31,7 +40,8 @@
             <de><![CDATA[Sie können dem Benutzer mit der ID [userId] für das Passwort mit der ID #[passwordId] keine Ansichtsrechte entziehen, weil dieser das Recht nicht besitzt.]]></de>
         </locale>
         <locale name="exception.password.removviewtuser.error">
-            <de><![CDATA[Beim Enziehen des Ansichtsrechts für Benutzer mit der ID #[userId] für das Passwort mit der ID [passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Beim Enziehen des Ansichtsrechts für Benutzer mit der ID #[userId] für das Passwort mit der ID [passwordId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.password.addedituser.no.rights">
             <de><![CDATA[Sie können Benutzern für das Passwort mit der ID #[passwordId] keine Bearbeitungsrechte zuweisen, weil Sie dazu nicht die nötigen Rechte haben.]]></de>
@@ -88,28 +98,41 @@
             <de><![CDATA[Der Passwort-Zugriff kann nicht für einen Benutzer erstellt werden, der Eigentümer des Passworts ist oder zur Gruppe gehört, die Eigentümer des Passworts ist.]]></de>
         </locale>
         <locale name="exception.password.create.access.user.not.eligible">
-            <de><![CDATA[Der Passwort-Zugriff für Benutzer [userName] (#[userId]) kann nicht erstellt werden, da er nicht für alle Authentifizierungs-Module der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
+            <de><![CDATA[Der Passwort-Zugriff für Benutzer [userName] (#[userId]) kann nicht erstellt werden, da er nicht für alle Authentifizierungs-Faktoren der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
         </locale>
         <locale name="exception.password.create.access.group.not.eligible">
-            <de><![CDATA[Der Passwort-Zugriff für Benutzer der Gruppe [groupName] (#[groupId]) kann nicht erstellt werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Module der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
+            <de><![CDATA[Der Passwort-Zugriff für Benutzer der Gruppe [groupName] (#[groupId]) kann nicht erstellt werden, da nicht alle Benutzer der Gruppe für alle Authentifizierungs-Faktoren der Sicherheitsklasse "[securityClassTitle]" (#[securityClassId) registriert ist.]]></de>
         </locale>
         <locale name="exception.password.group.password.key.not.authentic">
-            <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] für das Password #[passwordId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] für das Password #[passwordId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.password.change.owner.user.error">
-            <de><![CDATA[Der Eigentümer des Passworts #[passwordId] konnte nicht auf den Benutzer #[newOwnerId] geändert werden, da ein unerwarteter Fehler aufgetreten ist. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Der Eigentümer des Passworts #[passwordId] konnte nicht auf den Benutzer #[newOwnerId] geändert werden, da ein unerwarteter Fehler aufgetreten ist. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.password.change.owner.group.error">
-            <de><![CDATA[Der Eigentümer des Passworts #[passwordId] konnte nicht auf die Gruppe #[newOwnerId] geändert werden, da ein unerwarteter Fehler aufgetreten ist. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Der Eigentümer des Passworts #[passwordId] konnte nicht auf die Gruppe #[newOwnerId] geändert werden, da ein unerwarteter Fehler aufgetreten ist. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="exception.password.change.owner.no.group.share.permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Passwörter, deren Eigentümer sie über eine Gruppe sind, anderen Benutzern oder Gruppen zugänglich zu machen.]]></de>
+        </locale>
+        <locale name="exception.password.no.share.permission">
+            <de>
+                <![CDATA[Sie haben nicht die nötige Berechtigung, Passwörter anderen Benutzern oder Gruppen zugänglich zu machen. Das bedeutet, dass Sie Passwort-Eigentümer auch nicht ändern können.]]></de>
         </locale>
         <locale name="error.password.create" html="true">
-            <de><![CDATA[Das Passwort konnte nicht erstellt werden:<br/><br/>[error].]]></de>
+            <de><![CDATA[Das Passwort konnte nicht erstellt werden:<br/><br/>[error]]]></de>
         </locale>
         <locale name="success.password.create">
             <de><![CDATA[Das Passwort wurde erfolgreich erstellt.]]></de>
         </locale>
+        <locale name="exception.passwords.create.missing.title">
+            <de><![CDATA[Das Passwort muss einen Titel haben.]]></de>
+        </locale>
         <locale name="exception.password.setdata.error" html="true">
-            <de><![CDATA[Beim Ändern der Daten des Passworts #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error].]]></de>
+            <de><![CDATA[Beim Ändern der Daten des Passworts #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.password.no.share.rights">
             <de><![CDATA[Das Passwort kann nicht mit anderen Benutzern geteilt werden, da Sie keine Berechtigung haben, Passwörter anderen zugänglich zu machen.]]></de>
@@ -123,42 +146,63 @@
         <locale name="exception.password.setsecurityclass.owner.group.not.eligible">
             <de><![CDATA[Die aktuelle Eigentümer-Gruppe des Passworts ist für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) nicht geeignet.]]></de>
         </locale>
+        <locale name="exception.password.meta.entry.user.has.no.access">
+            <de>
+                <![CDATA[Es kann kein Meta-Tabellen-Eintrag für den Benutzer "[userName]" (#[userId]) für das Passwort #[passwordId] erstellt werden, da der Benutzer kein Zugriff auf das Passwort hat.]]></de>
+        </locale>
+        <locale name="exception.password.meta.entry.user.has.no.access">
+            <de>
+                <![CDATA[Der Meta-Tabellen-Eintrag für den Benutzer "[userName]" (#[userId]) für das Passwort #[passwordId] kann nicht gelöscht werden, da der Benutzer noch Zugriff auf das Passwort hat.]]></de>
+        </locale>
 
         <!-- Class: Handler/Passwords -->
         <locale name="exception.passwords.create.missing.data">
             <de><![CDATA[Es wurde keine Daten für das Password übergeben.]]></de>
         </locale>
         <locale name="exception.passwords.create.no.share.rights">
-            <de><![CDATA[Es kann kein anderer Benutzer als Passwort-Eigentümer festgelegt werden, da Sie nicht die nötige Berechtigung besitzen, Passwörter anderen Benutzern zugänglich zu machen.]]></de>
+            <de>
+                <![CDATA[Es kann kein anderer Benutzer als Passwort-Eigentümer festgelegt werden, da Sie nicht die nötige Berechtigung besitzen, Passwörter anderen Benutzern zugänglich zu machen.]]></de>
         </locale>
         <locale name="exception.passwords.create.no.permission">
             <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Passwörter zu erstellen.]]></de>
         </locale>
+        <locale name="exception.passwords.create.owner.user.incorrect.data">
+            <de>
+                <![CDATA[Der Benutzer, der als Passwort-Eigentümer angegeben wurde, ist nicht für die angegebene Sicherheitsklasse ("[securityClassTitle]" #[securityClassId]) geeignet. Bitte wählen Sie einen geeigneten Eigentümer oder eine andere Sicherheitsklasse.]]></de>
+        </locale>
 
         <!-- Class: CryptoUser -->
         <locale name="exception.cryptouser.not.found">
-            <de><![CDATA[Die Session-Daten des Benutzers mit der ID [userId] enthalten nicht die notwendigen Daten, um eine sichere Verschlüsselung zu gewährleisten. Bitte wenden Sie sich an einen Administator]]></de>
+            <de>
+                <![CDATA[Die Session-Daten des Benutzers mit der ID [userId] enthalten nicht die notwendigen Daten, um eine sichere Verschlüsselung zu gewährleisten. Bitte wenden Sie sich an einen Administator]]></de>
         </locale>
         <locale name="exception.cryptouser.no.pw.hash">
-            <de><![CDATA[Die Session-Daten des Benutzers mit der ID [userId] enthalten nicht die notwendigen Daten, um eine sichere Verschlüsselung zu gewährleisten. Bitte wenden Sie sich an einen Administator]]></de>
+            <de>
+                <![CDATA[Die Session-Daten des Benutzers mit der ID [userId] enthalten nicht die notwendigen Daten, um eine sichere Verschlüsselung zu gewährleisten. Bitte wenden Sie sich an einen Administator]]></de>
         </locale>
         <locale name="exception.cryptouser.encrypt.no.public.key">
-            <de><![CDATA[Der Benutzer mit der ID [userId] hat noch keinen öffentlichen Schlüssel (public key) und kann daher keine Daten verschlüsseln. Der Benutzer muss sich zuerst einloggen und ein gültiges Schlüsselpaar generieren oder hochladen.]]></de>
+            <de>
+                <![CDATA[Der Benutzer mit der ID [userId] hat noch keinen öffentlichen Schlüssel (public key) und kann daher keine Daten verschlüsseln. Der Benutzer muss sich zuerst einloggen und ein gültiges Schlüsselpaar generieren oder hochladen.]]></de>
         </locale>
         <locale name="exception.cryptouser.encrypt.no.private.key">
-            <de><![CDATA[Der Benutzer mit der ID [userId] hat noch keinen privaten Schlüssel (private key) und kann daher keine Daten entschlüsseln. Der Benutzer muss sich zuerst einloggen und ein gültiges Schlüsselpaar generieren oder hochladen.]]></de>
+            <de>
+                <![CDATA[Der Benutzer mit der ID [userId] hat noch keinen privaten Schlüssel (private key) und kann daher keine Daten entschlüsseln. Der Benutzer muss sich zuerst einloggen und ein gültiges Schlüsselpaar generieren oder hochladen.]]></de>
         </locale>
         <locale name="exception.cryptouser.encrypt.error">
-            <de><![CDATA[Beim verschlüsseln von Daten mit dem öffentlichen Schlüssel des Benutzers mit der ID [userId] ist ein Fehler aufgetreten. Die Daten konnten nicht verschlüsselt werden. Bitt wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Beim verschlüsseln von Daten mit dem öffentlichen Schlüssel des Benutzers mit der ID [userId] ist ein Fehler aufgetreten. Die Daten konnten nicht verschlüsselt werden. Bitt wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptouser.decrypt.error">
-            <de><![CDATA[Beim entschlüsseln von Daten mit dem privaten Schlüssel des Benutzers mit der ID [userId] ist ein Fehler aufgetreten. Die Daten konnten nicht entschlüsselt werden. Bitt wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Beim entschlüsseln von Daten mit dem privaten Schlüssel des Benutzers mit der ID [userId] ist ein Fehler aufgetreten. Die Daten konnten nicht entschlüsselt werden. Bitt wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptouser.generatekeypair.user.not.logged.in">
-            <de><![CDATA[Schlüsselpaar für Benutzer mit der ID [userId] konnte nicht generiert werden. Es wurde versucht, ein Schlüsselpaar für einen anderen Nutzer zu generieren. Nur ein eingeloggter Benutzer selbst kann ein neues Schlüsselpaar für sich setzen.]]></de>
+            <de>
+                <![CDATA[Schlüsselpaar für Benutzer mit der ID [userId] konnte nicht generiert werden. Es wurde versucht, ein Schlüsselpaar für einen anderen Nutzer zu generieren. Nur ein eingeloggter Benutzer selbst kann ein neues Schlüsselpaar für sich setzen.]]></de>
         </locale>
         <locale name="exception.cryptouser.generatekeypair.error">
-            <de><![CDATA[Bei der Erstellung eines neuen Schlüsselpaars für den Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Bei der Erstellung eines neuen Schlüsselpaars für den Benutzer mit der ID [userId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptouser.getpassword.no.right">
             <de><![CDATA[Sie haben kein Zugriffsrecht auf das Passwort mit der ID [passwordId].]]></de>
@@ -172,67 +216,80 @@
         <locale name="exception.cryptouser.keypair.not.authentic">
             <de><![CDATA[Das Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId] für den User #[userId] ist nicht mehr gültig. Bitte kontaktieren Sie umgehend einen Administrator.]]></de>
         </locale>
+        <locale name="exception.cryptouser.keypair.decryption.authentication.error">
+            <de><![CDATA[Das Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId] für den User #[userId] konnte nicht entschlüsselt werden. Bitte kontaktieren Sie einen Administrator.]]></de>
+        </locale>
         <locale name="exception.cryptouser.authkeypair.not.found">
             <de><![CDATA[Der Benutzer #[userId] besitzt kein Schlüsselpaar für das Authentifizierungs-Plugin #[authPluginId].]]></de>
         </locale>
         <locale name="exception.cryptouser.group.access.key.part.not.authentic">
-            <de><![CDATA[Ein Teil des Entschlüsselungsschlüssels des Benutzers #[userId] für das Schlüsselpaar der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Ein Teil des Entschlüsselungsschlüssels des Benutzers #[userId] für das Schlüsselpaar der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptouser.group.access.key.decrypt.user.has.no.access">
             <de><![CDATA[Das Schlüsselpaar der Gruppe #[groupId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer kein Zugriffsrecht für diese Gruppe hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.group.access.key.part.auth.key.error" html="true">
-            <de><![CDATA[Beim Zugriff auf das Schlüsselpaar einer Authentifizierungs-Methode (#[authKeyPairId]) zur Entschlüsselung des Schlüsselpaars der Gruppe #[groupId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+            <de><![CDATA[Beim Zugriff auf das Schlüsselpaar eines Authentifizierungs-Faktors (#[authKeyPairId]) zur Entschlüsselung des Schlüsselpaars der Gruppe #[groupId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.cryptouser.password.access.key.decrypt.user.has.no.access">
             <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer kein Zugriffsrecht für dieses Passwort hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.rencryptpasswordaccessKey.no.direct.access">
-            <de><![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer #[userId] nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer keinen direkten Zugriff auf das Passwort hat.]]></de>
+            <de>
+                <![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer #[userId] nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer keinen direkten Zugriff auf das Passwort hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.rencryptpasswordaccessKey.securityclass.not.eligible">
-            <de><![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer "[userName]" (#[userId]) nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet ist.]]></de>
+            <de>
+                <![CDATA[Der Schlüssel für das Passwort #[passwordId] kann für den Benutzer "[userName]" (#[userId]) nicht erneut als Direktzugriff verschlüsselt werden, da der Benutzer nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet ist.]]></de>
         </locale>
         <locale name="exception.cryptouser.reencryptgroup.no.group.access">
             <de><![CDATA[Der Schlüssel für die Gruppe #[groupId] kann für den Benutzer #[userId] nicht erneut verschlüsselt werden, da der Benutzer keinen Zugriff auf die Gruppe hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.password.key.recovery.error">
-            <de><![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer sich nicht für die ausreichende Anzahl an Authentifizierungs-Faktoren für das Passwort authentifiziert hat.]]></de>
+            <de>
+                <![CDATA[Der Schlüssel des Passworts #[passwordId] kann nicht durch den Benutzer #[userId] entschlüsselt werden, da der Benutzer sich nicht für die ausreichende Anzahl an Authentifizierungs-Faktoren für das Passwort authentifiziert hat.]]></de>
         </locale>
         <locale name="exception.cryptouser.delete.no.permission">
             <de><![CDATA[Benutzer können nur durch SuperUser oder sich selbst gelöscht werden.]]></de>
         </locale>
         <locale name="exception.cryptouser.delete.last.group.member">
-            <de><![CDATA[Der Benutzer kann nicht gelöscht werden, da er das letzte Mitglied der Passwort-Gruppe "[groupName]" (#[groupId]) ist. Weisen Sie der Gruppe ein weiteres Mitglied zu und entfernen Sie diesen Benutzer dann oder löschen Sie vorher die Passwort-Gruppe.]]></de>
+            <de>
+                <![CDATA[Der Benutzer kann nicht gelöscht werden, da er das letzte Mitglied der Passwort-Gruppe "[groupName]" (#[groupId]) ist. Weisen Sie der Gruppe ein weiteres Mitglied zu und entfernen Sie diesen Benutzer dann oder löschen Sie vorher die Passwort-Gruppe.]]></de>
         </locale>
         <locale name="exception.cryptouser.getgroupkeypairdecrypted.error">
-            <de><![CDATA[Das Schlüsselpaar der Gruppe "[groupName]" (#[groupId]) für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Das Schlüsselpaar der Gruppe "[groupName]" (#[groupId]) für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptouser.getpasswordaccesskeygroup.error">
-        <de><![CDATA[Der Passwort-Schlüssel für das Passwort #[passwordId] konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de><![CDATA[Der Passwort-Schlüssel für das Passwort #[passwordId] konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
-            <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] wurde nicht gefunden. Die Gruppe kann nicht für den Passwort-Manager verwendet werden.]]></de>
+            <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] wurde nicht gefunden. Die Gruppe kann nicht mit Sequry verwendet werden.]]></de>
         </locale>
         <locale name="exception.cryptogroup.keypair.not.authentic">
-            <de><![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Der Gruppenschlüssel der Gruppe #[groupId] hat die Authentizitätsprüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptogroup.cannot.remove.last.user">
-            <de><![CDATA[Der Benutzer #[userId] kann nicht aus der Gruppe #[groupId] entfernt werden, da er der letzte Benutzer ist, der Zugriff auf diese Gruppe hat. Um den Benutzer aus der Gruppe zu entfernen, müssen alle Sicherheitsklassen aus der Gruppe entfernt werden.]]></de>
+            <de>
+                <![CDATA[Der Benutzer #[userId] kann nicht aus der Gruppe #[groupId] entfernt werden, da er der letzte Benutzer ist, der Zugriff auf diese Gruppe hat. Um den Benutzer aus der Gruppe zu entfernen, müssen alle Sicherheitsklassen aus der Gruppe entfernt werden.]]></de>
         </locale>
         <locale name="exception.cryptogroup.add.user.not.eligible">
-            <de><![CDATA[Der Benutzer #[userId] kann der Gruppe #[groupId] nicht hinzugefügt werden, da er nicht für die benötigte Mindestanzahl an Authentifizierungs-Faktoren der Sicherheitsklasse #[securityClassId] registriert ist.]]></de>
+            <de>
+                <![CDATA[Der Benutzer #[userId] kann der Gruppe #[groupId] nicht hinzugefügt werden, da er nicht für die benötigte Mindestanzahl an Authentifizierungs-Faktoren der Sicherheitsklasse #[securityClassId] registriert ist.]]></de>
         </locale>
         <locale name="exception.cryptogroup.add.user.general.error">
             <de><![CDATA[Beim Hinzufügen des Benutzers #[userId] zur Gruppe #[groupId] ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
         <locale name="exception.cryptogroup.keypair.decryption.authentication.error">
-            <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error].]]></de>
+            <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.cryptogroup.addsecurityclass.users.not.eligible">
-            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+            <de>
+                <![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
         </locale>
         <locale name="exception.cryptogroup.setsecurityclass.users.has.no.group.access">
             <de><![CDATA[Der Benutzer #[userId] kann die Sicherheitsklasse #[securityClassId] der Gruppe #[groupId] nicht zuordnen, da der Benutzer der Gruppe nicht zugewiesen ist.]]></de>
@@ -268,13 +325,15 @@
             <de><![CDATA[Sie können sich nicht selbst zu einer Passwort-Gruppe hinzufügen.]]></de>
         </locale>
         <locale name="success.cryptogroup.securityclass.add">
-            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) wurde der Gruppe "[groupName]" (#[groupId]) erfolgreich hinzugefügt. Die Gruppe kann nun mit Passwörtern verknüpft werden, die dieser Sicherheitsklasse entsprechen.]]></de>
+            <de>
+                <![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) wurde der Gruppe "[groupName]" (#[groupId]) erfolgreich hinzugefügt. Die Gruppe kann nun mit Passwörtern verknüpft werden, die dieser Sicherheitsklasse entsprechen.]]></de>
         </locale>
         <locale name="error.cryptogroup.securityclass.add" html="true">
             <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte der Gruppe "[groupName]" (#[groupId]) nicht hinzugefügt werden:<br/><br/>[error]]]></de>
         </locale>
         <locale name="success.cryptogroup.securityclass.remove">
-            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) wurde asu der Gruppe "[groupName]" (#[groupId]) erfolgreich entfernt. Die Gruppe kann nun nicht mehr mit Passwörtern verknüpft werden, die dieser Sicherheitsklasse entsprechen.]]></de>
+            <de>
+                <![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) wurde asu der Gruppe "[groupName]" (#[groupId]) erfolgreich entfernt. Die Gruppe kann nun nicht mehr mit Passwörtern verknüpft werden, die dieser Sicherheitsklasse entsprechen.]]></de>
         </locale>
         <locale name="error.cryptogroup.securityclass.remove" html="true">
             <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) konnte nicht aus der Gruppe "[groupName]" (#[groupId]) entfernt werden:<br/><br/>[error]]]></de>
@@ -283,38 +342,43 @@
             <de><![CDATA[Nur SuperUser können Sicherheitsklassen aus Passwort-Gruppen entfernen.]]></de>
         </locale>
         <locale name="exception.cryptogroup.reencryptpasswordaccesskey.no.access">
-            <de><![CDATA[Der Passwort-Schlüssel für Passwort #[passwordId] kann für die Gruppe "[groupName]" (#[groupId]) nicht neu verschlüsselt werden, da die Gruppe kein Zugriffsrecht auf das Passwort hat.]]></de>
+            <de>
+                <![CDATA[Der Passwort-Schlüssel für Passwort #[passwordId] kann für die Gruppe "[groupName]" (#[groupId]) nicht neu verschlüsselt werden, da die Gruppe kein Zugriffsrecht auf das Passwort hat.]]></de>
         </locale>
         <locale name="exception.cryptogroup.reencryptpasswordaccesskey.securityclass.not.eligible">
-            <de><![CDATA[Der Passwort-Schlüssel für Passwort #[passwordId] kann für die Gruppe "[groupName]" (#[groupId]) nicht neu verschlüsselt werden, da die Gruppe für die Sicherheitsklasse des Passworts ("[securityClassTitle]" #[securityClassId]) nicht geeignet ist.]]></de>
+            <de>
+                <![CDATA[Der Passwort-Schlüssel für Passwort #[passwordId] kann für die Gruppe "[groupName]" (#[groupId]) nicht neu verschlüsselt werden, da die Gruppe für die Sicherheitsklasse des Passworts ("[securityClassTitle]" #[securityClassId]) nicht geeignet ist.]]></de>
         </locale>
         <locale name="exception.cryptogroup.reencryptpasswordaccesskey.general.error">
-            <de><![CDATA[Beim Verschlüsseln des Passwort-Schlüssels des Passworts #[passwordId] für die Gruppe "[groupName]" (#[groupId]) ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+            <de>
+                <![CDATA[Beim Verschlüsseln des Passwort-Schlüssels des Passworts #[passwordId] für die Gruppe "[groupName]" (#[groupId]) ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
-        <locale name="exception.cryptoactors.addcryptogroup.otherwise.associated">
-            <de><![CDATA[Es kann kein Schlüsselpaar für die Gruppe #[groupId] erstellt werden, da für die Grupe bereits ein Schlüsselpaar erstellt wurde und diese Gruppe ein .]]></de>
-        </locale>
         <locale name="exception.cryptoactors.addcryptogroup.no.users">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
+            <de>
+                <![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindestanzahl der nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+            <de>
+                <![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindestanzahl der nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
         </locale>
-        <locale name="exception.cryptoactors.addcryptogroup.group.already.exists">
-            <de><![CDATA[Die Gruppe #]]></de>
+        <locale name="exception.cryptoactors.addcryptogroup.user.not.eligible">
+            <de><![CDATA[Die Benutzer "[userName]" (#[userId]) ist nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet.]]></de>
+        </locale>
+        <locale name="exception.cryptogroup.securityclass.already.assigned">
+            <de><![CDATA[Die Gruppe ist der Sicherheitsklasse bereits zugeordnet.]]></de>
         </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
         <locale name="exception.authentication.plugin.register.error">
-            <de><![CDATA[Die Authentifizierungsinformationen sind ungültig.]]></de>
+            <de><![CDATA[Die Zugangsdaten sind ungültig.]]></de>
         </locale>
         <locale name="exception.auth.plugin.register.database.error">
             <de><![CDATA[Bei der Registrierung ist ein unerwarteter Fehler aufgetreten. Bitte kontaktieren Sie einen Administrator.]]></de>
         </locale>
         <locale name="exception.auth.plugin.derived.key.error">
-            <de><![CDATA[Die Ableitung des Schlüssel aus Authentifizierungsinformationen für das Authentifizierungs-Plugin #[pluginId] schlug fehl:<br/><br/>[error].]]></de>
+            <de><![CDATA[Die Ableitung des Schlüssel aus Zugangsdaten für das Authentifizierungs-Plugin #[pluginId] schlug fehl:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.auth.plugin.delete.user.no.permission">
             <de><![CDATA[Das Löschen der Registrierung für ein Authentifizierungs-Plugin kann nur durch einen SuperUser oder den Benutzer selbst vorgenommen werden.]]></de>
@@ -328,7 +392,8 @@
             <de><![CDATA[Das Authentifizierungs-Plugin mit der ID [id] wurde nicht gefunden.]]></de>
         </locale>
         <locale name="success.authentication.sync.authplugin">
-            <de><![CDATA[Der Vorgang war erfolgreich. Der Authentifizierungs-Faktor #[authPluginId] kann von Ihnen nun für alle Passwörter mit entsprechender Sicherheitsklasse verwendet werden.]]></de>
+            <de>
+                <![CDATA[Der Vorgang war erfolgreich. Der Authentifizierungs-Faktor #[authPluginId] kann von Ihnen nun für alle Passwörter mit entsprechender Sicherheitsklasse verwendet werden.]]></de>
         </locale>
         <locale name="error.authentication.sync.authplugin">
             <de><![CDATA[Der Vorgang war nicht erfolgreich. Bitte kontaktieren Sie einen Administrator.]]></de>
@@ -350,26 +415,33 @@
         </locale>
 
         <!-- Ajax -->
+        <locale name="message.general.error">
+            <de><![CDATA[Bei der Verarbeitung Ihrer Anfrage ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
         <locale name="success.auth.registeruser">
-            <de><![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war erfolgreich. Sie können nun Passwörter erstellen und auf Passwörter zugreifen, die diese Authentifizierungs-Methode erfordern.]]></de>
+            <de><![CDATA[Die Registrierung für diesen Authentifizierungs-Plugin war erfolgreich. Sie können nun Passwörter erstellen und auf Passwörter zugreifen, die diesen Authentifizierungs-Faktor erfordern.]]></de>
         </locale>
         <locale name="error.auth.registeruser">
             <de><![CDATA[Die Registrierung für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
         <locale name="error.auth.changeauth">
-            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+            <de><![CDATA[Die Änderung von Zugangsdaten für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
         <locale name="success.auth.changeauth">
-            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war erfolgreich.]]></de>
+            <de><![CDATA[Die Änderung von Zugangsdaten für dieses Authentifizierungs-Plugin war erfolgreich.]]></de>
         </locale>
         <locale name="error.auth.changeauth">
-            <de><![CDATA[Die Änderung von Authentifizierungsinformationen für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
+            <de><![CDATA[Die Änderung von Zugangsdaten für dieses Authentifizierungs-Plugin war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
         <locale name="error.password.edit">
             <de><![CDATA[Die Änderung der Passwort-Daten (#[passwordId]) war nicht erfolgreich:<br/><br/>[error]]]></de>
         </locale>
         <locale name="success.password.edit">
             <de><![CDATA[Die Passwort-Daten (#[passwordId]) wurden erfolgreich geändert.]]></de>
+        </locale>
+        <locale name="message.passwords.edit.private.categories.no.access">
+            <de>
+                <![CDATA[Die persönlichen Kategorien, die Sie dem Passwort #[passwordId] zugewiesen haben, konnten nicht gespeichert werden, da Sie nach dem Bearbeiten des Passworts keinen Zugriff mehr auf dieses Passwort haben.]]></de>
         </locale>
         <locale name="error.password.share">
             <de><![CDATA[Das Teilen der Passwort-Daten (#[passwordId]) war nicht erfolgreich:<br/><br/>[error]]]></de>
@@ -395,27 +467,140 @@
         <locale name="success.actors.addgroupstouser">
             <de><![CDATA[Die Passwort-Gruppen wurden erfolgreich dem Benutzer "[userName]" (#[userId]) zugewiesen.]]></de>
         </locale>
+        <locale name="message.general.error">
+            <de><![CDATA[Bei der Verarbeitung Ihrer Anfrage ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.createPublic.error" html="true">
+            <de><![CDATA[Bei Erstellung der öffentlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.createPublic.success">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie "[title]" wurde erfolgreich erstellt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.deletePublic.error" html="true">
+            <de><![CDATA[Beim Löschen der öffentlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.deletePublic.success">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie wurde erfolgreich gelöscht.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.renamePublic.error" html="true">
+            <de><![CDATA[Beim Umbenennen der öffentlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.renamePublic.success">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie wurde erfolgreich umbenannt.]]></de>
+        </locale>
+        <locale name="mmessage.ajax.passwords.categories.private.create.error" html="true">
+            <de><![CDATA[Bei Erstellung der persönlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.create.success">
+            <de><![CDATA[Die persönliche Passwort-Kategorie "[title]" wurde erfolgreich erstellt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.delete.error" html="true">
+            <de><![CDATA[Beim Löschen der persönlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.delete.success">
+            <de><![CDATA[Die persönliche Passwort-Kategorie wurde erfolgreich gelöscht.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.rename.error" html="true">
+            <de><![CDATA[Beim Umbenennen der persönlichen Passwort-Kategorie ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.rename.success">
+            <de><![CDATA[Die persönliche Passwort-Kategorie wurde erfolgreich umbenannt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.get.error" html="true">
+            <de><![CDATA[Beim Abruf des Passworts #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.getView.error" html="true">
+            <de><![CDATA[Beim Abruf des Passworts #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.setToPassword.error" html="true">
+            <de><![CDATA[Beim Setzen der persönliche(n) Passwort-Kategorie(n) für das Passwort #[passwordId] ist ein Fehler aufgetreten:<br/><br/>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.setToPassword.success">
+            <de><![CDATA[Die persönliche(n) Passwort-Kategorie(n) für das Passwort #[passwordId] wurden erfolgreich gesetzt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.private.setToPasswords.success">
+            <de><![CDATA[Die persönliche(n) Passwort-Kategorie(n) für die gewählten Passwörter wurden erfolgreich gesetzt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.categories.public.setToPasswords.success">
+            <de><![CDATA[Die Passwort-Kategorie(n) für die gewählten Passwörter wurden erfolgreich gesetzt.]]></de>
+        </locale>
+        <locale name="message.ajax.passwords.getList.error" html="true">
+            <de><![CDATA[Beim Abruf der Passwort-Liste ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="exception.ajax.reEncryptAll.missing.auth.info" html="true">
+            <de><![CDATA[Bitte geben Sie die Zugangsdaten für <b>alle</b> Authentifizierungs-Faktoren an!]]></de>
+        </locale>
+        <locale name="message.ajax.reEncryptAll.error" html="true">
+            <de><![CDATA[Beim Neu-Verschlüsseln ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.reEncryptAll.success" html="true">
+            <de><![CDATA[Alle kryptografisch gesicherten Daten wurden erfolgreich neu verschlüsselt.]]></de>
+        </locale>
+        <locale name="message.ajax.auth.editSecurityClass.error" html="true">
+            <de><![CDATA[Die Sicherheitsklasse konnte nicht bearbeitet werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.auth.editSecurityClass.success" html="true">
+            <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich bearbeitet.]]></de>
+        </locale>
+        <locale name="message.ajax.auth.createSecurityClass.error" html="true">
+            <de><![CDATA[Die Sicherheitsklasse konnte nicht erstellt werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.auth.createSecurityClass.success" html="true">
+            <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich erstellt und kann jetzt Passwörtern zugewiesen werden.]]></de>
+        </locale>
+        <locale name="message.ajax.auth.deleteSecurityClass.error" html="true">
+            <de><![CDATA[Die Sicherheitsklasse konnte nicht gelöscht werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.auth.deleteSecurityClass.success" html="true">
+            <de><![CDATA[Die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) wurde erfolgreich gelöscht.]]></de>
+        </locale>
+        <locale name="exception.ajax.authenticate.decode.error">
+            <de><![CDATA[Beim Dekodieren der Zugangsdaten ist ein Fehler aufgetreten.]]></de>
+        </locale>
+
+        <locale name="message.ajax.auth.recovery.sendToken.token_sent">
+            <de><![CDATA[Das Wiederherstellungs-Token wurde erfolgreich an Ihre E-Mail-Adresse versandt.]]></de>
+        </locale>
+        <locale name="message.ajax.auth.recovery.regenerateCode.error">
+            <de><![CDATA[Beim Erzeugen des Wiederherstellungs-Codes ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.passwords.link.create.success">
+            <de><![CDATA[Der Passwort-Links für das Password #[passwordId] wurde erfolgreich erstellt.]]></de>
+        </locale>
+        <locale name="message.passwords.link.create.error" html="true">
+            <de><![CDATA[Bei der Erstellung des Passwort-Links für das Password #[passwordId] ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.passwords.link.deactivate.success">
+            <de><![CDATA[Der Passwort-Link #[linkId] wurde erfolgreich deaktiviert und kann nun nicht mehr aufgerufen werden.]]></de>
+        </locale>
+        <locale name="message.passwords.link.deactivate.error" html="true">
+            <de><![CDATA[Der Passwort-Link #[linkId] konnte nicht deaktiviert werden:<br><br>[error]]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
             <de><![CDATA[Authentifizierungs-Schlüssel des Systems nicht gefunden.]]></de>
         </locale>
+        <locale name="exception.system.passwordlink.key.file.not.found">
+            <de><![CDATA[Passwort-Link-Schlüssel des Systems nicht gefunden.]]></de>
+        </locale>
 
         <!-- Class: Security\Authentication\SecurityClass -->
         <locale name="exception.securityclass.authenticate.missing.authdata">
-            <de><![CDATA[Die Authentifizierungsinformationen für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] wurden nicht übergeben.]]></de>
+            <de><![CDATA[Die Zugangsdaten für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] wurden nicht übergeben.]]></de>
         </locale>
         <locale name="exception.securityclass.authenticate.authdata.not.given">
-            <de><![CDATA[Die Authentifizierungsinformationen wurden nicht übergeben.]]></de>
+            <de><![CDATA[Die Zugangsdaten wurden nicht übergeben.]]></de>
         </locale>
         <locale name="attention.securityclass.edit.groups.cannot.delete.group">
-            <de><![CDATA[Die Gruppe #[groupId] kann nicht aus der Sicherheitsklasse #[securityClassId] entfernt werden. Gruppen können nur aus einer Sicherheitsklasse entfernt werden, wenn sie einer anderen Sicherheitsklasse zugeordnet oder direkt gelöscht werden.]]></de>
+            <de>
+                <![CDATA[Die Gruppe #[groupId] kann nicht aus der Sicherheitsklasse #[securityClassId] entfernt werden. Gruppen können nur aus einer Sicherheitsklasse entfernt werden, wenn sie einer anderen Sicherheitsklasse zugeordnet oder direkt gelöscht werden.]]></de>
         </locale>
         <locale name="exception.securityclass.authenticate.wrong.authdata">
-            <de><![CDATA[Die Authentifizierungsinformationen für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] sind nicht korrekt.]]></de>
+            <de><![CDATA[Die Zugangsdaten für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] sind nicht korrekt.]]></de>
         </locale>
         <locale name="exception.securityclass.authenticate.insufficient.authentication.count">
-            <de><![CDATA[Zur Authentifizierung für die Sicherheitsklasse #[securityClassId] wurden nicht ausreichend Authentifizierungsinformationen übergeben. Sie müssen sich bei mindestens [requiredFactors] verschiedenen Faktoren authentifizieren.]]></de>
+            <de><![CDATA[Zur Authentifizierung für die Sicherheitsklasse #[securityClassId] wurden nicht ausreichend Zugangsdaten übergeben. Sie müssen sich bei mindestens [requiredFactors] verschiedenen Faktoren authentifizieren.]]></de>
         </locale>
         <locale name="exception.securityclass.create.no.permission">
             <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Sicherheitsklassen zu erstellen oder zu bearbeiten.]]></de>
@@ -442,7 +627,7 @@
         <locale name="exception.events.group.delete.info">
             <de><![CDATA[Bitte bestätigen Sie die Sicherheitswarnung für das Löschen der Gruppe.]]></de>
         </locale>
-        <locale name="exception.events.add.users.to.group.infos">
+        <locale name="exception.events.add.users.to.group.info">
             <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Gruppe authentifizieren, bevor Sie dieser Gruppe Benutzer hinzufügen können.]]></de>
         </locale>
         <locale name="exception.events.add.groups.to.user.info">
@@ -451,16 +636,25 @@
 
         <!-- Recovery -->
         <locale name="exception.recovery.create.entry.wrong.authentication.information">
-            <de><![CDATA[Es kann kein Wiederherstellungs-Eintrag erzeugt werden, da die Authentifizierungsinformationen falsch sind.]]></de>
+            <de><![CDATA[Es kann kein Wiederherstellungs-Eintrag erzeugt werden, da die Zugangsdaten falsch sind.]]></de>
         </locale>
         <locale name="exception.recovery.recover.entry.not.found">
-            <de><![CDATA[Es wurde kein Wiederherstellungs-Eintrag für den Benutzer #[userId] und das Authentifizierungs-Modul #[authPluginId] gefunden.]]></de>
+            <de><![CDATA[Es wurde kein Wiederherstellungs-Eintrag für den Benutzer #[userId] und den Authentifizierungs-Faktor #[authPluginId] gefunden.]]></de>
         </locale>
         <locale name="exception.recovery.recover.entry.mac.mismatch">
             <de><![CDATA[Der Wiederherstellungs-Eintrag hat die Authentizitäts-Prüfung nicht bestanden und kann daher nicht verwendet werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
-        <locale name="exception.recovery.recover.wrong.code">
+        <locale name="exception.recovery.wrong_code">
             <de><![CDATA[Der Wiederherstellungs-Code ist nicht korrekt.]]></de>
+        </locale>
+        <locale name="exception.recovery.wrong_token">
+            <de><![CDATA[Das Wiederherstellungs-Token ist nicht korrekt.]]></de>
+        </locale>
+        <locale name="exception.recovery.no_email_address">
+            <de><![CDATA[Das Wiederherstellungs-Token kann nicht versendet werden, da Sie in Ihrem Benutzerprofil keine E-Mail-Adresse hinterlegt haben.]]></de>
+        </locale>
+        <locale name="exception.recovery.mail_send_error">
+            <de><![CDATA[Beim Versenden des Wiederherstellungs-Tokens ist ein Fehler aufgetreten. Bitte wiederholen Sie den Vorgang oder wenden Sie sich an einen Administrator.]]></de>
         </locale>
 
         <!-- PasswordTypes -->
@@ -468,7 +662,7 @@
             <de><![CDATA[FTP-Server]]></de>
         </locale>
         <locale name="passwordtypes.Website.title">
-            <de><![CDATA[Website-Login]]></de>
+            <de><![CDATA[Zugangsdaten]]></de>
         </locale>
         <locale name="passwordtypes.SecretKey.title">
             <de><![CDATA[SSH-Schlüssel]]></de>
@@ -477,7 +671,7 @@
             <de><![CDATA[API-Schlüssel]]></de>
         </locale>
         <locale name="passwordtypes.Credentials.title">
-            <de><![CDATA[Zugangsdaten]]></de>
+            <de><![CDATA[Zugangsdaten (alt - nicht mehr benutzen!)]]></de>
         </locale>
 
         <!-- General password type locales -->
@@ -564,7 +758,8 @@
 
         <!-- Instructions -->
         <locale name="exception.actors.sendinstructions.no.email.address">
-            <de><![CDATA[Die Anweisungen für den PasswortManager können nicht versendet werden, da der Benuzter "[userName]" (#[userId]) keine E-Mail-Addresse in seinem Benutzerprofil eingetragen hat.]]></de>
+            <de>
+                <![CDATA[Die Anweisungen für den PasswortManager können nicht versendet werden, da der Benuzter "[userName]" (#[userId]) keine E-Mail-Addresse in seinem Benutzerprofil eingetragen hat.]]></de>
         </locale>
         <locale name="error.actors.sendinstructions">
             <de><![CDATA[Die Anleitung konnte nicht verschickt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie einen Administrator.]]></de>
@@ -578,21 +773,171 @@
         <locale name="actors.sendinstructions.instructions" html="true">
             <de><![CDATA[Anleitungstext]]></de>
         </locale>
+
+        <!-- Handler\Categories -->
+        <locale name="exception.handler.categories.category.not.found">
+            <de><![CDATA[Die öffentliche Passwort-Kategorie #[id] wurde nicht gefunden.]]></de>
+        </locale>
+        <locale name="exception.handler.categories.no.private.permission">
+            <de><![CDATA[Sie haben nicht die benötigte Berechtigung, um private Passwort-Kategorien des Benutzers "[userName]" (#[userId]) zu bearbeiten.]]></de>
+        </locale>
+        <locale name="exception.handler.categories.add.private.category.no.access">
+            <de>
+                <![CDATA[Das Passwort #[passwordId] kann nicht zur persönlichen Passwort-Kategorie des Benutzers "[userName]" (#[userId]) zugeordnet werden, da der Benutzer keinen Zugriff auf dieses Passwort hat.]]></de>
+        </locale>
+
+        <!-- Class: PasswordTypes\Handler -->
+        <locale name="passwordtypes.handler.view.template.created">
+            <de><![CDATA[Erstellt: [date] von [userName] (#[userId])]]></de>
+        </locale>
+        <locale name="passwordtypes.handler.view.template.lastEdit">
+            <de><![CDATA[Zuletzt bearbeitet: [date] von [userName] (#[userId])]]></de>
+        </locale>
+
+        <!-- Class: Security\Handler\Recovery -->
+        <locale name="recovery.sendtoken.subject">
+            <de><![CDATA[Wiederherstellung Ihrer Zugangsdaten]]></de>
+        </locale>
+        <locale name="recovery.sendtoken.body" html="true">
+            <de><![CDATA[Hallo [userName]!
+<p>
+Sie haben ein Wiederherstellungs-Token für den Authentifizierungs-Faktor "[authPluginTitle]" angefordert.
+</p>
+<p>
+Das Token lautet: [token]
+</p>
+<p>
+Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs-Fenster ein.
+</p>
+<p><b>Hinweis:</b> Sollten Sie dieses Token nicht angefordert haben, können Sie diese E-Mail ignorieren.</p>]]></de>
+        </locale>
+
+        <!-- Class: PasswordLink -->
+        <locale name="exception.passwordlink.not_found">
+            <de><![CDATA[Password-Link nicht gefunden]]></de>
+        </locale>
+        <locale name="exception.passwordlink.no_longer_valid">
+            <de><![CDATA[Password-Link ist zeitlich nicht mehr gültig]]></de>
+        </locale>
+        <locale name="exception.passwordlink.decryption_failed'">
+            <de><![CDATA[Password-Link Entschlüsselung fehlgeschlagen]]></de>
+        </locale>
+        <locale name="exception.passwordlink.invalid_hash">
+            <de><![CDATA[Password-Link-Hash inkorrekt]]></de>
+        </locale>
+        <locale name="exception.passwordlink.max_calls_reached">
+            <de><![CDATA[Password-Link maximale Aufrufe erreicht]]></de>
+        </locale>
+        <locale name="exception.passwordlink.invalid">
+            <de><![CDATA[Password-Link ist ungültig:<br>[error]]]></de>
+        </locale>
+        <locale name="exception.passwordlink.site_not_found">
+            <de><![CDATA[Es wurde keine aktive Passwort-Link Seite im System gefunden]]></de>
+        </locale>
+        <locale name="exception.passwordlink.create.no_limit_set">
+            <de><![CDATA[Es muss entweder eine maximale Anzahl an Aufrufen oder ein Ablaufdatum festgelegt werden.]]></de>
+        </locale>
+        <locale name="exception.passwordlink.not_active">
+            <de><![CDATA[Der Passwort-Link ist nicht aktiv]]></de>
+        </locale>
+        <locale name="exception.passwordlink.no_password_given">
+            <de><![CDATA[Der Passwort-Link erfordert ein Passwort zur Entschlüsselung]]></de>
+        </locale>
+        <locale name="exception.passwordlink.permission_denied">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um diesen Passwort-Link zu bearbeiten.]]></de>
+        </locale>
+
+        <!-- Security/Handler/PasswordLinks -->
+        <locale name="mail.passwordlink.greeting">
+            <de><![CDATA[Hallo!]]></de>
+        </locale>
+        <locale name="mail.passwordlink.body" html="true">
+            <de><![CDATA[Folgender Passwort-Link wurde mit Ihnen geteilt:
+
+[url]
+
+Freundliche Grüße!]]></de>
+        </locale>
+        <locale name="mail.passwordlink.subject">
+            <de><![CDATA[Sequry Passwort-Link]]></de>
+        </locale>
+        <locale name="message.security.handler.passwordlinks.mail_send_error">
+            <de><![CDATA[Das Versenden des Passwort-Links an die angegebenen E-Mail-Empfänger ist fehlgeschlagen. Bitte überprüfen Sie Ihre Mail-Server-Einstellungen oder wenden Sie sich an einen Administrator.]]></de>
+        </locale>
+        <locale name="message.security.handler.passwordlinks.mail_send_success">
+            <de><![CDATA[Der Passwort-Link wurde erfolgreich an die angegebenen E-Mail-Empfänger versandt.]]></de>
+        </locale>
+        <locale name="exception.security.handler.passwordlinks.securityclass_links_not_allowed">
+            <de><![CDATA[Für die Sicherheitsklasse dieses Passworts sind Passwort-Links nicht erlaubt.]]></de>
+        </locale>
+        <locale name="exception.security.handler.passwordlinks.no_permission">
+            <de><![CDATA[Der aktuelle Session-Benutzer hat nicht die nötige Berechtigung, um Passwort-Links für dieses Passwort zu erstellen.]]></de>
+        </locale>
+
+        <!-- types/passwordlink -->
+        <locale name="message.sitetypes.passwordlink.wrong_password">
+            <de><![CDATA[Der PIN ist nicht korrekt]]></de>
+        </locale>
+        <locale name="sitetypes.passwordlink.password_protection">
+            <de><![CDATA[Dieses Passwort ist durch einen PIN geschützt. Bitte geben Sie den entsprechenden PIN ein. Falls Sie keinen PIN erhalten haben, wenden Sie sich bitte an die Person, die Ihnen den Passwort-Link zugesendet hat.]]></de>
+        </locale>
+        <locale name="sitetypes.passwordlink.general_error" html="true">
+            <de><![CDATA[Der Passwort-Link konnte nicht aufgerufen werden. Dies kann folgende Gründe haben:
+<ul>
+    <li>Der Link ist nicht mehr gültig</li>
+    <li>Die Link-Adresse ist fehlerhaft</li>
+</ul>]]></de>
+        </locale>
+        <locale name="sitetypes.passwordlink.password_label">
+            <de><![CDATA[PIN]]></de>
+        </locale>
+
     </groups>
 
-    <groups name="pcsg/grouppasswordmanager" datatype="php,js">
+    <groups name="sequry/core" datatype="php,js">
+
+        <!-- Site types -->
+        <locale name="sitetype.passwordlink.title">
+            <de><![CDATA[Passwort-Link]]></de>
+        </locale>
+        <locale name="sitetype.passwordlink.description">
+            <de><![CDATA[Dient der Anzeige von Passwort-Inhalten für mittels Passwort-Link geteilte Passwörter.]]></de>
+        </locale>
+
+        <!-- Setup -->
+        <locale name="setup.securityclass.title">
+            <de><![CDATA[1-Faktor (QUIQQER Passwort)]]></de>
+        </locale>
+        <locale name="setup.securityclass.description">
+            <de><![CDATA[Authentifizierung per QUIQQER Login Passwort]]></de>
+        </locale>
+
+        <locale name="password.create.template.passwordCategory">
+            <de><![CDATA[Kategorien]]></de>
+        </locale>
+        <locale name="password.create.template.passwordCategoryPrivate">
+            <de><![CDATA[Kategorien (persönlich)]]></de>
+        </locale>
 
         <!-- User profile -->
         <locale name="user.profile.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="user.profile.authplugins.label">
             <de><![CDATA[Auth.-Faktoren]]></de>
         </locale>
+        <locale name="user.profile.reencryption.label">
+            <de><![CDATA[Neu-Verschlüsselung]]></de>
+        </locale>
+
+        <!-- QUIQQER Group Panel -->
+        <locale name="group.category.grouppasswordmanager">
+            <de><![CDATA[Sequry]]></de>
+        </locale>
 
         <!-- Settings -->
         <locale name="settings.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="settings.category.module_settings.title">
             <de><![CDATA[Einstellungen]]></de>
@@ -604,18 +949,55 @@
             <de><![CDATA[Lebensdauer v. Auth-Informationen (Sekunden)]]></de>
         </locale>
         <locale name="settings.module_settings.auth_ttl.description">
-            <de><![CDATA[Bestimmt, wie lange Authentifizierungs-Informationen in der Benutzer-Session zwischengespeichert werden, bevor der Benutzer erneut seine Authentifizierungs-Informationen zur Authentifizierung eingeben muss. Angabe in Sekunden.]]></de>
+            <de><![CDATA[Bestimmt, wie lange Zugangsdaten in der Benutzer-Session zwischengespeichert werden, bevor der Benutzer erneut seine Zugangsdaten zur Authentifizierung eingeben muss. Angabe in Sekunden.]]></de>
+        </locale>
+        <locale name="settings.module_settings.reEncryptEnabled.title">
+            <de><![CDATA[Neu-Verschlüsselung erlauben]]></de>
+        </locale>
+        <locale name="settings.module_settings.reEncryptEnabled.description">
+            <de>
+                <![CDATA[Benutzer haben in ihrem Profil die Option, alle kryptografisch gesicherten Daten neu zu verschlüsseln. Sollte nur bei Notwendigkeit (z.B. Versionssprung der Verschlüsselungs-Bibliothek) erlaubt werden.]]></de>
+        </locale>
+        <locale name="settings.module_settings.defaultSecurityClassId.title">
+            <de><![CDATA[Standard Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="settings.module_settings.defaultSecurityClassId.description">
+            <de><![CDATA[Legen Sie fest, welche Sicherheitsklasse beim "Neues Passwort erstellen"-Dialog vorausgewählt ist.]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.title">
+            <de><![CDATA[Vorausgewählte Eigentümer-Typ bei Passwort-Erstellung]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.description">
+            <de><![CDATA[Eigentümer-Typ, der vorausgewählt ist, wenn bei Erstellung eines neuen Passworts das Eigentümer-Auswahl-Fenster geöffnet wird.]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.users">
+            <de><![CDATA[Benutzer (alle)]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.groups">
+            <de><![CDATA[Gruppen (alle)]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.users_eligible">
+            <de><![CDATA[Benutzer (nur für die jeweilige Sicherheitsklasse geeignete)]]></de>
+        </locale>
+        <locale name="settings.module_settings.actorTypePasswordCreate.option.groups_eligible">
+            <de><![CDATA[Gruppen (nur für die jeweilige Sicherheitsklasse geeignete)]]></de>
+        </locale>
+        <locale name="settings.module_settings.showPasswordLinkVHostSelect.title">
+            <de><![CDATA[VHost-Auswahl für Passwort-Links anzeigen]]></de>
+        </locale>
+        <locale name="settings.module_settings.showPasswordLinkVHostSelect.description">
+            <de><![CDATA[Ermöglicht bei Erstellung eines Passwort-Links den VHost anzugeben, der für die Generierung der Passwort-Link URL verwendet werden soll (nur möglich, wenn mehr als ein VHost im System angelegt ist)]]></de>
         </locale>
 
-        <locale name="user.pwm.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+        <locale name="user.gpm.title">
+            <de><![CDATA[Sequry]]></de>
         </locale>
 
         <locale name="menu.apps.gpm.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="menu.extras.gpm.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="menu.extras.gpm.auth.title">
             <de><![CDATA[Authentifizierung]]></de>
@@ -629,19 +1011,20 @@
 
         <!-- print recovery code -->
         <locale name="auth.recoverycodewindow.info" html="true">
-            <de><![CDATA[Mit diesem Wiederherstellungs-Code können Sie ihre Authentifizierungsinformationen ändern, wenn Sie auf die Authentifizierungsinformationen keinen Zugriff mehr haben. <b>Dieser Wiederherstellungs-Code wird nur einmalig angezeigt und nach dem Schließen dieses Fensters dauerhaft gelöscht!</b> Klicken Sie auf <b>Drucken</b>, um den Wiederherstellungs-Code auszudrucken oder schreiben Sie ihn auf und verwahren Sie ihn an einem sicheren Ort.]]></de>
+            <de><![CDATA[Mit diesem Wiederherstellungs-Code können Sie ihre Zugangsdaten ändern, wenn Sie auf die Zugangsdaten keinen Zugriff mehr haben. <b>Dieser Wiederherstellungs-Code wird nur einmalig angezeigt und nach dem Schließen dieses Fensters dauerhaft gelöscht!</b> Klicken Sie auf <b>Drucken</b>, um den Wiederherstellungs-Code auszudrucken oder schreiben Sie ihn auf und verwahren Sie ihn an einem sicheren Ort.]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.info" html="true">
-            <de><![CDATA[Wiederherstellungs-Code für den QUIQQER Passwort-Manager bei Verlust der Authentifizierungsinformationen. Mit diesem Code können Sie Ihre aktuellen Zugangsdaten für das unten genannte Authentifizierungs-Modul einmalig ändern.]]></de>
+            <de><![CDATA[Wiederherstellungs-Code für den Sequry bei Verlust der Zugangsdaten. Mit diesem Code können Sie Ihre aktuellen Zugangsdaten für den unten genannten Authentifizierungs-Faktor einmalig ändern.]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.warning.title">
             <de><![CDATA[ACHTUNG!]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.warning">
-            <de><![CDATA[Bewahren Sie diesen Wiederherstellungs-Code an einem sicheren Ort auf. Geben Sie ihn nicht an Dritte weiter. Mit Zugriff auf diesen Code können u.U. alle Passwörter eingesehen werden, auf die Sie Zugriff haben!]]></de>
+            <de>
+                <![CDATA[Bewahren Sie diesen Wiederherstellungs-Code an einem sicheren Ort auf. Geben Sie ihn nicht an Dritte weiter. Mit Zugriff auf diesen Code können u.U. alle Passwörter eingesehen werden, auf die Sie Zugriff haben!]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.print.title">
-            <de><![CDATA[QUIQQER Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.basicData">
             <de><![CDATA[Wiederherstellungs-Informationen]]></de>
@@ -650,7 +1033,7 @@
             <de><![CDATA[Benutzer]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.authplugin">
-            <de><![CDATA[Authentifizierungs-Modul]]></de>
+            <de><![CDATA[Authentifizierungs-Faktor]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.recoveryCodeId">
             <de><![CDATA[Wiederherstellungs-ID]]></de>
@@ -673,13 +1056,15 @@
             <de><![CDATA[Achtung!]]></de>
         </locale>
         <locale name="event.user.delete.confirm.information" html="true">
-            <de><![CDATA[Wenn Sie den Benutzer <b>[userName]</b> (#[userId]) löschen, wird er aus allen Gruppen entfernt und es werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer er ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
+            <de>
+                <![CDATA[Wenn Sie den Benutzer <b>[userName]</b> (#[userId]) löschen, wird er aus allen Gruppen entfernt und es werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer er ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
         </locale>
         <locale name="event.group.delete.confirm.title">
             <de><![CDATA[Achtung!]]></de>
         </locale>
         <locale name="event.group.delete.confirm.information" html="true">
-            <de><![CDATA[Wenn Sie die Gruppe <b>[groupName]</b> (#[groupId]) löschen, werden alle Benutzer, die der Gruppe angehören, aus der Gruppe entfernt. Zudem werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer sie ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
+            <de>
+                <![CDATA[Wenn Sie die Gruppe <b>[groupName]</b> (#[groupId]) löschen, werden alle Benutzer, die der Gruppe angehören, aus der Gruppe entfernt. Zudem werden alle Passwörter dauerhaft gelöscht, dessen direkter Eigentümer sie ist. Das bedeutet, dass alle Benutzer und Gruppen die betroffenen Passwörter fortan nicht mehr einsehen können. Die betroffenen Passwörter sind nicht wiederherstellbar. Wenn Sie sicher sind, dass sie diese Operation ausführen möchten, klicken sie bitte auf OK.]]></de>
         </locale>
         <locale name="exception.events.user.delete.no.permission">
             <de><![CDATA[Der Benutzer kann nicht gelöscht werden. Benutzer können nur durch SuperUser oder sich selbst gelöscht werden.]]></de>
@@ -690,15 +1075,18 @@
 
         <!-- General messages -->
         <locale name="error.authentication.incorrect.auth.data">
-            <de><![CDATA[Der Vorgang war nicht erfolgreich, da die übergebenen Authentifizierungs-Informationen nicht korrekt waren.]]></de>
+            <de><![CDATA[Der Vorgang war nicht erfolgreich, da die übergebenen Zugangsdaten nicht korrekt waren.]]></de>
         </locale>
 
         <!-- Permissions -->
         <locale name="permission.gpm._header">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata._header">
             <de><![CDATA[Passwörter]]></de>
+        </locale>
+        <locale name="permission.gpm.passwordlinks._header">
+            <de><![CDATA[Passwort-Links]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata.create">
             <de><![CDATA[Darf neue Passwörter anlegen]]></de>
@@ -706,10 +1094,13 @@
         <locale name="permission.gpm.cryptodata.edit">
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) bearbeiten]]></de>
         </locale>
-        <locale name="permission.gpm.cryptodata.delete">
+        <locale name="permission.gpm.cryptodata.delete_group">
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) löschen]]></de>
         </locale>
         <locale name="permission.gpm.cryptodata.share">
+            <de><![CDATA[Darf eigene Passwörter mit anderen Benutzern und Gruppen teilen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptodata.share_group">
             <de><![CDATA[Darf Gruppen-Passwörter (Eigentümer = Gruppe) mit anderen Benutzern und Gruppen teilen]]></de>
         </locale>
         <locale name="permission.gpm.cryptogroup._header">
@@ -724,15 +1115,48 @@
         <locale name="permission.gpm.securityclass.edit">
             <de><![CDATA[Darf Sicherheitsklassen erstellen und bearbeiten]]></de>
         </locale>
+        <locale name="permission.gpm.categories._header">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="permission.gpm.categories.edit">
+            <de><![CDATA[Darf öffentliche Passwort-Kategorien erstellen, umbenennen und löschen]]></de>
+        </locale>
+        <locale name="permission.gpm.passwordlinks.allowed">
+            <de><![CDATA[Mitglieder dieser Gruppe dürfen für alle Passwörter, deren Eigentümer diese Gruppe ist, Passwort-Links erstellen]]></de>
+        </locale>
 
         <locale name="passwords.panel.title">
-            <de><![CDATA[Passwort-Manager]]></de>
+            <de><![CDATA[Sequry]]></de>
+        </locale>
+
+        <!-- Categories Panel -->
+        <locale name="panels.categories.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="panels.categories.description">
+            <de><![CDATA[Kategorisierung und Filtern von Passwörtern]]></de>
+        </locale>
+
+        <!-- Desktop Search -->
+        <locale name="desktopsearch.group.passwords.label">
+            <de><![CDATA[Passwörter]]></de>
+        </locale>
+
+        <!-- Cron -->
+        <locale name="cron.delete_passwordlinks.title">
+            <de><![CDATA[Passwort-Links deaktivieren]]></de>
+        </locale>
+        <locale name="cron.delete_passwordlinks.description">
+            <de><![CDATA[Deaktiviert alle Passwort-Links, deren Ablaufdatum (sofern eingestellt) erreicht ist]]></de>
         </locale>
     </groups>
 
-    <groups name="pcsg/grouppasswordmanager" datatype="js">
+    <groups name="sequry/core" datatype="js">
 
         <!-- Control: passwords/Panel -->
+        <locale name="controls.gpm.passwords.panel.options.label.dblclick">
+            <de><![CDATA[Doppelklick-Aktion]]></de>
+        </locale>
         <locale name="controls.gpm.passwordlist.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
         </locale>
@@ -751,14 +1175,23 @@
         <locale name="controls.gpm.passwords.panel.tbl.header.shared">
             <de><![CDATA[Geteilt]]></de>
         </locale>
-        <locale name="controls.gpm.passwords.panel.tbl.header.permissions">
-            <de><![CDATA[Rechte]]></de>
+        <locale name="controls.gpm.passwords.panel.tbl.header.actions">
+            <de><![CDATA[Aktionen]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.tbl.header.owner">
             <de><![CDATA[Eigentümer]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.header.securityClass">
+            <de><![CDATA[Sicherheitskl.]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.tbl.owner.myself">
+            <de><![CDATA[Ich]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.panel.tbl.shared.no">
             <de><![CDATA[nein]]></de>
+        </locale>
+        <locale name="controls.passwords.panel.tabl.shared.no_permission">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um zu sehen, ob und/oder mit wem dieses Passwort geteilt ist]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.shareinfo.title">
             <de><![CDATA[Auflistung der Passwort-Empfänger]]></de>
@@ -775,20 +1208,44 @@
         <locale name="gpm.passwords.panel.create.title">
             <de><![CDATA[Neues Passwort erstellen]]></de>
         </locale>
+        <locale name="gpm.passwords.panel.link.title">
+            <de><![CDATA[Passwort-Link]]></de>
+        </locale>
         <locale name="controls.gpm.passwords.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.view">
+            <de><![CDATA[Ansehen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.action.view">
             <de><![CDATA[Passwort ansehen]]></de>
         </locale>
-        <locale name="controls.gpm.passwords.btn.share">
-            <de><![CDATA[Passwort teilen]]></de>
-        </locale>
-        <locale name="controls.gpm.passwords.btn.edit">
+        <locale name="controls.gpm.passwords.action.edit">
             <de><![CDATA[Passwort bearbeiten]]></de>
         </locale>
-        <locale name="controls.gpm.passwords.btn.delete">
+        <locale name="controls.gpm.passwords.action.share">
+            <de><![CDATA[Passwort teilen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.action.delete">
             <de><![CDATA[Passwort löschen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.action.link">
+            <de><![CDATA[Passwort extern verlinken]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.dblclickaction.view">
+            <de><![CDATA[Bei Doppelklick: Ansehen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.dblclickaction.share">
+            <de><![CDATA[Bei Doppelklick: Teilen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.dblclickaction.edit">
+            <de><![CDATA[Bei Doppelklick: Bearbeiten]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.btn.delete">
+            <de><![CDATA[Löschen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.btn.categories">
+            <de><![CDATA[Kategoriezuweisung]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.searchremove">
             <de><![CDATA[Suchfilter entfernen]]></de>
@@ -835,6 +1292,54 @@
         <locale name="controls.gpm.passwords.panel.accessinfo.acess">
             <de><![CDATA[Zugriff über]]></de>
         </locale>
+        <locale name="controls.gpm.passwords.panel.category.info" html="true">
+            <de><![CDATA[<b>Kategorie:</b> [category]]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.category.private.info" html="true">
+            <de><![CDATA[<b>Kategorie (persönlich):</b> [category]]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.favo.alt">
+            <de><![CDATA[Dieses Passwort als Favorit setzen]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.categories.title">
+            <de><![CDATA[Kategorie-Zuweisung für mehrere Passwörter]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.categories.info">
+            <de>
+                <![CDATA[Bitte wählen Sie die Passwort-Kategorien, die den gewählten Passwörtern zugeordnet werden sollen. Bereits vorhandene Passwort-Kategorien in den gewählten Passwörtern werden durch die hier gewählten überschrieben.]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.categories.warning">
+            <de><![CDATA[Passwörter werden nur dann den öffentlichen Kategorien zugeordnet, wenn Sie die Berechtigung besitzen, diese Passwörter zu bearbeiten!]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.categories.warning">
+            <de><![CDATA[Passwörter werden nur dann den öffentlichen Kategorien zugeordnet, wenn Sie die Berechtigung besitzen, diese Passwörter zu bearbeiten!]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.search.placeholder">
+            <de><![CDATA[Passwort-Suche]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.initialRegistration.title">
+            <de><![CDATA[Registrierung für erstmalige Nutzung]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.initialRegistration.header">
+            <de><![CDATA[Herzlich Willkommen!]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.initialRegistration.info" html="true">
+            <de>
+                <![CDATA[Es scheint, als würden Sie <b>Sequry</b> zum ersten Mal benutzen. Damit Sie Ihre ersten Passwörter einpflegen und verwalten können, ist es notwendig, sich mit Ihrem Login-Passwort beim Sequry zu registrieren. So wird sichergestellt, dass nur Sie Zugriff auf Ihre Passwörter haben. Geben Sie dazu bitte Ihr Login-Passwort in das Eingabefeld ein und klicken anschließend auf <b>Registrieren</b>.]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.initialRegistration.btn">
+            <de><![CDATA[Registrieren]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.initialRegistration.label">
+            <de><![CDATA[QUIQQER Login-Passwort]]></de>
+        </locale>
+        <locale name="controls.gpm.passwords.panel.view.button.edit">
+            <de><![CDATA[Passwort bearbeiten]]></de>
+        </locale>
+        <locale name="controls.password.panel.setup_incomplete" html="true">
+            <de><![CDATA[<h1>Sequry ist noch nicht einsatzbereit!</h1>
+<p>Sequry kann leider noch nicht benutzt werden, da noch nicht alle nötigen Konfigurationsschritte abgeschlossen sind. Bitte lesen Sie den Abschnitt <b>"Sequry einrichten"</b> in der Dokumentation und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>]]></de>
+        </locale>
 
         <!-- Control: password/Create -->
         <locale name="password.create.template.title">
@@ -844,7 +1349,7 @@
             <de><![CDATA[Stammdaten]]></de>
         </locale>
         <locale name="password.create.template.securityClass">
-            <de><![CDATA[Sicherheitsklasse]]></de>
+            <de><![CDATA[Authentifizierungs-Stufe]]></de>
         </locale>
         <locale name="password.create.template.passwordTitle">
             <de><![CDATA[Titel]]></de>
@@ -853,7 +1358,7 @@
             <de><![CDATA[Beschreibung]]></de>
         </locale>
         <locale name="password.create.template.payload">
-            <de><![CDATA[Inhalt]]></de>
+            <de><![CDATA[Inhalt - Diese Informationen werden verschlüsselt!]]></de>
         </locale>
         <locale name="password.create.template.passwordPayload">
             <de><![CDATA[Passwort-Inhalt]]></de>
@@ -861,19 +1366,37 @@
         <locale name="password.create.template.payloadWarning">
             <de><![CDATA[Achtung! Dies sind die Daten, die verschlüsselt werden und auf die nach der Erstellung ausschließlich Berechtigte zugreifen können!]]></de>
         </locale>
-        <locale name="password.create.template.owner">
-            <de><![CDATA[Eigentümer]]></de>
+        <locale name="password.create.template.extra">
+            <de><![CDATA[Erweiterte Daten]]></de>
         </locale>
         <locale name="password.create.template.passwordOwner">
-            <de><![CDATA[Benutzer / Gruppe]]></de>
+            <de><![CDATA[Eigentümer]]></de>
         </locale>
         <locale name="password.create.submit.no.owner.assigned">
             <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
+        </locale>
+        <locale name="password.create.set.owner.info_group">
+            <de><![CDATA[Bitte legen Sie eine Gruppe als Passwort-Eigentümer fest.]]></de>
+        </locale>
+        <locale name="password.create.set.owner.info_all">
+            <de><![CDATA[Bitte legen Sie einen Benutzer oder eine Gruppe als Passwort-Eigentümer fest.]]></de>
+        </locale>
+        <locale name="password.create.set.owner.not.eligible">
+            <de>
+                <![CDATA[Der aktuell gewählte Passwort-Eigentümer ist nicht für die gewählte Authentifizierungs-Stufe geeignet. Bitte wählen Sie einen anderen Benutzer oder eine andere Gruppe als Passwort-Eigentümer.]]></de>
+        </locale>
+        <locale name="controls.password.create.ownerselect.info">
+            <de>
+                <![CDATA[Bitte wählen Sie einen Eigentümer, der das Passwort bearbeiten, teilen und löschen kann. Wenn eine Gruppe als Eigentümer gewählt wird, haben alle Benutzer dieser Gruppe die genannten Passwort-Berechtigungen.]]></de>
         </locale>
 
         <!-- Control: password/Edit -->
         <locale name="edit.template.title">
             <de><![CDATA[Passwort bearbeiten]]></de>
+        </locale>
+        <locale name="password.edit.securityclass.change.warning">
+            <de>
+                <![CDATA[Der aktuelle Eigentümer des Passworts ist eine Passwort-Gruppe. Bitte beachten Sie, dass als zukünftiger Eigentümer ausschließlich eine (andere) Gruppe und kein einzelner Benutzer gesetzt werden darf.]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->
@@ -884,7 +1407,13 @@
             <de><![CDATA[Registrieren]]></de>
         </locale>
         <locale name="auth.panel.btn.change">
-            <de><![CDATA[Registrierungsinformationen ändern]]></de>
+            <de><![CDATA[Zugangsdaten ändern]]></de>
+        </locale>
+        <locale name="auth.panel.btn.recovery">
+            <de><![CDATA[Zugangsdaten vergessen]]></de>
+        </locale>
+        <locale name="auth.panel.btn.regenerate">
+            <de><![CDATA[Wiederherstellungs-Code neu generieren]]></de>
         </locale>
         <locale name="auth.panel.tbl.header.registered">
             <de><![CDATA[registriert]]></de>
@@ -908,10 +1437,25 @@
             <de><![CDATA[Bestätigen]]></de>
         </locale>
         <locale name="gpm.auth.panel.change.title">
-            <de><![CDATA[Authentifizierungsinformationen für "[authPluginTitle]" ändern]]></de>
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" ändern]]></de>
+        </locale>
+        <locale name="gpm.auth.panel.recovery.title">
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" wiederherstellen]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.title">
+            <de><![CDATA[Wiederherstellungs-Code für "[authPluginTitle]" neu generieren]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.header">
+            <de><![CDATA[Sind Sie sicher, dass Sie den Wiederherstellungs-Code für den Authentifizierungs-Faktor "[authPluginTitle]" neu generieren möchten?]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.info" html="true">
+            <de><![CDATA[Der aktuell gültige <b>Wiederherstellungs-Code #[recoveryCodeId]</b> verliert dadurch seine Gültigkeit und kann nicht mehr verwendet werden. Es wird ein neuer Wiederherstellungs-Code generiert und <b>einmalig angezeigt</b>. Der neue Code muss unbedingt an einem <b>sicheren Ort aufbewahrt</b> werden!]]></de>
+        </locale>
+        <locale name="auth.panel.regenerate.popup.btn.confirm">
+            <de><![CDATA[Neuen Wiederherstellungs-Code generieren]]></de>
         </locale>
         <locale name="auth.panel.register.btn.register">
-            <de><![CDATA[Neue Informationen senden]]></de>
+            <de><![CDATA[Registrieren]]></de>
         </locale>
 
         <!-- Control: auth/Register -->
@@ -919,24 +1463,24 @@
             <de><![CDATA[Registrierung für eine Authentifizierungsmethode]]></de>
         </locale>
         <locale name="auth.template.basicData">
-            <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
+            <de><![CDATA[Eingabe der Zugangsdaten]]></de>
         </locale>
 
         <!-- Control: auth/Change -->
         <locale name="auth.change.template.title">
-            <de><![CDATA[Änderung der Authentifizierungsinformationen für eine Authentifizierungs-Methode]]></de>
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" ändern]]></de>
         </locale>
-        <locale name="auth.change.template.basicData">
-            <de><![CDATA[Eingabe der Authentifizierungsinformationen]]></de>
+        <locale name="auth.change.template.authData">
+            <de><![CDATA[Aktuelle Zugangsdaten eingeben]]></de>
         </locale>
-        <locale name="auth.change.template.recovery">
-            <de><![CDATA[Authentifizierungsinformationen vergessen]]></de>
+        <locale name="auth.change.template.newAuthData">
+            <de><![CDATA[Neue Zugangsdaten eingeben]]></de>
         </locale>
         <locale name="auth.change.btn.recovery">
-            <de><![CDATA[Ich habe meine aktuellen Authentifizierungsinformationen vergessen]]></de>
+            <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
         <locale name="auth.recovery.information">
-            <de><![CDATA[Sie können Ihre aktuellen Authentifizierungsinformationen mit dem Wiederherstellungscode, der bei Registrierung mit dieser Authentifizierungs-Methode angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Authentifizierungsinformationen dafür leer.]]></de>
+            <de><![CDATA[Sie können Ihre aktuellen Zugangsdaten mit dem Wiederherstellungscode, der bei Registrierung mit diesem Authentifizierungs-Faktor angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Zugangsdaten dafür leer.]]></de>
         </locale>
         <locale name="auth.recovery.code">
             <de><![CDATA[Wiederherstellungs-Code #[recoveryCodeId]]]></de>
@@ -958,10 +1502,11 @@
             <de><![CDATA[Authentifizierung erforderlich!]]></de>
         </locale>
         <locale name="controls.authenticate.popup.info.description" html="true">
-            <de><![CDATA[Für diese Operation ist eine Authentifizierung erforderlich.<br/><br/><b>Sicherheitsklasse:</b> [securityClass]<br/><br/>Bitte authentifzieren Sie sich mit <b>mindestens [requiredFactors]</b> dafür nötigen Authentifizierungs-Faktoren.]]></de>
+            <de>
+                <![CDATA[Für diese Operation ist eine Authentifizierung erforderlich.<br/><br/><b>Sicherheitsklasse:</b> [securityClass]<br/><br/>Bitte authentifzieren Sie sich mit <b>mindestens [requiredFactors]</b> dafür nötigen Authentifizierungs-Faktoren.]]></de>
         </locale>
         <locale name="controls.authenticate.popup.label.save.authdata">
-            <de><![CDATA[Authentifizierungs-Informationen merken]]></de>
+            <de><![CDATA[Zugangsdaten merken]]></de>
         </locale>
         <locale name="controls.authenticate.popup.btn.text">
             <de><![CDATA[Authentifizieren]]></de>
@@ -976,17 +1521,37 @@
             <de><![CDATA[Hier klicken, um den Authentifizierungsvorgang abzubrechen]]></de>
         </locale>
         <locale name="controls.auth.authenticate.warning.nonregistered">
-            <de><![CDATA[Dieser Authentifizierungs-Faktor kann nicht verwendet werden, da Sie für ihn nicht registriert sind. Um sich für diesen Authentifizierungs-Faktor zu registrieren, gehen Sie bitte in die Authentifizierungsverwaltung.]]></de>
+            <de>
+                <![CDATA[Dieser Authentifizierungs-Faktor kann nicht verwendet werden, da Sie für ihn nicht registriert sind. Um sich für diesen Authentifizierungs-Faktor zu registrieren, gehen Sie bitte in die Authentifizierungsverwaltung.]]></de>
+        </locale>
+        <locale name="controls.auth.authenticate.show_plugin">
+            <de><![CDATA[Anzeigen]]></de>
+        </locale>
+        <locale name="controls.auth.authenticate.info">
+            <de><![CDATA[Bitte authentifizieren Sie sich für die folgenden Authentifizierungs-Faktoren.]]></de>
+        </locale>
+        <locale name="controls.auth.authenticate.recover_authdata">
+            <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
 
         <!-- Control: password/Authenticate -->
         <locale name="controls.password.authenticate.warning.unsynced">
-            <de><![CDATA[Dieser Authentifizierungs-Faktor kann für dieses Passwort z.Z. nicht verwendet werden. Um dies zu beheben, gehen Sie bitte in die Authentifizierungsverwaltung und klicken auf den Warn-Button für diesen Authentifizierungs-Faktor.]]></de>
+            <de>
+                <![CDATA[Dieser Authentifizierungs-Faktor kann für dieses Passwort z.Z. nicht verwendet werden. Um dies zu beheben, gehen Sie bitte in die Authentifizierungsverwaltung und klicken auf den Warn-Button für diesen Authentifizierungs-Faktor.]]></de>
         </locale>
 
         <!-- Control: passwords/View -->
         <locale name="controls.password.view.popup.title">
             <de><![CDATA[Passwort ansehen]]></de>
+        </locale>
+        <locale name="controls.password.view.categories.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="controls.password.view.tooltip.copy">
+            <de><![CDATA[Kopiert!]]></de>
+        </locale>
+        <locale name="controls.password.view.categories.tooltip">
+            <de><![CDATA[Können unter "Passwort bearbeiten" angepasst werden]]></de>
         </locale>
 
         <!-- Control: password/Panel -->
@@ -998,6 +1563,9 @@
         </locale>
         <locale name="gpm.password.panel.btn.share">
             <de><![CDATA[Passwort-Daten teilen]]></de>
+        </locale>
+        <locale name="controls.passwords.panel.linkpassword.btn.create">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
         </locale>
 
         <!-- Control: securityclasses/Panel -->
@@ -1026,7 +1594,8 @@
             <de><![CDATA[Sicherheitsklasse bearbeiten]]></de>
         </locale>
         <locale name="gpm.securityclasses.panel.delete.popup.info.description" html="true">
-            <de><![CDATA[Sind Sie sicher, dass Sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) unwiderruflich löschen wollen?<br/>Bitte beachten Sie, dass eine Löschung nur möglich ist, wenn aktuell keine Passwörter angelegt sind, der diese Sicherheitsklasse zugeordnet ist.]]></de>
+            <de>
+                <![CDATA[Sind Sie sicher, dass Sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) unwiderruflich löschen wollen?<br/>Bitte beachten Sie, dass eine Löschung nur möglich ist, wenn aktuell keine Passwörter angelegt sind, der diese Sicherheitsklasse zugeordnet sind.]]></de>
         </locale>
         <locale name="gpm.securityclasses.panel.delete.popup.title">
             <de><![CDATA[Sicherheitsklasse löschen]]></de>
@@ -1061,7 +1630,8 @@
             <de><![CDATA[Mindestens benötigte Faktoren]]></de>
         </locale>
         <locale name="securityclasses.create.template.authPluginsWarning">
-            <de><![CDATA[Nach der Erstellung der Sicherheitsklasse können nur noch Authentifizierungs-Faktoren hinzugefügt werden. Bestehende Faktoren können nicht mehr aus der Sicherheitsklasse entfernt werden.]]></de>
+            <de>
+                <![CDATA[Nach der Erstellung der Sicherheitsklasse können nur noch Authentifizierungs-Faktoren hinzugefügt werden. Bestehende Faktoren können nicht mehr aus der Sicherheitsklasse entfernt werden.]]></de>
         </locale>
         <locale name="securityclasses.create.template.authPluginsRequiredFactorsWarning">
             <de><![CDATA[Die festgelegte Mindestanzahl an zur Authentifizierung benötigten Faktoren kann im Nachhinein nicht mehr geändert werden.]]></de>
@@ -1071,6 +1641,9 @@
         </locale>
         <locale name="securityclasses.create.template.groupsInfo">
             <de><![CDATA[Die Gruppen für eine Sicherheitsklasse können festgelegt werden, nachdem die Sicherheitsklasse erstellt wurde.]]></de>
+        </locale>
+        <locale name="securityclasses.create.template.allowPasswordLinks">
+            <de><![CDATA[Passwort-Links erlauben]]></de>
         </locale>
 
         <!-- Control: securityclasses/Edit -->
@@ -1098,6 +1671,9 @@
         <locale name="securityclasses.edit.template.requiredFactors">
             <de><![CDATA[Mindestens benötigte Faktoren]]></de>
         </locale>
+        <locale name="securityclasses.edit.template.allowPasswordLinks">
+            <de><![CDATA[Passwort-Links erlauben]]></de>
+        </locale>
         <locale name="securityclasses.edit.addauthfactors.none.available">
             <de><![CDATA[Dieser Sicherheitsklasse sind bereits alle verfügbaren Authentifizierungs-Faktoren zugeordnet.]]></de>
         </locale>
@@ -1117,6 +1693,14 @@
         </locale>
         <locale name="controls.password.share.groups.header">
             <de><![CDATA[Gruppen]]></de>
+        </locale>
+        <locale name="controls.password.share.actorselect.users.info">
+            <de>
+                <![CDATA[Wählen Sie alle Benutzer aus, für die das Passwort sichtbar sein soll. Bitte beachten Sie, dass Benutzer, die bereits direkt oder über eine Gruppe Zugriff auf das Passwort haben, hier nicht aufgelistet sind.]]></de>
+        </locale>
+        <locale name="controls.password.share.actorselect.groups.info">
+            <de>
+                <![CDATA[Wählen Sie alle Gruppen aus, für deren Benutzer das Passwort sichtbar sein soll. Bitte beachten Sie, dass Gruppen, die bereits Zugriff auf das Passwort haben, hier nicht aufgelistet sind.]]></de>
         </locale>
 
         <!-- Control: actors/Select -->
@@ -1191,6 +1775,15 @@
         <locale name="password.search.template.searchfieldsDescription">
             <de><![CDATA[Kurzbeschreibung]]></de>
         </locale>
+        <locale name="password.search.template.filters">
+            <de><![CDATA[Such-Filter]]></de>
+        </locale>
+        <locale name="password.search.template.uncategorized">
+            <de><![CDATA[Passwörter ohne öffentliche Passwort-Kategorie]]></de>
+        </locale>
+        <locale name="password.search.template.uncategorizedPrivate">
+            <de><![CDATA[Passwörter ohne persönliche Passwort-Kategorie]]></de>
+        </locale>
 
         <!-- Control: password/View -->
         <locale name="password.view.restricted.info">
@@ -1205,7 +1798,7 @@
             <de><![CDATA[Passwort-Gruppe bearbeiten]]></de>
         </locale>
         <locale name="gpm.groups.panel.table.nosecurityclass">
-            <de><![CDATA[keine (Gruppe kann nicht für den Passwort-Manager verwendet werden)]]></de>
+            <de><![CDATA[keine (Gruppe kann nicht mit Sequry verwendet werden)]]></de>
         </locale>
         <locale name="group.panel.tbl.header.name">
             <de><![CDATA[Gruppe]]></de>
@@ -1223,7 +1816,8 @@
             <de><![CDATA[Zugeordnete Sicherheitsklassen]]></de>
         </locale>
         <locale name="actors.groupedit.no.securityclass" html="true">
-            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann. <b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
+            <de>
+                <![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen von Sequry verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
         </locale>
         <locale name="actors.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>
@@ -1238,12 +1832,17 @@
             <de><![CDATA[Sicherheitsklasse aus Gruppe entfernen]]></de>
         </locale>
         <locale name="actors.groupedit.remove.securityclass.information" html="true">
-            <de><![CDATA[Sind Sie sicher, dass sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) aus der Passwort-Gruppe <b>[groupName]</b> (#[groupId]) entfernen möchten? Bei diesem Vorgang werden alle Passwörter gelöscht, deren Eigentümer diese Gruppe ist und die dieser Sicherheitsklasse angehören. Zudem verlieren alle Benutzer der Gruppe Zugriff auf Passwörter dieser Sicherheitsklasse, die den Zugriff über diese Gruppe haben. Wenn Sie den Vorgang durchführen möchten, klicken Sie bitte auf <b>Übernehmen</b>.]]></de>
+            <de>
+                <![CDATA[Sind Sie sicher, dass sie die Sicherheitsklasse <b>[securityClassTitle]</b> (#[securityClassId]) aus der Passwort-Gruppe <b>[groupName]</b> (#[groupId]) entfernen möchten? Bei diesem Vorgang werden alle Passwörter gelöscht, deren Eigentümer diese Gruppe ist und die dieser Sicherheitsklasse angehören. Zudem verlieren alle Benutzer der Gruppe Zugriff auf Passwörter dieser Sicherheitsklasse, die den Zugriff über diese Gruppe haben. Wenn Sie den Vorgang durchführen möchten, klicken Sie bitte auf <b>Übernehmen</b>.]]></de>
+        </locale>
+        <locale name="controls.actors.groupedit.addsecurityclass.selectactor.info">
+            <de>
+                <![CDATA[Dieser Gruppe sind momentan keine Benutzer zugewiesen, die für die gewählte Sicherheitsklasse geeignet sind. Um die Sicherheitsklasse der Gruppe hinzuzufügen, wählen Sie bitte einen geeigneten Benutzer. Dieser wird der Gruppe automatisch hinzugefügt.]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->
         <locale name="auth.panel.title">
-            <de><![CDATA[Authentifizierungs-Module]]></de>
+            <de><![CDATA[Authentifizierungs-Faktoren]]></de>
         </locale>
 
         <!-- Control: auth/RecoveryCodeWindow -->
@@ -1259,7 +1858,8 @@
             <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.info" html="true">
-            <de><![CDATA[Sie haben Berechtigungen für Passwörter, für deren Zugriff das Authentifizierungs-Modul <b>"[authPluginTitle]"</b> verwendet werden kann. Da Sie bereits Zugriff auf diese Passwörter hatten, bevor Sie sich für dieses Authentifizierungs-Modul registriert haben, ist es nötig, sich einmalig für die Sicherheitsklassen dieser Passwörter zu authentifizieren. Dadurch wird sichergestellt, dass sie auch diesen Authentifizierungs-Faktor für den Zugriff auf diese Passwörter nutzen können.]]></de>
+            <de>
+                <![CDATA[Sie haben sich für einen neuen Authentifizierungs-Faktor registriert. Um den Zugriff auf alle Passwörter freizuschalten, die mit diesem Faktor entschlüsselt werden können, authentifizieren Sie sich bitte einmalig für die folgenden Sicherheitsklassen.]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.btn.sync.text">
             <de><![CDATA[Synchronisieren]]></de>
@@ -1271,7 +1871,7 @@
             <de><![CDATA[Authentifizierung]]></de>
         </locale>
         <locale name="auth.syncauthpluginwindow.authdata.incorrect">
-            <de><![CDATA[Die Authentifizierungsinformationen sind nicht korrekt.]]></de>
+            <de><![CDATA[Die Zugangsdaten sind nicht korrekt.]]></de>
         </locale>
 
         <!-- Control: passwordtypes/Edit -->
@@ -1317,10 +1917,400 @@
 
         <!-- Control: user/AuthPluginSettings -->
         <locale name="controls.user.authpluginsettings.label.autosave">
-            <de><![CDATA[Authentifizierungs-Informationen nach erstmaliger Anmeldung automatisch speichern]]></de>
+            <de><![CDATA[Zugangsdaten nach erstmaliger Anmeldung automatisch speichern]]></de>
         </locale>
         <locale name="controls.user.authpluginsettings.label.priority">
             <de><![CDATA[Anzeige-Priorität im Authentifizierungsfenster (höhere Zahl = weiter oben)]]></de>
+        </locale>
+
+        <!-- Control: categories/private/Panel -->
+        <locale name="controls.categories.private.panel.title">
+            <de><![CDATA[Passwort-Kategorien (persönlich)]]></de>
+        </locale>
+
+        <!-- Control: categories/Map -->
+        <locale name="controls.categories.map.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="controls.categories.map.filter.new.text">
+            <de><![CDATA[Neue Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.title">
+            <de><![CDATA[Neue Passwort-Kategorie]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.info">
+            <de><![CDATA[Neue Unter-Kategorie für die Kategorie "[catTitle]" (#[catId])]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.label">
+            <de><![CDATA[Bitte geben Sie einen Kategorie-Titel ein]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.btn.create.text">
+            <de><![CDATA[Neue Unter-Kategorie]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.btn.rename.text">
+            <de><![CDATA[Umbenennen]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.btn.delete.text">
+            <de><![CDATA[Löschen]]></de>
+        </locale>
+        <locale name="controls.categories.map.delete.title">
+            <de><![CDATA[Passwort-Kategorie löschen]]></de>
+        </locale>
+        <locale name="controls.categories.map.delete.info">
+            <de>
+                <![CDATA[Sind Sie sicher, dass Sie die öffentliche Passwort-Kategorie "[catTitle]" (#[catId]) und alle Kind-Kategorien löschen wollen? Alle dieser Kategorie zugeordneten Passwörter verlieren dann ihre Kategorie-Zuweisung für diese und alle Kind-Kategorien.]]></de>
+        </locale>
+        <locale name="controls.categories.map.rename.title">
+            <de><![CDATA[Passwort-Kategorie umbenennen]]></de>
+        </locale>
+        <locale name="controls.categories.map.rename.label">
+            <de><![CDATA[Neuer Kategorie-Titel]]></de>
+        </locale>
+        <locale name="controls.categories.map.category.all">
+            <de><![CDATA[Alle Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.map.create.info.all">
+            <de><![CDATA[Neue Unter-Kategorie für die Kategorie "[catTitle]"]]></de>
+        </locale>
+        <locale name="controls.categories.map.btn.hideempty.text">
+            <de><![CDATA[Leere Kategorien ausblenden]]></de>
+        </locale>
+        <locale name="controls.categories.map.btn.showempty.text">
+            <de><![CDATA[Leere Kategorien anzeigen]]></de>
+        </locale>
+
+        <!-- Control: categories/Panel -->
+        <locale name="controls.categories.panel.title">
+            <de><![CDATA[Passwort-Kategorien]]></de>
+        </locale>
+        <locale name="controls.categories.panel.public.title">
+            <de><![CDATA[Kategorien]]></de>
+        </locale>
+        <locale name="controls.categories.panel.private.title">
+            <de><![CDATA[Kategorien (persönlich)]]></de>
+        </locale>
+        <locale name="controls.categories.panel.filter.title">
+            <de><![CDATA[Filter / Sortierung]]></de>
+        </locale>
+
+        <!-- Control: categories/Filters -->
+        <locale name="controls.categories.filters.new">
+            <de><![CDATA[Neue Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.filters.mostUsed">
+            <de><![CDATA[Meistgenutzte Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.filters.favorites">
+            <de><![CDATA[Favoriten]]></de>
+        </locale>
+        <locale name="controls.categories.filters.owned">
+            <de><![CDATA[Eigene Passwörter]]></de>
+        </locale>
+
+        <!-- Control: categories/Select -->
+        <locale name="controls.categories.select.title">
+            <de><![CDATA[Passwort-Kategorie wählen]]></de>
+        </locale>
+        <locale name="controls.categories.select.info" html="true">
+            <de><![CDATA[Wählen Sie ein oder mehrere Kategorien, die sie dem Passwort zuordnen wollen.<br><i>(Mehrfachauswahl mit Strg+Klick)</i>]]></de>
+        </locale>
+        <locale name="controls.categories.select.add.text">
+            <de><![CDATA[Hinzufügen]]></de>
+        </locale>
+        <locale name="controls.categories.select.all">
+            <de><![CDATA[Alle Passwörter]]></de>
+        </locale>
+        <locale name="controls.categories.delete.confirm.title">
+            <de><![CDATA[Kategorie aus Passwort entfernen]]></de>
+        </locale>
+        <locale name="controls.categories.delete.confirm.text">
+            <de><![CDATA[Sind Sie sicher, dass Sie die Kategorie "[category]" aus diesem Passwort entfernen möchten?]]></de>
+        </locale>
+
+        <!-- Control: user/ReEncryptKeys -->
+        <locale name="controls.user.ReEncryptKeys.info">
+            <de><![CDATA[Neu-Verschlüsselung aller kryptografisch gesicherten Daten, auf die Sie Zugriff haben (ausgenommen Wiederherstellungs-Informationen). Benötigt die Authentifizierung für <b>alle</b> Authentifizierungs-Faktoren, für die Sie registriert sind. Dieser Vorgang kann eine gewisse Zeit in Anspruch nehmen.]]></de>
+        </locale>
+        <locale name="controls.user.ReEncryptKeys.info.not.enabled">
+            <de><![CDATA[Diese Funktion ist z.Z. nicht freigeschaltet.]]></de>
+        </locale>
+        <locale name="controls.user.ReEncryptKeys.btn.title">
+            <de><![CDATA[Jetzt neu verschlüsseln]]></de>
+        </locale>
+
+        <!-- Control: actors/SelectWindow -->
+        <locale name="controls.actors.selectwindow.title">
+            <de><![CDATA[Passwort-Benutzer und -Gruppen Auswahl]]></de>
+        </locale>
+        <locale name="controls.actors.selectwindow.tbl.header.id">
+            <de><![CDATA[ID]]></de>
+        </locale>
+        <locale name="controls.actors.selectwindow.tbl.header.name">
+            <de><![CDATA[Name]]></de>
+        </locale>
+        <locale name="controls.actors.selectwindow.tbl.header.notice">
+            <de><![CDATA[Bemerkung]]></de>
+        </locale>
+
+        <!-- Control: securityclasses/SelectSlider -->
+        <locale name="controls.securityclasses.selectslider.authfactors">
+            <de><![CDATA[[requiredFactors]-Faktor Authentifizierung]]></de>
+        </locale>
+
+        <!-- Control: actors/SelectTable -->
+        <locale name="controls.actors.selecttable.tbl.header.id">
+            <de><![CDATA[ID]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.header.name">
+            <de><![CDATA[Name]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.header.notice">
+            <de><![CDATA[Eignung für Sicherheitsklasse "[securityClassTitle]"]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.eligible">
+            <de><![CDATA[geeignet]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.not.eligible">
+            <de><![CDATA[nicht geeignet]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.not.eligible.user" html="true">
+            <de><![CDATA[<i>(nicht für die Mindestanzahl an Authentifizierungs-Faktoren registriert)</i>]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.not.eligible.group" html="true">
+            <de><![CDATA[<i>(nicht für die Sicherheitsklasse freigeschaltet)</i>]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.btn.users">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.btn.groups">
+            <de><![CDATA[Gruppen]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.search.input.placeholder">
+            <de><![CDATA[Suche]]></de>
+        </locale>
+        <locale name="controls.actors.selecttable.tbl.btn.showeligibleonly">
+            <de><![CDATA[Nur geeignete zeigen]]></de>
+        </locale>
+
+        <!-- Control: actors/SelectTablePopup -->
+        <locale name="controls.actors.selecttablepopup.btn.confirm">
+            <de><![CDATA[Auswählen]]></de>
+        </locale>
+        <locale name="controls.actors.selecttablepopup.title.users">
+            <de><![CDATA[Benutzer-Auswahl]]></de>
+        </locale>
+        <locale name="controls.actors.selecttablepopup.title.groups">
+            <de><![CDATA[Gruppen-Auswahl]]></de>
+        </locale>
+        <locale name="controls.actors.selecttablepopup.title.all">
+            <de><![CDATA[Benutzer- und Gruppen-Auswahl]]></de>
+        </locale>
+
+        <!-- Class: Authentication -->
+        <locale name="classes.authentication.securityClassAuth.info" html="true">
+            <de><![CDATA[<b>Sicherheitsklasse:</b> [title]<br><b>Benötigte Faktoren:</b> [requiredFactors]]]></de>
+        </locale>
+
+        <!-- Control: auth/recovery/Recovery -->
+        <locale name="controls.auth.recovery.template.title">
+            <de><![CDATA[Zugangsdaten für "[authPluginTitle]" wiederherstellen]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step1">
+            <de><![CDATA[Schritt 1]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step1desc">
+            <de><![CDATA[Wiederherstellungs-Token eingeben]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step2">
+            <de><![CDATA[Schritt 2]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step2desc">
+            <de><![CDATA[Wiederherstellungs-Code eingeben]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step3">
+            <de><![CDATA[Schritt 3]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.template.step3desc">
+            <de><![CDATA[Prüfen und neue Zugangsdaten setzen]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.btn.send_token">
+            <de><![CDATA[Wiederherstellungs-Token generieren und senden]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.btn.send_token_again">
+            <de><![CDATA[Wiederherstellungs-Token erneut senden]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.btn.check_data">
+            <de><![CDATA[Wiederherstellungs-Daten prüfen]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.code_info">
+            <de><![CDATA[Bitte geben Sie <b>Wiederherstellungs-Code #[codeId]</b> ein, den Sie bei der Registrierung mit diesem Authentifizierungs-Faktor oder der letzten Änderung Ihrer Zugangsdaten erhalten haben.]]></de>
+        </locale>
+        <locale name="controls.auth.recovery.btn.submit">
+            <de><![CDATA[Neue Zugangsdaten speichern]]></de>
+        </locale>
+
+        <!-- Control: auth/Panel -->
+        <locale name="controls.auth.panel.regenerateRecoveryCode.authwindow.info">
+            <de><![CDATA[Bitte geben Sie Ihre Zugangsdaten an, um den Wiederherstellungs-Code neu zu generieren.]]></de>
+        </locale>
+
+        <!-- Control: password/LinkCreate -->
+        <locale name="controls.password.linkcreate.template.tableHeader">
+            <de><![CDATA[Passwort-Link]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateLabel">
+            <de><![CDATA[Gültig bis]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.maxCallsLabel">
+            <de><![CDATA[Maximale Aufrufe]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.passwordLabel">
+            <de><![CDATA[PIN-Schutz]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.titleLabel">
+            <de><![CDATA[Titel]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.messageLabel">
+            <de><![CDATA[Beschreibung]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.emailLabel">
+            <de><![CDATA[Link nach dem Erstellen an folgende E-Mail-Adressen versenden]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.activeLabel">
+            <de><![CDATA[aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption1Day">
+            <de><![CDATA[1 Tag]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption3Day">
+            <de><![CDATA[3 Tage]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption1Week">
+            <de><![CDATA[1 Woche]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOption1Month">
+            <de><![CDATA[1 Monat]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.validDateOptionDate">
+            <de><![CDATA[Datum]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.template.vhostLabel">
+            <de><![CDATA[Layout festlegen]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.btn">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.password_min_length">
+            <de><![CDATA[Bitte geben Sie einen PIN mit mindestens 6 Zeichen ein!]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.no_password_sites" html="true">
+            <de><![CDATA[<b>Passwort-Links können z.Z. nicht erstellt werden!</b><br><p>In Ihrem Projekt befindet sich keine aktive Seite mit dem Seitentyp "Passwort-Link". Eine solche Seite ist notwendig, damit Besucher von Passwort-Links den Inhalt eines Passworts angezeigt bekommen können. Bitte legen Sie eine Seite mit dem Seitentyp "Passwort-Link" an und aktivieren Sie diese Seite.]]></de>
+        </locale>
+
+        <!-- Control: password/LinkList -->
+        <locale name="controls.password.linklist.tbl.validUntil.infinite">
+            <de><![CDATA[unbegrenzt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.calls.infinite">
+            <de><![CDATA[unbegrenzt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.link.text">
+            <de><![CDATA[Link]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.active">
+            <de><![CDATA[Passwort-Link ist aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.inactive">
+            <de><![CDATA[Passwort-Link ist nicht aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.password">
+            <de><![CDATA[Passwort-Link ist durch ein separates Passwort geschützt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.no_password">
+            <de><![CDATA[Passwort-Link ist nicht durch ein separates Passwort geschützt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.add.popup.btn.submit.text">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.add.popup.btn.submit">
+            <de><![CDATA[Hier klicken, um den Passwort-Link zu erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.add.popup.title">
+            <de><![CDATA[Neuen Passwort-Link erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.id">
+            <de><![CDATA[ID]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.validUntil">
+            <de><![CDATA[Gültig bis (einschließlich)]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.callCount">
+            <de><![CDATA[Aufrufe]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.active">
+            <de><![CDATA[Aktiv]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.link">
+            <de><![CDATA[URL]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.createUser">
+            <de><![CDATA[Erstellt]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.passwordProtected">
+            <de><![CDATA[PIN-Schutz]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.securityClass">
+            <de><![CDATA[Passwort-Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.header.passwordOwner">
+            <de><![CDATA[Passwort-Eigentümer]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.btn.add">
+            <de><![CDATA[Passwort-Link erstellen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.btn.calls">
+            <de><![CDATA[Aufrufe anzeigen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.btn.toggleInactive">
+            <de><![CDATA[Inaktive anzeigen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.tbl.btn.deactivate">
+            <de><![CDATA[Deaktivieren]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.popup.title">
+            <de><![CDATA[Aufrufe]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.tbl.header.date">
+            <de><![CDATA[Datum]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.tbl.header.ipAdress">
+            <de><![CDATA[IP-Adresse]]></de>
+        </locale>
+        <locale name="controls.password.linklist.calls.tbl.header.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.password.linklist.showurl.title">
+            <de><![CDATA[Passwort-Link URL zum Teilen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.showurl.ok">
+            <de><![CDATA[OK]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.title">
+            <de><![CDATA[Passwort-Link dauerhaft deaktivieren]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.text">
+            <de><![CDATA[Deaktivierung bestätigen]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.information">
+            <de><![CDATA[Sind Sie sicher, dass der Passwort-Link #[linkId] dauerhaft deaktiviert werden soll? Der Passwort-Link bleibt weiterhin in der Übersichtsliste, kann aber nicht mehr aufgerufen oder wieder aktiviert werden.]]></de>
+        </locale>
+        <locale name="controls.password.linklist.deactivate.confirm">
+            <de><![CDATA[Passwort-Link deaktivieren]]></de>
+        </locale>
+
+        <!-- Control: utils/InputButtons -->
+        <locale name="controls.utils.inputbuttons.copy">
+            <de><![CDATA[Kopiert!]]></de>
         </locale>
 
     </groups>

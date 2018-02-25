@@ -1,45 +1,39 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Register
+ * @module package/sequry/core/bin/controls/auth/Register
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Locale
  * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require text!package/sequry/core/bin/controls/auth/Register.html
+ * @require css!package/sequry/core/bin/controls/auth/Register.css
  *
  * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
+define('package/sequry/core/bin/controls/auth/Register', [
 
-    'qui/QUI',
     'qui/controls/Control',
-    'qui/utils/Form',
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/sequry/core/bin/Authentication',
 
-    'Ajax',
+    'text!package/sequry/core/bin/controls/auth/Register.html',
+    'css!package/sequry/core/bin/controls/auth/Register.css'
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css'
-
-], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, AuthHandler,
-             Ajax, template) {
+], function (QUIControl, QUILocale, Mustache, Authentication, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthHandler();
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
+        Type   : 'package/sequry/core/bin/controls/auth/Register',
 
         Binds: [
             '$onInject',
@@ -111,16 +105,10 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
          * @returns {Promise}
          */
         submit: function () {
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                Ajax.post('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
-                    'package'       : 'pcsg/grouppasswordmanager',
-                    onError         : reject,
-                    authPluginId    : self.getAttribute('authPluginId'),
-                    registrationData: JSON.encode(self.$AuthPluginControl.getRegistrationData())
-                });
-            });
+            return Authentication.registerUser(
+                this.getAttribute('authPluginId'),
+                this.$AuthPluginControl.getRegistrationData()
+            );
         }
     });
 });

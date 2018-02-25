@@ -1,0 +1,27 @@
+<div class="pcsg-gpm-password-view-header">
+<h1 class="pcsg-gpm-password-view-info-title">
+    <span class="{{favoClass}}"></span>
+    {{title}}
+</h1>
+</div>
+<div class="pcsg-gpm-password-view-info">
+    <p class="pcsg-gpm-password-view-info-description">
+        {{description}}
+    </p>
+</div>
+<div class="pcsg-gpm-password-view-payload">
+    <!-- Fake username and password fields to trick Chrome -->
+    {{payload}}
+</div>
+<div class="pcsg-gpm-password-view-info-categories">
+    <div class="pcsg-gpm-password-view-info-categories-public" data-catids="{{categoryIds}}">
+        <span><b>{{categoryPublicLabel}}</b></span>
+    </div>
+    <div class="pcsg-gpm-password-view-info-categories-private" data-catids="{{categoryIdsPrivate}}">
+        <span><b>{{categoryPrivateLabel}}</b></span>
+    </div>
+</div>
+<div class="pcsg-gpm-password-view-info-date">
+    <span>{{created}}</span><br>
+    <span>{{lastEdit}}</span>
+</div>

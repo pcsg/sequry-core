@@ -1,13 +1,13 @@
 {
-  "name": "pcsg/grouppasswordmanager",
-  "type": "quiqqer-module",
-  "description": "Modul zur Verwaltung und dem Teilen von Passwörtern für Benutzer/Gruppen.",
+  "name": "sequry/core",
+  "type": "quiqqer-application",
+  "description": "Modul zur Verwaltung und dem Teilen von Passw\u00f6rtern f\u00fcr Benutzer\/Gruppen.",
   "version": "dev-master",
   "authors": [
     {
-      "name": "Patrick Müller",
+      "name": "Patrick M\u00fcller",
       "email": "p.mueller@pcsg.de",
-      "homepage": "http://www.pcsg.de",
+      "homepage": "http:\/\/www.pcsg.de",
       "role": "Developer"
     }
   ],
@@ -15,17 +15,22 @@
     "email": "support@pcsg.de"
   },
   "require": {
-    "quiqqer/quiqqer": "*@dev",
-    "phpseclib/phpseclib": "2.0.0",
-    "paragonie/halite": "1.5.0",
-    "ext-bcmath": "*"
+    "php": ">=7.0",
+    "quiqqer\/quiqqer": ">=1.1|dev-master|dev-dev",
+    "quiqqer\/tooltips": ">=1.0|dev-master|dev-dev",
+    "phpseclib\/phpseclib": "2.0.0",
+    "paragonie\/halite": "3.2.0",
+    "ext-bcmath": "*",
+    "npm-asset\/clipboard": "1.5.16",
+    "sequry/auth-password": ">=1.0|dev-master|dev-dev",
+    "pcsg/template-sequry": ">=1.0|dev-master|dev-dev"
   },
   "autoload": {
     "psr-0": {
-      "Pcsg": "src/"
+      "Sequry": "src\/"
     },
     "psr-4": {
-      "TQ\\Shamir\\": "lib/tq/shamir/src/"
+      "TQ\\Shamir\\": "lib\/tq\/shamir\/src\/"
     }
   }
 }

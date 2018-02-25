@@ -12,6 +12,21 @@
     margin-bottom: 5px;
 }
 
+.pcsg-gpm-auth-authenticate-plugins-plugin__hidden {
+    display: none;
+}
+
+.pcsg-gpm-auth-authenticate-plugins-plugin h3 {
+    font-size: 13px;
+}
+
+.pcsg-gpm-auth-authenticate-check {
+    color: #0FA90F;
+    float: right;
+    font-size: 30px;
+    margin-left: 10px;
+}
+
 .pcsg-gpm-auth-authenticate-warning {
     background-color: #FAF6D4;
     border: 1px solid #E6C26E;
@@ -41,4 +56,15 @@
 .pcsg-gpm-auth-authenticate-plugins-show-title {
     font-size: 12px;
     margin-left: 5px;
+}
+
+.pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata {
+    clear: both;
+    cursor: pointer;
+    text-align: right;
+    width: 100%;
+}
+
+.pcsg-gpm-auth-authenticate-plugins-plugin-recoverauthdata:hover {
+    color: #00A0B0;
 }

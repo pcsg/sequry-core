@@ -9,7 +9,7 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "git@dev.quiqqer.com:pcsg/grouppasswordmanager.git"
+      "url": "git@dev.quiqqer.com:sequry/core.git"
     },
     {
       "type": "vcs",
@@ -21,7 +21,7 @@
     }
   ],
   "packages": {
-    "pcsg/grouppasswordmanager": "dev-master",
+    "sequry/core": "dev-master",
     "pcsg/gpmauthpassword": "dev-master",
     "pcsg/gpmauthsecondpassword": "dev-master"
   }

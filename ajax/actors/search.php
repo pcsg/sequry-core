@@ -1,49 +1,26 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
 use QUI\Utils\Security\Orthos;
+use QUI\Utils\Grid;
 
 /**
- * Get password actor info (user/group)
+ * Search password manager users
  *
- * @param string $search - search term
- * @param string $type - "user" or "group"
- * @param integer $securityClassId - id of security class
- * @param integer $limit
+ * @param string $searchParams - search parameters
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_search($search, $type, $securityClassId, $limit)
-{
-    $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
+\QUI::$Ajax->registerFunction(
+    'package_sequry_core_ajax_actors_search',
+    function ($searchParams) {
+        $searchParams = Orthos::clearArray(json_decode($searchParams, true));
+        $Grid         = new Grid($searchParams);
 
-    $search = Orthos::clear($search);
-    $limit  = (int)$limit;
-
-    $actors = $SecurityClass->searchEligibleActors($search, $type, $limit);
-
-    foreach ($actors as $k => $actor) {
-        switch ($actor['type']) {
-            case 'user':
-                $actor['icon'] = 'fa fa-user';
-                $actor['id']   = 'u' . $actor['id'];
-                break;
-
-            case 'group':
-                $actor['icon'] = 'fa fa-users';
-                $actor['id']   = 'g' . $actor['id'];
-                break;
-        }
-
-        $actor['title'] = $actor['name'];
-
-        $actors[$k] = $actor;
-    }
-
-    return $actors;
-}
-
-\QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_search',
-    array('search', 'type', 'securityClassId', 'limit'),
+        return $Grid->parseResult(
+            CryptoActors::searchActors($searchParams),
+            CryptoActors::searchActors($searchParams, true)
+        );
+    },
+    array('searchParams'),
     'Permission::checkAdminUser'
 );

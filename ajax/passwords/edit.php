@@ -1,40 +1,50 @@
 <?php
 
-use QUI\Utils\Security\Orthos;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Handler\Categories;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Edit a password object
  *
  * @param integer $passwordId - ID of password
- * @param array $passwordData - edited data of password
- * @param array $authData - authentication information
+ * @param string $passwordData - edited data of password
  * @return false|array - new pasword data; false if data could not be retrieved
  *
  * @throws QUI\Exception
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $passwordData, $authData)
+function package_sequry_core_ajax_passwords_edit($passwordId, $passwordData)
 {
     $passwordId = (int)$passwordId;
 
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
-
     // edit password
     try {
-        $Password = Passwords::get($passwordId);
+        $Password     = Passwords::get($passwordId);
+        $passwordData = json_decode($passwordData, true);
+        $Password->setData($passwordData);
 
-        $Password->setData(
-            Orthos::clearArray(json_decode($passwordData, true))
-        );
+        if (isset($passwordData['categoryIdsPrivate'])
+            && is_array($passwordData['categoryIdsPrivate'])
+            && !empty($passwordData['categoryIdsPrivate'])
+        ) {
+            if (!$Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
+                QUI::getMessagesHandler()->addAttention(
+                    QUI::getLocale()->get(
+                        'sequry/core',
+                        'message.passwords.edit.private.categories.no.access',
+                        array(
+                            'passwordId' => $passwordId
+                        )
+                    )
+                );
+            } else {
+                Categories::addPasswordToPrivateCategories($Password, $passwordData['categoryIdsPrivate']);
+            }
+        }
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'success.password.edit',
                 array(
                     'passwordId' => $passwordId
@@ -48,10 +58,10 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
         } catch (\Exception $Exception) {
             return false;
         }
-    } catch (\Exception $Exception) {
+    } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.password.edit',
                 array(
                     'error'      => $Exception->getMessage(),
@@ -59,11 +69,27 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
                 )
             )
         );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_sequry_core_ajax_passwords_edit -> '
+            . $Exception->getMessage()
+        );
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'sequry/core',
+                'message.general.error'
+            )
+        );
+
+        return false;
     }
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_edit',
-    array('passwordId', 'passwordData', 'authData'),
+    'package_sequry_core_ajax_passwords_edit',
+    array('passwordId', 'passwordData'),
     'Permission::checkAdminUser'
 );

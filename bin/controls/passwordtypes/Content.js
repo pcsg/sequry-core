@@ -1,44 +1,45 @@
 /**
  * Control for password content input with different types
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content
+ * @module package/sequry/core/bin/controls/passwordtypes/Content
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/passwordtypes/Content.html
+ * @require css!package/sequry/core/bin/controls/passwordtypes/Content.css
  *
  * @event onLoaded
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
+define('package/sequry/core/bin/controls/passwordtypes/Content', [
 
     'qui/QUI',
     'qui/controls/Control',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
+    'package/sequry/core/bin/controls/passwordtypes/Select',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content.css'
+    'css!package/sequry/core/bin/controls/passwordtypes/Content.css'
 
 ], function (QUI, QUIControl, QUILocale, TypeSelect) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
+        Type   : 'package/sequry/core/bin/controls/passwordtypes/Content',
 
         Binds: [
-            '$loadContent'
+            '$loadContent',
+            '$onDestroy'
         ],
 
         options: {
@@ -52,6 +53,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             this.$PasswordTypeControl = null;
             this.$ContentElm          = null;
             this.$passwordType        = null;
+            this.$CurrentData         = {};
+            this.$loaded              = false;
+
+            this.addEvents({
+                onDestroy: this.$onDestroy
+            });
         },
 
         /**
@@ -91,15 +98,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             var self = this;
 
             this.$ContentElm.set('html', '');
+            this.$CurrentData = Object.merge(this.$CurrentData, this.getData());
 
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit'
+                'package/sequry/core/bin/controls/passwordtypes/Edit'
             ], function (PasswordTypeControl) {
                 self.$PasswordTypeControl = new PasswordTypeControl({
                     type  : type,
                     events: {
                         onLoaded: function () {
-                            self.fireEvent('loaded');
+                            if (!self.$loaded) {
+                                self.fireEvent('loaded');
+                                self.$loaded = true;
+                            }
+
+                            if (Object.getLength(self.$CurrentData)) {
+                                self.setData(self.$CurrentData);
+                            }
                         }
                     }
                 }).inject(self.$ContentElm);
@@ -141,6 +156,13 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
          */
         getPasswordType: function () {
             return this.$passwordType;
+        },
+
+        /**
+         * Event: onDestroy
+         */
+        $onDestroy: function() {
+            this.$CurrentData = null;
         }
     });
 });

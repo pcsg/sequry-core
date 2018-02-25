@@ -1,35 +1,33 @@
 /**
  * Control authentication for auth plugin synchronisation
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate
+ * @module package/sequry/core/bin/controls/auth/SyncAuthenticate
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/Authentication
+ * @require css!package/sequry/core/bin/controls/auth/SyncAuthenticate.css
  *
  * @event onFinish
  * @event onAbort - on AuthPopup user close
  * @event onClose - on AuthPopup close
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
+define('package/sequry/core/bin/controls/auth/SyncAuthenticate', [
 
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/sequry/core/bin/controls/auth/Authenticate',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate.css'
+    'css!package/sequry/core/bin/controls/auth/SyncAuthenticate.css'
 
-], function (AuthenticationControl, AuthHandler) {
+], function (AuthenticationControl) {
     "use strict";
-
-    var Authentication = new AuthHandler();
 
     return new Class({
 
         Extends: AuthenticationControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate',
+        Type   : 'package/sequry/core/bin/controls/auth/SyncAuthenticate',
 
         Binds: [
-            '$onLoaded',
-            '$getPasswordId'
+            '$onLoaded'
         ],
 
         options: {
@@ -48,27 +46,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
          * Disable sync auth plugin
          */
         $onLoaded: function () {
-            var self = this;
-
             var syncAuthPluginId = this.getAttribute('authPluginId');
 
-            this.$AuthPopup.Loader.show();
+            for (var i = 0, len = this.$authPluginControls.length; i < len; i++) {
+                var authPluginId = this.$authPluginControls[i].getAttribute('authPluginId');
 
-            Authentication.getAllowedSyncAuthPlugins(syncAuthPluginId).then(function (allowedAuthPluginIds) {
-                for (var i = 0, len = self.$authPluginControls.length; i < len; i++) {
-                    var authPluginId = self.$authPluginControls[i].getAttribute('authPluginId');
-
-                    if (allowedAuthPluginIds.contains(authPluginId)) {
-                        continue;
-                    }
-
-                    var AuthPluginElm = self.$authPluginControls[i].getElm();
-
-                    AuthPluginElm.getParent().setStyle('display', 'none');
+                if (authPluginId !== syncAuthPluginId) {
+                    continue;
                 }
 
-                self.$AuthPopup.Loader.hide();
-            });
+                var AuthPluginElm = this.$authPluginControls[i].getElm();
+                AuthPluginElm.getParent().setStyle('display', 'none');
+            }
         }
     });
 });

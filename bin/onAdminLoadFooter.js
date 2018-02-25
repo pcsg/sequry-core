@@ -1,45 +1,99 @@
+require.config({
+    paths: {
+        "ClipboardJS"  : URL_OPT_DIR + 'bin/clipboard/dist/clipboard',
+        "html5tooltips": URL_OPT_DIR + 'quiqqer/tooltips/bin/html5tooltips'
+    }
+});
+
 require([
+    'qui/QUI',
     'Ajax',
     'qui/controls/windows/Confirm',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
-    'utils/Panels',
+    'package/sequry/core/bin/Passwords',
     'Locale'
-], function (QUIAjax, QUIConfirm, PasswordManager, PanelUtils, QUILocale) {
-    var lg  = 'pcsg/grouppasswordmanager';
-    var pkg = 'pcsg/grouppasswordmanager';
+], function (QUI, QUIAjax, QUIConfirm, Passwords, QUILocale) {
+    "use strict";
+
+    var lg  = 'sequry/core';
+    var pkg = 'sequry/core';
+
+    var loadExecute = 0;
+
+    var loadPasswordCategoryPanel = function () {
+        loadExecute++;
+
+        if (loadExecute == 10) {
+            return;
+        }
+
+        var ColumnElm = document.getElement('.qui-column'),
+            Column    = QUI.Controls.getById(ColumnElm.get('data-quiid'));
+
+        var panels = Column.getChildren(),
+            length = Object.getLength(panels);
+
+        if (length === 0) {
+            loadPasswordCategoryPanel();
+            return;
+        }
+
+        for (var i in panels) {
+            if (!panels.hasOwnProperty(i)) {
+                continue;
+            }
+
+            if (panels[i].getType() === 'package/sequry/core/bin/controls/categories/Panel') {
+                return;
+            }
+        }
+
+        require([
+            'package/sequry/core/bin/controls/categories/Panel'
+        ], function (CategoryPanel) {
+            Column.appendChild(new CategoryPanel(), 0);
+        });
+    };
 
     QUI.addEvents({
-        onQuiqqerLoaded: function() {
-            PanelUtils.openPanelInTasks(new PasswordManager()).then(function(Panel) {
-                Panel.open();
+        onQuiqqerLoaded: function () {
+            var panels = QUI.Controls.getByType(
+                'package/sequry/core/bin/controls/passwords/Panel'
+            );
+
+            if (!panels.length) {
+                Passwords.openPasswordListPanel();
+                loadPasswordCategoryPanel();
+
+                return;
+            }
+
+            var PasswordPanel = panels[0];
+
+            PasswordPanel.addEvents({
+                onDestroy: function () {
+                    window.PasswordList = null;
+                }
             });
+
+            window.PasswordList = PasswordPanel;
+            loadPasswordCategoryPanel();
         }
     });
 
     QUIAjax.registerGlobalJavaScriptCallback(
         'addUsersByGroup',
         function (response, AuthInfo) {
-
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
-                'package/pcsg/grouppasswordmanager/bin/classes/Actors'
-            ], function (MultiAuthWindow, ActorHandler) {
-                var Actors = new ActorHandler();
-
-                new MultiAuthWindow({
-                    securityClassIds: AuthInfo.securityClassIds,
-                    events          : {
-                        onSubmit: function (AuthData, Popup) {
-                            Actors.addUsersToGroup(
-                                AuthInfo.groupId,
-                                AuthInfo.userIds,
-                                AuthData
-                            );
-
-                            Popup.close();
-                        }
-                    }
-                }).open();
+                'package/sequry/core/bin/Actors'
+            ], function (Actors) {
+                Actors.addUsersToGroup(
+                    AuthInfo.groupId,
+                    AuthInfo.userIds
+                ).then(function () {
+                    // nothing
+                }, function () {
+                    // nothing
+                });
             });
         }
     );
@@ -47,27 +101,17 @@ require([
     QUIAjax.registerGlobalJavaScriptCallback(
         'addGroupsToUser',
         function (response, AuthInfo) {
-
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
-                'package/pcsg/grouppasswordmanager/bin/classes/Actors'
-            ], function (MultiAuthWindow, ActorHandler) {
-                var Actors = new ActorHandler();
-
-                new MultiAuthWindow({
-                    securityClassIds: AuthInfo.securityClassIds,
-                    events          : {
-                        onSubmit: function (AuthData, Popup) {
-                            Actors.addGroupsToUser(
-                                AuthInfo.userId,
-                                AuthInfo.groupIds,
-                                AuthData
-                            );
-
-                            Popup.close();
-                        }
-                    }
-                }).open();
+                'package/sequry/core/bin/Actors'
+            ], function (Actors) {
+                Actors.addGroupsToUser(
+                    AuthInfo.userId,
+                    AuthInfo.groupIds
+                ).then(function () {
+                    // nothing
+                }, function () {
+                    // nothing
+                });
             });
         }
     );
@@ -87,7 +131,7 @@ require([
                     onSubmit: function () {
                         Confirm.Loader.show();
 
-                        QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_delete', function () {
+                        QUIAjax.post('package_sequry_core_ajax_actors_delete', function () {
                             Confirm.close();
                         }, {
                             'package': pkg,
@@ -120,7 +164,7 @@ require([
                     onSubmit: function () {
                         Confirm.Loader.show();
 
-                        QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_delete', function () {
+                        QUIAjax.post('package_sequry_core_ajax_actors_delete', function () {
                             Confirm.close();
                         }, {
                             'package': pkg,
@@ -135,6 +179,19 @@ require([
             });
 
             Confirm.open();
+        }
+    );
+
+    QUIAjax.registerGlobalJavaScriptCallback(
+        'showRecoveryCode',
+        function (response, Data) {
+            require([
+                'package/sequry/core/bin/controls/auth/recovery/CodePopup'
+            ], function (RecoveryCodePopup) {
+                new RecoveryCodePopup({
+                    RecoveryCodeData: Data.recoveryCode
+                }).open();
+            });
         }
     );
 });

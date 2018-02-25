@@ -1,24 +1,16 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Get all users and groups a password is shared with
  *
  * @param integer $passwordId - ID of password
- * @param array $authData - authentication information
  * @return array - password data
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups($passwordId, $authData)
+function package_sequry_core_ajax_passwords_getShareUsersAndGroups($passwordId)
 {
     $passwordId = (int)$passwordId;
-
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
 
     // get password data
     $shareData   = Passwords::get($passwordId)->getShareData();
@@ -32,7 +24,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups
         $User                   = QUI::getUsers()->get($userId);
         $usersGroups['users'][] = array(
             'id'   => $userId,
-            'name' => $User->getUsername()
+            'name' => $User->getName()
         );
     }
 
@@ -48,7 +40,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getShareUsersAndGroups',
-    array('passwordId', 'authData'),
+    'package_sequry_core_ajax_passwords_getShareUsersAndGroups',
+    array('passwordId'),
     'Permission::checkAdminUser'
 );

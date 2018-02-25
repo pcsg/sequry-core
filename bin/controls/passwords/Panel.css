@@ -1,15 +1,47 @@
-.pcsg-gpm-panel-container,
 .pcsg-gpm-panel-grid {
     float: left;
     height: 100%;
     width: 100%;
 }
 
-.pcsg-gpm-passwords-panel-grid-shared {
+.pcsg-gpm-passwords-panel-info {
+    background-color: #dafada;
+    float: left;
+    padding: 5px 10px;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-category-close {
+    font-size: 15px;
+    margin-left: 10px;
+}
+
+.pcsg-gpm-passwords-panel-options label {
+    float: left;
+}
+
+.pcsg-gpm-passwords-panel-options label span {
+    float: left;
+    margin-right: 5px;
+    line-height: 29px;
+}
+
+.pcsg-gpm-passwords-panel-table {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-grid-shared,
+.pcsg-gpm-passwords-panel-grid-shared-no-permission {
     float: left;
     height: 100%;
     text-align: center;
     width: 90%;
+}
+
+.pcsg-gpm-passwords-panel-grid-shared-no-permission {
+    color: #aaa;
 }
 
 .pcsg-gpm-passwords-panel-grid-shared:hover,
@@ -32,7 +64,7 @@
 
 .pcsg-gpm-passwords-panel-table-accesstype {
     float: left;
-    text-align: center;
+    text-align: left;
     width: 90%;
 }
 
@@ -40,15 +72,28 @@
     margin: 0 2px;
 }
 
-.pcsg-gpm-passwords-panel-table-permissions {
+.pcsg-gpm-passwords-panel-table-actions {
     color: #0069b4;
     float: left;
     text-align: center;
     width: 90%;
 }
 
-.pcsg-gpm-passwords-panel-table-permissions span {
-    margin: 0 2px;
+.pcsg-gpm-passwords-panel-table-actions span {
+    margin: 0 3px;
+}
+
+.pcsg-gpm-passwords-panel-table-actions span:hover {
+    color: #00A0B0;
+}
+
+.pcsg-gpm-passwords-panel-table-action-disabled {
+    color: #ccc;
+}
+
+.pcsg-gpm-passwords-panel-table-action-disabled:hover {
+    cursor: default;
+    color: #ccc !important;
 }
 
 .pcsg-gpm-passwords-panel-access-info-owner div {
@@ -64,4 +109,99 @@
 
 .pcsg-gpm-passwords-panel-table-owner span.fa {
     margin-right: 5px;
+}
+
+.pcsg-gpm-passwords-panel-table-favorite {
+    color: #aa1317;
+}
+
+.pcsg-gpm-passwords-panel-table-favorite,
+.pcsg-gpm-passwords-panel-table-favorite span {
+    height: 100%;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-categories-public,
+.pcsg-gpm-passwords-panel-categories-private {
+    float: left;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-search {
+    float: right;
+    margin: 8px;
+    position: relative;
+    width: 300px;
+}
+
+.pcsg-gpm-passwords-panel-search input {
+    float: right;
+    height: 35px;
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    z-index: 3;
+}
+
+.pcsg-gpm-passwords-panel-search span {
+    color: #ddd;
+    transition: all 0.3s;
+    font-size: 23px;
+    position: absolute;
+    height: 100%;
+    padding-top: 5px;
+    width: 30px;
+    vertical-align: middle;
+    right: 0;
+    z-index: 4;
+}
+
+.pcsg-gpm-passwords-panel-search span:hover {
+    cursor: pointer;
+    color: #000000;
+}
+
+.pcsg-gpm-passwords-panel-table-accesstype-share-indicator {
+    font-size: 10px !important;
+    position: relative;
+    bottom: 6px;
+    margin: 0 !important;
+    color: #0069b4;
+}
+
+.pcsg-passwords-panel-initialRegistration label {
+    float: left;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.pcsg-passwords-panel-initialRegistration input {
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-panel-setupincomplete {
+    cursor: not-allowed;
+    height: 100%;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.pcsg-gpm-passwords-panel-setupincomplete > div {
+    background-color: #FAF6D4;
+    border: 1px solid #E6C26E;
+    border-radius: 5px;
+    color: #000;
+    line-height: 20px;
+    margin: 200px auto;
+    max-width: 600px;
+    padding: 10px 15px;
+}
+
+.pcsg-gpm-passwords-panel-setupincomplete > div h1 {
+    font-size: 20px;
 }

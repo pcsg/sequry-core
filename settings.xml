@@ -8,12 +8,27 @@
                     <type><![CDATA[integer]]></type>
                     <defaultvalue>900</defaultvalue>
                 </conf>
+                <conf name="defaultSecurityClassId">
+                    <type><![CDATA[integer]]></type>
+                </conf>
+                <conf name="reEncryptEnabled">
+                    <type><![CDATA[bool]]></type>
+                </conf>
+
+                <conf name="actorTypePasswordCreate">
+                    <type><![CDATA[users]]></type>
+                </conf>
+
+                <conf name="showPasswordLinkVHostSelect">
+                    <type><![CDATA[bool]]></type>
+                    <defaultvalue>1</defaultvalue>
+                </conf>
             </section>
         </config>
 
         <window>
             <title>
-                <locale group="pcsg/grouppasswordmanager" var="settings.title" />
+                <locale group="sequry/core" var="settings.title" />
             </title>
             <params>
                 <icon>fa fa-diamond</icon>
@@ -22,23 +37,72 @@
             <categories>
                 <category name="module_settings">
                     <text>
-                        <locale group="pcsg/grouppasswordmanager" var="settings.category.module_settings.title" />
+                        <locale group="sequry/core" var="settings.category.module_settings.title" />
                     </text>
                     <icon>fa fa-cogs</icon>
 
                     <settings title="module_settings" name="module_settings">
                         <title>
-                            <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.title" />
+                            <locale group="sequry/core" var="settings.module_settings.title" />
                         </title>
 
                         <input conf="settings.auth_ttl" type="number">
                             <text>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.title" />
+                                <locale group="sequry/core" var="settings.module_settings.auth_ttl.title" />
                             </text>
                             <description>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.description" />
+                                <locale group="sequry/core" var="settings.module_settings.auth_ttl.description" />
                             </description>
                         </input>
+
+                        <input conf="settings.defaultSecurityClassId" type="number" data-qui="package/sequry/core/bin/controls/settings/DefaultSecurityClass">
+                            <text>
+                                <locale group="sequry/core" var="settings.module_settings.defaultSecurityClassId.title" />
+                            </text>
+                            <description>
+                                <locale group="sequry/core" var="settings.module_settings.defaultSecurityClassId.description" />
+                            </description>
+                        </input>
+
+                        <select conf="settings.actorTypePasswordCreate">
+                            <text>
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.title" />
+                            </text>
+                            <description>
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.description" />
+                            </description>
+                            <option value="users">
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.users" />
+                            </option>
+                            <option value="users_eligible">
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.users_eligible" />
+                            </option>
+                            <option value="groups">
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.groups" />
+                            </option>
+                            <option value="groups_eligible">
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.groups_eligible" />
+                            </option>
+                        </select>
+
+                        <input conf="settings.showPasswordLinkVHostSelect" type="checkbox">
+                            <text>
+                                <locale group="sequry/core" var="settings.module_settings.showPasswordLinkVHostSelect.title" />
+                            </text>
+                            <description>
+                                <locale group="sequry/core" var="settings.module_settings.showPasswordLinkVHostSelect.description" />
+                            </description>
+                        </input>
+
+                        <input conf="settings.reEncryptEnabled" type="checkbox">
+                            <text>
+                                <locale group="sequry/core" var="settings.module_settings.reEncryptEnabled.title" />
+                            </text>
+                            <description>
+                                <locale group="sequry/core" var="settings.module_settings.reEncryptEnabled.description" />
+                            </description>
+                        </input>
+
                     </settings>
 
                 </category>

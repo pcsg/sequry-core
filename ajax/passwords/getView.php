@@ -1,33 +1,65 @@
 <?php
 
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\PasswordTypes\Handler;
+use Sequry\Core\Security\Handler\Passwords;
+use QUI\Utils\Security\Orthos;
 
 /**
  * Get a single password object
  *
  * @param integer $passwordId - the id of the password object
- * @param array $authData - authentication information
- * @return array
+ * @return string|false - view html; false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId, $authData)
+function package_sequry_core_ajax_passwords_getView($passwordId)
 {
     $passwordId = (int)$passwordId;
 
-    // authenticate
-    Passwords::getSecurityClass(
-        $passwordId
-    )->authenticate(
-        json_decode($authData, true) // @todo diese daten ggf. filtern
-    );
+    try {
+        $Password = Passwords::get($passwordId);
+        $viewData = $Password->getViewData();
 
-    $Password = Passwords::get($passwordId);
+        foreach ($viewData as $k => $v) {
+            if (is_string($v)) {
+                $viewData[$k] = Orthos::escapeHTML($v);
+            }
+        }
 
-    return Handler::getViewHtml($Password->getDataType(), $Password->getViewData());
+        return Handler::getViewHtml($Password->getDataType(), $viewData);
+    } catch (QUI\Exception $Exception) {
+        QUI\System\Log::writeException($Exception);
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'sequry/core',
+                'message.ajax.passwords.getView.error',
+                array(
+                    'error'      => $Exception->getMessage(),
+                    'passwordId' => $passwordId
+                )
+            )
+        );
+
+        return false;
+    } catch (\Exception $Exception) {
+        QUI\System\Log::addError(
+            'AJAX :: package_sequry_core_ajax_passwords_getView -> ' . $Exception->getMessage()
+        );
+
+        QUI\System\Log::writeException($Exception);
+
+        QUI::getMessagesHandler()->addError(
+            QUI::getLocale()->get(
+                'sequry/core',
+                'message.general.error'
+            )
+        );
+
+        return false;
+    }
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getView',
-    array('passwordId', 'authData'),
+    'package_sequry_core_ajax_passwords_getView',
+    array('passwordId'),
     'Permission::checkAdminUser'
 );

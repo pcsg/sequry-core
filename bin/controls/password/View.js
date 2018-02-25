@@ -1,51 +1,61 @@
 /**
- * Control for creating a new password
+ * Control for viewing password content
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/View
+ * @module package/sequry/core/bin/controls/password/View
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
  * @require qui/controls/Control
+ * @require qui/controls/buttons/Button
+ * @require qui/controls/loader/Loader
  * @require Locale
- * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/passwords/SecurityClassSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/View.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css
+ * @require package/sequry/core/bin/classes/Authentication
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/categories/public/Select
+ * @require package/sequry/core/bin/controls/categories/private/Select
+ * @require package/sequry/core/bin/Categories
+ * @require ClipboardJS
+ * @require css!package/sequry/core/bin/controls/password/View.css
  *
  * @event onLoaded
  * @event onClose
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
+define('package/sequry/core/bin/controls/password/View', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
+    'qui/controls/loader/Loader',
+
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/controls/categories/public/Select',
+    'package/sequry/core/bin/controls/categories/private/Select',
+    'package/sequry/core/bin/Categories',
+    'package/sequry/core/bin/controls/utils/InputButtons',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
+    'css!package/sequry/core/bin/controls/password/View.css'
 
-], function (QUI, QUIControl, QUIButton, QUILocale, AuthenticationControl, PasswordHandler,
-             PasswordContent) {
+], function (QUIControl, QUIButton, QUILoader, QUILocale, Authentication,
+             Passwords, CategorySelect, CategorySelectPrivate, Categories,
+             InputButtons) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager',
-        Passwords = new PasswordHandler();
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/View',
+        Type   : 'package/sequry/core/bin/controls/password/View',
 
         Binds: [
-            '$onInject'
+            '$onInject',
+            '$setPrivateCategories'
         ],
 
         options: {
-            'passwordId': false   // id of the password
+            'passwordId'          : false,   // id of the password
+            'editPublicCategories': false // can edit public categories
         },
 
         initialize: function (options) {
@@ -54,6 +64,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
             this.addEvents({
                 onInject: this.$onInject
             });
+
+            this.Loader             = new QUILoader();
+            this.$CategoriesToolTip = null;
         },
 
         /**
@@ -65,152 +78,134 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
             this.$Elm = this.parent();
 
             this.$Elm.set({
-                'class': 'pcsg-gpm-password-create',
+                'class': 'pcsg-gpm-password-view',
                 html   : '<p class="pcsg-gpm-password-view-payload">' +
                 QUILocale.get(lg, 'password.view.restricted.info') +
                 '</p>'
             });
 
+            this.Loader.inject(this.$Elm);
+
             return this.$Elm;
         },
 
         /**
-         * event : oninject
+         * event : onInject
          *
          * Ask user for authentication information and load password data
          */
         $onInject: function () {
             var self = this;
 
-            var AuthControl = new AuthenticationControl({
-                passwordId: this.getAttribute('passwordId'),
-                events    : {
-                    onSubmit: function (AuthData) {
-                        Passwords.getView(
-                            self.getAttribute('passwordId'),
-                            AuthData
-                        ).then(
-                            function (viewHtml) {
-                                AuthControl.destroy();
-
-                                self.$Elm.set(
-                                    'html',
-                                    viewHtml
-                                );
-
-                                self.$parseView();
-
-                                self.fireEvent('loaded');
-
-                                //var PassContent = new PasswordContent({
-                                //    type  : PasswordData.dataType,
-                                //    mode  : 'view',
-                                //    events: {
-                                //        onLoaded: function () {
-                                //            self.fireEvent('loaded');
-                                //        }
-                                //    }
-                                //}).inject(
-                                //    self.$Elm.getElement('.pcsg-gpm-password-view-payload')
-                                //);
-                            },
-                            function () {
-                                // @todo
-                            }
-                        );
-                    },
-                    onClose : function () {
-                        self.fireEvent('close');
+            Passwords.getView(self.getAttribute('passwordId')).then(
+                function (viewHtml) {
+                    if (!viewHtml) {
+                        return;
                     }
-                }
-            });
 
-            AuthControl.open();
+                    self.$Elm.set(
+                        'html',
+                        viewHtml
+                    );
+
+                    var CategoryPrivateElm = self.$Elm.getElement(
+                        '.pcsg-gpm-password-view-info-categories-private'
+                    );
+
+                    var CategoryPrivate = new CategorySelectPrivate({
+                        events: {
+                            onChange: self.$setPrivateCategories
+                        }
+                    }).inject(CategoryPrivateElm);
+
+                    var catIdsPrivate = CategoryPrivateElm.getProperty(
+                        'data-catids'
+                    );
+
+                    if (catIdsPrivate) {
+                        catIdsPrivate = catIdsPrivate.split(',');
+                        CategoryPrivate.setValue(catIdsPrivate);
+                    }
+
+                    // public categories
+                    var CategoriesPublicElm = self.$Elm.getElement(
+                        '.pcsg-gpm-password-view-info-categories-public'
+                    );
+
+                    var Categories = new CategorySelect({
+                        editMode: self.getAttribute('editPublicCategories')
+                    }).inject(CategoriesPublicElm);
+
+                    var catIdsPublic = CategoriesPublicElm.getProperty(
+                        'data-catids'
+                    );
+
+                    if (catIdsPublic) {
+                        catIdsPublic = catIdsPublic.split(',');
+                        Categories.setValue(catIdsPublic);
+                    }
+
+                    self.$parseView();
+                    self.fireEvent('loaded');
+                },
+                function () {
+                    self.fireEvent('close');
+                }
+            );
+        },
+
+        /**
+         * Set private password categories
+         *
+         * @return {Promise}
+         */
+        $setPrivateCategories: function (categoryIds) {
+            var self = this;
+
+            this.Loader.show();
+
+            return new Promise(function (resolve, reject) {
+                Categories.setPrivatePasswordCategories(
+                    self.getAttribute('passwordId'),
+                    categoryIds
+                ).then(function () {
+                    self.Loader.hide();
+
+                    if (window.PasswordCategories) {
+                        window.PasswordCategories.refreshCategories();
+                    }
+
+                    resolve();
+                }, reject);
+            });
         },
 
         /**
          * Parse DOM elements of the view and add specific controls (e.g. copy / show password buttons)
          */
         $parseView: function () {
+            var i, len;
+            var ButtonParser = new InputButtons();
+
             // copy elements
-            var i, len, Elm, ValueInput;
-            var copyElms = this.$Elm.getElements('.pwm-passwordtypes-copy');
+            var copyElms = this.$Elm.getElements('.gpm-passwordtypes-copy');
 
             for (i = 0, len = copyElms.length; i < len; i++) {
-                Elm = copyElms[i];
-
-                ValueInput = new Element('input', {
-                    'type'  : 'text',
-                    'class' : 'pcsg-gpm-password-view-value',
-                    readonly: 'readonly',
-                    value   : Elm.innerHTML.trim()
-                });
-
-                new QUIButton({
-                    Elm   : ValueInput,
-                    icon  : 'fa fa-copy',
-                    events: {
-                        onClick: function (Btn) {
-                            var Elm = Btn.getAttribute('Elm');
-                            Elm.select();
-                        }
-                    }
-                }).inject(Elm.getParent(), 'after');
-
-                ValueInput.replaces(Elm);
+                ButtonParser.parse(copyElms[i], ['copy']);
             }
 
-            // copy and hide elements
-            var copyHideElms = this.$Elm.getElements('.pwm-passwordtypes-copy-hide');
+            // show elements (switch between show and hide)
+            var showElms = this.$Elm.getElements('.gpm-passwordtypes-show');
 
-            for (i = 0, len = copyHideElms.length; i < len; i++) {
-                Elm = copyHideElms[i];
+            for (i = 0, len = showElms.length; i < len; i++) {
+                ButtonParser.parse(showElms[i], ['viewtoggle']);
+            }
 
-                ValueInput = new Element('input', {
-                    'type'  : 'password',
-                    'class' : 'pcsg-gpm-password-view-value',
-                    readonly: 'readonly',
-                    events: {
-                        blur: function(event) {
-                            // @todo input = password
-                        }
-                    },
-                    value   : Elm.innerHTML.trim()
-                });
+            // url elements
+            var urlElms = this.$Elm.getElements('.gpm-passwordtypes-url');
 
-                new QUIButton({
-                    Elm   : ValueInput,
-                    icon  : 'fa fa-eye',
-                    action: 'show',
-                    events: {
-                        onClick: function (Btn) {
-                            var Elm = Btn.getAttribute('Elm');
-
-                            if (Btn.getAttribute('action') === 'show') {
-                                Btn.setAttributes({
-                                    icon  : 'fa fa-eye-slash',
-                                    action: 'hide'
-                                });
-
-                                Elm.setProperty('type', 'text');
-                                Elm.focus();
-                                Elm.select();
-
-                                return;
-                            }
-
-                            Btn.setAttributes({
-                                icon  : 'fa fa-eye',
-                                action: 'show'
-                            });
-
-                            Elm.setProperty('type', 'password');
-                            Elm.blur();
-                        }
-                    }
-                }).inject(Elm.getParent(), 'after');
-
-                ValueInput.replaces(Elm);
+            for (i = 0, len = urlElms.length; i < len; i++) {
+                ButtonParser.parse(urlElms[i], ['openurl']);
             }
         }
     });

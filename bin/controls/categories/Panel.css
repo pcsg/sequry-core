@@ -1,0 +1,59 @@
+.pcsg-gpm-passwords-categories-create p {
+    margin-bottom: 10px;
+}
+
+.pcsg-gpm-passwords-categories-create label,
+.pcsg-gpm-passwords-categories-rename label {
+    float: left;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-categories-create input,
+.pcsg-gpm-passwords-categories-rename input {
+    float: left;
+    margin-top: 5px;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-categories-list {
+    background-color: #ededed;
+    border-bottom: 1px solid #929292;
+    float: left;
+    /*max-height: 300px;*/
+    overflow-y: auto;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-categories-list-container {
+    float: left;
+    width: 100%;
+}
+
+.pcsg-gpm-passwords-categories-list[data-type="filters"] .pcsg-gpm-passwords-categories-list-container {
+    padding-bottom: 10px;
+}
+
+.pcsg-gpm-categories-panel h1 {
+    background-color: #d4d4d4;
+    border-bottom: 1px solid #929292;
+    float: left;
+    font-size: 17px;
+    margin: 0;
+    padding: 10px;
+    width: 100%;
+}
+
+.pcsg-gpm-categories-panel .qui-sitemap-map {
+    margin: 0;
+    padding: 10px;
+}
+
+.pcsg-gpm-categories-panel-toggle {
+    float: right;
+    font-size: 16px;
+    line-height: 23px;
+}
+
+.pcsg-gpm-categories-panel-toggle:hover {
+    cursor: pointer;
+}

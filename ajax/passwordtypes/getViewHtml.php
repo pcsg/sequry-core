@@ -1,5 +1,7 @@
 <?php
 
+use QUI\Utils\Security\Orthos;
+
 /**
  * Get edit template
  *
@@ -8,14 +10,19 @@
  *
  * @throws QUI\Exception
  */
-function package_pcsg_grouppasswordmanager_ajax_passwordtypes_getViewHtml($type)
+function package_sequry_core_ajax_passwordtypes_getViewHtml($type)
 {
+    if (!is_string($type)) {
+        return '';
+    }
+
+    $type         = Orthos::clear($type);
     $dir          = dirname(dirname(dirname(__FILE__))) . '/bin/passwordtypes/';
     $templateFile = $dir . $type . '/View.html';
 
     if (!file_exists($templateFile)) {
         throw new QUI\Exception(array(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'exception.passwordtypes.template.not.found'
         ), 404);
     }
@@ -24,7 +31,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwordtypes_getViewHtml($type)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwordtypes_getViewHtml',
+    'package_sequry_core_ajax_passwordtypes_getViewHtml',
     array('type'),
     'Permission::checkAdminUser'
 );

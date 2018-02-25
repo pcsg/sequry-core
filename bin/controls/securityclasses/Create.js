@@ -1,46 +1,48 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create
+ * @module package/sequry/core/bin/controls/securityclasses/Create
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/securityclasses/Create.html
+ * @require css!package/sequry/core/bin/controls/securityclasses/Create.css
  *
  * @event onLoaded
  * @event onSuccess
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', [
+define('package/sequry/core/bin/controls/securityclasses/Create', [
 
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Select',
+    'qui/utils/Form',
+
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/sequry/core/bin/Authentication',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.css'
+    'text!package/sequry/core/bin/controls/securityclasses/Create.html',
+    'css!package/sequry/core/bin/controls/securityclasses/Create.css'
 
-], function (QUI, QUIControl, QUISelect, QUILocale, Mustache, AuthenticationHandler, template) {
+], function (QUI, QUIControl, QUISelect, QUIFormUtils, QUILocale, Mustache,
+             Authentication, template) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager',
-        Authentication = new AuthenticationHandler();
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create',
+        Type   : 'package/sequry/core/bin/controls/securityclasses/Create',
 
         Binds: [
             '$onInject',
@@ -78,7 +80,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
                     authPluginsWarning               : QUILocale.get(lg, lg_prefix + 'authPluginsWarning'),
                     groups                           : QUILocale.get(lg, lg_prefix + 'groups'),
                     requiredFactors                  : QUILocale.get(lg, lg_prefix + 'requiredFactors'),
-                    authPluginsRequiredFactorsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsRequiredFactorsWarning')
+                    authPluginsRequiredFactorsWarning: QUILocale.get(lg, lg_prefix + 'authPluginsRequiredFactorsWarning'),
+                    allowPasswordLinks               : QUILocale.get(lg, lg_prefix + 'allowPasswordLinks')
                 })
             });
 
@@ -186,12 +189,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
                 }
             }
 
-            this.$SecurityClassData = {
-                title          : this.$Elm.getElement('.pcsg-gpm-securityclasses-title').value,
-                description    : this.$Elm.getElement('.pcsg-gpm-securityclasses-description').value,
-                authPluginIds  : authPluginIds,
-                requiredFactors: this.$RequiredFactorsSelect.getValue()
-            };
+            this.$SecurityClassData = QUIFormUtils.getFormData(
+                this.$Elm.getElement('form')
+            );
+
+            this.$SecurityClassData.authPluginIds   = authPluginIds;
+            this.$SecurityClassData.requiredFactors = this.$RequiredFactorsSelect.getValue();
 
             Authentication.createSecurityClass(
                 this.$SecurityClassData

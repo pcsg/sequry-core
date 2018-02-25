@@ -1,7 +1,7 @@
 /**
  * Select for password security classes
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
+ * @module package/sequry/core/bin/controls/securityclasses/Select
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,33 +9,33 @@
  * @require qui/controls/loader/Loader
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select.css
+ * @require css!package/sequry/core/bin/controls/securityclasses/Select.css
  *
  * @event onLoaded [this] - fires when security classes are loaded
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select', [
+define('package/sequry/core/bin/controls/securityclasses/Select', [
 
     'qui/QUI',
     'qui/controls/buttons/Select',
     'qui/controls/loader/Loader',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/sequry/core/bin/classes/Authentication',
 
     'Ajax',
     'Locale'
 
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select.css'
+    //'css!package/sequry/core/bin/controls/securityclasses/Select.css'
 
 ], function (QUI, QUISelect, QUILoader, AuthHandler, Ajax, QUILocale) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager';
+    var lg             = 'sequry/core';
     var Authentication = new AuthHandler();
 
     return new Class({
 
         Extends: QUISelect,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
+        Type   : 'package/sequry/core/bin/controls/securityclasses/Select',
 
         Binds: [
             '$onInject',

@@ -1,0 +1,36 @@
+.pcsg-gpm-actors-selecttable {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.pcsg-gpm-actors-selecttable-info {
+    float: left;
+    margin-bottom: 20px;
+    font-size: 13px;
+    width: 100%;
+}
+
+.pcsg-gpm-actors-selecttable-grid {
+    float: left;
+    height: 100% !important;
+    width: 100%;
+}
+
+.pcsg-gpm-actors-selecttable-eligible {
+    color: green;
+    float: left;
+    margin-right: 5px;
+}
+
+.pcsg-gpm-actors-selecttable-noteligible {
+    color: red;
+    font-weight: 900;
+    float: left;
+    margin-right: 5px;
+}
+
+.pcsg-gpm-actors-selecttable-searchinput {
+    float: right;
+    margin: 4px;
+}

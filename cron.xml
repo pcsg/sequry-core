@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crons>
+    <cron exec="\Sequry\Core\Cron::deactivateExpiredPasswordLinks">
+        <title>
+            <locale group="sequry/core" var="cron.delete_passwordlinks.title" />
+        </title>
+        <description>
+            <locale group="sequry/core" var="cron.delete_passwordlinks.description" />
+        </description>
+    </cron>
+</crons>

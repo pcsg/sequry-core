@@ -1,0 +1,11 @@
+.pcsg-gpm-auth-recovery-popup h1 {
+    background-color: #dedede;
+    padding: 10px 20px;
+}
+
+.pcsg-gpm-recoverycode-code {
+    float: left;
+    font-size: 40px;
+    text-align: center;
+    width: 100%;
+}

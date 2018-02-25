@@ -1,39 +1,39 @@
 /**
  * Control authentication for a password operation
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate
+ * @module package/sequry/core/bin/controls/password/Authenticate
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/loader/Loader
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require css!package/sequry/core/bin/controls/password/Authenticate.css
  *
  * @event onFinish
  * @event onAbort - on AuthPopup user close
  * @event onClose - on AuthPopup close
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate', [
+define('package/sequry/core/bin/controls/password/Authenticate', [
 
     'qui/controls/loader/Loader',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/sequry/core/bin/classes/Passwords',
+    'package/sequry/core/bin/controls/auth/Authenticate',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate.css'
+    'css!package/sequry/core/bin/controls/password/Authenticate.css'
 
 ], function (QUILoader, QUILocale, PasswordHandler, AuthenticationControl) {
     "use strict";
 
-    var lg        = 'pcsg/grouppasswordmanager',
+    var lg        = 'sequry/core',
         Passwords = new PasswordHandler();
 
     return new Class({
 
         Extends: AuthenticationControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Authenticate',
+        Type   : 'package/sequry/core/bin/controls/password/Authenticate',
 
         Binds: [
             '$onLoaded',

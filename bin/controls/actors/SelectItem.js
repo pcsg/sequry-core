@@ -1,5 +1,5 @@
 /**
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem
+ * @module package/sequry/core/bin/controls/actors/SelectItem
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -7,24 +7,22 @@
  * @require Ajax
  * @require Locale
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem', [
+define('package/sequry/core/bin/controls/actors/SelectItem', [
 
     'qui/QUI',
     'qui/controls/elements/SelectItem',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Actors',
+    'package/sequry/core/bin/Actors',
 
     'Ajax'
 
-], function (QUI, QUIElementSelectItem, ActorHandler, QUIAjax) {
+], function (QUI, QUIElementSelectItem, Actors) {
     "use strict";
-
-    var Actors = new ActorHandler();
 
     return new Class({
 
         Extends: QUIElementSelectItem,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem',
+        Type   : 'package/sequry/core/bin/controls/actors/SelectItem',
 
         Binds: [
             'refresh'

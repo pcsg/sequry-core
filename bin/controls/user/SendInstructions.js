@@ -1,24 +1,24 @@
 /**
  * Send password manager instruction to the user
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions
+ * @module package/sequry/core/bin/controls/user/SendInstructions
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/user/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/user/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/user/SendInstructions.html
+ * @require css!package/sequry/core/bin/controls/user/SendInstructions.css
  *
  * @event onLoaded
  * @event onSuccess
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions', [
+define('package/sequry/core/bin/controls/user/SendInstructions', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
@@ -27,17 +27,17 @@ define('package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions', [
 
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions.css'
+    'css!package/sequry/core/bin/controls/user/SendInstructions.css'
 
 ], function (QUIControl, QUIButton, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions',
+        Type   : 'package/sequry/core/bin/controls/user/SendInstructions',
 
         Binds: [
             '$onInject'
@@ -71,12 +71,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/user/SendInstructions', [
                     onClick: function () {
                         self.$SendBtn.disable();
 
-                        QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_sendInstructions', function (result) {
+                        QUIAjax.post('package_sequry_core_ajax_actors_sendInstructions', function (result) {
                             if (!result) {
                                 self.$SendBtn.enable();
                             }
                         }, {
-                            'package': 'pcsg/grouppasswordmanager',
+                            'package': 'sequry/core',
                             userId   : self.$User.getId()
                         });
                     }
