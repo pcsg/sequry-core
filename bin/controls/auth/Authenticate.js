@@ -1,7 +1,7 @@
 /**
  * Authenticate for a single security class
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
+ * @module package/sequry/core/bin/controls/auth/Authenticate
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded
@@ -9,26 +9,26 @@
  * @event onClose - on AuthPopup close
  * @event onSubmit [AuthData] - if the user submits the auth form
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
+define('package/sequry/core/bin/controls/auth/Authenticate', [
 
     'qui/controls/Control',
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Authentication',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate.css'
+    'css!package/sequry/core/bin/controls/auth/Authenticate.css'
 
 ], function (QUIControl, QUIPopup, QUIButton, QUILocale, Authentication) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+        Type   : 'package/sequry/core/bin/controls/auth/Authenticate',
 
         Binds: [
             '$onInject',
@@ -470,7 +470,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate', [
 
             return new Promise(function (resolve, reject) {
                 require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/auth/Panel',
+                    'package/sequry/core/bin/controls/auth/Panel',
                     'utils/Panels'
                 ], function (AuthPanelControl, QUIPanelUtils) {
                     QUIPanelUtils.openPanelInTasks(new AuthPanelControl()).then(function (Panel) {

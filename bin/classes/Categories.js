@@ -2,14 +2,14 @@
  * Categories Handler
  * Get information of password categories
  *
- * @module package/pcsg/grouppasswordmanager/bin/classes/Categories
+ * @module package/sequry/core/bin/classes/Categories
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/classes/DOM
  * @require Ajax
  */
-define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
+define('package/sequry/core/bin/classes/Categories', [
 
     'qui/QUI',
     'qui/classes/DOM',
@@ -18,12 +18,12 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
 ], function (QUI, QUIDOM, QUIAjax) {
     "use strict";
 
-    var pkg = 'pcsg/grouppasswordmanager';
+    var pkg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIDOM,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/classes/Categories',
+        Type   : 'package/sequry/core/bin/classes/Categories',
 
         /**
          * Get public categories
@@ -33,7 +33,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
          */
         getPublic: function (ids) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_get', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_passwords_categories_public_get', resolve, {
                     'package': pkg,
                     onError  : reject,
                     ids      : JSON.encode(ids)
@@ -49,7 +49,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
          */
         getPrivate: function (ids) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_get', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_passwords_categories_private_get', resolve, {
                     'package': pkg,
                     onError  : reject,
                     ids      : JSON.encode(ids)
@@ -67,7 +67,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
         setPublicPasswordsCategories: function (passwordIds, categoryIds, AuthData) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_setToPasswords',
+                    'package_sequry_core_ajax_passwords_categories_public_setToPasswords',
                     resolve, {
                         'package'  : pkg,
                         onError    : reject,
@@ -89,7 +89,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
         setPrivatePasswordsCategories: function (passwordIds, categoryIds) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_setToPasswords',
+                    'package_sequry_core_ajax_passwords_categories_private_setToPasswords',
                     resolve, {
                         'package'  : pkg,
                         onError    : reject,
@@ -109,7 +109,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Categories', [
          */
         setPrivatePasswordCategories: function (passwordId, categoryIds) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_setToPassword',
+                QUIAjax.post('package_sequry_core_ajax_passwords_categories_private_setToPassword',
                     resolve, {
                         'package'  : pkg,
                         onError    : reject,

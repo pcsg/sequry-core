@@ -2,14 +2,14 @@
  * Authentication Handler
  * Register and update new authentication methods for a user
  *
- * @module package/pcsg/grouppasswordmanager/bin/classes/Authentication
+ * @module package/sequry/core/bin/classes/Authentication
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/classes/DOM
  * @require Ajax
  */
-define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
+define('package/sequry/core/bin/classes/Authentication', [
 
     'qui/QUI',
     'qui/classes/DOM',
@@ -19,13 +19,13 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
 ], function (QUI, QUIDOM, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg  = 'pcsg/grouppasswordmanager';
-    var pkg = 'pcsg/grouppasswordmanager';
+    var lg  = 'sequry/core';
+    var pkg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIDOM,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+        Type   : 'package/sequry/core/bin/classes/Authentication',
 
         /**
          * Authentication for a specific security class
@@ -38,7 +38,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
 
             return new Promise(function (resolve, reject) {
                 require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate'
+                    'package/sequry/core/bin/controls/auth/Authenticate'
                 ], function (AuthWindow) {
                     Promise.all([
                         self.getAuthPluginIdsBySecurityClass([securityClassId]),
@@ -101,7 +101,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         multiSecurityClassAuth: function (securityClassIds) {
             return new Promise(function (resolve, reject) {
                 require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow'
+                    'package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow'
                 ], function (MultiAuthWindow) {
                     new MultiAuthWindow({
                         info            : 'Bitte für alle Sicherheitsklassen authentifizieren', // @todo Sprachvariable
@@ -134,7 +134,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         $authenticate: function (securityClassId, AuthData) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_auth_authenticate',
+                    'package_sequry_core_ajax_auth_authenticate',
                     resolve, {
                         'package'      : pkg,
                         authData       : JSON.encode(AuthData),
@@ -153,7 +153,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         authAll: function () {
             return new Promise(function (resolve, reject) {
                 require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll'
+                    'package/sequry/core/bin/controls/auth/AuthenticateAll'
                 ], function (AllAuth) {
                     var Popup = new AllAuth({
                         events: {
@@ -184,7 +184,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getAuthPlugins: function () {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginList', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getAuthPluginList', resolve, {
                     'package': pkg,
                     onError  : reject
                 });
@@ -199,7 +199,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getAuthenticationControl: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthenticationControl', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getAuthenticationControl', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -215,7 +215,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getChangeAuthenticationControl: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getChangeAuthenticationControl', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getChangeAuthenticationControl', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -231,7 +231,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getRegistrationControl: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getRegistrationControl', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getRegistrationControl', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -249,7 +249,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         getAuthPluginControls: function (authPluginIds) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_auth_getControls',
+                    'package_sequry_core_ajax_auth_getControls',
                     resolve,
                     {
                         'package'    : pkg,
@@ -270,7 +270,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         getAuthPluginControlsBySecurityClass: function (securityClassId) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_auth_getControlsBySecurityClass',
+                    'package_sequry_core_ajax_auth_getControlsBySecurityClass',
                     resolve,
                     {
                         'package'      : pkg,
@@ -289,7 +289,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         getControlsByUser: function () {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_auth_getControlsByUser',
+                    'package_sequry_core_ajax_auth_getControlsByUser',
                     resolve,
                     {
                         'package': pkg,
@@ -309,7 +309,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
         getAllowedSyncAuthPlugins: function (authPluginId) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_auth_getAllowedSyncAuthPlugins',
+                    'package_sequry_core_ajax_auth_getAllowedSyncAuthPlugins',
                     resolve,
                     {
                         'package'   : pkg,
@@ -330,7 +330,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         changeAuthInformation: function (authPluginId, oldInfo, newInfo) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation', resolve, {
+                QUIAjax.post('package_sequry_core_ajax_auth_changeAuthenticationInformation', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId,
@@ -348,7 +348,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getAuthPluginInfo: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginInfo', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getAuthPluginInfo', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -364,7 +364,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getSecurityClassInfo: function (securityClassId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getSecurityClassInfo', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     securityClassId: securityClassId
@@ -380,7 +380,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getAuthPluginIdsBySecurityClass: function (securityClassIds) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginIdsBySecurityClass', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getAuthPluginIdsBySecurityClass', resolve, {
                     'package'       : pkg,
                     onError         : reject,
                     securityClassIds: JSON.encode(securityClassIds)
@@ -395,7 +395,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getSecurityClasses: function () {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassesList', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getSecurityClassesList', resolve, {
                     'package': pkg,
                     onError  : reject
                 });
@@ -410,7 +410,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         checkSecurityClassAuthStatus: function (securityClassIds) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkSecurityClassAuthStatus', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_checkSecurityClassAuthStatus', resolve, {
                     'package'       : pkg,
                     onError         : reject,
                     securityClassIds: JSON.encode(securityClassIds)
@@ -426,7 +426,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         checkAuthStatus: function (authPluginIds) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_checkAuthStatus', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_checkAuthStatus', resolve, {
                     'package'    : pkg,
                     onError      : reject,
                     authPluginIds: JSON.encode(authPluginIds)
@@ -442,7 +442,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         createSecurityClass: function (Data) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass', resolve, {
+                QUIAjax.post('package_sequry_core_ajax_auth_createSecurityClass', resolve, {
                     'package': pkg,
                     onError  : reject,
                     data     : JSON.encode(Data)
@@ -459,7 +459,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         editSecurityClass: function (id, Data) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_editSecurityClass', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_editSecurityClass', resolve, {
                     'package': pkg,
                     onError  : reject,
                     id       : id,
@@ -476,7 +476,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         deleteSecurityClass: function (id) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_deleteSecurityClass', resolve, {
                     'package': pkg,
                     onError  : reject,
                     id       : id
@@ -493,7 +493,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getActor: function (id, type) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_get', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_actors_get', resolve, {
                     'package': pkg,
                     onError  : reject,
                     id       : id,
@@ -510,7 +510,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         hasNonFullyAccessiblePasswords: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_hasNonFullyAccessiblePasswords', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_hasNonFullyAccessiblePasswords', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -527,7 +527,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getNonFullyAccessibleSecurityClassIds: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getNonFullyAccessibleSecurityClassIds', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -543,7 +543,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getRecoveryCodeId: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_recovery_getCodeId', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_recovery_getCodeId', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -559,7 +559,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         sendRecoveryToken: function (authPluginId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_recovery_sendToken', resolve, {
+                QUIAjax.post('package_sequry_core_ajax_auth_recovery_sendToken', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId
@@ -576,7 +576,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         regenerateRecoveryCode: function (authPluginId, authData) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_recovery_regenerateCode', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_recovery_regenerateCode', resolve, {
                     'package'   : pkg,
                     onError     : reject,
                     authPluginId: authPluginId,
@@ -594,8 +594,8 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         registerUser: function (authPluginId, registrationData) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_registerUser', resolve, {
-                    'package'       : 'pcsg/grouppasswordmanager',
+                QUIAjax.post('package_sequry_core_ajax_auth_registerUser', resolve, {
+                    'package'       : 'sequry/core',
                     onError         : reject,
                     authPluginId    : authPluginId,
                     registrationData: registrationData
@@ -610,7 +610,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getDefaultAuthPluginId: function () {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultPluginId', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getDefaultPluginId', resolve, {
                     'package': pkg,
                     onError  : reject
                 });
@@ -627,7 +627,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         isActorEligibleForSecurityClass: function (actorId, actorType, securityClassId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_isActorEligibleForSecurityClass', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_isActorEligibleForSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     actorId        : actorId,
@@ -644,7 +644,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getDefaultSecurityClassId: function () {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getDefaultSecurityClassId', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_auth_getDefaultSecurityClassId', resolve, {
                     'package': pkg,
                     onError  : reject
                 });
@@ -659,7 +659,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/Authentication', [
          */
         getCommKey: function () {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_getCommKey',
+                QUIAjax.get('package_sequry_core_ajax_auth_getCommKey',
                     function (keyData) {
                         if (!keyData) {
                             resolve(keyData);

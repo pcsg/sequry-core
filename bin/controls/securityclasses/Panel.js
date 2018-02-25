@@ -1,7 +1,7 @@
 /**
  * List of installed authentication modules
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel
+ * @module package/sequry/core/bin/controls/securityclasses/Panel
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,10 +9,10 @@
  * @require qui/controls/buttons/Button
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel.css
+ * @require css!package/sequry/core/bin/controls/securityclasses/Panel.css
  *
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
+define('package/sequry/core/bin/controls/securityclasses/Panel', [
 
     'qui/QUI',
     'qui/controls/desktop/Panel',
@@ -21,26 +21,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel', [
     'qui/controls/windows/Popup',
     'controls/grid/Grid',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit',
+    'package/sequry/core/bin/classes/Authentication',
+    'package/sequry/core/bin/controls/securityclasses/Create',
+    'package/sequry/core/bin/controls/securityclasses/Edit',
 
     'Ajax',
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel.css'
+    'css!package/sequry/core/bin/controls/securityclasses/Panel.css'
 
 ], function (QUI, QUIPanel, QUIButton, QUILoader, QUIPopup, Grid, AuthHandler,
              SecurityClassCreate, SecurityClassEdit, Ajax, QUILocale) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager';
+    var lg             = 'sequry/core';
     var Authentication = new AuthHandler();
 
     return new Class({
 
         Extends: QUIPanel,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel',
+        Type   : 'package/sequry/core/bin/controls/securityclasses/Panel',
 
         Binds: [
             '$onInject',

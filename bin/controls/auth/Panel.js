@@ -1,10 +1,10 @@
 /**
  * List of installed authentication modules
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Panel
+ * @module package/sequry/core/bin/controls/auth/Panel
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
+define('package/sequry/core/bin/controls/auth/Panel', [
 
     'qui/controls/desktop/Panel',
     'qui/controls/buttons/Button',
@@ -12,29 +12,29 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Panel', [
     'qui/controls/loader/Loader',
     'controls/grid/Grid',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/controls/auth/Register',
+    'package/sequry/core/bin/controls/auth/Change',
+    'package/sequry/core/bin/controls/auth/recovery/CodePopup',
+    'package/sequry/core/bin/controls/auth/SyncAuthPluginWindow',
+    'package/sequry/core/bin/controls/auth/recovery/Recovery',
+    'package/sequry/core/bin/controls/auth/Authenticate',
 
     'Ajax',
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Panel.css'
+    'css!package/sequry/core/bin/controls/auth/Panel.css'
 
 ], function (QUIPanel, QUIButton, QUIConfirm, QUILoader, Grid, Authentication, AuthRegister,
              AuthChange, RecoveryCodePopup, SyncAuthPluginWindow, Recovery, AuthWindow, Ajax, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIPanel,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Panel',
+        Type   : 'package/sequry/core/bin/controls/auth/Panel',
 
         Binds: [
             '$onInject',

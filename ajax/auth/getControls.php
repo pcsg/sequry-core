@@ -1,6 +1,6 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use \Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Get array with paths to all authentication controls for a specific security class
@@ -9,7 +9,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @return array - data of AuthPlugin and control path
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getControls',
+    'package_sequry_core_ajax_auth_getControls',
     function ($authPluginIds) {
         $controls      = array();
         $authPluginIds = json_decode($authPluginIds, true);
@@ -18,7 +18,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
             return $controls;
         }
 
-        /** @var \Pcsg\GroupPasswordManager\Security\Authentication\Plugin $AuthPlugin */
+        /** @var \Sequry\Core\Security\Authentication\Plugin $AuthPlugin */
         foreach ($authPluginIds as $authPluginId) {
             try {
                 $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);

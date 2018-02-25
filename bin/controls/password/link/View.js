@@ -1,25 +1,25 @@
 /**
  * Display password data from a PasswordLink
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/link/View
+ * @module package/sequry/core/bin/controls/password/link/View
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/link/View', [
+define('package/sequry/core/bin/controls/password/link/View', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
-    'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
+    'package/sequry/core/bin/controls/utils/InputButtons',
     'Locale'
 
 ], function (QUIControl, QUIButton, InputButtons, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/link/View',
+        Type   : 'package/sequry/core/bin/controls/password/link/View',
 
         Binds: [
             '$onImport'

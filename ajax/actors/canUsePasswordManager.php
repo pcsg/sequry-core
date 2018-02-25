@@ -1,6 +1,6 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use \Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Check if the current session user is eligible to user basic
@@ -9,7 +9,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @return bool
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_canUsePasswordManager',
+    'package_sequry_core_ajax_actors_canUsePasswordManager',
     function ()
     {
         return CryptoActors::getCryptoUser()->canUsePasswordManager();

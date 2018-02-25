@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Authentication;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -11,7 +11,7 @@ use QUI\Utils\Security\Orthos;
  * @param integer $limit
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_securityClassGroupSearch($search, $securityClassId, $limit)
+function package_sequry_core_ajax_auth_securityClassGroupSearch($search, $securityClassId, $limit)
 {
     $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 
@@ -32,7 +32,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_securityClassGroupSearch($s
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_securityClassGroupSearch',
+    'package_sequry_core_ajax_auth_securityClassGroupSearch',
     array('search', 'securityClassId', 'limit'),
     'Permission::checkAdminUser'
 );

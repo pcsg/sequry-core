@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
+use Sequry\Core\Security\Handler\PasswordLinks;
 
 /**
  * Deactivate a PasswordLink
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
  * @throws QUI\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_link_deactivate',
+    'package_sequry_core_ajax_passwords_link_deactivate',
     function ($linkId) {
         $linkId = (int)$linkId;
 
@@ -21,7 +21,7 @@ QUI::$Ajax->registerFunction(
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.passwords.link.deactivate.error',
                     array(
                         'error'  => $Exception->getMessage(),
@@ -33,14 +33,14 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_link_deactivate'
+                'AJAX :: package_sequry_core_ajax_passwords_link_deactivate'
             );
 
             QUI\System\Log::writeException($Exception);
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -50,7 +50,7 @@ QUI::$Ajax->registerFunction(
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.passwords.link.deactivate.success',
                 array(
                     'linkId' => $linkId

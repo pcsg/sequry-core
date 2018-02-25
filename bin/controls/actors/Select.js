@@ -1,19 +1,19 @@
 /**
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/Select
+ * @module package/sequry/core/bin/controls/actors/Select
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/elements/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup
+ * @require package/sequry/core/bin/controls/actors/SelectTablePopup
  * @require Ajax
  * @require Locale
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
+define('package/sequry/core/bin/controls/actors/Select', [
 
     'qui/QUI',
     'qui/controls/elements/Select',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
+    'package/sequry/core/bin/controls/actors/SelectTablePopup',
 
     'Ajax',
     'Locale'
@@ -21,12 +21,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
 ], function (QUI, QUIElementSelect, SelectTablePopup, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIElementSelect,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
+        Type   : 'package/sequry/core/bin/controls/actors/Select',
 
         Binds: [
             'actorSearch',
@@ -76,7 +76,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
                 this.setAttribute('Search', this.actorSearch);
             }
 
-            this.setAttribute('child', 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem');
+            this.setAttribute('child', 'package/sequry/core/bin/controls/actors/SelectItem');
 
             this.addEvents({
                 onSearchButtonClick: this.$onSearchButtonClick
@@ -93,8 +93,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Select', [
             var self = this;
 
             return new Promise(function (resolve) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch', resolve, {
-                    'package'      : 'pcsg/grouppasswordmanager',
+                QUIAjax.get('package_sequry_core_ajax_actors_suggestSearch', resolve, {
+                    'package'      : 'sequry/core',
                     type           : self.getAttribute('actorType'),
                     search         : value,
                     securityClassId: self.getAttribute('securityClassId'),

@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Recovery;
 
 /**
  * Get recovery code ID
@@ -10,7 +10,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
  * @return false|int - id of recovery code or false on error
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_recovery_getCodeId',
+    'package_sequry_core_ajax_auth_recovery_getCodeId',
     function ($authPluginId) {
         $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
         return Recovery::getRecoveryCodeId($AuthPlugin);

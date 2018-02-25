@@ -1,24 +1,24 @@
 /**
  * Control for editing a security class
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit
+ * @module package/sequry/core/bin/controls/securityclasses/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/securityclasses/Edit.html
+ * @require css!package/sequry/core/bin/controls/securityclasses/Edit.css
  *
  * @event onLoaded
  * @event onSuccess
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
+define('package/sequry/core/bin/controls/securityclasses/Edit', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -27,24 +27,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Actors',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Actors',
+    'package/sequry/core/bin/Authentication',
 
     'Ajax',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit.css'
+    'text!package/sequry/core/bin/controls/securityclasses/Edit.html',
+    'css!package/sequry/core/bin/controls/securityclasses/Edit.css'
 
 ], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, Actors,
              Authentication, QUIAjax, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit',
+        Type   : 'package/sequry/core/bin/controls/securityclasses/Edit',
 
         Binds: [
             '$onInject',
@@ -255,8 +255,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Edit', [
             var self = this;
 
             return new Promise(function (resolve) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_auth_securityClassGroupSearch', resolve, {
-                    'package'      : 'pcsg/grouppasswordmanager',
+                QUIAjax.get('package_sequry_core_ajax_auth_securityClassGroupSearch', resolve, {
+                    'package'      : 'sequry/core',
                     search         : value,
                     securityClassId: self.getAttribute('securityClassId'),
                     limit          : 10

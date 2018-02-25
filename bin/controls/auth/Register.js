@@ -1,39 +1,39 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Register
+ * @module package/sequry/core/bin/controls/auth/Register
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Locale
  * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require text!package/sequry/core/bin/controls/auth/Register.html
+ * @require css!package/sequry/core/bin/controls/auth/Register.css
  *
  * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/Register', [
+define('package/sequry/core/bin/controls/auth/Register', [
 
     'qui/controls/Control',
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Authentication',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Register.css'
+    'text!package/sequry/core/bin/controls/auth/Register.html',
+    'css!package/sequry/core/bin/controls/auth/Register.css'
 
 ], function (QUIControl, QUILocale, Mustache, Authentication, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Register',
+        Type   : 'package/sequry/core/bin/controls/auth/Register',
 
         Binds: [
             '$onInject',

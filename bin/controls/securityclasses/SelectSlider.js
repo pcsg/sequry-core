@@ -1,24 +1,24 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider
+ * @module package/sequry/core/bin/controls/securityclasses/SelectSlider
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/securityclasses/SelectSlider.html
+ * @require css!package/sequry/core/bin/controls/securityclasses/SelectSlider.css
  *
  * @event onLoaded [this] - fires when the control has finished loading
  * @event onChange [securityClassId, this] - fires if the user selects a security class
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider', [
+define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
 
     'qui/controls/Control',
     'qui/controls/loader/Loader',
@@ -26,22 +26,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSli
     'html5tooltips',
     URL_OPT_DIR + 'bin/nouislider/distribute/nouislider.js',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Authentication',
 
     'Locale',
 
     'css!' + URL_OPT_DIR + 'bin/nouislider/distribute/nouislider.css',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider.css'
+    'css!package/sequry/core/bin/controls/securityclasses/SelectSlider.css'
 
 ], function (QUIControl, QUILoader, html5tooltips, noUiSlider, Authentication, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
+        Type   : 'package/sequry/core/bin/controls/securityclasses/SelectSlider',
 
         Binds: [
             '$onInject',

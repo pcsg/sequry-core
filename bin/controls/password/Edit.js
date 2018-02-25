@@ -1,25 +1,25 @@
 /**
  * Control for editing a password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/Edit
+ * @module package/sequry/core/bin/controls/password/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/password/Edit.html
+ * @require css!package/sequry/core/bin/controls/password/Edit.css
  *
  * @event onLoaded
  * @event onAuthAbort - on user authentication abort
  * @event onClose (this) - if password is closed
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
+define('package/sequry/core/bin/controls/password/Edit', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -27,30 +27,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/Categories',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/Categories',
+    'package/sequry/core/bin/controls/securityclasses/SelectSlider',
+    'package/sequry/core/bin/controls/actors/Select',
+    'package/sequry/core/bin/controls/passwordtypes/Content',
+    'package/sequry/core/bin/controls/categories/public/Select',
+    'package/sequry/core/bin/controls/categories/private/Select',
 
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html'
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css'
+    'text!package/sequry/core/bin/controls/password/Edit.html'
+    //'css!package/sequry/core/bin/controls/password/Edit.css'
 
 ], function (QUI, QUIControl, QUILoader, QUILocale, Mustache, Authentication, Passwords,
              Categories, SecurityClassSelect, ActorSelect, PasswordContent,
              CategorySelect, CategorySelectPrivate, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
+        Type   : 'package/sequry/core/bin/controls/password/Edit',
 
         Binds: [
             '$onInject',

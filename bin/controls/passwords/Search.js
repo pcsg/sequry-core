@@ -1,13 +1,13 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Search
+ * @module package/sequry/core/bin/controls/passwords/Search
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded
  * @event onSubmit [SearchData]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Search', [
+define('package/sequry/core/bin/controls/passwords/Search', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -15,20 +15,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Search', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/sequry/core/bin/Passwords',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Search.css'
+    'text!package/sequry/core/bin/controls/passwords/Search.html',
+    'css!package/sequry/core/bin/controls/passwords/Search.css'
 
 ], function (QUI, QUIControl, QUIFormUtils, QUILocale, Mustache, Passwords, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
+        Type   : 'package/sequry/core/bin/controls/passwords/Search',
 
         Binds: [
             '$onInject',

@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Returns IDs of security classes of passwords which keys are not protected by
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param integer $authPluginId - id of auth plugin
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds(
+function package_sequry_core_ajax_auth_getNonFullyAccessibleSecurityClassIds(
     $authPluginId
 ) {
     $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
@@ -37,7 +37,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecuri
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getNonFullyAccessibleSecurityClassIds',
+    'package_sequry_core_ajax_auth_getNonFullyAccessibleSecurityClassIds',
     array('authPluginId'),
     'Permission::checkAdminUser'
 );

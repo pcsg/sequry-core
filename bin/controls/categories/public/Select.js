@@ -1,7 +1,7 @@
 /**
  * Select a password category
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select
+ * @module package/sequry/core/bin/controls/categories/public/Select
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,12 +9,12 @@
  * @require qui/controls/loader/Loader
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select.css
+ * @require css!package/sequry/core/bin/controls/categories/public/Select.css
  *
  * @event onChange [categoryIds, this] - fires if the user adds and/or deletes password categories
  * @event onRemoveCategory [categoryId, this] - fires if the user deletes a password category
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select', [
+define('package/sequry/core/bin/controls/categories/public/Select', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -22,23 +22,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select'
     'qui/controls/loader/Loader',
 
     'qui/controls/windows/Confirm',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map',
-    'package/pcsg/grouppasswordmanager/bin/Categories',
+    'package/sequry/core/bin/controls/categories/public/Map',
+    'package/sequry/core/bin/Categories',
 
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select.css'
+    'css!package/sequry/core/bin/controls/categories/public/Select.css'
 
 ], function (QUI, QUIControl, QUIButton, QUILoader, QUIConfirm, CategoryTree,
              Categories, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
+        Type   : 'package/sequry/core/bin/controls/categories/public/Select',
 
         Binds: [
             'getValue',

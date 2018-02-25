@@ -1,7 +1,7 @@
 /**
  * Password category map
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map
+ * @module package/sequry/core/bin/controls/categories/public/Map
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,12 +9,12 @@
  * @require qui/controls/buttons/Button
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map.css
+ * @require css!package/sequry/core/bin/controls/categories/public/Map.css
  *
  * @event onCategorySelect [catId, catTitle, this] - fires if the user selects a password category
  * @event onLoaded [this] - fires if the map has finished loading
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
+define('package/sequry/core/bin/controls/categories/public/Map', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -30,18 +30,18 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
     'Ajax',
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map.css'
+    'css!package/sequry/core/bin/controls/categories/public/Map.css'
 
 ], function (QUI, QUIControl, QUIButton, QUILoader, QUIConfirm, QUISiteMap, QUISiteMapItem,
              QUIContextMenuItem, QUIContextMenuSeparator, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map',
+        Type   : 'package/sequry/core/bin/controls/categories/public/Map',
 
         Binds: [
             '$onInject',
@@ -430,9 +430,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         $getCategories: function () {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_getList',
+                    'package_sequry_core_ajax_passwords_categories_public_getList',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         onError  : reject
                     }
                 );
@@ -683,9 +683,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         $addCategory: function (title, parentId) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_create',
+                    'package_sequry_core_ajax_passwords_categories_public_create',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         parentId : parentId,
                         title    : title,
                         onError  : reject
@@ -704,9 +704,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         $renameCategory: function (id, title) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_rename',
+                    'package_sequry_core_ajax_passwords_categories_public_rename',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         id       : id,
                         title    : title,
                         onError  : reject
@@ -724,9 +724,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map', [
         $deleteCategory: function (id) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_delete',
+                    'package_sequry_core_ajax_passwords_categories_public_delete',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         id       : id,
                         onError  : reject
                     }

@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
+use Sequry\Core\Security\Handler\PasswordLinks;
 
 /**
  * Create a new PasswordLink
@@ -12,7 +12,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
  * @throws QUI\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_link_create',
+    'package_sequry_core_ajax_passwords_link_create',
     function ($passwordId, $linkData) {
         $passwordId = (int)$passwordId;
 
@@ -28,7 +28,7 @@ QUI::$Ajax->registerFunction(
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.passwords.link.create.error',
                     array(
                         'error'      => $Exception->getMessage(),
@@ -40,14 +40,14 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_link_create'
+                'AJAX :: package_sequry_core_ajax_passwords_link_create'
             );
 
             QUI\System\Log::writeException($Exception);
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -57,7 +57,7 @@ QUI::$Ajax->registerFunction(
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.passwords.link.create.success',
                 array(
                     'passwordId' => $passwordId

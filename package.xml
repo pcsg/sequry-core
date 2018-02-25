@@ -3,15 +3,15 @@
 <quiqqer>
     <package>
         <title>
-            <locale group="pcsg/grouppasswordmanager" var="package.title"/>
+            <locale group="sequry/core" var="package.title"/>
         </title>
 
         <description>
-            <locale group="pcsg/grouppasswordmanager" var="package.description"/>
+            <locale group="sequry/core" var="package.description"/>
         </description>
 
         <provider>
-            <desktopSearch src="\Pcsg\GroupPasswordManager\DesktopSearch" />
+            <desktopSearch src="\Sequry\Core\DesktopSearch" />
         </provider>
 
     </package>

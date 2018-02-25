@@ -1,7 +1,7 @@
 /**
  * Search and list actors for a specific SecurityClass
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/Search
+ * @module package/sequry/core/bin/controls/actors/Search
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,10 +9,10 @@
  * @require qui/controls/buttons/Button
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/actors/Search.css
+ * @require css!package/sequry/core/bin/controls/actors/Search.css
  *
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/Search', [
+define('package/sequry/core/bin/controls/actors/Search', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -25,19 +25,19 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/Search', [
     'Ajax',
     'Locale',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/actors/Search.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/actors/Search.css'
+    'text!package/sequry/core/bin/controls/actors/Search.html',
+    'css!package/sequry/core/bin/controls/actors/Search.css'
 
 ], function (QUI, QUIControl, QUIButton, QUIPopup, QUILoader, Grid, Mustache,
              QUIAjax, QUILocale, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/Search',
+        Type   : 'package/sequry/core/bin/controls/actors/Search',
 
         Binds: [
             '$onInject',

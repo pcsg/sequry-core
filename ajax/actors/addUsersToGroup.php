@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Events;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Events;
 
 /**
  * Add user(s) to a group
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Events;
  * @return bool - success
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_addUsersToGroup',
+    'package_sequry_core_ajax_actors_addUsersToGroup',
     function ($groupId, $userIds)
     {
         $userIds = json_decode($userIds, true);
@@ -33,7 +33,7 @@ use Pcsg\GroupPasswordManager\Events;
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'error.actors.adduserstogroup',
                     array(
                         'groupId' => (int)$groupId
@@ -46,7 +46,7 @@ use Pcsg\GroupPasswordManager\Events;
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'success.actors.adduserstogroup',
                 array(
                     'groupId'   => $CryptoGroup->getId(),

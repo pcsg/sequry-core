@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Set security class for a group
@@ -13,7 +13,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  *
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass(
+function package_sequry_core_ajax_actors_addGroupSecurityClass(
     $groupId,
     $securityClassId,
     $userId = null
@@ -31,7 +31,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass(
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.cryptogroup.securityclass.add',
                 array(
                     'groupId'            => $Group->getId(),
@@ -48,7 +48,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass(
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'success.cryptogroup.securityclass.add',
             array(
                 'groupId'            => $Group->getId(),
@@ -63,7 +63,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass(
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_addGroupSecurityClass',
+    'package_sequry_core_ajax_actors_addGroupSecurityClass',
     array('groupId', 'securityClassId', 'userId'),
     'Permission::checkAdminUser'
 );

@@ -1,9 +1,9 @@
 <?php
 
-use Pcsg\GroupPasswordManager\PasswordLink;
+use Sequry\Core\PasswordLink;
 use QUI\Utils\Security\Orthos;
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler as PasswordTypesHandler;
-use Pcsg\GroupPasswordManager\Security\Exception\InvalidKeyException;
+use Sequry\Core\PasswordTypes\Handler as PasswordTypesHandler;
+use Sequry\Core\Security\Exception\InvalidKeyException;
 
 function send400()
 {
@@ -66,7 +66,7 @@ try {
     }
 } catch (InvalidKeyException $Exception) {
     $invalidPasswordMsg = QUI::getLocale()->get(
-        'pcsg/grouppasswordmanager',
+        'sequry/core',
         'message.sitetypes.passwordlink.wrong_password'
     );
 } catch (\Exception $Exception) {

@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Set favorite status to a password
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @return bool - favorite status after editing
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_setFavoriteStatus',
+    'package_sequry_core_ajax_passwords_setFavoriteStatus',
     function ($passwordId, $status)
     {
         try {
@@ -19,13 +19,13 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
             $CryptoUser->setPasswordFavoriteStatus((int)$passwordId, $status);
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_setFavoriteStatus -> '
+                'AJAX :: package_sequry_core_ajax_passwords_setFavoriteStatus -> '
                 . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );

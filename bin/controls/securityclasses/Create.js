@@ -1,24 +1,24 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create
+ * @module package/sequry/core/bin/controls/securityclasses/Create
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/securityclasses/Create.html
+ * @require css!package/sequry/core/bin/controls/securityclasses/Create.css
  *
  * @event onLoaded
  * @event onSuccess
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', [
+define('package/sequry/core/bin/controls/securityclasses/Create', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -28,21 +28,21 @@ define('package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create', 
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Authentication',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create.css'
+    'text!package/sequry/core/bin/controls/securityclasses/Create.html',
+    'css!package/sequry/core/bin/controls/securityclasses/Create.css'
 
 ], function (QUI, QUIControl, QUISelect, QUIFormUtils, QUILocale, Mustache,
              Authentication, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Create',
+        Type   : 'package/sequry/core/bin/controls/securityclasses/Create',
 
         Binds: [
             '$onInject',

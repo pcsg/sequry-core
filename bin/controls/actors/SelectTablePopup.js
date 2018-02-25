@@ -1,34 +1,34 @@
 /**
  * Select actors for a SecurityClass via Grid (Popup)
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup
+ * @module package/sequry/core/bin/controls/actors/SelectTablePopup
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/windows/Popup
  * @require qui/controls/buttons/Button
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable
+ * @require package/sequry/core/bin/controls/actors/SelectTable
  *
  * @event onSubmit [selectedIds, actorType, this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup', [
+define('package/sequry/core/bin/controls/actors/SelectTablePopup', [
 
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
 
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable'
+    'package/sequry/core/bin/controls/actors/SelectTable'
 
 ], function (QUIPopup, QUIButton, QUILocale, SelectTable) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIPopup,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
+        Type   : 'package/sequry/core/bin/controls/actors/SelectTablePopup',
 
         Binds: [
             '$onOpen',

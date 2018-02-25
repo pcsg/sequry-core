@@ -1,40 +1,40 @@
 /**
  * Control for creating / viewing password links
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/link/Create
+ * @module package/sequry/core/bin/controls/password/link/Create
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onSubmit [this] - fires after a new PasswordLink has been successfully created
  * @event onLoaded [this] - fires after everything loaded
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
+define('package/sequry/core/bin/controls/password/link/Create', [
 
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
     'controls/email/Select',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
+    'package/sequry/core/bin/controls/utils/InputButtons',
 
     'Ajax',
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/sequry/core/bin/Passwords',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/link/Create.css'
+    'text!package/sequry/core/bin/controls/password/link/Create.html',
+    'css!package/sequry/core/bin/controls/password/link/Create.css'
 
 ], function (QUI, QUIControl, QUIButton, QUIMailSelect, InputButtons, QUIAjax,
              QUILocale, Mustache, Passwords, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/link/Create',
+        Type   : 'package/sequry/core/bin/controls/password/link/Create',
 
         Binds: [
             'create',
@@ -353,8 +353,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
         $generatePin: function () {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_link_generatePin', resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                    'package_sequry_core_ajax_passwords_link_generatePin', resolve, {
+                        'package': 'sequry/core',
                         onError  : reject
                     }
                 );
@@ -369,8 +369,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/Create', [
         $getVHostList: function () {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_link_getVHostList', resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                    'package_sequry_core_ajax_passwords_link_getVHostList', resolve, {
+                        'package': 'sequry/core',
                         onError  : reject
                     }
                 );

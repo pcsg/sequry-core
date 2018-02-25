@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Get the symmetric key that is used for encryption
@@ -9,7 +9,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @return false|string
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getCommKey',
+    'package_sequry_core_ajax_auth_getCommKey',
     function() {
         $key = Authentication::getSessionCommunicationKey();
 

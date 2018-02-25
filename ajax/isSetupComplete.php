@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Checks if the system is set up to use Sequry
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @return bool
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_isSetupComplete',
+    'package_sequry_core_ajax_isSetupComplete',
     function() {
         return Passwords::isSetupComplete();
     },

@@ -1,43 +1,43 @@
 /**
  * Control for creating a new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/Create
+ * @module package/sequry/core/bin/controls/password/Create
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded
  * @event onFinish
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
+define('package/sequry/core/bin/controls/password/Create', [
 
     'qui/QUI',
     'qui/controls/Control',
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/controls/securityclasses/SelectSlider',
+    'package/sequry/core/bin/controls/actors/Select',
+    'package/sequry/core/bin/controls/passwordtypes/Content',
+    'package/sequry/core/bin/controls/categories/public/Select',
+    'package/sequry/core/bin/controls/categories/private/Select',
 
     'Ajax',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/password/Create.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/Create.css'
+    'text!package/sequry/core/bin/controls/password/Create.html',
+    'css!package/sequry/core/bin/controls/password/Create.css'
 
 ], function (QUI, QUIControl, QUILocale, Mustache, Passwords, Authentication,
              SecurityClassSelectSlider, ActorSelect, PasswordTypes, CategorySelect,
              CategorySelectPrivate, QUIAjax, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
+        Type   : 'package/sequry/core/bin/controls/password/Create',
 
         Binds: [
             '$onInject',
@@ -376,8 +376,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Create', [
          */
         $getSettings: function () {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_create_getSettings', resolve, {
-                    'package': 'pcsg/grouppasswordmanager',
+                QUIAjax.get('package_sequry_core_ajax_passwords_create_getSettings', resolve, {
+                    'package': 'sequry/core',
                     onError  : reject
                 });
             });

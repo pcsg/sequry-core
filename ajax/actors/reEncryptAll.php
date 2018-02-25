@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Re-encrypt all keys a user has access to
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @return false|integer - false on error, Password ID on success
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_reEncryptAll',
+    'package_sequry_core_ajax_actors_reEncryptAll',
     function () {
         try {
             $CryptoUser     = CryptoActors::getCryptoUser();
@@ -16,7 +16,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.ajax.reEncryptAll.error',
                     array(
                         'error' => $Exception->getMessage()
@@ -27,13 +27,13 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_actors_reEncryptAll -> '
+                'AJAX :: package_sequry_core_ajax_actors_reEncryptAll -> '
                 . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -43,7 +43,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.reEncryptAll.success'
             )
         );

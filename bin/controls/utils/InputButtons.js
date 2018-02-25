@@ -8,30 +8,30 @@ require.config({
 /**
  * Parses all inputs in a DOMNode and adds specific interaction buttons
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons
+ * @module package/sequry/core/bin/controls/utils/InputButtons
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons', [
+define('package/sequry/core/bin/controls/utils/InputButtons', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
 
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/sequry/core/bin/Passwords',
 
     'Locale',
     'ClipboardJS',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons.css'
+    'css!package/sequry/core/bin/controls/utils/InputButtons.css'
 
 ], function (QUIControl, QUIButton, Passwords, QUILocale, Clipboard) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
+        Type   : 'package/sequry/core/bin/controls/utils/InputButtons',
 
         Binds: [
             'parse',

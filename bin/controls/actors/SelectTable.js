@@ -1,12 +1,12 @@
 /**
  * Select actors for a SecurityClass via Grid
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable
+ * @module package/sequry/core/bin/controls/actors/SelectTable
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onSubmit [selectedIds, actorType, this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
+define('package/sequry/core/bin/controls/actors/SelectTable', [
 
     'qui/controls/Control',
     'qui/controls/loader/Loader',
@@ -14,20 +14,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable', [
 
     'controls/grid/Grid',
 
-    'package/pcsg/grouppasswordmanager/bin/Actors',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Actors',
+    'package/sequry/core/bin/Authentication',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable.css'
+    'css!package/sequry/core/bin/controls/actors/SelectTable.css'
 
 ], function (QUIControl, QUILoader, QUILocale, Grid, Actors, Authentication) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTable',
+        Type   : 'package/sequry/core/bin/controls/actors/SelectTable',
 
         Binds: [
             '$onInject',

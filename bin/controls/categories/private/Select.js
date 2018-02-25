@@ -1,7 +1,7 @@
 /**
  * Select a private password category
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
+ * @module package/sequry/core/bin/controls/categories/private/Select
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
@@ -9,30 +9,30 @@
  * @require qui/controls/loader/Loader
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select.css
+ * @require css!package/sequry/core/bin/controls/categories/private/Select.css
  *
  * @event onLoaded [this] - fires when security classes are loaded
  * @event onCategorySelect [catId, this] - fires when user selects a category
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select', [
+define('package/sequry/core/bin/controls/categories/private/Select', [
 
     'qui/controls/windows/Confirm',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
-    'package/pcsg/grouppasswordmanager/bin/Categories',
+    'package/sequry/core/bin/controls/categories/public/Select',
+    'package/sequry/core/bin/controls/categories/private/Map',
+    'package/sequry/core/bin/Categories',
 
     'Locale'
 
 ], function (QUIConfirm, CategorySelect, CategoryMapPrivate, Categories, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: CategorySelect,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
+        Type   : 'package/sequry/core/bin/controls/categories/private/Select',
 
         /**
          * Refresh category label

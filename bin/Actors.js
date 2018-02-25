@@ -2,16 +2,16 @@
  * Actors Handler
  * Handle password users and groups
  *
- * @module package/pcsg/grouppasswordmanager/bin/Actors
+ * @module package/sequry/core/bin/Actors
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/classes/DOM
  * @require Ajax
  */
-define('package/pcsg/grouppasswordmanager/bin/Actors', [
+define('package/sequry/core/bin/Actors', [
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Actors'
+    'package/sequry/core/bin/classes/Actors'
 
 ], function (ActorsHandler) {
     "use strict";

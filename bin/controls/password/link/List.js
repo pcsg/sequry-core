@@ -1,12 +1,12 @@
 /**
  * List all PasswordLinks of a Password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/link/List
+ * @module package/sequry/core/bin/controls/password/link/List
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onClose [this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
+define('package/sequry/core/bin/controls/password/link/List', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -16,28 +16,28 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/link/List', [
     'qui/controls/windows/Confirm',
 
     'controls/grid/Grid',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/link/Create',
-    'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
+    'package/sequry/core/bin/controls/password/link/Create',
+    'package/sequry/core/bin/controls/utils/InputButtons',
 
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/sequry/core/bin/Passwords',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/link/List.css'
+    'css!package/sequry/core/bin/controls/password/link/List.css'
 
 ], function (QUI, QUIControl, QUILoader, QUIButton, QUIPopup,
              QUIConfirm, Grid, PasswordLinkCreate, InputButtons, QUILocale,
              Mustache, Passwords) {
     "use strict";
 
-    var lg              = 'pcsg/grouppasswordmanager';
+    var lg              = 'sequry/core';
     var UrlButtonParser = new InputButtons();
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/link/List',
+        Type   : 'package/sequry/core/bin/controls/password/link/List',
 
         Binds: [
             '$onCreate',

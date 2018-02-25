@@ -1,10 +1,10 @@
 <?php
 
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Exception\Exception;
-use Pcsg\GroupPasswordManager\Security\HiddenString;
-use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Exception\Exception;
+use Sequry\Core\Security\HiddenString;
+use Sequry\Core\Exception\InvalidAuthDataException;
 
 /**
  * Authenticate for a security class
@@ -13,16 +13,16 @@ use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
  * @param string $authData - authentication information
  * @return bool - true if correct, false if not correct
  *
- * @throws \Pcsg\GroupPasswordManager\Exception\Exception
+ * @throws \Sequry\Core\Exception\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_authenticate',
+    'package_sequry_core_ajax_auth_authenticate',
     function ($securityClassId, $authData) {
         $authData = json_decode($authData, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Exception(array(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'exception.ajax.authenticate.decode.error'
             ));
         }

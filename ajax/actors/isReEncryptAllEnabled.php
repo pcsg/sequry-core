@@ -6,9 +6,9 @@
  * @return bool
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_isReEncryptAllEnabled',
+    'package_sequry_core_ajax_actors_isReEncryptAllEnabled',
     function () {
-        return boolval(QUI::getPackage('pcsg/grouppasswordmanager')->getConfig()->get(
+        return boolval(QUI::getPackage('sequry/core')->getConfig()->get(
             'settings',
             'reEncryptEnabled'
         ));

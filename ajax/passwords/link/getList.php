@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\PasswordLinks;
+use Sequry\Core\Security\Handler\PasswordLinks;
 use QUI\Utils\Security\Orthos;
 use QUI\Utils\Grid;
 
@@ -14,7 +14,7 @@ use QUI\Utils\Grid;
  * @throws QUI\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_link_getList',
+    'package_sequry_core_ajax_passwords_link_getList',
     function ($passwordId, $searchParams) {
         $searchParams = Orthos::clearArray(
             json_decode($searchParams, true)

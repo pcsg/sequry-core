@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Authentication;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -9,7 +9,7 @@ use QUI\Utils\Security\Orthos;
  * @param string $data - security class data
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass($data)
+function package_sequry_core_ajax_auth_createSecurityClass($data)
 {
     try {
         $newSecurityClassId = Authentication::createSecurityClass(
@@ -18,7 +18,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass($data)
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.auth.createSecurityClass.error',
                 array(
                     'error' => $Exception->getMessage()
@@ -29,13 +29,13 @@ function package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass($data)
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::writeRecursive(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass'
+            'AJAX :: package_sequry_core_ajax_auth_createSecurityClass'
         );
         QUI\System\Log::writeException($Exception);
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -47,7 +47,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass($data)
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'message.ajax.auth.createSecurityClass.success',
             array(
                 'securityClassId'    => $SecurityClass->getId(),
@@ -60,7 +60,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass($data)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_createSecurityClass',
+    'package_sequry_core_ajax_auth_createSecurityClass',
     array('data'),
     'Permission::checkAdminUser'
 );

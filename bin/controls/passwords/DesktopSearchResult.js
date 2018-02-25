@@ -1,19 +1,19 @@
 /**
  * Display a password result for QUIQQER Desktop Search
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/DesktopSearchResult
+ * @module package/sequry/core/bin/controls/passwords/DesktopSearchResult
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwords/DesktopSearchResult', [
+define('package/sequry/core/bin/controls/passwords/DesktopSearchResult', [
 
-    'package/pcsg/grouppasswordmanager/bin/Passwords'
+    'package/sequry/core/bin/Passwords'
 
 ], function (Passwords) {
     "use strict";
 
     return new Class({
 
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwords/DesktopSearchResult',
+        Type   : 'package/sequry/core/bin/controls/passwords/DesktopSearchResult',
 
         initialize: function (options) {
             if (!options.passwordId) {

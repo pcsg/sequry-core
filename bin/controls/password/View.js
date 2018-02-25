@@ -1,25 +1,25 @@
 /**
  * Control for viewing password content
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/View
+ * @module package/sequry/core/bin/controls/password/View
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/Control
  * @require qui/controls/buttons/Button
  * @require qui/controls/loader/Loader
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Authentication
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select
- * @require package/pcsg/grouppasswordmanager/bin/Categories
+ * @require package/sequry/core/bin/classes/Authentication
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/categories/public/Select
+ * @require package/sequry/core/bin/controls/categories/private/Select
+ * @require package/sequry/core/bin/Categories
  * @require ClipboardJS
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css
+ * @require css!package/sequry/core/bin/controls/password/View.css
  *
  * @event onLoaded
  * @event onClose
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
+define('package/sequry/core/bin/controls/password/View', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
@@ -27,26 +27,26 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/View', [
 
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
-    'package/pcsg/grouppasswordmanager/bin/Categories',
-    'package/pcsg/grouppasswordmanager/bin/controls/utils/InputButtons',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/controls/categories/public/Select',
+    'package/sequry/core/bin/controls/categories/private/Select',
+    'package/sequry/core/bin/Categories',
+    'package/sequry/core/bin/controls/utils/InputButtons',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/View.css'
+    'css!package/sequry/core/bin/controls/password/View.css'
 
 ], function (QUIControl, QUIButton, QUILoader, QUILocale, Authentication,
              Passwords, CategorySelect, CategorySelectPrivate, Categories,
              InputButtons) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/View',
+        Type   : 'package/sequry/core/bin/controls/password/View',
 
         Binds: [
             '$onInject',

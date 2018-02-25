@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
-use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Recovery;
+use Sequry\Core\Security\HiddenString;
 
 /**
  * Re-generate a Recovery Code for an Authentication Plugin
@@ -12,7 +12,7 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
  * @return array|false - recovery code data; false on error
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_recovery_regenerateCode',
+    'package_sequry_core_ajax_auth_recovery_regenerateCode',
     function ($authPluginId, $authData) {
         $authData = new HiddenString($authData);
 
@@ -24,7 +24,7 @@ QUI::$Ajax->registerFunction(
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.ajax.auth.recovery.regenerateCode.error',
                     array(
                         'error' => $Exception->getMessage()
@@ -35,13 +35,13 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_recovery_regenerateCode -> '
+                'AJAX :: package_sequry_core_ajax_auth_recovery_regenerateCode -> '
                 . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );

@@ -6,9 +6,9 @@
  * @return array
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_create_getSettings',
+    'package_sequry_core_ajax_passwords_create_getSettings',
     function () {
-        $Conf     = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig();
+        $Conf     = QUI::getPackage('sequry/core')->getConfig();
         $settings = $Conf->getSection('settings');
 
         return array(

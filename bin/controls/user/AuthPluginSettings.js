@@ -1,35 +1,35 @@
 /**
  * User-specific settings for authentication plugins
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/user/AuthPluginSettings
+ * @module package/sequry/core/bin/controls/user/AuthPluginSettings
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/user/AuthPluginSettings', [
+define('package/sequry/core/bin/controls/user/AuthPluginSettings', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Authentication',
+    'package/sequry/core/bin/classes/Authentication',
 
     'Ajax',
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/user/AuthPluginSettings.css'
+    'css!package/sequry/core/bin/controls/user/AuthPluginSettings.css'
 
 ], function (QUIControl, QUIButton, AuthenticationHandler, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg             = 'pcsg/grouppasswordmanager';
+    var lg             = 'sequry/core';
     var Authentication = new AuthenticationHandler();
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/user/AuthPluginSettings',
+        Type   : 'package/sequry/core/bin/controls/user/AuthPluginSettings',
 
         Binds: [
             '$onInject',

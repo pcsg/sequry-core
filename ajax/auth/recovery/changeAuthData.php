@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
-use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Recovery;
+use Sequry\Core\Security\HiddenString;
 
 /**
  * Change authentication data via recovered secret
@@ -12,7 +12,7 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
  * @return array|false - recovery code data; false on error
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_recovery_changeAuthData',
+    'package_sequry_core_ajax_auth_recovery_changeAuthData',
     function (
         $authPluginId,
         $newAuthData
@@ -32,7 +32,7 @@ QUI::$Ajax->registerFunction(
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'error.auth.changeauth',
                     array(
                         'error' => $Exception->getMessage()
@@ -43,13 +43,13 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_recovery_changeAuthData -> '
+                'AJAX :: package_sequry_core_ajax_auth_recovery_changeAuthData -> '
                 . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -59,7 +59,7 @@ QUI::$Ajax->registerFunction(
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'success.auth.changeauth'
             )
         );

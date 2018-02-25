@@ -5,7 +5,7 @@
  *
  * @return array|false - settings for authplugin or false if no settings set
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginSettings()
+function package_sequry_core_ajax_auth_getAuthPluginSettings()
 {
     $User               = QUI::getUserBySession();
     $authPluginSettings = $User->getAttribute('pcsg.gpm.settings.authplugins');
@@ -18,7 +18,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginSettings()
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginSettings',
+    'package_sequry_core_ajax_auth_getAuthPluginSettings',
     array(),
     'Permission::checkAdminUser'
 );

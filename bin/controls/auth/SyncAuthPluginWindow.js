@@ -1,24 +1,24 @@
 /**
  * Control for managing synchronization of authentication plugins
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
+ * @module package/sequry/core/bin/controls/auth/SyncAuthPluginWindow
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Locale
  * @require Mustache
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow.css
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require text!package/sequry/core/bin/controls/auth/SyncAuthPluginWindow.html
+ * @require css!package/sequry/core/bin/controls/auth/SyncAuthPluginWindow.css
  *
  * @event onSuccess [this]
  * @event onFail [this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow', [
+define('package/sequry/core/bin/controls/auth/SyncAuthPluginWindow', [
 
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow',
+    'package/sequry/core/bin/Authentication',
     'Locale',
 
     'Ajax'
@@ -26,12 +26,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
 ], function (MultiSecurityClassAuthWindow, Authentication, QUILocale, QUIAjax) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: MultiSecurityClassAuthWindow,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow',
+        Type   : 'package/sequry/core/bin/controls/auth/SyncAuthPluginWindow',
 
         Binds: [
             '$restrictedSecurityClassAuth',
@@ -88,7 +88,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
 
             return new Promise(function (resolve, reject) {
                 require([
-                    'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate'
+                    'package/sequry/core/bin/controls/auth/SyncAuthenticate'
                 ], function (SyncAuth) {
                     var Popup = new SyncAuth({
                         authPluginId   : self.getAttribute('authPluginId'),
@@ -132,7 +132,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
             var self = this;
 
             QUIAjax.post(
-                'package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin',
+                'package_sequry_core_ajax_auth_syncAuthPlugin',
                 function (success) {
                     self.close();
 
@@ -143,7 +143,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthPluginWindow
 
                     self.fireEvent('success', [self]);
                 }, {
-                    'package'   : 'pcsg/grouppasswordmanager',
+                    'package'   : 'sequry/core',
                     authPluginId: self.getAttribute('authPluginId')
                 }
             );

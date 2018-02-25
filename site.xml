@@ -5,9 +5,9 @@
 
         <!-- PasswordLink -->
         <type type="types/passwordlink" icon="fa fa-link">
-            <locale group="pcsg/grouppasswordmanager" var="sitetype.passwordlink.title" />
+            <locale group="sequry/core" var="sitetype.passwordlink.title" />
             <desc>
-                <locale group="pcsg/grouppasswordmanager" var="sitetype.passwordlink.description" />
+                <locale group="sequry/core" var="sitetype.passwordlink.description" />
             </desc>
         </type>
 

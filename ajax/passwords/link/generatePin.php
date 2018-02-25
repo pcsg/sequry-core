@@ -6,7 +6,7 @@
  * @return string
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_link_generatePin',
+    'package_sequry_core_ajax_passwords_link_generatePin',
     function () {
         $pin = array();
 

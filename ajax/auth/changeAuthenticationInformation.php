@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
-use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Recovery;
+use Sequry\Core\Security\HiddenString;
 
 /**
  * Register current session user and create a keypair for an authentication plugin
@@ -12,7 +12,7 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
  * @param string $newAuthInfo - new authentication information
  * @return array|false - recovery code data; false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation(
+function package_sequry_core_ajax_auth_changeAuthenticationInformation(
     $authPluginId,
     $oldAuthInfo,
     $newAuthInfo
@@ -29,7 +29,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.auth.changeauth',
                 array(
                     'error' => $Exception->getMessage()
@@ -40,13 +40,13 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation -> '
+            'AJAX :: package_sequry_core_ajax_auth_changeAuthenticationInformation -> '
             . $Exception->getMessage()
         );
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -56,7 +56,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'success.auth.changeauth'
         )
     );
@@ -65,7 +65,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInforma
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_changeAuthenticationInformation',
+    'package_sequry_core_ajax_auth_changeAuthenticationInformation',
     array('authPluginId', 'oldAuthInfo', 'newAuthInfo', 'recoveryToken'),
     'Permission::checkAdminUser'
 );

@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Get info for auth plugins the user can use to authenticate for a specific password
@@ -9,7 +9,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @param integer $passwordId - the id of the password
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPluginsInfo($passwordId)
+function package_sequry_core_ajax_passwords_getAvailableAuthPluginsInfo($passwordId)
 {
     $passwordId              = (int)$passwordId;
     $availableAuthPluginInfo = array();
@@ -17,7 +17,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPlugin
     $authPlugins             = $SecurityClass->getAuthPlugins();
     $CryptoUser              = CryptoActors::getCryptoUser();
 
-    /** @var \Pcsg\GroupPasswordManager\Security\Authentication\Plugin $AuthPlugin */
+    /** @var \Sequry\Core\Security\Authentication\Plugin $AuthPlugin */
     foreach ($authPlugins as $AuthPlugin) {
         $unavailablePasswordIds = $CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin);
 
@@ -33,7 +33,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPlugin
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getAvailableAuthPluginsInfo',
+    'package_sequry_core_ajax_passwords_getAvailableAuthPluginsInfo',
     array('passwordId'),
     'Permission::checkAdminUser'
 );

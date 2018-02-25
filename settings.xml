@@ -28,7 +28,7 @@
 
         <window>
             <title>
-                <locale group="pcsg/grouppasswordmanager" var="settings.title" />
+                <locale group="sequry/core" var="settings.title" />
             </title>
             <params>
                 <icon>fa fa-diamond</icon>
@@ -37,69 +37,69 @@
             <categories>
                 <category name="module_settings">
                     <text>
-                        <locale group="pcsg/grouppasswordmanager" var="settings.category.module_settings.title" />
+                        <locale group="sequry/core" var="settings.category.module_settings.title" />
                     </text>
                     <icon>fa fa-cogs</icon>
 
                     <settings title="module_settings" name="module_settings">
                         <title>
-                            <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.title" />
+                            <locale group="sequry/core" var="settings.module_settings.title" />
                         </title>
 
                         <input conf="settings.auth_ttl" type="number">
                             <text>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.title" />
+                                <locale group="sequry/core" var="settings.module_settings.auth_ttl.title" />
                             </text>
                             <description>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.auth_ttl.description" />
+                                <locale group="sequry/core" var="settings.module_settings.auth_ttl.description" />
                             </description>
                         </input>
 
-                        <input conf="settings.defaultSecurityClassId" type="number" data-qui="package/pcsg/grouppasswordmanager/bin/controls/settings/DefaultSecurityClass">
+                        <input conf="settings.defaultSecurityClassId" type="number" data-qui="package/sequry/core/bin/controls/settings/DefaultSecurityClass">
                             <text>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.defaultSecurityClassId.title" />
+                                <locale group="sequry/core" var="settings.module_settings.defaultSecurityClassId.title" />
                             </text>
                             <description>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.defaultSecurityClassId.description" />
+                                <locale group="sequry/core" var="settings.module_settings.defaultSecurityClassId.description" />
                             </description>
                         </input>
 
                         <select conf="settings.actorTypePasswordCreate">
                             <text>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.title" />
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.title" />
                             </text>
                             <description>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.description" />
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.description" />
                             </description>
                             <option value="users">
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.users" />
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.users" />
                             </option>
                             <option value="users_eligible">
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.users_eligible" />
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.users_eligible" />
                             </option>
                             <option value="groups">
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.groups" />
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.groups" />
                             </option>
                             <option value="groups_eligible">
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.actorTypePasswordCreate.option.groups_eligible" />
+                                <locale group="sequry/core" var="settings.module_settings.actorTypePasswordCreate.option.groups_eligible" />
                             </option>
                         </select>
 
                         <input conf="settings.showPasswordLinkVHostSelect" type="checkbox">
                             <text>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.title" />
+                                <locale group="sequry/core" var="settings.module_settings.showPasswordLinkVHostSelect.title" />
                             </text>
                             <description>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.showPasswordLinkVHostSelect.description" />
+                                <locale group="sequry/core" var="settings.module_settings.showPasswordLinkVHostSelect.description" />
                             </description>
                         </input>
 
                         <input conf="settings.reEncryptEnabled" type="checkbox">
                             <text>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.reEncryptEnabled.title" />
+                                <locale group="sequry/core" var="settings.module_settings.reEncryptEnabled.title" />
                             </text>
                             <description>
-                                <locale group="pcsg/grouppasswordmanager" var="settings.module_settings.reEncryptEnabled.description" />
+                                <locale group="sequry/core" var="settings.module_settings.reEncryptEnabled.description" />
                             </description>
                         </input>
 

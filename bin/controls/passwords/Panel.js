@@ -1,10 +1,10 @@
 /**
  * Password listing and CRUD operations
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel
+ * @module package/sequry/core/bin/controls/passwords/Panel
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
+define('package/sequry/core/bin/controls/passwords/Panel', [
 
     'qui/QUI',
     'qui/controls/desktop/Panel',
@@ -20,23 +20,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
     'controls/grid/Grid',
 
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/Actors',
-    'package/pcsg/grouppasswordmanager/bin/Categories',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Create',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/View',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
-    'package/pcsg/grouppasswordmanager/bin/controls/password/link/List',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwords/Search',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Actors',
+    'package/sequry/core/bin/Categories',
+    'package/sequry/core/bin/controls/password/Create',
+    'package/sequry/core/bin/controls/password/View',
+    'package/sequry/core/bin/controls/password/Share',
+    'package/sequry/core/bin/controls/password/Edit',
+    'package/sequry/core/bin/controls/password/link/List',
+    'package/sequry/core/bin/controls/passwords/Search',
+    'package/sequry/core/bin/controls/auth/recovery/CodePopup',
+    'package/sequry/core/bin/controls/categories/public/Select',
+    'package/sequry/core/bin/controls/categories/private/Select',
 
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel.css'
+    'css!package/sequry/core/bin/controls/passwords/Panel.css'
 
 ], function (QUI, QUIPanel, QUISeparator, QUIButton, QUISelect, QUILoader, QUIPopup, QUIConfirm,
              QUISiteMap, QUISiteMapItem, Grid, Passwords, Authentication, Actors, Categories,
@@ -44,12 +44,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
              RecoveryCodePopup, CategorySelect, CategorySelectPrivate, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIPanel,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel',
+        Type   : 'package/sequry/core/bin/controls/passwords/Panel',
 
         options: {
             passwordId: false, // immediately open password on inject
@@ -1378,7 +1378,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel', [
 
                         Sheet.addButton(
                             new QUIButton({
-                                text     : QUILocale.get('pcsg/grouppasswordmanager', 'gpm.passwords.panel.btn.search'),
+                                text     : QUILocale.get('sequry/core', 'gpm.passwords.panel.btn.search'),
                                 textimage: 'fa fa-search',
                                 events   : {
                                     onClick: function () {

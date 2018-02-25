@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\PasswordLink;
-use Pcsg\GroupPasswordManager\Constants\Settings;
+use Sequry\Core\PasswordLink;
+use Sequry\Core\Constants\Settings;
 
 /**
  * Get list of VHosts
@@ -9,10 +9,10 @@ use Pcsg\GroupPasswordManager\Constants\Settings;
  * @return array
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_link_getVHostList',
+    'package_sequry_core_ajax_passwords_link_getVHostList',
     function () {
         // check if VHost selection is enabled
-        $Conf = QUI::getPackage('pcsg/grouppasswordmanager')->getConfig();
+        $Conf = QUI::getPackage('sequry/core')->getConfig();
 
         $VhostManager = new \QUI\System\VhostManager();
         $validVhosts  = array();

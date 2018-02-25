@@ -1,13 +1,13 @@
 /**
  * Control for changing authentication information
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/Change
+ * @module package/sequry/core/bin/controls/auth/Change
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded [this] - fires when control has finished loading
  * @event onFinish [this] - fires if the user successfully committed new auth information
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
+define('package/sequry/core/bin/controls/auth/Change', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
@@ -16,22 +16,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/Change', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/controls/auth/recovery/CodePopup',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/Change.css'
+    'text!package/sequry/core/bin/controls/auth/Change.html',
+    'css!package/sequry/core/bin/controls/auth/Change.css'
 
 ], function (QUIControl, QUIButton, QUILoader, QUILocale, Mustache,
              Authentication, RecoveryCodePopup, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/Change',
+        Type   : 'package/sequry/core/bin/controls/auth/Change',
 
         Binds: [
             '$onInject',

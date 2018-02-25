@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Get security class id of password
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param integer $passwordId - the id of the password object
  * @return int
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassId($passwordId)
+function package_sequry_core_ajax_passwords_getSecurityClassId($passwordId)
 {
     $securityClassIds = Passwords::getSecurityClassIds(array($passwordId));
 
@@ -20,7 +20,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassId($pa
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassId',
+    'package_sequry_core_ajax_passwords_getSecurityClassId',
     array('passwordId'),
     'Permission::checkAdminUser'
 );

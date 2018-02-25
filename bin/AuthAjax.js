@@ -2,14 +2,14 @@
  * AuthAjax
  * Perform asynchronous requests with preceding authentication
  *
- * @module package/pcsg/grouppasswordmanager/bin/Authentication
+ * @module package/sequry/core/bin/Authentication
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require package/pcsg/grouppasswordmanager/bin/classes/AuthAjax
+ * @require package/sequry/core/bin/classes/AuthAjax
  */
-define('package/pcsg/grouppasswordmanager/bin/AuthAjax', [
+define('package/sequry/core/bin/AuthAjax', [
 
-    'package/pcsg/grouppasswordmanager/bin/classes/AuthAjax'
+    'package/sequry/core/bin/classes/AuthAjax'
 
 ], function (AuthAjaxClass) {
     "use strict";

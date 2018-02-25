@@ -1,22 +1,22 @@
 /**
  * Control authentication for auth plugin synchronisation
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate
+ * @module package/sequry/core/bin/controls/auth/SyncAuthenticate
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate.css
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/Authentication
+ * @require css!package/sequry/core/bin/controls/auth/SyncAuthenticate.css
  *
  * @event onFinish
  * @event onAbort - on AuthPopup user close
  * @event onClose - on AuthPopup close
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
+define('package/sequry/core/bin/controls/auth/SyncAuthenticate', [
 
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate',
+    'package/sequry/core/bin/controls/auth/Authenticate',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate.css'
+    'css!package/sequry/core/bin/controls/auth/SyncAuthenticate.css'
 
 ], function (AuthenticationControl) {
     "use strict";
@@ -24,7 +24,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate', [
     return new Class({
 
         Extends: AuthenticationControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/SyncAuthenticate',
+        Type   : 'package/sequry/core/bin/controls/auth/SyncAuthenticate',
 
         Binds: [
             '$onLoaded'

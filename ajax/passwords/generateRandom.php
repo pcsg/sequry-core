@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Utils;
+use Sequry\Core\Security\Utils;
 
 /**
  * Generate a random password
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Utils;
  * @return string
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_generateRandom',
+    'package_sequry_core_ajax_passwords_generateRandom',
     function () {
         return Utils::generatePassword();
     },

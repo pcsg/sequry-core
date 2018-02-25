@@ -1,14 +1,14 @@
 /**
  * Passwords Handler
  *
- * @module package/pcsg/grouppasswordmanager/bin/Passwords
+ * @module package/sequry/core/bin/Passwords
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
+ * @require package/sequry/core/bin/classes/Passwords
  */
-define('package/pcsg/grouppasswordmanager/bin/Passwords', [
+define('package/sequry/core/bin/Passwords', [
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Passwords'
+    'package/sequry/core/bin/classes/Passwords'
 
 ], function (PasswordsHandler) {
     "use strict";

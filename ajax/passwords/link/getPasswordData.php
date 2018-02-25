@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Get list of all PasswordLinks for a specific password
@@ -13,7 +13,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @throws QUI\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_link_getPasswordData',
+    'package_sequry_core_ajax_passwords_link_getPasswordData',
     function ($passwordId) {
         $Password = Passwords::get((int)$passwordId);
 

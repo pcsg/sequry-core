@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Create a new security class
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @param integer $id - security class id
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass($id)
+function package_sequry_core_ajax_auth_deleteSecurityClass($id)
 {
     $SecurityClass = Authentication::getSecurityClass((int)$id);
 
@@ -17,7 +17,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass($id)
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.auth.deleteSecurityClass.error',
                 array(
                     'error' => $Exception->getMessage()
@@ -28,13 +28,13 @@ function package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass($id)
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::writeRecursive(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass'
+            'AJAX :: package_sequry_core_ajax_auth_deleteSecurityClass'
         );
         QUI\System\Log::writeException($Exception);
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -44,7 +44,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass($id)
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'message.ajax.auth.deleteSecurityClass.success',
             array(
                 'securityClassId'    => $SecurityClass->getId(),
@@ -57,7 +57,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass($id)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_deleteSecurityClass',
+    'package_sequry_core_ajax_auth_deleteSecurityClass',
     array('id'),
     'Permission::checkAdminUser'
 );

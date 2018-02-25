@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Handler\Categories;
+use Sequry\Core\Handler\Categories;
 
 /**
  * Delete password category
@@ -9,14 +9,14 @@ use Pcsg\GroupPasswordManager\Handler\Categories;
  * @return bool - success
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_delete',
+    'package_sequry_core_ajax_passwords_categories_private_delete',
     function ($id) {
         try {
             Categories::deletePrivate((int)$id);
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.ajax.passwords.categories.private.delete.error',
                     array(
                         'error' => $Exception->getMessage()
@@ -27,13 +27,13 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_delete'
+                'AJAX :: package_sequry_core_ajax_passwords_categories_private_delete'
                 . ' -> ' . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -43,7 +43,7 @@ QUI::$Ajax->registerFunction(
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.passwords.categories.private.delete.success'
             )
         );

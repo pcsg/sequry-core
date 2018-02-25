@@ -1,42 +1,42 @@
 /**
  * Control for sharing new password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/Share
+ * @module package/sequry/core/bin/controls/password/Share
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require qui/controls/buttons/Button
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
- * @require package/pcsg/grouppasswordmanager/bin/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/Select
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css
+ * @require package/sequry/core/bin/Authentication
+ * @require package/sequry/core/bin/Passwords
+ * @require package/sequry/core/bin/controls/actors/Select
+ * @require css!package/sequry/core/bin/controls/password/Share.css
  *
  * @event onLoaded
  * @event onAuthAbort - on user authentication abort
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/Share', [
+define('package/sequry/core/bin/controls/password/Share', [
 
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/controls/actors/Select',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/password/Share.css'
+    'css!package/sequry/core/bin/controls/password/Share.css'
 
 ], function (QUI, QUIControl, QUIButton, QUILocale, Passwords, ActorSelect) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Share',
+        Type   : 'package/sequry/core/bin/controls/password/Share',
 
         Binds: [
             '$onInject',

@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Handler\Categories;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Handler\Categories;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Edit a password object
@@ -13,7 +13,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  *
  * @throws QUI\Exception
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $passwordData)
+function package_sequry_core_ajax_passwords_edit($passwordId, $passwordData)
 {
     $passwordId = (int)$passwordId;
 
@@ -30,7 +30,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
             if (!$Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
                 QUI::getMessagesHandler()->addAttention(
                     QUI::getLocale()->get(
-                        'pcsg/grouppasswordmanager',
+                        'sequry/core',
                         'message.passwords.edit.private.categories.no.access',
                         array(
                             'passwordId' => $passwordId
@@ -44,7 +44,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'success.password.edit',
                 array(
                     'passwordId' => $passwordId
@@ -61,7 +61,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.password.edit',
                 array(
                     'error'      => $Exception->getMessage(),
@@ -73,13 +73,13 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_edit -> '
+            'AJAX :: package_sequry_core_ajax_passwords_edit -> '
             . $Exception->getMessage()
         );
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -89,7 +89,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_edit($passwordId, $pas
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_edit',
+    'package_sequry_core_ajax_passwords_edit',
     array('passwordId', 'passwordData'),
     'Permission::checkAdminUser'
 );

@@ -1,8 +1,8 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
-use Pcsg\GroupPasswordManager\Security\HiddenString;
+use \Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Recovery;
+use Sequry\Core\Security\HiddenString;
 
 /**
  * Register current session user and create a keypair for an authentication plugin
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
  * @param string $registrationData - authentication data
  * @return false|array - recovery code data; false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId, $registrationData)
+function package_sequry_core_ajax_auth_registerUser($authPluginId, $registrationData)
 {
     try {
         // register with auth plugin
@@ -23,7 +23,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.auth.registeruser',
                 array(
                     'error' => $Exception->getMessage()
@@ -36,7 +36,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'success.auth.registeruser'
         )
     );
@@ -45,7 +45,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_registerUser($authPluginId,
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_registerUser',
+    'package_sequry_core_ajax_auth_registerUser',
     array('authPluginId', 'registrationData'),
     'Permission::checkAdminUser'
 );
