@@ -23,7 +23,7 @@
     "ext-bcmath": "*",
     "npm-asset\/clipboard": "1.5.16",
     "sequry/auth-password": ">=1.0|dev-master|dev-dev",
-    "pcsg/template-sequry": ">=1.0|dev-master|dev-dev"
+    "sequry/template": ">=1.0|dev-master|dev-dev"
   },
   "autoload": {
     "psr-0": {
