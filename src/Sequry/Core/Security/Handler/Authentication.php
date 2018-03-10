@@ -1,13 +1,12 @@
 <?php
 
 /**
- * This file contains \Sequry\Core\Password
+ * This file contains \Sequry\Core\Security\Handler\Authentication
  */
 
 namespace Sequry\Core\Security\Handler;
 
-use Composer\Cache;
-use Pcsg\GpmAuthPassword\AuthPlugin;
+use Sequry\Auth\Password\AuthPlugin;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Actors\CryptoUser;
@@ -19,7 +18,6 @@ use Sequry\Core\Security\Interfaces\IAuthPlugin;
 use Sequry\Core\Security\KDF;
 use Sequry\Core\Security\Keys\AuthKeyPair;
 use Sequry\Core\Security\Keys\Key;
-use Sequry\Core\Security\Keys\KeyPair;
 use Sequry\Core\Security\SymmetricCrypto;
 use QUI;
 use Sequry\Core\Security\Authentication\Cache as AuthCache;
