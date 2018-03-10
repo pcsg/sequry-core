@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Get group administration information for current session user
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @return array
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_users_getGroupAdminStatus',
+    'package_sequry_core_ajax_actors_users_getGroupAdminStatus',
     function () {
         $CryptoUser  = CryptoActors::getCryptoUser();
         $adminGroups = $CryptoUser->getAdminGroups();

@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Handler\Categories;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Handler\Categories;
+use Sequry\Core\Security\Handler\Passwords;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -12,7 +12,7 @@ use QUI\Utils\Security\Orthos;
  * @return bool - success
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_setToPassword',
+    'package_sequry_core_ajax_passwords_categories_private_setToPassword',
     function ($passwordId, $categoryIds) {
         $categoryIds = Orthos::clearArray(json_decode($categoryIds, true));
 
@@ -22,7 +22,7 @@ QUI::$Ajax->registerFunction(
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.ajax.passwords.categories.private.setToPassword.error',
                     array(
                         'error'      => $Exception->getMessage(),
@@ -34,13 +34,13 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_setToPassword -> '
+                'AJAX :: package_sequry_core_ajax_passwords_categories_private_setToPassword -> '
                 . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -50,7 +50,7 @@ QUI::$Ajax->registerFunction(
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.passwords.categories.private.setToPassword.success',
                 array(
                     'passwordId' => $passwordId

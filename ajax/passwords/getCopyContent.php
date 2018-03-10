@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler as TypesHandler;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\PasswordTypes\Handler as TypesHandler;
 
 /**
  * Get copy content of a password
@@ -9,7 +9,7 @@ use Pcsg\GroupPasswordManager\PasswordTypes\Handler as TypesHandler;
  * @param integer $passwordId - ID of password
  * @return string - copied content
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getCopyContent($passwordId)
+function package_sequry_core_ajax_passwords_getCopyContent($passwordId)
 {
     $passwordId = (int)$passwordId;
     $Password   = Passwords::get($passwordId);
@@ -19,7 +19,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getCopyContent($passwo
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getCopyContent',
+    'package_sequry_core_ajax_passwords_getCopyContent',
     array('passwordId'),
     'Permission::checkAdminUser'
 );

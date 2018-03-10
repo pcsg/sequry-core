@@ -1,7 +1,7 @@
 /**
  * Control for authenticating for all available auth plugins
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll
+ * @module package/sequry/core/bin/controls/auth/AuthenticateAll
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded
@@ -9,26 +9,26 @@
  * @event onClose - on AuthPopup close
  * @event onSubmit [AuthData] - if the user submits the auth form
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll', [
+define('package/sequry/core/bin/controls/auth/AuthenticateAll', [
 
     'qui/controls/Control',
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication'
+    'package/sequry/core/bin/Authentication'
 
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll.css'
+    //'css!package/sequry/core/bin/controls/auth/AuthenticateAll.css'
 
 ], function (QUIControl, QUIPopup, QUIButton, QUILocale, Authentication) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/AuthenticateAll',
+        Type   : 'package/sequry/core/bin/controls/auth/AuthenticateAll',
 
         Binds: [
             '$onInject',

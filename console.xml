@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <console>
-    <tool exec="\Pcsg\GroupPasswordManager\Console\Patch" />
-    <tool exec="\Pcsg\GroupPasswordManager\Console\Utils" />
+    <tool exec="\Sequry\Core\Console\Patch" />
+    <tool exec="\Sequry\Core\Console\Utils" />
 </console>

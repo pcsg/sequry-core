@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Add an admin user to a group
@@ -12,17 +12,17 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @return bool - success
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_groups_addAdminUser',
+    'package_sequry_core_ajax_actors_groups_addAdminUser',
     function ($groupId, $userId) {
         try {
             $CryptoGroup = CryptoActors::getCryptoGroup((int)$groupId);
             $CryptoUser  = CryptoActors::getCryptoUser((int)$userId);
 
             $CryptoGroup->addAdminUser($CryptoUser);
-        } catch (\Pcsg\GroupPasswordManager\Exception\Exception $Exception) {
+        } catch (\Sequry\Core\Exception\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.ajax.actors.groups.addAdminUser.error',
                     array(
                         'error' => $Exception->getMessage()
@@ -36,7 +36,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -46,7 +46,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.actors.groups.addAdminUser.success'
             )
         );

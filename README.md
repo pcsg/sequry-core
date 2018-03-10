@@ -5,7 +5,7 @@ Passwort-Manager für Gruppen und Benutzer
 
 Paketname:
 
-    pcsg/grouppasswordmanager
+    sequry/core
 
 
 Features (Funktionen)
@@ -23,7 +23,7 @@ Passwort-Manager zur Verwaltung von Passwörtern bzw. geheimen Daten:
 Installation
 ------------
 
-Der Paketname ist: pcsg/grouppasswordmanager
+Der Paketname ist: sequry/core
 
 
 Abhängigkeiten
@@ -52,8 +52,8 @@ Abhängigkeiten
 Mitwirken
 ----------
 
-- Issue Tracker:    https://dev.quiqqer.com/pcsg/grouppasswordmanager/issues
-- Source Code:      https://dev.quiqqer.com/pcsg/grouppasswordmanager/tree/dev
+- Issue Tracker:    https://dev.quiqqer.com/sequry/core/issues
+- Source Code:      https://dev.quiqqer.com/sequry/core/tree/dev
 
 
 Support

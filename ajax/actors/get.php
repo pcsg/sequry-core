@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Constants\Tables;
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Constants\Tables;
+use Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Get password actor info (user/group)
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @param string $type - "user" or "group"
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_get($id, $type)
+function package_sequry_core_ajax_actors_get($id, $type)
 {
     $info = array();
 
@@ -83,7 +83,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_get($id, $type)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_get',
+    'package_sequry_core_ajax_actors_get',
     array('id', 'type'),
     'Permission::checkAdminUser'
 );

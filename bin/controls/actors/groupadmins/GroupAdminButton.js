@@ -1,10 +1,10 @@
 /**
  * Button for Group administrators
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupAdminButton
+ * @module package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupAdminButton', [
+define('package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton', [
 
     'qui/controls/buttons/Button',
 
@@ -13,12 +13,12 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupA
 ], function (QUIButton, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIButton,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupAdminButton',
+        Type   : 'package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton',
 
         Binds: [
             'actorSearch',
@@ -49,7 +49,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupA
          */
         $onClick: function () {
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel',
+                'package/sequry/core/bin/controls/actors/groupadmins/Panel',
                 'utils/Panels'
             ], function (GroupAdminPanel, PanelUtils) {
                 var GroupAdminPanelInstance = new GroupAdminPanel();

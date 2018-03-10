@@ -1,6 +1,6 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use \Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Get id, name and description of a security class
@@ -8,7 +8,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @param integer $securityClassId - id of security class
  * @return array - id, name and description
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo($securityClassId)
+function package_sequry_core_ajax_auth_getSecurityClassInfo($securityClassId)
 {
     $SecurityClass = Authentication::getSecurityClass($securityClassId);
 
@@ -23,7 +23,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo($secur
 
     $authPlugins = $SecurityClass->getAuthPlugins();
 
-    /** @var \Pcsg\GroupPasswordManager\Security\Authentication\Plugin $AuthPlugin */
+    /** @var \Sequry\Core\Security\Authentication\Plugin $AuthPlugin */
     foreach ($authPlugins as $AuthPlugin) {
         $info['authPlugins'][] = array(
             'id'          => $AuthPlugin->getId(),
@@ -36,7 +36,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo($secur
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getSecurityClassInfo',
+    'package_sequry_core_ajax_auth_getSecurityClassInfo',
     array('securityClassId'),
     'Permission::checkAdminUser'
 );

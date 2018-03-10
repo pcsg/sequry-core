@@ -1,10 +1,10 @@
 /**
  * Basic authentication parent control for AuthPlugins
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/authPlugins/ChangeAuth
+ * @module package/sequry/core/bin/controls/authPlugins/ChangeAuth
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/authPlugins/ChangeAuth', [
+define('package/sequry/core/bin/controls/authPlugins/ChangeAuth', [
 
     'qui/controls/Control'
 
@@ -14,7 +14,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/authPlugins/ChangeAuth', 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/authPlugins/ChangeAuth',
+        Type   : 'package/sequry/core/bin/controls/authPlugins/ChangeAuth',
 
         Binds: [
             '$onImport',

@@ -10,10 +10,10 @@
     <window>
         <tab name="gpm">
             <text>
-                <locale group="pcsg/grouppasswordmanager" var="user.gpm.title"/>
+                <locale group="sequry/core" var="user.gpm.title"/>
             </text>
             <image>fa fa-diamond</image>
-            <template>OPT_DIR/pcsg/grouppasswordmanager/templates/gpm_user.html</template>
+            <template>OPT_DIR/sequry/core/templates/gpm_user.html</template>
         </tab>
     </window>
 
@@ -21,7 +21,7 @@
         <tab name="gpm_user_profile">
             <text>Produkte</text>
             <image>fa fa-shopping-bag</image>
-            <template>OPT_DIR/pcsg/grouppasswordmanager/templates/user_profile.html</template>
+            <template>OPT_DIR/sequry/core/templates/user_profile.html</template>
         </tab>
     </profile>
 </user>

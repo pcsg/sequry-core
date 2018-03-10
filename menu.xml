@@ -2,31 +2,31 @@
 <menu>
     <item parent="/apps/"
           name="passwords"
-          require="package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel"
+          require="package/sequry/core/bin/controls/passwords/Panel"
           icon="fa fa-diamond"
     >
-        <locale group="pcsg/grouppasswordmanager" var="menu.apps.gpm.title"/>
+        <locale group="sequry/core" var="menu.apps.gpm.title"/>
     </item>
 
     <item parent="/extras/"
           name="gpmsettings"
           icon="fa fa-diamond"
     >
-        <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.title"/>
+        <locale group="sequry/core" var="menu.extras.gpm.title"/>
     </item>
     <item parent="/extras/gpmsettings/"
           name="gpmsettingsauth"
-          require="package/pcsg/grouppasswordmanager/bin/controls/auth/Panel"
+          require="package/sequry/core/bin/controls/auth/Panel"
           icon="fa fa-male"
     >
-        <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.auth.title"/>
+        <locale group="sequry/core" var="menu.extras.gpm.auth.title"/>
     </item>
     <item parent="/extras/gpmsettings/"
           name="gpmsettingssecurityclasses"
-          require="package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Panel"
+          require="package/sequry/core/bin/controls/securityclasses/Panel"
           icon="fa fa-lock"
     >
-        <locale group="pcsg/grouppasswordmanager" var="menu.extras.gpm.securityclasses.title"/>
+        <locale group="sequry/core" var="menu.extras.gpm.securityclasses.title"/>
     </item>
 
 </menu>

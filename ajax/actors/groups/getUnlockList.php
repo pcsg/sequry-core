@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\CryptoActors;
 use QUI\Utils\Security\Orthos;
 use QUI\Utils\Grid;
 
@@ -11,7 +11,7 @@ use QUI\Utils\Grid;
  * @return array|false - false on error or groupadmin list otherwise
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_groups_getUnlockList',
+    'package_sequry_core_ajax_actors_groups_getUnlockList',
     function ($searchParams) {
         try {
             $CryptoUser   = CryptoActors::getCryptoUser();
@@ -26,10 +26,10 @@ QUI::$Ajax->registerFunction(
                 $list,
                 $CryptoUser->getAdminGroupsUnlockList($searchParams, true)
             );
-        } catch (\Pcsg\GroupPasswordManager\Exception\Exception $Exception) {
+        } catch (\Sequry\Core\Exception\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.ajax.actors.groups.getUnlockList.error',
                     array(
                         'error' => $Exception->getMessage()
@@ -40,14 +40,14 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_actors_groups_getUnlockList'
+                'AJAX :: package_sequry_core_ajax_actors_groups_getUnlockList'
             );
 
             QUI\System\Log::writeException($Exception);
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );

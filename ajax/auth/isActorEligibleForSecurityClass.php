@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Checks if the given user is eligible for the given security class
@@ -12,7 +12,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @return array
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_isActorEligibleForSecurityClass',
+    'package_sequry_core_ajax_auth_isActorEligibleForSecurityClass',
     function ($actorId, $actorType, $securityClassId) {
         try {
             $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
@@ -26,12 +26,12 @@ QUI::$Ajax->registerFunction(
             }
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_isActorEligibleForSecurityClass -> ' . $Exception->getMessage()
+                'AJAX :: package_sequry_core_ajax_auth_isActorEligibleForSecurityClass -> ' . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );

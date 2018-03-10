@@ -4,13 +4,13 @@
     <panels>
 
         <!-- Password categories -->
-        <panel require="package/pcsg/grouppasswordmanager/bin/controls/categories/Panel">
+        <panel require="package/sequry/core/bin/controls/categories/Panel">
             <image>fa fa-book</image>
             <title>
-                <locale group="pcsg/grouppasswordmanager" var="panels.categories.title" />
+                <locale group="sequry/core" var="panels.categories.title" />
             </title>
             <text>
-                <locale group="pcsg/grouppasswordmanager" var="panels.categories.text" />
+                <locale group="sequry/core" var="panels.categories.text" />
             </text>
         </panel>
 

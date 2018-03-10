@@ -1,6 +1,6 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use \Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Get id, title and description of a authentication plugin
@@ -8,7 +8,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @param integer $authPluginId - id of authentication plugin
  * @return array - id, title and description
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginInfo($authPluginId)
+function package_sequry_core_ajax_auth_getAuthPluginInfo($authPluginId)
 {
     $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
 
@@ -20,7 +20,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginInfo($authPlug
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginInfo',
+    'package_sequry_core_ajax_auth_getAuthPluginInfo',
     array('authPluginId'),
     'Permission::checkAdminUser'
 );

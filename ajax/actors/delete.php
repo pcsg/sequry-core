@@ -1,6 +1,6 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use \Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Delete password actor (user/group)
@@ -9,7 +9,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @param string $type - "user" or "group"
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_actors_delete($id, $type)
+function package_sequry_core_ajax_actors_delete($id, $type)
 {
     switch ($type) {
         case 'user':
@@ -27,7 +27,7 @@ function package_pcsg_grouppasswordmanager_ajax_actors_delete($id, $type)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_actors_delete',
+    'package_sequry_core_ajax_actors_delete',
     array('id', 'type'),
     'Permission::checkAdminUser'
 );

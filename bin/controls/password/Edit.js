@@ -1,14 +1,14 @@
 /**
  * Control for editing a password
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/password/Edit
+ * @module package/sequry/core/bin/controls/password/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded
  * @event onAuthAbort - on user authentication abort
  * @event onClose (this) - if password is closed
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
+define('package/sequry/core/bin/controls/password/Edit', [
 
     'qui/QUI',
     'qui/controls/Control',
@@ -16,30 +16,30 @@ define('package/pcsg/grouppasswordmanager/bin/controls/password/Edit', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Actors',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/SelectSlider',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Select',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Select',
+    'package/sequry/core/bin/Actors',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/controls/securityclasses/SelectSlider',
+    'package/sequry/core/bin/controls/actors/Select',
+    'package/sequry/core/bin/controls/passwordtypes/Content',
+    'package/sequry/core/bin/controls/categories/public/Select',
+    'package/sequry/core/bin/controls/categories/private/Select',
 
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.html'
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/password/Edit.css'
+    'text!package/sequry/core/bin/controls/password/Edit.html'
+    //'css!package/sequry/core/bin/controls/password/Edit.css'
 
 ], function (QUI, QUIControl, QUILoader, QUILocale, Mustache, Actors, Authentication, Passwords,
              SecurityClassSelect, ActorSelect, PasswordContent,
              CategorySelect, CategorySelectPrivate, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/password/Edit',
+        Type   : 'package/sequry/core/bin/controls/password/Edit',
 
         Binds: [
             '$onInject',

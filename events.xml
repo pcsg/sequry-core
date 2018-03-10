@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <events>
 
-    <event on="onPackageSetup" fire="\Pcsg\GroupPasswordManager\Events::onPackageSetup" />
-    <event on="onUserLogin" fire="\Pcsg\GroupPasswordManager\Events::onUserLogin" />
-    <event on="onUserSaveBegin" fire="\Pcsg\GroupPasswordManager\Events::onUserSaveBegin" />
-    <event on="onUserDelete" fire="\Pcsg\GroupPasswordManager\Events::onUserDelete" />
-    <event on="onGroupDelete" fire="\Pcsg\GroupPasswordManager\Events::onGroupDelete" />
-    <event on="onAdminLoad" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoad" />
-    <event on="onAdminLoadFooter" fire="\Pcsg\GroupPasswordManager\Events::onAdminLoadFooter" />
-    <event on="onAjaxCallBefore" fire="\Pcsg\GroupPasswordManager\Events::onAjaxCallBefore" />
-    <event on="onGroupCreate" fire="\Pcsg\GroupPasswordManager\Events::onGroupCreate" />
+    <event on="onPackageSetup" fire="\Sequry\Core\Events::onPackageSetup" />
+    <event on="onUserLogin" fire="\Sequry\Core\Events::onUserLogin" />
+    <event on="onUserSaveBegin" fire="\Sequry\Core\Events::onUserSaveBegin" />
+    <event on="onUserDelete" fire="\Sequry\Core\Events::onUserDelete" />
+    <event on="onGroupDelete" fire="\Sequry\Core\Events::onGroupDelete" />
+    <event on="onAdminLoad" fire="\Sequry\Core\Events::onAdminLoad" />
+    <event on="onAdminLoadFooter" fire="\Sequry\Core\Events::onAdminLoadFooter" />
+    <event on="onAjaxCallBefore" fire="\Sequry\Core\Events::onAjaxCallBefore" />
+    <event on="onGroupCreate" fire="\Sequry\Core\Events::onGroupCreate" />
 
 </events>

@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
+use Sequry\Core\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Exception\InvalidAuthDataException;
 
 /**
  * Get edit data from password object
@@ -10,7 +10,7 @@ use Pcsg\GroupPasswordManager\Exception\InvalidAuthDataException;
  * @param integer $passwordId - ID of password
  * @return array|false - password data or false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
+function package_sequry_core_ajax_passwords_get($passwordId)
 {
     $passwordId = (int)$passwordId;
 
@@ -29,7 +29,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.passwords.get.error',
                 array(
                     'error'      => $Exception->getMessage(),
@@ -41,12 +41,12 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_get -> ' . $Exception->getMessage()
+            'AJAX :: package_sequry_core_ajax_passwords_get -> ' . $Exception->getMessage()
         );
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -56,7 +56,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_get($passwordId)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_get',
+    'package_sequry_core_ajax_passwords_get',
     array('passwordId'),
     'Permission::checkAdminUser'
 );

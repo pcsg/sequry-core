@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
+use Sequry\Core\PasswordTypes\Handler;
 
 /**
  * Get edit template
@@ -10,13 +10,13 @@ use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
  *
  * @throws QUI\Exception
  */
-function package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml($type)
+function package_sequry_core_ajax_passwordtypes_getEditHtml($type)
 {
     return Handler::getEditTemplate($type);
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml',
+    'package_sequry_core_ajax_passwordtypes_getEditHtml',
     array('type'),
     'Permission::checkAdminUser'
 );

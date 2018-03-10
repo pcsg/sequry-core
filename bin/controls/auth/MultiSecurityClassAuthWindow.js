@@ -1,14 +1,14 @@
 /**
  * Window for authentication with multiple security classes
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow
+ * @module package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onSubmit [AuthData, this]
  * @event onClose [this]
  * @event onAbort [this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow', [
+define('package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow', [
 
     'qui/QUI',
     'qui/controls/windows/Popup',
@@ -16,20 +16,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAu
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Authentication',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow.css'
+    'text!package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow.html',
+    'css!package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow.css'
 
 ], function (QUI, QUIPopup, QUIButton, QUILocale, Mustache, Authentication, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIPopup,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/MultiSecurityClassAuthWindow',
+        Type   : 'package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow',
 
         Binds: [
             '$onInject',

@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -11,7 +11,7 @@ use QUI\Utils\Security\Orthos;
  * @return bool - success
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_setToPasswords',
+    'package_sequry_core_ajax_passwords_categories_public_setToPasswords',
     function ($passwordIds, $categoryIds) {
         $passwordIds = Orthos::clearArray(json_decode($passwordIds, true));
         $categoryIds = Orthos::clearArray(json_decode($categoryIds, true));
@@ -29,13 +29,13 @@ QUI::$Ajax->registerFunction(
             }
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_setToPasswords -> '
+                'AJAX :: package_sequry_core_ajax_passwords_categories_public_setToPasswords -> '
                 . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -45,7 +45,7 @@ QUI::$Ajax->registerFunction(
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.passwords.categories.public.setToPasswords.success'
             )
         );

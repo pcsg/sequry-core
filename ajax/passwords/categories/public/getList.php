@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Handler\Categories;
+use Sequry\Core\Handler\Categories;
 
 /**
  * Get list of public password categories
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Handler\Categories;
  * @return array - public password categories
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_getList',
+    'package_sequry_core_ajax_passwords_categories_public_getList',
     function () {
         return Categories::getPublicList();
     },

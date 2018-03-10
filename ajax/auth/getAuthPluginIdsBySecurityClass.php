@@ -1,6 +1,6 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use \Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Get IDs of authentication plugins for SecurityClass(es)
@@ -9,7 +9,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @return array - IDs of authentication plugins per SecurityClass
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getAuthPluginIdsBySecurityClass',
+    'package_sequry_core_ajax_auth_getAuthPluginIdsBySecurityClass',
     function ($securityClassIds) {
         $authPluginIds    = array();
         $securityClassIds = json_decode($securityClassIds, true);

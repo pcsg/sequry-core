@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Create a new password object
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param string $passwordData - password data
  * @return false|integer - false on error, Password ID on success
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
+function package_sequry_core_ajax_passwords_create($passwordData)
 {
     $passwordData = json_decode($passwordData, true);
 
@@ -18,7 +18,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.password.create',
                 array(
                     'error' => $Exception->getMessage()
@@ -29,13 +29,13 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_create -> '
+            'AJAX :: package_sequry_core_ajax_passwords_create -> '
             . $Exception->getMessage()
         );
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -45,7 +45,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'success.password.create'
         )
     );
@@ -54,7 +54,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_create($passwordData)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_create',
+    'package_sequry_core_ajax_passwords_create',
     array('passwordData'),
     'Permission::checkAdminUser'
 );

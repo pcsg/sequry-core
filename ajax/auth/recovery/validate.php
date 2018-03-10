@@ -1,10 +1,10 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\Recovery;
-use Pcsg\GroupPasswordManager\Exception\Exception;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Recovery;
+use Sequry\Core\Exception\Exception;
 use QUI\Utils\Security\Orthos;
-use Pcsg\GroupPasswordManager\Security\HiddenString;
+use Sequry\Core\Security\HiddenString;
 
 /**
  * Send recovery token via mail
@@ -14,10 +14,10 @@ use Pcsg\GroupPasswordManager\Security\HiddenString;
  * @param string $code - Recovery code
  * @return bool - success
  *
- * @throws \Pcsg\GroupPasswordManager\Exception\Exception
+ * @throws \Sequry\Core\Exception\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_recovery_validate',
+    'package_sequry_core_ajax_auth_recovery_validate',
     function ($authPluginId, $token, $code) {
         $token = new HiddenString(Orthos::clear($token));
         $code  = new HiddenString(Orthos::clear($code));
@@ -32,14 +32,14 @@ QUI::$Ajax->registerFunction(
             throw $Exception;
         } catch (\Exception $Exception) {
             QUI\System\Log::writeRecursive(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_auth_recovery_validate'
+                'AJAX :: package_sequry_core_ajax_auth_recovery_validate'
             );
 
             QUI\System\Log::writeException($Exception);
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );

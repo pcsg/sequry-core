@@ -1,26 +1,26 @@
 /**
  * Select the default security class for new passwords
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/settings/DefaultSecurityClass
+ * @module package/sequry/core/bin/controls/settings/DefaultSecurityClass
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/Control
- * @require package/pcsg/grouppasswordmanager/bin/classes/Locations
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/settings/DefaultSecurityClass.css
+ * @require package/sequry/core/bin/classes/Locations
+ * @require css!package/sequry/core/bin/controls/settings/DefaultSecurityClass.css
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/settings/DefaultSecurityClass', [
+define('package/sequry/core/bin/controls/settings/DefaultSecurityClass', [
 
     'qui/controls/Control',
-    'package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select',
+    'package/sequry/core/bin/controls/securityclasses/Select',
 
-    //'css!package/pcsg/grouppasswordmanager/bin/controls/settings/DefaultSecurityClass.css'
+    //'css!package/sequry/core/bin/controls/settings/DefaultSecurityClass.css'
 
 ], function (QUIControl, SecurityClassSelect) {
     "use strict";
 
     return new Class({
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/settings/DefaultSecurityClass',
+        Type   : 'package/sequry/core/bin/controls/settings/DefaultSecurityClass',
 
         Binds: [
             '$onImport',

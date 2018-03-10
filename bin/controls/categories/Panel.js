@@ -1,7 +1,7 @@
 /**
  * Panel that combines different password list filters
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/categories/Panel
+ * @module package/sequry/core/bin/controls/categories/Panel
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/desktop/Panel
@@ -11,15 +11,15 @@
  * @require qui/controls/sitemap/Item
  * @require qui/controls/contextmenu/Item
  * @require qui/controls/contextmenu/Seperator
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/Filters
- * @require package/pcsg/grouppasswordmanager/bin/Passwords
+ * @require package/sequry/core/bin/controls/categories/public/Map
+ * @require package/sequry/core/bin/controls/categories/private/Map
+ * @require package/sequry/core/bin/controls/categories/Filters
+ * @require package/sequry/core/bin/Passwords
  * @requrie Ajax
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/Panel.css
+ * @require css!package/sequry/core/bin/controls/categories/Panel.css
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
+define('package/sequry/core/bin/controls/categories/Panel', [
 
     'qui/controls/desktop/Panel',
     'qui/controls/loader/Loader',
@@ -30,27 +30,27 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/Panel', [
     'qui/controls/contextmenu/Item',
     'qui/controls/contextmenu/Seperator',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/Filters',
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/sequry/core/bin/controls/categories/public/Map',
+    'package/sequry/core/bin/controls/categories/private/Map',
+    'package/sequry/core/bin/controls/categories/Filters',
+    'package/sequry/core/bin/Passwords',
 
     'Ajax',
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/categories/Panel.css'
+    'css!package/sequry/core/bin/controls/categories/Panel.css'
 
 ], function (QUIPanel, QUILoader, QUIConfirm, QUISiteMap, QUISiteMapItem,
              QUIContextMenuItem, QUIContextMenuSeparator, CategoryMap,
              CategoryMapPrivate, Filters, Passwords, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIPanel,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel',
+        Type   : 'package/sequry/core/bin/controls/categories/Panel',
 
         Binds: [
             '$saveToggleStatus',

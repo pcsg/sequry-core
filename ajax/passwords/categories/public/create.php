@@ -1,7 +1,7 @@
 <?php
 
 use QUI\Utils\Security\Orthos;
-use Pcsg\GroupPasswordManager\Handler\Categories;
+use Sequry\Core\Handler\Categories;
 
 /**
  * Create new password category
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Handler\Categories;
  * @return bool - success
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_create',
+    'package_sequry_core_ajax_passwords_categories_public_create',
     function ($title, $parentId = null) {
         $title = Orthos::clear($title);
 
@@ -24,7 +24,7 @@ QUI::$Ajax->registerFunction(
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.ajax.passwords.categories.createPublic.error',
                     array(
                         'error' => $Exception->getMessage()
@@ -35,13 +35,13 @@ QUI::$Ajax->registerFunction(
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_categories_public_create'
+                'AJAX :: package_sequry_core_ajax_passwords_categories_public_create'
                 . ' -> ' . $Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'message.general.error'
                 )
             );
@@ -51,7 +51,7 @@ QUI::$Ajax->registerFunction(
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.passwords.categories.createPublic.success',
                 array(
                     'title' => $title

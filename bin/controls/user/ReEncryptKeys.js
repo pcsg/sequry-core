@@ -1,39 +1,39 @@
 /**
  * Re-encrypt all user keys
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/user/ReEncryptKeys
+ * @module package/sequry/core/bin/controls/user/ReEncryptKeys
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/Control
  * @require qui/controls/loader/Loader
  * @require qui/controls/buttons/Button
- * @require package/pcsg/grouppasswordmanager/bin/Authentication
- * @require package/pcsg/grouppasswordmanager/bin/Actors
+ * @require package/sequry/core/bin/Authentication
+ * @require package/sequry/core/bin/Actors
  * @require Ajax
  * @require Locale
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/user/ReEncryptKeys', [
+define('package/sequry/core/bin/controls/user/ReEncryptKeys', [
 
     'qui/controls/Control',
     'qui/controls/loader/Loader',
     'qui/controls/buttons/Button',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Actors',
 
     'Ajax',
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/user/ReEncryptKeys.css'
+    'css!package/sequry/core/bin/controls/user/ReEncryptKeys.css'
 
 ], function (QUIControl, QUILoader, QUIButton, Authentication, Actors, QUIAjax, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/user/ReEncryptKeys',
+        Type   : 'package/sequry/core/bin/controls/user/ReEncryptKeys',
 
         Binds: [],
 
@@ -102,9 +102,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/user/ReEncryptKeys', [
         $isReEncryptEnabled: function () {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_actors_isReEncryptAllEnabled',
+                    'package_sequry_core_ajax_actors_isReEncryptAllEnabled',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         onError  : reject
                     }
                 );

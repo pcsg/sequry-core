@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\PasswordTypes\Handler;
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\PasswordTypes\Handler;
+use Sequry\Core\Security\Handler\Passwords;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -10,7 +10,7 @@ use QUI\Utils\Security\Orthos;
  * @param integer $passwordId - the id of the password object
  * @return string|false - view html; false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId)
+function package_sequry_core_ajax_passwords_getView($passwordId)
 {
     $passwordId = (int)$passwordId;
 
@@ -30,7 +30,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId)
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.passwords.getView.error',
                 array(
                     'error'      => $Exception->getMessage(),
@@ -42,14 +42,14 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId)
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_getView -> ' . $Exception->getMessage()
+            'AJAX :: package_sequry_core_ajax_passwords_getView -> ' . $Exception->getMessage()
         );
 
         QUI\System\Log::writeException($Exception);
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -59,7 +59,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getView($passwordId)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getView',
+    'package_sequry_core_ajax_passwords_getView',
     array('passwordId'),
     'Permission::checkAdminUser'
 );

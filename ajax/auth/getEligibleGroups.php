@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Get groups that are eligible for a specific security class
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @param integer $securityClassId - ID of security class
  * @return array
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_getEligibleGroups($securityClassId)
+function package_sequry_core_ajax_auth_getEligibleGroups($securityClassId)
 {
     $SecurityClass     = Authentication::getSecurityClass((int)$securityClassId);
     $eligibleGroupIds  = $SecurityClass->getGroupIds();
@@ -27,7 +27,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_getEligibleGroups($security
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_getEligibleGroups',
+    'package_sequry_core_ajax_auth_getEligibleGroups',
     array('securityClassId'),
     'Permission::checkAdminUser'
 );

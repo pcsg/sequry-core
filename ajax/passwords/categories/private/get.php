@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Handler\Categories;
+use Sequry\Core\Handler\Categories;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -10,7 +10,7 @@ use QUI\Utils\Security\Orthos;
  * @return array - public password categories
  */
 QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_get',
+    'package_sequry_core_ajax_passwords_categories_private_get',
     function ($ids) {
         $ids = Orthos::clearArray(json_decode($ids, true));
         return Categories::getPrivate($ids);

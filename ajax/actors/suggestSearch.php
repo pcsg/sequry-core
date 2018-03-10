@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\Authentication;
 use QUI\Utils\Security\Orthos;
 
 /**
@@ -15,7 +15,7 @@ use QUI\Utils\Security\Orthos;
  * @throws QUI\Exception
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_suggestSearch',
+    'package_sequry_core_ajax_actors_suggestSearch',
     function ($search, $type, $securityClassIds, $limit) {
         $securityClassIds = json_decode($securityClassIds, true);
         $search           = Orthos::clear($search);

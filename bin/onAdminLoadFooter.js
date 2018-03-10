@@ -9,14 +9,14 @@ require([
     'qui/QUI',
     'Ajax',
     'qui/controls/windows/Confirm',
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
-    'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/Actors',
     'Locale'
 ], function (QUI, QUIAjax, QUIConfirm, Passwords, Actors, QUILocale) {
     "use strict";
 
-    var lg  = 'pcsg/grouppasswordmanager';
-    var pkg = 'pcsg/grouppasswordmanager';
+    var lg  = 'sequry/core';
+    var pkg = 'sequry/core';
 
     var loadExecute = 0;
 
@@ -43,13 +43,13 @@ require([
                 continue;
             }
 
-            if (panels[i].getType() === 'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel') {
+            if (panels[i].getType() === 'package/sequry/core/bin/controls/categories/Panel') {
                 return;
             }
         }
 
         require([
-            'package/pcsg/grouppasswordmanager/bin/controls/categories/Panel'
+            'package/sequry/core/bin/controls/categories/Panel'
         ], function (CategoryPanel) {
             Column.appendChild(new CategoryPanel(), 0);
         });
@@ -58,7 +58,7 @@ require([
     QUI.addEvents({
         onQuiqqerLoaded: function () {
             var panels = QUI.Controls.getByType(
-                'package/pcsg/grouppasswordmanager/bin/controls/passwords/Panel'
+                'package/sequry/core/bin/controls/passwords/Panel'
             );
 
             if (!panels.length) {
@@ -85,7 +85,7 @@ require([
         'addUsersByGroup',
         function (response, AuthInfo) {
             require([
-                'package/pcsg/grouppasswordmanager/bin/Actors'
+                'package/sequry/core/bin/Actors'
             ], function (Actors) {
                 Actors.addUsersToGroup(
                     AuthInfo.groupId,
@@ -103,7 +103,7 @@ require([
         'addGroupsToUser',
         function (response, AuthInfo) {
             require([
-                'package/pcsg/grouppasswordmanager/bin/Actors'
+                'package/sequry/core/bin/Actors'
             ], function (Actors) {
                 Actors.addGroupsToUser(
                     AuthInfo.userId,
@@ -132,7 +132,7 @@ require([
                     onSubmit: function () {
                         Confirm.Loader.show();
 
-                        QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_delete', function () {
+                        QUIAjax.post('package_sequry_core_ajax_actors_delete', function () {
                             Confirm.close();
                         }, {
                             'package': pkg,
@@ -165,7 +165,7 @@ require([
                     onSubmit: function () {
                         Confirm.Loader.show();
 
-                        QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_actors_delete', function () {
+                        QUIAjax.post('package_sequry_core_ajax_actors_delete', function () {
                             Confirm.close();
                         }, {
                             'package': pkg,
@@ -187,7 +187,7 @@ require([
         'showRecoveryCode',
         function (response, Data) {
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup'
+                'package/sequry/core/bin/controls/auth/recovery/CodePopup'
             ], function (RecoveryCodePopup) {
                 new RecoveryCodePopup({
                     RecoveryCodeData: Data.recoveryCode
@@ -203,7 +203,7 @@ require([
             }
 
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/GroupAdminButton'
+                'package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton'
             ], function(GroupAdminButton) {
                 new GroupAdminButton({
                     openRequests: Status.openRequests

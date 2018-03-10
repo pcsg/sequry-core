@@ -6,10 +6,10 @@
  * @param string $searchParams - search options [json]
  * @return array|false - false on error or password list otherwise
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
+function package_sequry_core_ajax_passwords_getList($searchParams)
 {
     try {
-        $CryptoUser = \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors::getCryptoUser();
+        $CryptoUser = \Sequry\Core\Security\Handler\CryptoActors::getCryptoUser();
 
         $searchParams = \QUI\Utils\Security\Orthos::clearArray(
             json_decode($searchParams, true)
@@ -25,7 +25,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.ajax.passwords.getList.error',
                 array(
                     'error' => $Exception->getMessage()
@@ -36,13 +36,13 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_delete -> '
+            'AJAX :: package_sequry_core_ajax_passwords_delete -> '
             . $Exception->getMessage()
         );
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -52,7 +52,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getList($searchParams)
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getList',
+    'package_sequry_core_ajax_passwords_getList',
     array('searchParams'),
     'Permission::checkAdminUser'
 );

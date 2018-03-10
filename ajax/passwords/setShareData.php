@@ -1,8 +1,8 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 use QUI\Utils\Security\Orthos;
-use Pcsg\GroupPasswordManager\Password;
+use Sequry\Core\Password;
 
 /**
  * Set share data from password object
@@ -11,7 +11,7 @@ use Pcsg\GroupPasswordManager\Password;
  * @param string $shareData - share users and groups
  * @return array|false - password data or false on error
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($passwordId, $shareData)
+function package_sequry_core_ajax_passwords_setShareData($passwordId, $shareData)
 {
     $passwordId = (int)$passwordId;
     $Password   = Passwords::get($passwordId);
@@ -36,7 +36,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'success.password.share',
                 array(
                     'passwordId' => $passwordId
@@ -46,7 +46,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
     } catch (QUI\Exception $Exception) {
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.password.share',
                 array(
                     'passwordId' => $passwordId,
@@ -58,7 +58,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
         return false;
     } catch (\Exception $Exception) {
         QUI\System\Log::addError(
-            'AJAX :: package_pcsg_grouppasswordmanager_ajax_passwords_setShareData -> '
+            'AJAX :: package_sequry_core_ajax_passwords_setShareData -> '
             . $Exception->getMessage()
         );
 
@@ -66,7 +66,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'message.general.error'
             )
         );
@@ -79,7 +79,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_setShareData($password
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_setShareData',
+    'package_sequry_core_ajax_passwords_setShareData',
     array('passwordId', 'shareData'),
     'Permission::checkAdminUser'
 );

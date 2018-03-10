@@ -3,26 +3,26 @@
  *
  * Perform asynchronous requests that require authentication
  *
- * @module package/pcsg/grouppasswordmanager/bin/classes/AuthAjax
+ * @module package/sequry/core/bin/classes/AuthAjax
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/classes/DOM
  * @require Ajax
  */
-define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
+define('package/sequry/core/bin/classes/AuthAjax', [
 
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/Authentication',
     'Ajax'
 
 ], function (Authentication, QUIAjax) {
     "use strict";
 
-    var pkg = 'pcsg/grouppasswordmanager';
+    var pkg = 'sequry/core';
 
     return new Class({
 
-        Type: 'package/pcsg/grouppasswordmanager/bin/classes/AuthAjax',
+        Type: 'package/sequry/core/bin/classes/AuthAjax',
 
         Binds: [
             'get',
@@ -136,7 +136,7 @@ define('package/pcsg/grouppasswordmanager/bin/classes/AuthAjax', [
          */
         $getSecurityClassId: function (passwordId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_pcsg_grouppasswordmanager_ajax_passwords_getSecurityClassId', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_passwords_getSecurityClassId', resolve, {
                     'package' : pkg,
                     onError   : reject,
                     passwordId: passwordId

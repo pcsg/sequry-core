@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Get share data from password object
@@ -8,7 +8,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param integer $passwordId - ID of password
  * @return array - password data
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getShareData($passwordId)
+function package_sequry_core_ajax_passwords_getShareData($passwordId)
 {
     $passwordId = (int)$passwordId;
     // get password data
@@ -16,7 +16,7 @@ function package_pcsg_grouppasswordmanager_ajax_passwords_getShareData($password
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getShareData',
+    'package_sequry_core_ajax_passwords_getShareData',
     array('passwordId'),
     'Permission::checkAdminUser'
 );

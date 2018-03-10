@@ -2,16 +2,16 @@
  * Categories Handler
  * Get information of password categories
  *
- * @module package/pcsg/grouppasswordmanager/bin/Categories
+ * @module package/sequry/core/bin/Categories
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/classes/DOM
  * @require Ajax
  */
-define('package/pcsg/grouppasswordmanager/bin/Categories', [
+define('package/sequry/core/bin/Categories', [
 
-    'package/pcsg/grouppasswordmanager/bin/classes/Categories'
+    'package/sequry/core/bin/classes/Categories'
 
 ], function (CategoriesHandler) {
     "use strict";

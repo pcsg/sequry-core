@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Syncs an auth plugin with all passwords, so a user can access all (eligible) passwords with all
@@ -10,7 +10,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @param integer $authPluginId - id of auth plugin
  * @return bool - success
  */
-function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginId)
+function package_sequry_core_ajax_auth_syncAuthPlugin($authPluginId)
 {
     $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
     $CryptoUser = CryptoActors::getCryptoUser();
@@ -28,7 +28,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'error.authentication.sync.authplugin',
                 array(
                     'authPluginId' => $authPluginId
@@ -41,7 +41,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
 
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
-            'pcsg/grouppasswordmanager',
+            'sequry/core',
             'success.authentication.sync.authplugin',
             array(
                 'authPluginId' => $authPluginId
@@ -53,7 +53,7 @@ function package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin($authPluginI
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_auth_syncAuthPlugin',
+    'package_sequry_core_ajax_auth_syncAuthPlugin',
     array('authPluginId'),
     'Permission::checkAdminUser'
 );

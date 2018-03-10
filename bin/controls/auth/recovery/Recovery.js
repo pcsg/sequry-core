@@ -1,13 +1,13 @@
 /**
  * Recovery process for a single authentication plugin
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery
+ * @module package/sequry/core/bin/controls/auth/recovery/Recovery
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded [this]
  * @event onFinish [this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', [
+define('package/sequry/core/bin/controls/auth/recovery/Recovery', [
 
     'qui/controls/Control',
     'qui/controls/loader/Loader',
@@ -17,22 +17,22 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
     'Mustache',
     'Ajax',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
+    'package/sequry/core/bin/controls/auth/recovery/CodePopup',
+    'package/sequry/core/bin/Authentication',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery.css'
+    'text!package/sequry/core/bin/controls/auth/recovery/Recovery.html',
+    'css!package/sequry/core/bin/controls/auth/recovery/Recovery.css'
 
 ], function (QUIControl, QUILoader, QUIButton, QUILocale, Mustache,
              QUIAjax, CodePopup, Authentication, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery',
+        Type   : 'package/sequry/core/bin/controls/auth/recovery/Recovery',
 
         Binds: [
             '$onInject',
@@ -265,8 +265,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
 
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_auth_recovery_validate', resolve, {
-                        'package'   : 'pcsg/grouppasswordmanager',
+                    'package_sequry_core_ajax_auth_recovery_validate', resolve, {
+                        'package'   : 'sequry/core',
                         authPluginId: self.getAttribute('authPluginId'),
                         code        : code,
                         token       : token,
@@ -364,8 +364,8 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/Recovery', 
 
 
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_pcsg_grouppasswordmanager_ajax_auth_recovery_changeAuthData', resolve, {
-                    'package'   : 'pcsg/grouppasswordmanager',
+                QUIAjax.post('package_sequry_core_ajax_auth_recovery_changeAuthData', resolve, {
+                    'package'   : 'sequry/core',
                     authPluginId: self.getAttribute('authPluginId'),
                     newAuthData : newAuthData,
                     onError     : reject

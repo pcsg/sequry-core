@@ -1,7 +1,7 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
-use \Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
+use \Sequry\Core\Security\Handler\Authentication;
+use \Sequry\Core\Security\Authentication\Plugin;
 
 /**
  * Checks the auth status for authentication plugins
@@ -10,7 +10,7 @@ use \Pcsg\GroupPasswordManager\Security\Authentication\Plugin;
  * @return array
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_checkAuthStatus',
+    'package_sequry_core_ajax_auth_checkAuthStatus',
     function ($authPluginIds) {
         $authStatus = array(
             'authPlugins'      => array(),

@@ -1,41 +1,41 @@
 /**
  * Control for password content input with different types
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content
+ * @module package/sequry/core/bin/controls/passwordtypes/Content
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/passwordtypes/Content.html
+ * @require css!package/sequry/core/bin/controls/passwordtypes/Content.css
  *
  * @event onLoaded
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
+define('package/sequry/core/bin/controls/passwordtypes/Content', [
 
     'qui/QUI',
     'qui/controls/Control',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
+    'package/sequry/core/bin/controls/passwordtypes/Select',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content.css'
+    'css!package/sequry/core/bin/controls/passwordtypes/Content.css'
 
 ], function (QUI, QUIControl, QUILocale, TypeSelect) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content',
+        Type   : 'package/sequry/core/bin/controls/passwordtypes/Content',
 
         Binds: [
             '$loadContent',
@@ -101,7 +101,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Content', [
             this.$CurrentData = Object.merge(this.$CurrentData, this.getData());
 
             require([
-                'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit'
+                'package/sequry/core/bin/controls/passwordtypes/Edit'
             ], function (PasswordTypeControl) {
                 self.$PasswordTypeControl = new PasswordTypeControl({
                     type  : type,

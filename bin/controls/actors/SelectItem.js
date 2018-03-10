@@ -1,15 +1,15 @@
 /**
  * SelectItem for actors/Select control
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem
+ * @module package/sequry/core/bin/controls/actors/SelectItem
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem', [
+define('package/sequry/core/bin/controls/actors/SelectItem', [
 
     'qui/QUI',
     'qui/controls/elements/SelectItem',
 
-    'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/sequry/core/bin/Actors',
 
     'Ajax'
 
@@ -19,7 +19,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem', [
     return new Class({
 
         Extends: QUIElementSelectItem,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectItem',
+        Type   : 'package/sequry/core/bin/controls/actors/SelectItem',
 
         Binds: [
             'refresh'

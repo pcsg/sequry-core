@@ -1,38 +1,38 @@
 /**
  * Password list filters
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/categories/Filters
+ * @module package/sequry/core/bin/controls/categories/Filters
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/Control
  * @require qui/controls/sitemap/Item
  * @require Locale
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/categories/Filters.css
+ * @require css!package/sequry/core/bin/controls/categories/Filters.css
  *
  * @event onSelectFilter [filter, this] - fires if the user selects a filter
  * @event onDeselectFilter [filter, this] - fires if the user deselects a filter
  * @event onChange [selectedFilters, this] - fires if the user selects or deselects a filter
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/categories/Filters', [
+define('package/sequry/core/bin/controls/categories/Filters', [
 
     'qui/controls/Control',
     'qui/controls/sitemap/Item',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
+    'package/sequry/core/bin/controls/passwordtypes/Select',
 
     'Locale',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/categories/Filters.css'
+    'css!package/sequry/core/bin/controls/categories/Filters.css'
 
 ], function (QUIControl, QUISiteMapItem, PasswordTypesSelect, QUILocale) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/Filters',
+        Type   : 'package/sequry/core/bin/controls/categories/Filters',
 
         Binds: [
             '$onInject',

@@ -10,7 +10,7 @@ if (!isset($_REQUEST['pluginId'])
     exit;
 }
 
-$recoveryData = \Pcsg\GroupPasswordManager\Security\Handler\Recovery::getRecoveryDataFromSession(
+$recoveryData = \Sequry\Core\Security\Handler\Recovery::getRecoveryDataFromSession(
     (int)$_REQUEST['pluginId']
 );
 
@@ -42,7 +42,7 @@ if (!in_array($lang, $langs)) {
 $L = QUI::getLocale();
 $L->setCurrent($lang);
 
-$lg = 'pcsg/grouppasswordmanager';
+$lg = 'sequry/core';
 
 $html = '
 <!DOCTYPE html>

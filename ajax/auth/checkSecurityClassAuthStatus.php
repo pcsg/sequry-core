@@ -1,6 +1,6 @@
 <?php
 
-use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use \Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Checks the auth status for every authentication plugin necessary
@@ -10,7 +10,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @return array
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_auth_checkSecurityClassAuthStatus',
+    'package_sequry_core_ajax_auth_checkSecurityClassAuthStatus',
     function ($securityClassIds) {
         $authStatus = array(
             'authenticatedAll' => false

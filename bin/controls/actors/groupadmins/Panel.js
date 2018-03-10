@@ -1,10 +1,10 @@
 /**
  * Manage Invite Codes
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel
+ * @module package/sequry/core/bin/controls/actors/groupadmins/Panel
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel', [
+define('package/sequry/core/bin/controls/actors/groupadmins/Panel', [
 
     'qui/controls/desktop/Panel',
     'qui/controls/loader/Loader',
@@ -12,23 +12,23 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel'
     'qui/controls/buttons/Button',
 
     'controls/grid/Grid',
-    'package/pcsg/grouppasswordmanager/bin/Actors',
+    'package/sequry/core/bin/Actors',
 
     'Locale',
     'Mustache',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel.css'
+    'text!package/sequry/core/bin/controls/actors/groupadmins/Panel.html',
+    'css!package/sequry/core/bin/controls/actors/groupadmins/Panel.css'
 
 ], function (QUIPanel, QUILoader, QUIConfirm, QUIButton, Grid, Actors, QUILocale, Mustache, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIPanel,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/groupadmins/Panel',
+        Type   : 'package/sequry/core/bin/controls/actors/groupadmins/Panel',
 
         Binds: [
             '$onCreate',

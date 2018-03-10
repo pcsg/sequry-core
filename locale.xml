@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <locales>
 
-    <groups name="pcsg/grouppasswordmanager" datatype="php">
+    <groups name="sequry/core" datatype="php">
 
         <!-- Package -->
         <locale name="package.title">
@@ -795,7 +795,7 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
 
     </groups>
 
-    <groups name="pcsg/grouppasswordmanager" datatype="php,js">
+    <groups name="sequry/core" datatype="php,js">
 
         <!-- Setup -->
         <locale name="setup.securityclass.title">
@@ -1023,7 +1023,7 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
     </groups>
 
-    <groups name="pcsg/grouppasswordmanager" datatype="js">
+    <groups name="sequry/core" datatype="js">
 
         <!-- Control: passwords/Panel -->
         <locale name="controls.gpm.passwords.panel.options.label.dblclick">

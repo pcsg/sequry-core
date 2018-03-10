@@ -1,14 +1,14 @@
 /**
  * Basic authentication parent control for AuthPlugins
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/authPlugins/Authentication
+ * @module package/sequry/core/bin/controls/authPlugins/Authentication
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/controls/Control
  *
  * @event onSubmit [authData, self] - fires if the user submits the authentication data
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/authPlugins/Authentication', [
+define('package/sequry/core/bin/controls/authPlugins/Authentication', [
 
     'qui/controls/Control'
 
@@ -18,7 +18,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/authPlugins/Authenticatio
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/authPlugins/Authentication',
+        Type   : 'package/sequry/core/bin/controls/authPlugins/Authentication',
 
         Binds: [
             '$onImport',

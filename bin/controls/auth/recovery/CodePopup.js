@@ -1,28 +1,28 @@
 /**
  * Control for showing / printing recovery code information
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup
+ * @module package/sequry/core/bin/controls/auth/recovery/CodePopup
  * @author www.pcsg.de (Patrick Müller)
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup', [
+define('package/sequry/core/bin/controls/auth/recovery/CodePopup', [
 
     'qui/controls/windows/Popup',
     'qui/controls/buttons/Button',
     'Locale',
     'Mustache',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup.css'
+    'text!package/sequry/core/bin/controls/auth/recovery/CodePopup.html',
+    'css!package/sequry/core/bin/controls/auth/recovery/CodePopup.css'
 
 ], function (QUIPopup, QUIButton, QUILocale, Mustache, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIPopup,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
+        Type   : 'package/sequry/core/bin/controls/auth/recovery/CodePopup',
 
         Binds: [
             '$onInject',
@@ -169,7 +169,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/auth/recovery/CodePopup',
          */
         $print: function () {
             var url = window.location.protocol + '//' +
-                window.location.host + URL_OPT_DIR + 'pcsg/grouppasswordmanager/bin/recoverycode.php';
+                window.location.host + URL_OPT_DIR + 'sequry/core/bin/recoverycode.php';
 
             var Form = new Element('form', {
                 action: url,

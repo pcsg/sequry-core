@@ -1,13 +1,13 @@
 /**
  * Settings for a Sequry Group
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit
+ * @module package/sequry/core/bin/controls/actors/GroupEdit
  * @author www.pcsg.de (Patrick Müller)
  *
  * @event onLoaded
  * @event onSuccess
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
+define('package/sequry/core/bin/controls/actors/GroupEdit', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
@@ -16,24 +16,24 @@ define('package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit', [
     'Locale',
     'Mustache',
 
-    'package/pcsg/grouppasswordmanager/bin/Actors',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/Select',
-    'package/pcsg/grouppasswordmanager/bin/Authentication',
-    'package/pcsg/grouppasswordmanager/bin/controls/actors/SelectTablePopup',
+    'package/sequry/core/bin/Actors',
+    'package/sequry/core/bin/controls/actors/Select',
+    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/controls/actors/SelectTablePopup',
 
-    'text!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.html',
-    'css!package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit.css'
+    'text!package/sequry/core/bin/controls/actors/GroupEdit.html',
+    'css!package/sequry/core/bin/controls/actors/GroupEdit.css'
 
 ], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors, ActorSelect,
              Authentication, ActorSelectPopup, template) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/actors/GroupEdit',
+        Type   : 'package/sequry/core/bin/controls/actors/GroupEdit',
 
         Binds: [
             '$onInject',

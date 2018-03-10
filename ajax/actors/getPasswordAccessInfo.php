@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
-use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Passwords;
+use \Sequry\Core\Security\Handler\CryptoActors;
 
 
 /**
@@ -11,7 +11,7 @@ use \Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
  * @return array
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_getPasswordAccessInfo',
+    'package_sequry_core_ajax_actors_getPasswordAccessInfo',
     function ($passwordId)
     {
         $Password = Passwords::get((int)$passwordId);

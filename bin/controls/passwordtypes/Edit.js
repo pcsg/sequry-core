@@ -1,23 +1,23 @@
 /**
  * Control for password content input with different types
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit
+ * @module package/sequry/core/bin/controls/passwordtypes/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
  * @require qui/QUI
  * @require qui/controls/Control
  * @require Mustache
  * @require Locale
- * @require package/pcsg/grouppasswordmanager/bin/classes/Passwords
- * @require package/pcsg/grouppasswordmanager/bin/controls/auth/Authenticate
- * @require package/pcsg/grouppasswordmanager/bin/controls/securityclasses/Select
- * @require package/pcsg/grouppasswordmanager/bin/controls/actors/EligibleActorSelect
- * @require text!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.html
- * @require css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.css
+ * @require package/sequry/core/bin/classes/Passwords
+ * @require package/sequry/core/bin/controls/auth/Authenticate
+ * @require package/sequry/core/bin/controls/securityclasses/Select
+ * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
+ * @require text!package/sequry/core/bin/controls/passwordtypes/Edit.html
+ * @require css!package/sequry/core/bin/controls/passwordtypes/Edit.css
  *
  * @event onLoaded [this]
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
+define('package/sequry/core/bin/controls/passwordtypes/Edit', [
 
     'qui/controls/Control',
     'qui/controls/buttons/Button',
@@ -26,20 +26,20 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
     'Ajax',
     'Locale',
 
-    'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Select',
-    'package/pcsg/grouppasswordmanager/bin/Passwords',
+    'package/sequry/core/bin/controls/passwordtypes/Select',
+    'package/sequry/core/bin/Passwords',
 
-    'css!package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit.css'
+    'css!package/sequry/core/bin/controls/passwordtypes/Edit.css'
 
 ], function (QUIControl, QUIButton, QUILoader, QUIAjax, QUILocale, TypeSelect, Passwords) {
     "use strict";
 
-    var lg = 'pcsg/grouppasswordmanager';
+    var lg = 'sequry/core';
 
     return new Class({
 
         Extends: QUIControl,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit',
+        Type   : 'package/sequry/core/bin/controls/passwordtypes/Edit',
 
         Binds: [
             '$onInject',
@@ -111,7 +111,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
             var self = this;
 
             QUIAjax.get(
-                'package_pcsg_grouppasswordmanager_ajax_passwordtypes_getEditHtml',
+                'package_sequry_core_ajax_passwordtypes_getEditHtml',
                 function (templateHtml) {
                     self.$EditContent.set('html', templateHtml);
                     //self.$EditContent.getElement('table').addClass(
@@ -119,7 +119,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/passwordtypes/Edit', [
                     //);
                     self.$parseTemplate();
                 }, {
-                    'package': 'pcsg/grouppasswordmanager',
+                    'package': 'sequry/core',
                     type     : this.getAttribute('type')
                 }
             );

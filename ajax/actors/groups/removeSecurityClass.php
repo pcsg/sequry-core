@@ -1,7 +1,7 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\CryptoActors;
-use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\CryptoActors;
+use Sequry\Core\Security\Handler\Authentication;
 
 /**
  * Remove security class from a group
@@ -12,7 +12,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
  * @return bool - success
  */
 \QUI::$Ajax->registerFunction(
-    'package_pcsg_grouppasswordmanager_ajax_actors_groups_removeSecurityClass',
+    'package_sequry_core_ajax_actors_groups_removeSecurityClass',
     function ($groupId, $securityClassId) {
         try {
             $Group         = QUI::getGroups()->get((int)$groupId);
@@ -25,7 +25,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
-                    'pcsg/grouppasswordmanager',
+                    'sequry/core',
                     'error.cryptogroup.securityclass.remove',
                     array(
                         'groupId'            => $Group->getId(),
@@ -42,7 +42,7 @@ use Pcsg\GroupPasswordManager\Security\Handler\Authentication;
 
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
-                'pcsg/grouppasswordmanager',
+                'sequry/core',
                 'success.cryptogroup.securityclass.remove',
                 array(
                     'groupId'            => $Group->getId(),

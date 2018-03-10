@@ -4,10 +4,10 @@
     <window>
         <tab name="grouppasswordmanager">
             <text>
-                <locale group="pcsg/grouppasswordmanager" var="group.category.grouppasswordmanager" />
+                <locale group="sequry/core" var="group.category.grouppasswordmanager" />
             </text>
             <image>fa fa-diamond</image>
-            <template>OPT_DIR/pcsg/grouppasswordmanager/templates/pwm_group.html</template>
+            <template>OPT_DIR/sequry/core/templates/pwm_group.html</template>
         </tab>
     </window>
 

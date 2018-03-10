@@ -1,6 +1,6 @@
 <?php
 
-use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
+use Sequry\Core\Security\Handler\Passwords;
 
 /**
  * Get access info of password for session user
@@ -8,13 +8,13 @@ use Pcsg\GroupPasswordManager\Security\Handler\Passwords;
  * @param integer $passwordId - ID of password
  * @return array - password data
  */
-function package_pcsg_grouppasswordmanager_ajax_passwords_getAccessInfo($passwordId)
+function package_sequry_core_ajax_passwords_getAccessInfo($passwordId)
 {
     return Passwords::get((int)$passwordId)->getAccessInfo();
 }
 
 \QUI::$Ajax->register(
-    'package_pcsg_grouppasswordmanager_ajax_passwords_getAccessInfo',
+    'package_sequry_core_ajax_passwords_getAccessInfo',
     array('passwordId'),
     'Permission::checkAdminUser'
 );

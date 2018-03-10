@@ -1,15 +1,15 @@
 /**
  * Password category map (private categories)
  *
- * @module package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map
+ * @module package/sequry/core/bin/controls/categories/private/Map
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map
+ * @require package/sequry/core/bin/controls/categories/public/Map
  * @requrie Ajax
  */
-define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', [
+define('package/sequry/core/bin/controls/categories/private/Map', [
 
-    'package/pcsg/grouppasswordmanager/bin/controls/categories/public/Map',
+    'package/sequry/core/bin/controls/categories/public/Map',
 
     'Ajax'
 
@@ -19,7 +19,7 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
     return new Class({
 
         Extends: CategoryMap,
-        Type   : 'package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map',
+        Type   : 'package/sequry/core/bin/controls/categories/private/Map',
 
         initialize: function (options) {
             this.parent(options);
@@ -34,9 +34,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
         $getCategories: function () {
             return new Promise(function (resolve, reject) {
                 QUIAjax.get(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_getList',
+                    'package_sequry_core_ajax_passwords_categories_private_getList',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         onError  : reject
                     }
                 );
@@ -53,9 +53,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
         $addCategory: function (title, parentId) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_create',
+                    'package_sequry_core_ajax_passwords_categories_private_create',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         parentId : parentId,
                         title    : title,
                         onError  : reject
@@ -74,9 +74,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
         $renameCategory: function (id, title) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_rename',
+                    'package_sequry_core_ajax_passwords_categories_private_rename',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         id       : id,
                         title    : title,
                         onError  : reject
@@ -94,9 +94,9 @@ define('package/pcsg/grouppasswordmanager/bin/controls/categories/private/Map', 
         $deleteCategory: function (id) {
             return new Promise(function (resolve, reject) {
                 QUIAjax.post(
-                    'package_pcsg_grouppasswordmanager_ajax_passwords_categories_private_delete',
+                    'package_sequry_core_ajax_passwords_categories_private_delete',
                     resolve, {
-                        'package': 'pcsg/grouppasswordmanager',
+                        'package': 'sequry/core',
                         id       : id,
                         onError  : reject
                     }
