@@ -26,6 +26,7 @@ define('package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton', [
         ],
 
         options: {
+            textimage   : 'fa fa-users',
             openRequests: 0 // number of open group administration requests
         },
 

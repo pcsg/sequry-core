@@ -42,7 +42,8 @@ define('package/sequry/core/bin/controls/actors/groupadmins/Panel', [
         ],
 
         options: {
-            title: QUILocale.get(lg, 'controls.actors.groupadmins.Panel.title')
+            title: QUILocale.get(lg, 'controls.actors.groupadmins.Panel.title'),
+            icon : 'fa fa-users'
         },
 
         initialize: function (options) {
