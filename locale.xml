@@ -1684,8 +1684,20 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="actors.groups.edit.template.groupAdminDesc" html="true">
             <de><![CDATA[Hier können Benutzer als <b>Gruppen-Administratoren</b> festgelegt werden. Gruppen-Administratoren können <b>andere Benutzer zu dieser Gruppe hinzufügen</b> und <b>andere Benutzer aus der Gruppe entfernen</b>. Sie bestimmen so, wer Zugriff auf alle Passwörter hat, auf die diese Gruppe Zugriff hat.<br><br>Zudem haben Gruppen-Administratoren die Möglichkeit, Benutzer freizuschalten, die dieser Gruppe zugewiesen sind, aber erst im Nachhinein die Eignung für eine Sicherheitsklasse dieser Gruppe erhalten.]]></de>
         </locale>
-        <locale name="actors.groupedit.no.securityclass" html="true">
+        <locale name="actors.groupedit.no_group_securityclass" html="true">
             <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
+        </locale>
+        <locale name="actors.groupedit.no_securityclasses" html="true">
+            <de><![CDATA[Es sind noch keine <b>Sicherheitsklassen</b> eingerichtet. Bitte richten sie <b>mindestens eine</b> Sicherheitsklasse ein und weisen Sie dieser Gruppe eine Sicherheitsklasse zu, damit Sie im Rahmen von Sequry verwendet werden kann.]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.remove_alt">
+            <de><![CDATA[Hier klicken, um diese Sicherheitsklasse aus der Gruppe zu entfernen]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.add_alt">
+            <de><![CDATA[Hier klicken, um diese Sicherheitsklasse der Gruppe hinzuzufügen]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.add_alt_not_eligible">
+            <de><![CDATA[Diese Sicherheitsklasse kann der Gruppe nicht hinzugefügt werden, da nicht alle aktuellen Gruppen-Administratoren für diese Sicherheitsklasse geeignet sind]]></de>
         </locale>
         <locale name="actors.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>

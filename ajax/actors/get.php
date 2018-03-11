@@ -10,6 +10,10 @@ use Sequry\Core\Security\Handler\Authentication;
  * @param integer $id - user or group id
  * @param string $type - "user" or "group"
  * @return array
+ *
+ * @throws \Sequry\Core\Exception\Exception
+ * @throws QUI\Users\Exception
+ * @throws QUI\Exception
  */
 function package_sequry_core_ajax_actors_get($id, $type)
 {
@@ -37,15 +41,19 @@ function package_sequry_core_ajax_actors_get($id, $type)
 
             $securityClassIds             = array();
             $eligibleUserForSecurityClass = array();
-            $groupUserIds                 = $CryptoGroup->getUserIds();
+            $groupAdminUserIds            = $CryptoGroup->getAdminUserIds();
 
             if (current(current($result)) > 0) {
 
                 $securityClassIds = $CryptoGroup->getSecurityClassIds();
             }
 
-            // get all security classes and check if the group has at least
-            // one eligible user
+            /*
+             * Check which SecurityClasses can be added to the groups
+             *
+             * This is the case if all Group Administrators are eligible
+             * for the respective SecurityClass
+             */
             foreach (Authentication::getSecurityClassesList() as $secClassId => $data) {
                 if (in_array($secClassId, $securityClassIds)) {
                     $eligibleUserForSecurityClass[$secClassId] = true;
@@ -55,26 +63,20 @@ function package_sequry_core_ajax_actors_get($id, $type)
                 $SecurityClass            = Authentication::getSecurityClass($secClassId);
                 $eligibleUserIds          = $SecurityClass->getEligibleUserIds();
                 $eligibleUserIdsIntersect = array_intersect(
-                    $groupUserIds,
+                    $groupAdminUserIds,
                     $eligibleUserIds
                 );
 
-                $eligibleUserForSecurityClass[$secClassId] = !empty($eligibleUserIdsIntersect);
-            }
-
-            $groupAdminUserIds = array();
-
-            foreach ($CryptoGroup->getAdminUsers() as $AdminUser) {
-                $groupAdminUserIds[] = $AdminUser->getId();
+                $eligibleUserForSecurityClass[$secClassId] = count($groupAdminUserIds) === count($eligibleUserIdsIntersect);
             }
 
             $info = array(
-                'id'                 => $CryptoGroup->getId(),
-                'name'               => $CryptoGroup->getAttribute('name'),
-                'securityClassIds'   => $securityClassIds,
-                'sessionUserInGroup' => QUI::getUserBySession()->isInGroup($CryptoGroup->getId()),
-                'eligibleUser'       => $eligibleUserForSecurityClass,
-                'groupAdminUserIds'  => $groupAdminUserIds
+                'id'                       => $CryptoGroup->getId(),
+                'name'                     => $CryptoGroup->getAttribute('name'),
+                'securityClassIds'         => $securityClassIds,
+                'sessionUserInGroup'       => QUI::getUserBySession()->isInGroup($CryptoGroup->getId()),
+                'securityClassEligibility' => $eligibleUserForSecurityClass,
+                'groupAdminUserIds'        => $groupAdminUserIds
             );
             break;
     }

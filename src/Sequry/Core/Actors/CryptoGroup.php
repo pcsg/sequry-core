@@ -672,11 +672,11 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
-     * Get all admins of this group
+     * Get IDs of Group administrator users
      *
-     * @return CryptoUser[]
+     * @return array
      */
-    public function getAdminUsers()
+    public function getAdminUserIds()
     {
         $result = QUI::getDataBase()->fetch(array(
             'select' => 'userId',
@@ -686,10 +686,26 @@ class CryptoGroup extends QUI\Groups\Group
             )
         ));
 
-        $users = array();
+        $ids = array();
 
         foreach ($result as $row) {
-            $users[] = CryptoActors::getCryptoUser($row['userId']);
+            $ids[] = $row['userId'];
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get all admins of this group
+     *
+     * @return CryptoUser[]
+     */
+    public function getAdminUsers()
+    {
+        $users = array();
+
+        foreach ($this->getAdminUserIds() as $userId) {
+            $users[] = CryptoActors::getCryptoUser($userId);
         }
 
         return $users;
