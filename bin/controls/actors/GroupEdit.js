@@ -261,7 +261,10 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
 
             this.$GroupAdminSelect = new ActorSelect({
                 popupInfo        : QUILocale.get(lg,
-                    'controls.actors.groupselect.adminselect.info'
+                    'controls.actors.groupselect.adminselect.info', {
+                        groupName: this.$Group.name,
+                        groupId  : this.$Group.id
+                    }
                 ),
                 securityClassIds : this.$activeSecurityClassIds,
                 actorType        : 'users',  // "users", "groups", "all"

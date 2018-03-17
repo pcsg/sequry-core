@@ -2070,6 +2070,11 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Sind Sie sicher, dass sie folgenden Benutzern für die jeweilige Gruppe und Sicherheitsklasse Zugriff gewähren möchten?<br/><br>[requests]]]></de>
         </locale>
 
+        <!-- Control: actors/GroupEdit -->
+        <locale name="controls.actors.groupselect.adminselect.info" html="true">
+            <de><![CDATA[Wählen Sie hier die Gruppen-Administratoren für die Gruppe <b>[groupName]</b> (#[groupId]). Gruppen-Administratoren dürfen dieser Gruppe Benutzer hinzufügen oder aus dieser entfernen. Zudem können sie den Gruppen-Zugriff für bestimmte Sicherheitsklassen für einzelne Benutzer im Nachhinein freischalten.]]></de>
+        </locale>
+
     </groups>
 
 </locales>

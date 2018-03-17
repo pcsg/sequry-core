@@ -1,14 +1,12 @@
 <?php
 
 /**
- * This file contains \QUI\Kapitalschutz\Events
+ * This file contains \Sequry\Core\Events
  */
 
 namespace Sequry\Core;
 
-use Pcsg\GpmAuthPassword\AuthPlugin;
 use Sequry\Core\Constants\Crypto;
-use Sequry\Core\Security\SymmetricCrypto;
 use QUI\Package\Package;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Security\Handler\CryptoActors;

@@ -41,9 +41,10 @@ define('package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow', [
         ],
 
         options: {
-            securityClassIds: [],   // IDs of all security classes the user should authenticate for
-            title           : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.title'),
-            info            : false // info text that is shown in top section of popup
+            securityClassIds : [],   // IDs of all security classes the user should authenticate for
+            title            : QUILocale.get(lg, 'auth.multisecurityclassauthwindow.title'),
+            info             : false, // info text that is shown in top section of popup
+            hideAuthPluginIds: []   // IDs of authentication plugins that should not be display in auth window
         },
 
         initialize: function (options) {
@@ -224,12 +225,13 @@ define('package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow', [
          * @param {Object} Btn
          */
         $onAuthBtnClick: function (Btn) {
-            var self            = this;
-            var securityClassId = Btn.getAttribute('securityClassId');
+            var self              = this;
+            var securityClassId   = Btn.getAttribute('securityClassId');
+            var hideAuthPluginIds = this.getAttribute('hideAuthPluginIds');
 
             this.Loader.show();
 
-            Authentication.securityClassAuth(securityClassId).then(function () {
+            Authentication.securityClassAuth(securityClassId, hideAuthPluginIds).then(function () {
                 self.Loader.hide();
                 self.$checkAuth();
             }, function () {

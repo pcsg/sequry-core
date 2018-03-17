@@ -352,7 +352,8 @@ define('package/sequry/core/bin/controls/auth/Panel', [
             ).then(function (securityClassIds) {
                 Authentication.multiSecurityClassAuth(
                     securityClassIds,
-                    QUILocale.get(lg, 'auth.panel.sync_info')
+                    QUILocale.get(lg, 'auth.panel.sync_info'),
+                    [authPluginId]
                 ).then(
                     startSync,
                     function() {
