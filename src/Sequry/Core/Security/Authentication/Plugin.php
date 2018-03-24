@@ -273,9 +273,11 @@ class Plugin extends QUI\QDOM
             Utils::getSystemKeyPairAuthKey()
         );
 
+        $DB = QUI::getDataBase();
+
         try {
             // put everything in the database
-            QUI::getDataBase()->insert(
+            $DB->insert(
                 Tables::keyPairsUser(),
                 array(
                     'userId'       => $User->getId(),
@@ -296,9 +298,11 @@ class Plugin extends QUI\QDOM
             ));
         }
 
+        $newKeyPairId = $DB->getPDO()->lastInsertId();
+
         $this->refreshGroupAccessKeyEntries(
             CryptoActors::getCryptoUser($User->getId()),
-            QUI::getDataBase()->getPDO()->lastInsertId()
+            $newKeyPairId
         );
 
         return $authInformation;

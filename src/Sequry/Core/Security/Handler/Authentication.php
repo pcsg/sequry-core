@@ -120,7 +120,7 @@ class Authentication
                 $AuthPlugin
             );
 
-            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false)) > 0;
+            $sync        = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false)) > 0;
             $row['sync'] = $sync;
 
             // title
@@ -776,14 +776,16 @@ class Authentication
     {
         foreach ($unlockRequests as $request) {
             if (empty($request['groupId'])
-                || empty($request['userId'])) {
+                || empty($request['userId'])
+                || empty($request['securityClassId'])) {
                 continue;
             }
 
-            $CryptoGroup = CryptoActors::getCryptoGroup($request['groupId']);
-            $CryptoUser  = CryptoActors::getCryptoUser($request['userId']);
+            $SecurityClass = Authentication::getSecurityClass($request['securityClassId']);
+            $CryptoGroup   = CryptoActors::getCryptoGroup($request['groupId']);
+            $CryptoUser    = CryptoActors::getCryptoUser($request['userId']);
 
-            $CryptoGroup->addCryptoUser($CryptoUser);
+            $CryptoGroup->addCryptoUser($CryptoUser, $SecurityClass);
         }
     }
 }

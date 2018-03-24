@@ -469,11 +469,12 @@ class CryptoGroup extends QUI\Groups\Group
      * Adds a user to this group so he can access all passwords the group has access to
      *
      * @param CryptoUser $AddUser - The user that is added to the group
+     * @param SecurityClass $AddSequrityClass (optional) - Write access entry only for a specific SecurityClass
      * @return void
      *
      * @throws QUI\Exception
      */
-    public function addCryptoUser(CryptoUser $AddUser)
+    public function addCryptoUser(CryptoUser $AddUser, $AddSequrityClass = null)
     {
         // permission check
         $this->checkAdminPermission();
@@ -486,6 +487,11 @@ class CryptoGroup extends QUI\Groups\Group
 
         // split group keys
         foreach ($securityClasses as $SecurityClass) {
+            if (!is_null($AddSequrityClass)
+                && $AddSequrityClass->getId() !== $SecurityClass->getId()) {
+                continue;
+            }
+
             // split key
             $GroupAccessKey = $this->CryptoUser->getGroupAccessKey($this, $SecurityClass);
 
@@ -689,7 +695,7 @@ class CryptoGroup extends QUI\Groups\Group
         $ids = array();
 
         foreach ($result as $row) {
-            $ids[] = $row['userId'];
+            $ids[] = (int)$row['userId'];
         }
 
         return $ids;
@@ -814,13 +820,14 @@ class CryptoGroup extends QUI\Groups\Group
             'count' => 1,
             'from'  => Tables::usersToGroups(),
             'where' => array(
-                'userId'        => $User->getId(),
-                'groupId'       => $this->getId(),
-                'userKeyPairId' => array(
+                'userId'          => $User->getId(),
+                'groupId'         => $this->getId(),
+                'securityClassId' => $SecurityClass->getId(),
+                'userKeyPairId'   => array(
                     'type'  => 'NOT',
                     'value' => null
                 ),
-                'groupKey'      => array(
+                'groupKey'        => array(
                     'type'  => 'NOT',
                     'value' => null
                 )

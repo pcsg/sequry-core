@@ -19,13 +19,8 @@ use Sequry\Core\Security\Handler\Authentication;
         try {
             $Group         = QUI::getGroups()->get((int)$groupId);
             $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
-            $User          = null;
 
-            if (!empty($userId)) {
-                $User = QUI::getUsers()->get((int)$userId);
-            }
-
-            CryptoActors::createCryptoGroupKey($Group, $SecurityClass, $User);
+            CryptoActors::createCryptoGroupKey($Group, $SecurityClass);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 

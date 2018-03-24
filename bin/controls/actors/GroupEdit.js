@@ -19,13 +19,12 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
     'package/sequry/core/bin/Actors',
     'package/sequry/core/bin/controls/actors/Select',
     'package/sequry/core/bin/Authentication',
-    'package/sequry/core/bin/controls/actors/SelectTablePopup',
 
     'text!package/sequry/core/bin/controls/actors/GroupEdit.html',
     'css!package/sequry/core/bin/controls/actors/GroupEdit.css'
 
 ], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors, ActorSelect,
-             Authentication, ActorSelectPopup, template) {
+             Authentication, template) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -274,13 +273,6 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                 this.$Elm.getElement('.pcsg-gpm-group-edit-groupamdmins')
             );
 
-            for (var i = 0, len = this.$Group.groupAdminUserIds.length; i < len; i++) {
-                this.$GroupAdminSelect.addItem('u' + this.$Group.groupAdminUserIds[i]);
-                filterActorIds.push('u' + this.$Group.groupAdminUserIds[i]);
-            }
-
-            this.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
-
             var enableSecurityClassBtns = function () {
                 self.$securityClassBtns.each(function (Btn) {
                     if (Btn.getAttribute('groupEligible')) {
@@ -298,6 +290,7 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
             this.$GroupAdminSelect.addEvents({
                 onAddItem   : function (Control, userId, Item) {
                     if (self.$noEventItemChange) {
+                        console.log("set false");
                         self.$noEventItemChange = false;
                         return;
                     }
@@ -374,6 +367,14 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                 disableSecurityClassBtns();
                 this.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_admins'));
             }
+
+            for (var i = 0, len = this.$Group.groupAdminUserIds.length; i < len; i++) {
+                this.$noEventItemChange = true;
+                this.$GroupAdminSelect.addItem('u' + this.$Group.groupAdminUserIds[i]);
+                filterActorIds.push('u' + this.$Group.groupAdminUserIds[i]);
+            }
+
+            this.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
         },
 
         /**

@@ -76,16 +76,13 @@ class CryptoActors
      *
      * @param QUI\Groups\Group $Group
      * @param SecurityClass $SecurityClass - The security class that determines how the group key will be encrypted
-     * @param QUI\Users\User $User (optional) - Initial User that gets access to the group key
-     * (requires eligibility for given $SecurityClass) [default: Session user]
      * @return CryptoGroup
      *
      * @throws QUI\Exception
      */
     public static function createCryptoGroupKey(
         QUI\Groups\Group $Group,
-        SecurityClass $SecurityClass,
-        QUI\Users\User $User = null
+        SecurityClass $SecurityClass
     ) {
         if (!QUIPermissions::hasPermission(Permissions::GROUP_CREATE)) {
             throw new QUI\Exception(array(
@@ -102,10 +99,6 @@ class CryptoActors
                 'sequry/core',
                 'exception.cryptogroup.securityclass.already.assigned'
             ));
-        }
-
-        if (is_null($User)) {
-            $User = QUI::getUserBySession();
         }
 
         // check eligibility for all Group admin users

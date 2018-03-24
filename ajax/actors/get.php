@@ -44,7 +44,6 @@ function package_sequry_core_ajax_actors_get($id, $type)
             $groupAdminUserIds            = $CryptoGroup->getAdminUserIds();
 
             if (current(current($result)) > 0) {
-
                 $securityClassIds = $CryptoGroup->getSecurityClassIds();
             }
 
