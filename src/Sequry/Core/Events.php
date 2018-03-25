@@ -30,6 +30,14 @@ class Events
     public static $addUsersViaGroup = false;
 
     /**
+     * Flag that indicates that users are added to a group via the Group GUI
+     * and is authenticated for the relevant SecurityClasses
+     *
+     * @var bool
+     */
+    public static $addUsersViaGroupAuthenticated = false;
+
+    /**
      * If warning on user delete should be triggered or not
      *
      * @var bool
@@ -111,6 +119,19 @@ class Events
             return;
         }
 
+        $isAuthenticated = true;
+
+        foreach ($groupSecurityClassIds as $securityClassId) {
+            $SecurityClass = Authentication::getSecurityClass($securityClassId);
+
+            if (!$SecurityClass->isAuthenticated()) {
+                $isAuthenticated = false;
+                break;
+            }
+        }
+
+        self::$addUsersViaGroupAuthenticated = $isAuthenticated;
+
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'addUsersByGroup',
             array(
@@ -158,6 +179,13 @@ class Events
     public static function onUserSaveBegin($User)
     {
         if (self::$addUsersViaGroup) {
+            if (self::$addUsersViaGroupAuthenticated) {
+                throw new QUI\Exception(array(
+                    'sequry/core',
+                    'exception.events.add.users.to.group.info_authenticated'
+                ));
+            }
+
             throw new QUI\Exception(array(
                 'sequry/core',
                 'exception.events.add.users.to.group.info'

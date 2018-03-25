@@ -93,7 +93,7 @@ define('package/sequry/core/bin/classes/Actors', [
             return new Promise(function (resolve, reject) {
                 self.getGroupsSecurityClassIds([groupId]).then(function (securityClassIds) {
                     AuthAjax.post(
-                        'package_sequry_core_ajax_actors_addUsersToGroup', {
+                        'package_sequry_core_ajax_actors_groups_addUsers', {
                             securityClassIds: securityClassIds,
                             groupId         : groupId,
                             userIds         : JSON.encode(userIds)

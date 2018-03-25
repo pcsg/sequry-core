@@ -18,7 +18,6 @@ use Sequry\Core\Security\Handler\CryptoActors;
 use Sequry\Core\Security\Handler\Passwords;
 use Sequry\Core\Security\HiddenString;
 use Sequry\Core\Security\Keys\AuthKeyPair;
-use Sequry\Core\Security\Keys\Key;
 use Sequry\Core\Security\Keys\KeyPair;
 use Sequry\Core\Security\MAC;
 use Sequry\Core\Security\SecretSharing;

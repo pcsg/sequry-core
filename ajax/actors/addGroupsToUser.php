@@ -14,7 +14,7 @@ use Sequry\Core\Security\Utils;
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_actors_addGroupsToUser',
     function ($userId, $groupIds) {
-        $groupIds = Utils::saveJsonDecode($groupIds);
+        $groupIds = Utils::safeJsonDecode($groupIds);
 
         try {
             $CryptoUser = CryptoActors::getCryptoUser((int)$userId);

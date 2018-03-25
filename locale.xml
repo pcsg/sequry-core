@@ -613,6 +613,9 @@
         <locale name="exception.events.add.users.to.group.info">
             <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Gruppe authentifizieren, bevor Sie dieser Gruppe Benutzer hinzufügen können.]]></de>
         </locale>
+        <locale name="exception.events.add.users.to.group.info_authenticated">
+            <de><![CDATA[Sie sind für die nötigen Sicherheitsklassen für diese Operation bereits authentifiziert. Diese Nachricht kann ignoriert werden.]]></de>
+        </locale>
         <locale name="exception.events.add.groups.to.user.info">
             <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Passwort-Gruppen authentifizieren, bevor sie diese Gruppen dem Benutzer zuweisen können.]]></de>
         </locale>
@@ -2038,12 +2041,12 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
 
         <!-- Control: actors/groupadmins/GroupAdminButton -->
         <locale name="controls.actors.groupadmins.GroupAdminButton.text">
-            <de><![CDATA[Sequry Gruppen-Administration ([openRequests] offene Anfragen)]]></de>
+            <de><![CDATA[Gruppen-Freischaltungen ([openRequests] offene Anfragen)]]></de>
         </locale>
 
         <!-- Control: actors/groupadmins/Panel -->
         <locale name="controls.actors.groupadmins.Panel.title">
-            <de><![CDATA[Sequry Gruppen-Administration]]></de>
+            <de><![CDATA[Sequry Gruppen-Freischaltungen]]></de>
         </locale>
         <locale name="controls.actors.groupadmins.Panel.tbl.btn.unlockAll">
             <de><![CDATA[Alle freischalten]]></de>

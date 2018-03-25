@@ -771,6 +771,7 @@ class Authentication
      *
      * @param array $unlockRequests
      * @return void
+     * @throws Exception
      */
     public static function unlockUsersForGroups($unlockRequests)
     {
