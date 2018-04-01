@@ -196,6 +196,15 @@ require([
         }
     );
 
+    QUIAjax.registerGlobalJavaScriptCallback(
+        'refreshGroupAdminPanels',
+        function() {
+            require(['package/sequry/core/bin/Actors'], function(Actors) {
+                Actors.fireEvent('refreshGroupAdminPanels');
+            });
+        }
+    );
+
     window.addEvent('quiqqerLoaded', function() {
         Actors.getGroupAdminStatus().then(function(Status) {
             if (!Status.isGroupAdmin) {

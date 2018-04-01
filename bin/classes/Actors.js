@@ -224,15 +224,15 @@ define('package/sequry/core/bin/classes/Actors', [
          * Add admin user to a group
          *
          * @param {Number} groupId
-         * @param {Number} userId
+         * @param {Array} userIds
          * @returns {Promise}
          */
-        addGroupAdminUser: function (groupId, userId) {
+        addGroupAdminUsers: function (groupId, userIds) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_sequry_core_ajax_actors_groups_addAdminUser', resolve, {
+                QUIAjax.post('package_sequry_core_ajax_actors_groups_addAdminUsers', resolve, {
                     'package': pkg,
                     groupId  : groupId,
-                    userId   : userId,
+                    userIds  : JSON.encode(userIds),
                     onError  : reject
                 });
             });

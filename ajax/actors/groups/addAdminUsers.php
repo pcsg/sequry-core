@@ -1,7 +1,7 @@
 <?php
 
 use Sequry\Core\Security\Handler\CryptoActors;
-use Sequry\Core\Security\Handler\Authentication;
+use QUI\Utils\Security\Orthos;
 
 /**
  * Add an admin user to a group
@@ -12,13 +12,17 @@ use Sequry\Core\Security\Handler\Authentication;
  * @return bool - success
  */
 \QUI::$Ajax->registerFunction(
-    'package_sequry_core_ajax_actors_groups_addAdminUser',
-    function ($groupId, $userId) {
+    'package_sequry_core_ajax_actors_groups_addAdminUsers',
+    function ($groupId, $userIds) {
+        $userIds = Orthos::clearArray(json_decode($userIds, true));
+
         try {
             $CryptoGroup = CryptoActors::getCryptoGroup((int)$groupId);
-            $CryptoUser  = CryptoActors::getCryptoUser((int)$userId);
 
-            $CryptoGroup->addAdminUser($CryptoUser);
+            foreach ($userIds as $userId) {
+                $CryptoUser  = CryptoActors::getCryptoUser((int)$userId);
+                $CryptoGroup->addAdminUser($CryptoUser);
+            }
         } catch (\Sequry\Core\Exception\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
@@ -53,6 +57,6 @@ use Sequry\Core\Security\Handler\Authentication;
 
         return true;
     },
-    array('groupId', 'userId'),
+    array('groupId', 'userIds'),
     'Permission::checkAdminUser'
 );

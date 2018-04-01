@@ -246,6 +246,7 @@ class Events
                 }
 
                 $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
+                $groupId                        = $CryptoGroup->getId();
                 $groupsHandled[$row['groupId']] = true;
 
                 if (!self::$addGroupsToUserAuthentication
@@ -269,6 +270,14 @@ class Events
 
                 try {
                     $CryptoGroup->addCryptoUser($CryptoUser);
+
+                    $sessionCache = QUI::getSession()->get('add_adminusers_to_group');
+
+                    if (!empty($sessionCache[$groupId])
+                        && in_array($CryptoUser->getId(), $sessionCache[$groupId])) {
+                        $CryptoGroup->addAdminUser($CryptoUser, false);
+                        QUI::getAjax()->triggerGlobalJavaScriptCallback('refreshGroupAdminPanels');
+                    }
                 } catch (\Exception $Exception) {
                     QUI::getMessagesHandler()->addAttention(
                         QUI::getLocale()->get(
@@ -546,7 +555,7 @@ class Events
                 'gpm.cryptodata.share'        => true,
                 'gpm.cryptodata.delete_group' => true,
                 'gpm.cryptodata.share_group'  => true,
-                'gpm.cryptogroup.create'        => true,
+                'gpm.cryptogroup.create'      => true,
                 'gpm.securityclass.edit'      => true,
                 'gpm.categories.edit'         => true
             ),

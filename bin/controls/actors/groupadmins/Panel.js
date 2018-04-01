@@ -9,7 +9,6 @@ define('package/sequry/core/bin/controls/actors/groupadmins/Panel', [
     'qui/controls/desktop/Panel',
     'qui/controls/loader/Loader',
     'qui/controls/windows/Confirm',
-    'qui/controls/buttons/Button',
 
     'controls/grid/Grid',
     'package/sequry/core/bin/Actors',
@@ -20,7 +19,7 @@ define('package/sequry/core/bin/controls/actors/groupadmins/Panel', [
     'text!package/sequry/core/bin/controls/actors/groupadmins/Panel.html',
     'css!package/sequry/core/bin/controls/actors/groupadmins/Panel.css'
 
-], function (QUIPanel, QUILoader, QUIConfirm, QUIButton, Grid, Actors, QUILocale, Mustache, template) {
+], function (QUIPanel, QUILoader, QUIConfirm, Grid, Actors, QUILocale, Mustache, template) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -50,10 +49,8 @@ define('package/sequry/core/bin/controls/actors/groupadmins/Panel', [
             this.parent(options);
 
             this.Loader      = new QUILoader();
-            this.$User       = null;
             this.$Grid       = null;
             this.$GridParent = null;
-            this.$Panel      = null;
 
             this.addEvents({
                 onCreate : this.$onCreate,

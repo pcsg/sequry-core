@@ -528,6 +528,12 @@ class CryptoGroup extends QUI\Groups\Group
      */
     public function removeCryptoUser(CryptoUser $RemoveUser)
     {
+        // if the user that is to be removed is an admin of this group
+        // -> try to remove admin status first
+        if ($this->isAdminUser($RemoveUser)) {
+            $this->removeAdminUser($RemoveUser);
+        }
+
         // SU can always remove users from groups
         if (!$this->CryptoUser->isSU()) {
             $this->checkAdminPermission();
@@ -573,16 +579,41 @@ class CryptoGroup extends QUI\Groups\Group
      * - Retrospectively grant access to users to group passwords for a specific SecurityClass
      *
      * @param CryptoUser $User
+     * @param bool $checkIfUserIsInGroup (optional) - Checks if the user is in the group
+     * This parameter is only used if the group user is added asynchronously via the QUIQQER event system
+     * to prevent recursive user-to-group-adding
      * @return void
      * @throws PermissionDeniedException
      * @throws QUI\Exception
      */
-    public function addAdminUser(CryptoUser $User)
+    public function addAdminUser(CryptoUser $User, $checkIfUserIsInGroup = true)
     {
         $this->checkAdminManagePermission();
 
         if ($this->isAdminUser($User)) {
             return;
+        }
+
+        // Create regular access for Admin User
+        $Session      = QUI::getSession();
+        $sessionCache = $Session->get('add_adminusers_to_group');
+        $groupId      = $this->getId();
+
+        if (empty($sessionCache)) {
+            $sessionCache = [];
+        }
+
+        if (empty($sessionCache[$groupId])) {
+            $sessionCache[$groupId] = [];
+        }
+
+        if ($checkIfUserIsInGroup && !$this->isUserInGroup($User)) {
+            $this->addUser($User);
+
+            $sessionCache[$groupId][] = $User->getId();
+            QUI::getSession()->set('add_adminusers_to_group', $sessionCache);
+
+            $User->save(QUI::getUsers()->getSystemUser());
         }
 
         // Admin users have to be eligible for all SecurityClasses of this Group
@@ -614,10 +645,11 @@ class CryptoGroup extends QUI\Groups\Group
             $data
         );
 
-        // Create regular access for Admin User
-        if (!$this->isUserInGroup($User)) {
-            $this->addCryptoUser($User);
+        if (in_array($User->getId(), $sessionCache[$groupId])) {
+            unset($sessionCache[$groupId][array_search($User->getId(), $sessionCache[$groupId])]);
         }
+
+        QUI::getSession()->set('add_adminusers_to_group', $sessionCache);
     }
 
     /**

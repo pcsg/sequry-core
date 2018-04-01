@@ -54,6 +54,8 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                 onInject: this.$onInject
             });
 
+            Actors.addEvent('onRefreshGroupAdminPanels', this.$onInject);
+
             this.$currentSecurityClassId = false;
             this.$canEditGroup           = true;
             this.$NoEditWarnElm          = null;
@@ -265,6 +267,7 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                         groupId  : this.$Group.id
                     }
                 ),
+                multiple         : false,    // this is only temporary until a separate group admin GUI for sequry is built
                 securityClassIds : this.$activeSecurityClassIds,
                 actorType        : 'users',  // "users", "groups", "all"
                 showEligibleOnly : true,  // show eligible only or all
@@ -303,7 +306,7 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
 
                     self.$GroupAdminSelect.Loader.show();
 
-                    Actors.addGroupAdminUser(self.$Group.id, realUserId).then(function (success) {
+                    Actors.addGroupAdminUsers(self.$Group.id, [realUserId]).then(function (success) {
                         self.$GroupAdminSelect.Loader.hide();
 
                         if (!success) {
