@@ -228,7 +228,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
                     );
 
                     VHostRowElm.destroy();
-                    self.fireEvent('loaded', [self]);
+                    self.fireEvent('noPasswordSites', [self]);
                     return;
                 }
 

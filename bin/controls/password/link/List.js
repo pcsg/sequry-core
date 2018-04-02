@@ -399,6 +399,24 @@ define('package/sequry/core/bin/controls/password/link/List', [
             var self = this;
             var LinkCreateControl;
 
+            var CreateBtn = new QUIButton({
+                text  : QUILocale.get(lg, 'controls.password.linklist.add.popup.btn.submit.text'),
+                alt   : QUILocale.get(lg, 'controls.password.linklist.add.popup.btn.submit'),
+                title : QUILocale.get(lg, 'controls.password.linklist.add.popup.btn.submit'),
+                events: {
+                    onClick: function () {
+                        Popup.Loader.show();
+
+                        LinkCreateControl.submit().then(function () {
+                            Popup.close();
+                            self.refresh();
+                        }, function () {
+                            Popup.Loader.hide();
+                        });
+                    }
+                }
+            });
+
             // open popup
             var Popup = new QUIPopup({
                 icon       : 'fa fa-plus',
@@ -417,6 +435,10 @@ define('package/sequry/core/bin/controls/password/link/List', [
                             events       : {
                                 onLoaded: function () {
                                     Popup.Loader.hide();
+                                },
+                                onNoPasswordSites: function() {
+                                    Popup.Loader.hide();
+                                    CreateBtn.disable();
                                 }
                             }
                         }).inject(Popup.getContent());
@@ -426,24 +448,7 @@ define('package/sequry/core/bin/controls/password/link/List', [
             });
 
             Popup.open();
-
-            Popup.addButton(new QUIButton({
-                text  : QUILocale.get(lg, 'controls.password.linklist.add.popup.btn.submit.text'),
-                alt   : QUILocale.get(lg, 'controls.password.linklist.add.popup.btn.submit'),
-                title : QUILocale.get(lg, 'controls.password.linklist.add.popup.btn.submit'),
-                events: {
-                    onClick: function () {
-                        Popup.Loader.show();
-
-                        LinkCreateControl.submit().then(function () {
-                            Popup.close();
-                            self.refresh();
-                        }, function () {
-                            Popup.Loader.hide();
-                        });
-                    }
-                }
-            }));
+            Popup.addButton(CreateBtn);
         },
 
         /**
