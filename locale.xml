@@ -756,24 +756,6 @@
             <de><![CDATA[Passwort]]></de>
         </locale>
 
-        <!-- Instructions -->
-        <locale name="exception.actors.sendinstructions.no.email.address">
-            <de>
-                <![CDATA[Die Anweisungen für den PasswortManager können nicht versendet werden, da der Benuzter "[userName]" (#[userId]) keine E-Mail-Addresse in seinem Benutzerprofil eingetragen hat.]]></de>
-        </locale>
-        <locale name="error.actors.sendinstructions">
-            <de><![CDATA[Die Anleitung konnte nicht verschickt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie einen Administrator.]]></de>
-        </locale>
-        <locale name="success.actors.sendinstructions">
-            <de><![CDATA[Die Anleitung wurde erfolgreich verschickt!]]></de>
-        </locale>
-        <locale name="actors.sendinstructions.subject">
-            <de><![CDATA[Anleitung für den QUIQQER PasswordManager]]></de>
-        </locale>
-        <locale name="actors.sendinstructions.instructions" html="true">
-            <de><![CDATA[Anleitungstext]]></de>
-        </locale>
-
         <!-- Handler\Categories -->
         <locale name="exception.handler.categories.category.not.found">
             <de><![CDATA[Die öffentliche Passwort-Kategorie #[id] wurde nicht gefunden.]]></de>
@@ -906,10 +888,10 @@ Freundliche Grüße!]]></de>
 
         <!-- Setup -->
         <locale name="setup.securityclass.title">
-            <de><![CDATA[1-Faktor (QUIQQER Passwort)]]></de>
+            <de><![CDATA[1-Faktor (Login-Passwort)]]></de>
         </locale>
         <locale name="setup.securityclass.description">
-            <de><![CDATA[Authentifizierung per QUIQQER Login Passwort]]></de>
+            <de><![CDATA[Authentifizierung per Login Passwort]]></de>
         </locale>
 
         <locale name="password.create.template.passwordCategory">
@@ -1331,7 +1313,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Registrieren]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.initialRegistration.label">
-            <de><![CDATA[QUIQQER Login-Passwort]]></de>
+            <de><![CDATA[Login-Passwort]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.view.button.edit">
             <de><![CDATA[Passwort bearbeiten]]></de>
