@@ -9,6 +9,7 @@ namespace Sequry\Core;
 use Sequry\Core\Constants\Crypto;
 use QUI\Package\Package;
 use Sequry\Core\Constants\Tables;
+use Sequry\Core\Exception\Exception;
 use Sequry\Core\Security\Handler\CryptoActors;
 use QUI;
 use Sequry\Core\Security\Handler\Authentication;
@@ -180,13 +181,13 @@ class Events
     {
         if (self::$addUsersViaGroup) {
             if (self::$addUsersViaGroupAuthenticated) {
-                throw new QUI\Exception(array(
+                throw new Exception(array(
                     'sequry/core',
                     'exception.events.add.users.to.group.info_authenticated'
                 ));
             }
 
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.events.add.users.to.group.info'
             ));
@@ -218,7 +219,8 @@ class Events
             return;
         }
 
-        $groupsAdded = array_diff($groupsNow, $groupsBefore);
+        $groupsAdded     = array_diff($groupsNow, $groupsBefore);
+        $addedAdminUsers = false;
 
         if (!empty($groupsAdded)) {
             $securityClassIds = array();
@@ -276,6 +278,8 @@ class Events
                     if (!empty($sessionCache[$groupId])
                         && in_array($CryptoUser->getId(), $sessionCache[$groupId])) {
                         $CryptoGroup->addAdminUser($CryptoUser, false);
+                        $addedAdminUsers = true;
+
                         QUI::getAjax()->triggerGlobalJavaScriptCallback('refreshGroupAdminPanels');
                     }
                 } catch (\Exception $Exception) {
@@ -366,6 +370,15 @@ class Events
                     $groupsNow[] = $CryptoGroup->getId();
                 }
             }
+        }
+
+        if ($addedAdminUsers) {
+            QUI::getMessagesHandler()->addSuccess(
+                QUI::getLocale()->get(
+                    'sequry/core',
+                    'message.ajax.actors.groups.addAdminUser.success'
+                )
+            );
         }
 
         if (empty($groupsNow)) {

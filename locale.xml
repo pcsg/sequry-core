@@ -551,11 +551,11 @@
         <locale name="message.ajax.auth.recovery.regenerateCode.error">
             <de><![CDATA[Beim Erzeugen des Wiederherstellungs-Codes ist ein Fehler aufgetreten:<br><br>[error]]]></de>
         </locale>
-        <locale name="message.ajax.actors.groups.addAdminUser.error" html="true">
-            <de><![CDATA[Der Benutzer konnte nicht als Gruppen-Administrator hinzugefügt werden:<br><br>[error]]]></de>
+        <locale name="message.ajax.actors.groups.addAdminUsers.error" html="true">
+            <de><![CDATA[Die Benutzer konnten nicht als Gruppen-Administratoren hinzugefügt werden:<br><br>[error]]]></de>
         </locale>
-        <locale name="message.ajax.actors.groups.addAdminUser.success">
-            <de><![CDATA[Der Benutzer wurde erfolgreich als Gruppen-Administrator hinzugefügt.]]></de>
+        <locale name="message.ajax.actors.groups.addAdminUsers.success">
+            <de><![CDATA[Die Benutzer wurden erfolgreich als Gruppen-Administratoren hinzugefügt.]]></de>
         </locale>
         <locale name="message.ajax.actors.groups.removeAdminUser.error" html="true">
             <de><![CDATA[Der Benutzer konnte nicht als Gruppen-Administrator entfernt werden:<br><br>[error]]]></de>

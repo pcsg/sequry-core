@@ -293,7 +293,6 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
             this.$GroupAdminSelect.addEvents({
                 onAddItem   : function (Control, userId, Item) {
                     if (self.$noEventItemChange) {
-                        console.log("set false");
                         self.$noEventItemChange = false;
                         return;
                     }
