@@ -239,7 +239,7 @@ class Handler
      */
     public static function getPasswordTypeClass($type)
     {
-        $class = 'Pcsg\\GroupPasswordManager\\PasswordTypes\\' . $type . '\\Type';
+        $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
         return new $class();
     }
 }
