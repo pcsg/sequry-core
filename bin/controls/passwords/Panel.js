@@ -1750,7 +1750,9 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                                 }
                             });
 
-                            Input.focus();
+                            (function() {
+                                Input.focus();
+                            }).delay(200);
                         }
                     }
                 });
