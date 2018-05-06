@@ -25,14 +25,6 @@ function package_sequry_core_ajax_auth_getNonFullyAccessibleSecurityClassIds(
         $securityClassIds[$SecurityClass->getId()] = true;
     }
 
-    $limitedGroupAccessData = $CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin);
-
-    foreach ($limitedGroupAccessData as $groupId => $limitedSecurityClassIds) {
-        foreach ($limitedSecurityClassIds as $limitedSecurityClassId) {
-            $securityClassIds[$limitedSecurityClassId] = true;
-        }
-    }
-
     return array_keys($securityClassIds);
 }
 

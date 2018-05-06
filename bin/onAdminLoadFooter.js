@@ -10,8 +10,9 @@ require([
     'Ajax',
     'qui/controls/windows/Confirm',
     'package/sequry/core/bin/Passwords',
+    'package/sequry/core/bin/Actors',
     'Locale'
-], function (QUI, QUIAjax, QUIConfirm, Passwords, QUILocale) {
+], function (QUI, QUIAjax, QUIConfirm, Passwords, Actors, QUILocale) {
     "use strict";
 
     var lg  = 'sequry/core';
@@ -194,4 +195,31 @@ require([
             });
         }
     );
+
+    QUIAjax.registerGlobalJavaScriptCallback(
+        'refreshGroupAdminPanels',
+        function() {
+            require(['package/sequry/core/bin/Actors'], function(Actors) {
+                Actors.fireEvent('refreshGroupAdminPanels');
+            });
+        }
+    );
+
+    window.addEvent('quiqqerLoaded', function() {
+        Actors.getGroupAdminStatus().then(function(Status) {
+            if (!Status.isGroupAdmin) {
+                return;
+            }
+
+            require([
+                'package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton'
+            ], function(GroupAdminButton) {
+                new GroupAdminButton({
+                    openRequests: Status.openRequests
+                }).inject(
+                    document.getElement('.qui-menu-container')
+                );
+            });
+        });
+    });
 });

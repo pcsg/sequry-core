@@ -259,7 +259,7 @@ class Utils
      * @param string $arrayData - Data to be decoded
      * @return array
      */
-    public static function saveJsonDecode($arrayData) {
+    public static function safeJsonDecode($arrayData) {
         if (!is_string($arrayData)) {
             return array();
         }

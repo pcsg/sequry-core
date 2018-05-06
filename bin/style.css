@@ -152,3 +152,37 @@
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;
 }
+
+.pcsg-gpm-password-noaccess {
+    cursor: not-allowed;
+    height: 100%;
+    left: 0px;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.pcsg-gpm-password-noaccess > div {
+    background-color: #FAF6D4;
+    border: 1px solid #E6C26E;
+    border-radius: 5px;
+    color: #000;
+    line-height: 20px;
+    margin: 200px auto;
+    max-width: 600px;
+    padding: 10px 15px;
+}
+
+.pcsg-gpm-password-noaccess > div h1 {
+    font-size: 20px;
+}
+
+.pcsg-gpm-password-noaccess button {
+    float: none !important;
+}
+
+.field-container-item-desc-no-padding {
+    padding: 10px !important;
+}

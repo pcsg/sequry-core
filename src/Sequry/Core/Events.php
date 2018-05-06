@@ -1,14 +1,15 @@
 <?php
 
+/**
+ * This file contains \Sequry\Core\Events
+ */
+
 namespace Sequry\Core;
 
-use Sequry\Core\Actors\CryptoGroup;
-use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Crypto;
-use Sequry\Core\Security\Authentication\SecurityClass;
-use Sequry\Core\Security\Handler\PasswordLinks;
 use QUI\Package\Package;
 use Sequry\Core\Constants\Tables;
+use Sequry\Core\Exception\Exception;
 use Sequry\Core\Security\Handler\CryptoActors;
 use QUI;
 use Sequry\Core\Security\Handler\Authentication;
@@ -25,6 +26,14 @@ class Events
      * @var bool
      */
     public static $addUsersViaGroup = false;
+
+    /**
+     * Flag that indicates that users are added to a group via the Group GUI
+     * and is authenticated for the relevant SecurityClasses
+     *
+     * @var bool
+     */
+    public static $addUsersViaGroupAuthenticated = false;
 
     /**
      * If warning on user delete should be triggered or not
@@ -112,6 +121,19 @@ class Events
             return;
         }
 
+        $isAuthenticated = true;
+
+        foreach ($groupSecurityClassIds as $securityClassId) {
+            $SecurityClass = Authentication::getSecurityClass($securityClassId);
+
+            if (!$SecurityClass->isAuthenticated()) {
+                $isAuthenticated = false;
+                break;
+            }
+        }
+
+        self::$addUsersViaGroupAuthenticated = $isAuthenticated;
+
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'addUsersByGroup',
             array(
@@ -159,7 +181,14 @@ class Events
     public static function onUserSaveBegin($User)
     {
         if (self::$addUsersViaGroup) {
-            throw new QUI\Exception(array(
+            if (self::$addUsersViaGroupAuthenticated) {
+                throw new Exception(array(
+                    'sequry/core',
+                    'exception.events.add.users.to.group.info_authenticated'
+                ));
+            }
+
+            throw new Exception(array(
                 'sequry/core',
                 'exception.events.add.users.to.group.info'
             ));
@@ -191,7 +220,8 @@ class Events
             return;
         }
 
-        $groupsAdded = array_diff($groupsNow, $groupsBefore);
+        $groupsAdded     = array_diff($groupsNow, $groupsBefore);
+        $addedAdminUsers = false;
 
         if (!empty($groupsAdded)) {
             $securityClassIds = array();
@@ -219,6 +249,7 @@ class Events
                 }
 
                 $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
+                $groupId                        = $CryptoGroup->getId();
                 $groupsHandled[$row['groupId']] = true;
 
                 if (!self::$addGroupsToUserAuthentication
@@ -242,6 +273,16 @@ class Events
 
                 try {
                     $CryptoGroup->addCryptoUser($CryptoUser);
+
+                    $sessionCache = QUI::getSession()->get('add_adminusers_to_group');
+
+                    if (!empty($sessionCache[$groupId])
+                        && in_array($CryptoUser->getId(), $sessionCache[$groupId])) {
+                        $CryptoGroup->addAdminUser($CryptoUser, false);
+                        $addedAdminUsers = true;
+
+                        QUI::getAjax()->triggerGlobalJavaScriptCallback('refreshGroupAdminPanels');
+                    }
                 } catch (\Exception $Exception) {
                     QUI::getMessagesHandler()->addAttention(
                         QUI::getLocale()->get(
@@ -330,6 +371,15 @@ class Events
                     $groupsNow[] = $CryptoGroup->getId();
                 }
             }
+        }
+
+        if ($addedAdminUsers) {
+            QUI::getMessagesHandler()->addSuccess(
+                QUI::getLocale()->get(
+                    'sequry/core',
+                    'message.ajax.actors.groups.addAdminUser.success'
+                )
+            );
         }
 
         if (empty($groupsNow)) {
@@ -519,7 +569,7 @@ class Events
                 'gpm.cryptodata.share'        => true,
                 'gpm.cryptodata.delete_group' => true,
                 'gpm.cryptodata.share_group'  => true,
-                'gpm.cryptogroup.edit'        => true,
+                'gpm.cryptogroup.create'      => true,
                 'gpm.securityclass.edit'      => true,
                 'gpm.categories.edit'         => true
             ),

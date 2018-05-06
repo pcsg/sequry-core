@@ -1,19 +1,8 @@
 /**
- * Control for editing a password manager groupd
+ * Settings for a Sequry Group
  *
  * @module package/sequry/core/bin/controls/actors/GroupEdit
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/auth/Authenticate
- * @require package/sequry/core/bin/controls/securityclasses/Select
- * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
- * @require text!package/sequry/core/bin/controls/actors/GroupEdit.html
- * @require css!package/sequry/core/bin/controls/actors/GroupEdit.css
  *
  * @event onLoaded
  * @event onSuccess
@@ -28,16 +17,14 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
     'Mustache',
 
     'package/sequry/core/bin/Actors',
+    'package/sequry/core/bin/controls/actors/Select',
     'package/sequry/core/bin/Authentication',
-    'package/sequry/core/bin/controls/actors/SelectTablePopup',
-
-    'Ajax',
 
     'text!package/sequry/core/bin/controls/actors/GroupEdit.html',
     'css!package/sequry/core/bin/controls/actors/GroupEdit.css'
 
-], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors,
-             Authentication, ActorSelectPopup, QUIAjax, template) {
+], function (QUIControl, QUIButton, QUIConfirm, QUILocale, Mustache, Actors, ActorSelect,
+             Authentication, template) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -50,7 +37,10 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
         Binds: [
             '$onInject',
             '$addSecurityClass',
-            '$removeSecurityClass'
+            '$removeSecurityClass',
+            '$buildGroupAdminSelect',
+            '$showWarning',
+            '$removeWarning'
         ],
 
         options: {
@@ -64,12 +54,19 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                 onInject: this.$onInject
             });
 
+            Actors.addEvent('onRefreshGroupAdminPanels', this.$onInject);
+
             this.$currentSecurityClassId = false;
             this.$canEditGroup           = true;
             this.$NoEditWarnElm          = null;
             this.$SecurityClasses        = {};
             this.$Group                  = {};
             this.$groupId                = false;
+            this.$GroupAdminSelect       = null;
+            this.$activeSecurityClassIds = [];
+            this.$noEventItemChange      = false;
+            this.$securityClassBtns      = [];
+            this.$WarningElm             = null;
         },
 
         /**
@@ -94,45 +91,27 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                 self.$Elm.set({
                     'class': 'pcsg-gpm-group-edit',
                     html   : Mustache.render(template, {
-                        basicData      : QUILocale.get(lg, lg_prefix + 'basicData'),
-                        securityclasses: QUILocale.get(lg, lg_prefix + 'securityclasses')
+                        headerSecurityClasses: QUILocale.get(lg, lg_prefix + 'headerSecurityClasses'),
+                        securityclasses      : QUILocale.get(lg, lg_prefix + 'securityclasses'),
+                        headerGroupAdmins    : QUILocale.get(lg, lg_prefix + 'headerGroupAdmins'),
+                        groupAdminDesc       : QUILocale.get(lg, lg_prefix + 'groupAdminDesc')
                     })
                 });
 
                 var SecurityClassesElm = self.$Elm.getElement('.pcsg-gpm-group-edit-securityclasses');
 
-                //if (!Group.sessionUserInGroup) {
-                //    self.$canEditGroup = false;
-                //
-                //    self.$NoEditWarnElm = new Element('div', {
-                //        'class': 'pcsg-gpm-password-error',
-                //        html   : '<span>' +
-                //        QUILocale.get(lg, 'actors.groupedit.not.in.group') +
-                //        '</span>'
-                //    }).inject(SecurityClassesElm);
-                //
-                //    self.fireEvent('loaded');
-                //    return;
-                //}
-
-                if (!Group.securityClassIds.length) {
-                    new Element('div', {
-                        'class': 'pcsg-gpm-password-warning',
-                        html   : '<span>' +
-                        QUILocale.get(lg, 'actors.groupedit.no.securityclass') +
-                        '</span>'
-                    }).inject(
-                        SecurityClassesElm,
-                        'top'
-                    );
+                if (!Object.getLength(SecurityClasses)) {
+                    self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_securityclasses'));
+                } else if (!Group.securityClassIds.length) {
+                    self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_securityclass'));
                 }
 
                 var FuncOnSwitchBtnClick = function (Btn) {
+                    var securityClassId = Btn.getAttribute('securityClassId');
+
                     switch (Btn.getAttribute('action')) {
                         case 'add':
-                            self.$addSecurityClass(
-                                Btn.getAttribute('securityClassId')
-                            ).then(function (success) {
+                            self.$addSecurityClass(securityClassId).then(function (success) {
                                 if (!success) {
                                     return;
                                 }
@@ -146,13 +125,14 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                                 if (!Btn.getAttribute('canRemove')) {
                                     Btn.disable();
                                 }
+
+                                self.$activeSecurityClassIds.push(securityClassId);
+                                self.$buildGroupAdminSelect();
                             });
                             break;
 
                         case 'remove':
-                            self.$removeSecurityClass(
-                                Btn.getAttribute('securityClassId')
-                            ).then(function (success) {
+                            self.$removeSecurityClass(securityClassId).then(function (success) {
                                 if (!success) {
                                     return;
                                 }
@@ -162,11 +142,15 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                                     textimage: 'fa fa-plus-square',
                                     action   : 'add'
                                 });
+
+                                self.$activeSecurityClassIds.erase(securityClassId);
+                                self.$buildGroupAdminSelect();
                             });
                             break;
                     }
                 };
 
+                // SecurityClasses
                 for (var securityClassId in SecurityClasses) {
                     if (!SecurityClasses.hasOwnProperty(securityClassId)) {
                         continue;
@@ -187,26 +171,37 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                         '<div class="pcsg-gpm-actors-groupedit-securityclass-btn"></div>'
                     }).inject(SecurityClassesElm);
 
-                    var btnText, btnIcon, btnAction;
-                    var disableBtn = false;
+                    var btnText, btnIcon, btnAction, btnAlt;
+                    var groupEligible = self.$Group.securityClassEligibility[securityClassId];
 
                     if (Group.securityClassIds.contains(securityClassId)) {
                         btnText   = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.remove');
                         btnIcon   = 'fa fa-minus-square';
                         btnAction = 'remove';
+                        btnAlt    = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.remove_alt');
+
+                        self.$activeSecurityClassIds.push(securityClassId);
                     } else {
                         btnText   = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add');
                         btnIcon   = 'fa fa-plus-square';
                         btnAction = 'add';
-                        //disableBtn = true;
+
+                        if (groupEligible) {
+                            btnAlt = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add_alt');
+                        } else {
+                            btnAlt = QUILocale.get(lg, 'actors.groupedit.securityclass.btn.add_alt_not_eligible');
+                        }
                     }
 
                     var SwitchBtn = new QUIButton({
                         text           : btnText,
                         textimage      : btnIcon,
+                        alt            : btnAlt,
+                        title          : btnAlt,
                         action         : btnAction,
                         securityClassId: securityClassId,
                         canRemove      : USER.isSU,
+                        groupEligible  : groupEligible,
                         events         : {
                             onClick: FuncOnSwitchBtnClick
                         }
@@ -214,15 +209,174 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                         SecClassElm.getElement('.pcsg-gpm-actors-groupedit-securityclass-btn')
                     );
 
-                    if (disableBtn) {
+                    if (!groupEligible) {
                         SwitchBtn.disable();
                     }
+
+                    self.$securityClassBtns.push(SwitchBtn);
                 }
 
+                // group admins
+                self.$buildGroupAdminSelect();
+
                 self.fireEvent('loaded');
-                //self.$currentSecurityClassId = Actor.securityClassId;
-                //self.$SecurityClassSelect.setValue(Actor.securityClassId);
             });
+        },
+
+        /**
+         * Show warning text
+         *
+         * @param {String} msg
+         */
+        $showWarning: function (msg) {
+            this.$removeWarning();
+
+            this.$WarningElm = new Element('div', {
+                'class': 'pcsg-gpm-password-warning',
+                html   : '<span>' + msg + '</span>'
+            }).inject(
+                this.$Elm.getElement('.pcsg-gpm-group-edit-securityclasses'),
+                'top'
+            );
+        },
+
+        /**
+         * Hide current warning text
+         */
+        $removeWarning: function () {
+            if (this.$WarningElm) {
+                this.$WarningElm.destroy();
+            }
+        },
+
+        /**
+         * Build ActorSelect to select Group administration Users
+         */
+        $buildGroupAdminSelect: function () {
+            var self           = this;
+            var filterActorIds = [];
+
+            if (this.$GroupAdminSelect) {
+                this.$GroupAdminSelect.destroy();
+            }
+
+            this.$GroupAdminSelect = new ActorSelect({
+                popupInfo        : QUILocale.get(lg,
+                    'controls.actors.groupselect.adminselect.info', {
+                        groupName: this.$Group.name,
+                        groupId  : this.$Group.id
+                    }
+                ),
+                multiple         : false,    // this is only temporary until a separate group admin GUI for sequry is built
+                securityClassIds : this.$activeSecurityClassIds,
+                actorType        : 'users',  // "users", "groups", "all"
+                showEligibleOnly : true,  // show eligible only or all
+                selectedActorType: 'users' // pre-selected actor type
+            }).inject(
+                this.$Elm.getElement('.pcsg-gpm-group-edit-groupamdmins')
+            );
+
+            var enableSecurityClassBtns = function () {
+                self.$securityClassBtns.each(function (Btn) {
+                    if (Btn.getAttribute('groupEligible')) {
+                        Btn.enable();
+                    }
+                });
+            };
+
+            var disableSecurityClassBtns = function () {
+                self.$securityClassBtns.each(function (Btn) {
+                    Btn.disable();
+                });
+            };
+
+            this.$GroupAdminSelect.addEvents({
+                onAddItem   : function (Control, userId, Item) {
+                    if (self.$noEventItemChange) {
+                        self.$noEventItemChange = false;
+                        return;
+                    }
+
+                    var realUserId = parseInt(userId.substring(1));
+
+                    if (self.$Group.groupAdminUserIds.contains(realUserId)) {
+                        return;
+                    }
+
+                    self.$GroupAdminSelect.Loader.show();
+
+                    Actors.addGroupAdminUsers(self.$Group.id, [realUserId]).then(function (success) {
+                        self.$GroupAdminSelect.Loader.hide();
+
+                        if (!success) {
+                            self.$noEventItemChange = true;
+                            Item.destroy();
+                        } else {
+                            self.$Group.groupAdminUserIds.push(realUserId);
+
+                            filterActorIds.push(userId);
+                            self.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
+                        }
+
+                        if (!self.$Group.groupAdminUserIds.length) {
+                            disableSecurityClassBtns();
+                            self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_admins'));
+                        } else {
+                            enableSecurityClassBtns();
+                            self.$removeWarning();
+                        }
+                    });
+                },
+                onRemoveItem: function (userId) {
+                    if (self.$noEventItemChange) {
+                        self.$noEventItemChange = false;
+                        return;
+                    }
+
+                    var realUserId = parseInt(userId.substring(1));
+
+                    if (!self.$Group.groupAdminUserIds.contains(realUserId)) {
+                        return;
+                    }
+
+                    self.$GroupAdminSelect.Loader.show();
+
+                    Actors.removeGroupAdminUser(self.$Group.id, realUserId).then(function (success) {
+                        self.$GroupAdminSelect.Loader.hide();
+
+                        if (!success) {
+                            self.$noEventItemChange = true;
+                            self.$GroupAdminSelect.addItem(userId);
+                        } else {
+                            self.$Group.groupAdminUserIds.erase(realUserId);
+
+                            filterActorIds.erase(userId);
+                            self.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
+                        }
+
+                        if (!self.$Group.groupAdminUserIds.length) {
+                            disableSecurityClassBtns();
+                            self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_admins'));
+                        } else {
+                            enableSecurityClassBtns();
+                            self.$removeWarning();
+                        }
+                    });
+                }
+            });
+
+            if (!this.$Group.groupAdminUserIds.length) {
+                disableSecurityClassBtns();
+                this.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_admins'));
+            }
+
+            for (var i = 0, len = this.$Group.groupAdminUserIds.length; i < len; i++) {
+                this.$noEventItemChange = true;
+                this.$GroupAdminSelect.addItem('u' + this.$Group.groupAdminUserIds[i]);
+                filterActorIds.push('u' + this.$Group.groupAdminUserIds[i]);
+            }
+
+            this.$GroupAdminSelect.setAttribute('filterActorIds', filterActorIds);
         },
 
         /**
@@ -232,33 +386,10 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
          * @return {Promise}
          */
         $addSecurityClass: function (securityClassId) {
-            if (this.$Group.eligibleUser[securityClassId]) {
-                return Actors.addGroupSecurityClass(
-                    this.$groupId,
-                    securityClassId
-                );
-            }
-
-            var self = this;
-
-            return new Promise(function (resolve, reject) {
-                new ActorSelectPopup({
-                    info           : QUILocale.get(lg,
-                        'controls.actors.groupedit.addsecurityclass.selectactor.info'
-                    ),
-                    securityClassId: securityClassId,
-                    actorType      : 'users',
-                    events: {
-                        onSubmit: function(selectedIds) {
-                            Actors.addGroupSecurityClass(
-                                self.$groupId,
-                                securityClassId,
-                                selectedIds[0]
-                            ).then(resolve, reject);
-                        }
-                    }
-                }).open();
-            });
+            return Actors.addGroupSecurityClass(
+                this.$groupId,
+                securityClassId
+            );
         },
 
         /**
@@ -270,10 +401,11 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
         $removeSecurityClass: function (securityClassId) {
             var self = this;
 
-            return new Promise(function (resolve, reject) {
+            return new Promise(function (resolve) {
                 var Confirm = new QUIConfirm({
                     icon       : 'fa fa-exclamation-triangle',
                     texticon   : 'fa fa-exclamation-triangle',
+                    text       : QUILocale.get(lg, 'actors.groupedit.remove.securityclass.title'),
                     title      : QUILocale.get(lg, 'actors.groupedit.remove.securityclass.title'),
                     information: QUILocale.get(lg, 'actors.groupedit.remove.securityclass.information', {
                         securityClassId   : securityClassId,

@@ -1,0 +1,11 @@
+.pcsg-gpm-actors-groupadmins-panel {
+    float: left;
+    height: 100%;
+    width: 100%;
+}
+
+.pcsg-gpm-actors-groupadmins-panel-table {
+    float: left;
+    height: 100% !important;
+    width: 100%;
+}

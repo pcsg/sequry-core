@@ -4,17 +4,6 @@
  * @module package/sequry/core/bin/controls/password/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/auth/Authenticate
- * @require package/sequry/core/bin/controls/securityclasses/Select
- * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
- * @require text!package/sequry/core/bin/controls/password/Edit.html
- * @require css!package/sequry/core/bin/controls/password/Edit.css
- *
  * @event onLoaded
  * @event onAuthAbort - on user authentication abort
  * @event onClose (this) - if password is closed
@@ -27,9 +16,9 @@ define('package/sequry/core/bin/controls/password/Edit', [
     'Locale',
     'Mustache',
 
+    'package/sequry/core/bin/Actors',
     'package/sequry/core/bin/Authentication',
     'package/sequry/core/bin/Passwords',
-    'package/sequry/core/bin/Categories',
     'package/sequry/core/bin/controls/securityclasses/SelectSlider',
     'package/sequry/core/bin/controls/actors/Select',
     'package/sequry/core/bin/controls/passwordtypes/Content',
@@ -40,8 +29,8 @@ define('package/sequry/core/bin/controls/password/Edit', [
     'text!package/sequry/core/bin/controls/password/Edit.html'
     //'css!package/sequry/core/bin/controls/password/Edit.css'
 
-], function (QUI, QUIControl, QUILoader, QUILocale, Mustache, Authentication, Passwords,
-             Categories, SecurityClassSelect, ActorSelect, PasswordContent,
+], function (QUI, QUIControl, QUILoader, QUILocale, Mustache, Actors, Authentication, Passwords,
+             SecurityClassSelect, ActorSelect, PasswordContent,
              CategorySelect, CategorySelectPrivate, template) {
     "use strict";
 
@@ -140,20 +129,28 @@ define('package/sequry/core/bin/controls/password/Edit', [
             var self = this;
             var pwId = this.getAttribute('passwordId');
 
-            Passwords.get(pwId).then(
-                function (PasswordData) {
-                    if (!PasswordData) {
-                        return;
-                    }
-
-                    self.$PasswordData    = PasswordData;
-                    self.$securityClassId = PasswordData.securityClassId;
-                    self.$onPasswordDataLoaded();
-                },
-                function () {
-                    self.fireEvent('close');
+            Actors.getPasswordAccessInfo(pwId).then(function (AccessInfo) {
+                if (!AccessInfo.canAccess) {
+                    Passwords.getNoAccessInfoElm(AccessInfo, self).inject(self.$Elm);
+                    self.fireEvent('loaded');
+                    return;
                 }
-            );
+
+                Passwords.get(pwId).then(
+                    function (PasswordData) {
+                        if (!PasswordData) {
+                            return;
+                        }
+
+                        self.$PasswordData    = PasswordData;
+                        self.$securityClassId = PasswordData.securityClassId;
+                        self.$onPasswordDataLoaded();
+                    },
+                    function () {
+                        self.fireEvent('close');
+                    }
+                );
+            });
         },
 
         /**
@@ -178,7 +175,7 @@ define('package/sequry/core/bin/controls/password/Edit', [
             this.$groupOwner = this.$CurrentOwner.type === 'group';
 
             this.$SecurityClassSelect = new SecurityClassSelect({
-                events      : {
+                events: {
                     onLoaded: function () {
                         self.$insertData();
                         self.fireEvent('loaded');
@@ -249,10 +246,10 @@ define('package/sequry/core/bin/controls/password/Edit', [
             this.$OwnerSelectElm.set('html', '');
 
             this.$OwnerSelect = new ActorSelect({
-                actorType      : self.$groupOwner ? 'groups' : 'all',
-                max            : 1,
-                securityClassId: securityClassId,
-                events         : {
+                actorType       : self.$groupOwner ? 'groups' : 'all',
+                max             : 1,
+                securityClassIds: [securityClassId],
+                events          : {
                     onChange: this.$onOwnerChange
                 }
             }).inject(this.$OwnerSelectElm);

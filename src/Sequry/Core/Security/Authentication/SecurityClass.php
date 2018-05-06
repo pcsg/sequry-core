@@ -8,6 +8,7 @@ use Sequry\Core\Actors\CryptoGroup;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
+use Sequry\Core\Exception\Exception;
 use Sequry\Core\Exception\InvalidAuthDataException;
 use Sequry\Core\Security\AsymmetricCrypto;
 use Sequry\Core\Security\Handler\Authentication;
@@ -58,7 +59,7 @@ class SecurityClass extends QUI\QDOM
      * AuthPlugin constructor.
      *
      * @param integer $id - authentication plugin id
-     * @throws QUI\Exception
+     * @throws \Sequry\Core\Exception\Exception
      */
     public function __construct($id)
     {
@@ -72,7 +73,7 @@ class SecurityClass extends QUI\QDOM
         ));
 
         if (empty($result)) {
-            throw new QUI\Exception(
+            throw new Exception(
                 'Security class #' . $id . ' not found.',
                 404
             );
@@ -304,7 +305,8 @@ class SecurityClass extends QUI\QDOM
     /**
      * Get all authentication plugins associated with this class
      *
-     * @return array
+     * @return Plugin[]
+     * @throws QUI\Exception
      */
     public function getAuthPlugins()
     {
@@ -376,6 +378,7 @@ class SecurityClass extends QUI\QDOM
      * Get list of users that are eligible to use password with this security class
      *
      * @return array
+     * @throws QUI\Exception
      */
     public function getEligibleUserIds()
     {

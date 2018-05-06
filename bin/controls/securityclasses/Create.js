@@ -4,23 +4,11 @@
  * @module package/sequry/core/bin/controls/securityclasses/Create
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/auth/Authenticate
- * @require package/sequry/core/bin/controls/securityclasses/Select
- * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
- * @require text!package/sequry/core/bin/controls/securityclasses/Create.html
- * @require css!package/sequry/core/bin/controls/securityclasses/Create.css
- *
  * @event onLoaded
  * @event onSuccess
  */
 define('package/sequry/core/bin/controls/securityclasses/Create', [
 
-    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Select',
     'qui/utils/Form',
@@ -33,7 +21,7 @@ define('package/sequry/core/bin/controls/securityclasses/Create', [
     'text!package/sequry/core/bin/controls/securityclasses/Create.html',
     'css!package/sequry/core/bin/controls/securityclasses/Create.css'
 
-], function (QUI, QUIControl, QUISelect, QUIFormUtils, QUILocale, Mustache,
+], function (QUIControl, QUISelect, QUIFormUtils, QUILocale, Mustache,
              Authentication, template) {
     "use strict";
 

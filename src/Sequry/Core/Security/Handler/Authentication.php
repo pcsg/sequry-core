@@ -1,7 +1,11 @@
 <?php
 
 /**
+<<<<<<< HEAD:src/Sequry/Core/Security/Handler/Authentication.php
  * This file contains \Sequry\Core\Password
+=======
+ * This file contains \Sequry\Core\Security\Handler\Authentication
+>>>>>>> groupadmin:src/Sequry/Core/Security/Handler/Authentication.php
  */
 
 namespace Sequry\Core\Security\Handler;
@@ -10,6 +14,7 @@ use Sequry\Auth\Password\AuthPlugin as PasswordAuthPlugin;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Actors\CryptoUser;
+use Sequry\Core\Exception\Exception;
 use Sequry\Core\Security\Authentication\Plugin;
 use Sequry\Core\Security\Authentication\SecurityClass;
 use Sequry\Core\Security\HiddenString;
@@ -119,12 +124,7 @@ class Authentication
                 $AuthPlugin
             );
 
-            $sync = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false)) > 0;
-
-            if (!$sync) {
-                $sync = count($CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin, false)) > 0;
-            }
-
+            $sync        = count($CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false)) > 0;
             $row['sync'] = $sync;
 
             // title
@@ -181,7 +181,7 @@ class Authentication
      *
      * @param $id
      * @return Plugin
-     * @throws QUI\Exception
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function getAuthPlugin($id)
     {
@@ -192,6 +192,38 @@ class Authentication
         self::$plugins[$id] = new Plugin($id);
 
         return self::$plugins[$id];
+    }
+
+    /**
+     * Get Authentication Plugin by User KeyPair ID
+     *
+     * @param int $userKeyPairId
+     * @return Plugin
+     * @throws \Sequry\Core\Exception\Exception
+     */
+    public static function getAuthPluginByUserKeyPairId($userKeyPairId)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'authPluginId'
+            ),
+            'from'   => Tables::keyPairsUser(),
+            'where'  => array(
+                'id' => $userKeyPairId
+            )
+        ));
+
+        if (empty($result)) {
+            throw new Exception(array(
+                'sequry/core',
+                'exception.security.handler.authentication.keypair_not_found',
+                array(
+                    'id' => $userKeyPairId
+                )
+            ), 404);
+        }
+
+        return self::getAuthPlugin($result[0]['authPluginId']);
     }
 
     /**
@@ -372,7 +404,7 @@ class Authentication
         }
 
         if (empty($params['authPluginIds']
-                     || !is_array($params['authPluginIds']))
+                  || !is_array($params['authPluginIds']))
         ) {
             throw new QUI\Exception(array(
                 'sequry/core',
@@ -515,7 +547,7 @@ class Authentication
      *
      * @param $id
      * @return SecurityClass
-     * @throws QUI\Exception
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function getSecurityClass($id)
     {
@@ -743,5 +775,29 @@ class Authentication
         $data['iv']  = hex2bin($data['iv']);
 
         return $data;
+    }
+
+    /**
+     * Grants CryptoUsers access to CryptoGroups for specific SecurityClasses
+     *
+     * @param array $unlockRequests
+     * @return void
+     * @throws Exception
+     */
+    public static function unlockUsersForGroups($unlockRequests)
+    {
+        foreach ($unlockRequests as $request) {
+            if (empty($request['groupId'])
+                || empty($request['userId'])
+                || empty($request['securityClassId'])) {
+                continue;
+            }
+
+            $SecurityClass = Authentication::getSecurityClass($request['securityClassId']);
+            $CryptoGroup   = CryptoActors::getCryptoGroup($request['groupId']);
+            $CryptoUser    = CryptoActors::getCryptoUser($request['userId']);
+
+            $CryptoGroup->addCryptoUser($CryptoUser, $SecurityClass);
+        }
     }
 }

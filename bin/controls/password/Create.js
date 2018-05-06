@@ -177,11 +177,11 @@ define('package/sequry/core/bin/controls/password/Create', [
             this.$OwnerSelectElm.set('html', '');
 
             var ActorSelectAttributes = {
-                popupInfo      : QUILocale.get(lg,
+                popupInfo       : QUILocale.get(lg,
                     'controls.password.create.ownerselect.info'
                 ),
-                max            : 1,
-                securityClassId: securityClassId,
+                max             : 1,
+                securityClassIds: [securityClassId],
 
                 events: {
                     onChange: this.$onOwnerChange
