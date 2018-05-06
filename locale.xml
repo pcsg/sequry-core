@@ -1320,7 +1320,7 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="controls.password.panel.setup_incomplete" html="true">
             <de><![CDATA[<h1>Sequry ist noch nicht einsatzbereit!</h1>
-<p>Sequry kann leider noch nicht benutzt werden, da noch nicht alle nötigen Konfigurationsschritte abgeschlossen sind. Bitte lesen Sie den Abschnitt <b>"Sequry einrichten"</b> in der Dokumentation und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>]]></de>
+<p>Sequry kann leider noch nicht benutzt werden, da noch nicht alle nötigen Konfigurationsschritte abgeschlossen sind. Bitte lesen Sie <a href="https://dev.quiqqer.com/sequry/core/wikis/setup-de" target="_blank"><b>"Sequry einrichten"</b></a> im Wiki und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>]]></de>
         </locale>
 
         <!-- Control: password/Create -->

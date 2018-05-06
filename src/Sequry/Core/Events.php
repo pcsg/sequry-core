@@ -70,9 +70,13 @@ class Events
             return;
         }
 
-        Authentication::loadAuthPlugins();
-        self::initialSystemSetup();
-        self::setDefaultAdminGroupPermissions();
+        try {
+            Authentication::loadAuthPlugins();
+            self::initialSystemSetup();
+            self::setDefaultAdminGroupPermissions();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
     }
 
     /**
