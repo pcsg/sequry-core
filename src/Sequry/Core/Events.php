@@ -6,6 +6,8 @@
 
 namespace Sequry\Core;
 
+use Sequry\Core\Actors\CryptoGroup;
+use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Crypto;
 use QUI\Package\Package;
 use Sequry\Core\Constants\Tables;
@@ -13,6 +15,8 @@ use Sequry\Core\Exception\Exception;
 use Sequry\Core\Security\Handler\CryptoActors;
 use QUI;
 use Sequry\Core\Security\Handler\Authentication;
+use Sequry\Core\Security\Handler\PasswordLinks;
+use Sequry\Core\Security\Authentication\SecurityClass;
 
 /**
  * Class Events
