@@ -3,21 +3,6 @@
  *
  * @module package/sequry/core/bin/controls/categories/Panel
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/controls/desktop/Panel
- * @require qui/controls/loader/Loader
- * @require qui/controls/windows/Confirm
- * @require qui/controls/sitemap/Map
- * @require qui/controls/sitemap/Item
- * @require qui/controls/contextmenu/Item
- * @require qui/controls/contextmenu/Separator
- * @require package/sequry/core/bin/controls/categories/public/Map
- * @require package/sequry/core/bin/controls/categories/private/Map
- * @require package/sequry/core/bin/controls/categories/Filters
- * @require package/sequry/core/bin/Passwords
- * @requrie Ajax
- * @require Locale
- * @require css!package/sequry/core/bin/controls/categories/Panel.css
  */
 define('package/sequry/core/bin/controls/categories/Panel', [
 

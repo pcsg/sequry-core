@@ -8,47 +8,97 @@ use QUI\Utils\Security\Orthos;
  *
  * @param string $search - search term
  * @param string $type - "user" or "group"
- * @param integer $securityClassId - id of security class
+ * @param array $securityClassIds - ids of security classes the actors or groups must be eligible for
  * @param integer $limit
  * @return array
+ *
+ * @throws QUI\Exception
  */
-function package_sequry_core_ajax_actors_suggestSearch($search, $type, $securityClassId, $limit)
-{
-    $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
+\QUI::$Ajax->registerFunction(
+    'package_sequry_core_ajax_actors_suggestSearch',
+    function ($search, $type, $securityClassIds, $limit) {
+        $securityClassIds = json_decode($securityClassIds, true);
+        $search           = Orthos::clear($search);
+        $limit            = (int)$limit;
+        $users            = array();
+        $groups           = array();
+        $allActors        = array();
 
-    $search = Orthos::clear($search);
-    $limit  = (int)$limit;
+        foreach ($securityClassIds as $securityClassId) {
+            $securityClassId = (int)$securityClassId;
+            $SecurityClass   = Authentication::getSecurityClass($securityClassId);
+            $actors          = $SecurityClass->suggestSearchEligibleActors($search, $type, $limit);
+            $allActors       = array_merge($allActors, $actors);
 
-    $actors = $SecurityClass->suggestSearchEligibleActors($search, $type, $limit);
+            $users[$securityClassId]  = array();
+            $groups[$securityClassId] = array();
 
-    foreach ($actors as $k => $actor) {
-        switch ($actor['type']) {
-            case 'user':
+            foreach ($actors as $actor) {
+                switch ($actor['type']) {
+                    case 'user':
+                        $users[$securityClassId][] = $actor['id'];
+                        break;
+
+                    case 'group':
+                        $groups[$securityClassId][] = $actor['id'];
+                        break;
+                }
+            }
+        }
+
+        // filter only those users and groups that are eligible for all given SecurityClasses
+        if (count($securityClassIds) > 1) {
+            $eligibleUserIds  = call_user_func_array('array_intersect', array_values($users));
+            $eligibleGroupIds = call_user_func_array('array_intersect', array_values($groups));
+            $eligibleActors   = array();
+
+            // users
+            foreach ($eligibleUserIds as $userId) {
+                foreach ($allActors as $k => $actor) {
+                    if ($actor['type'] === 'user' && $actor['id'] === $userId) {
+                        $eligibleActors[] = $actor;
+                        break;
+                    }
+                }
+            }
+
+            // groups
+            foreach ($eligibleGroupIds as $groupId) {
+                foreach ($allActors as $k => $actor) {
+                    if ($actor['type'] === 'group' && $actor['id'] === $groupId) {
+                        $eligibleActors[] = $actor;
+                        break;
+                    }
+                }
+            }
+        } else {
+            $eligibleActors = $allActors;
+        }
+
+        foreach ($eligibleActors as $k => $actor) {
+            switch ($actor['type']) {
+                case 'user':
 //                if ($actor['id'] == $CryptoUsers->getId()) {
 //                    unset($actors[$k]);
 //                    continue 2;
 //                }
 
-                $actor['icon'] = 'fa fa-user';
-                $actor['id']   = 'u' . $actor['id'];
-                break;
+                    $actor['icon'] = 'fa fa-user';
+                    $actor['id']   = 'u' . $actor['id'];
+                    break;
 
-            case 'group':
-                $actor['icon'] = 'fa fa-users';
-                $actor['id']   = 'g' . $actor['id'];
-                break;
+                case 'group':
+                    $actor['icon'] = 'fa fa-users';
+                    $actor['id']   = 'g' . $actor['id'];
+                    break;
+            }
+
+            $actor['title']     = $actor['name'];
+            $eligibleActors[$k] = $actor;
         }
 
-        $actor['title'] = $actor['name'];
-
-        $actors[$k] = $actor;
-    }
-
-    return array_values($actors);
-}
-
-\QUI::$Ajax->register(
-    'package_sequry_core_ajax_actors_suggestSearch',
-    array('search', 'type', 'securityClassId', 'limit'),
+        return array_values($eligibleActors);
+    },
+    array('search', 'type', 'securityClassIds', 'limit'),
     'Permission::checkAdminUser'
 );

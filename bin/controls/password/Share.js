@@ -1,35 +1,24 @@
 /**
- * Control for sharing new password
+ * Control for sharing a password
  *
  * @module package/sequry/core/bin/controls/password/Share
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require qui/controls/buttons/Button
- * @require Locale
- * @require package/sequry/core/bin/Authentication
- * @require package/sequry/core/bin/Passwords
- * @require package/sequry/core/bin/controls/actors/Select
- * @require css!package/sequry/core/bin/controls/password/Share.css
- *
  * @event onLoaded
- * @event onAuthAbort - on user authentication abort
+ * @event onClose
  */
 define('package/sequry/core/bin/controls/password/Share', [
 
-    'qui/QUI',
     'qui/controls/Control',
-    'qui/controls/buttons/Button',
     'Locale',
 
-    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Actors',
     'package/sequry/core/bin/Passwords',
     'package/sequry/core/bin/controls/actors/Select',
 
     'css!package/sequry/core/bin/controls/password/Share.css'
 
-], function (QUI, QUIControl, QUIButton, QUILocale, Passwords, ActorSelect) {
+], function (QUIControl, QUILocale, Actors, Passwords, ActorSelect) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -148,40 +137,50 @@ define('package/sequry/core/bin/controls/password/Share', [
 
             var pwId = this.getAttribute('passwordId');
 
-            Passwords.getShareData(pwId).then(
-                function (ShareData) {
-                    self.$Elm.getElement(
-                        '.gpm-password-share-info'
-                    ).set(
-                        'html',
-                        QUILocale.get(
-                            lg,
-                            'controls.password.share.info', {
-                                passwordTitle: ShareData.title,
-                                passwordId   : pwId
-                            }
-                        )
-                    );
-
-                    self.$ShareData = ShareData;
-
-                    self.$ActorSelectUsers = new ActorSelect({
-                        actorType      : 'users',
-                        securityClassId: ShareData.securityClassId
-                    }).inject(ActorUsersElm);
-
-                    self.$ActorSelectGroups = new ActorSelect({
-                        actorType      : 'groups',
-                        securityClassId: ShareData.securityClassId
-                    }).inject(ActorGroupsElm);
-
-                    self.$insertData();
+            Actors.getPasswordAccessInfo(pwId).then(function (AccessInfo) {
+                if (!AccessInfo.canAccess) {
+                    Passwords.getNoAccessInfoElm(AccessInfo, self).inject(self.$Elm);
                     self.fireEvent('loaded');
-                },
-                function () {
-                    self.fireEvent('close');
+                    return;
                 }
-            );
+
+                Passwords.getShareData(pwId).then(
+                    function (ShareData) {
+                        self.$Elm.getElement(
+                            '.gpm-password-share-info'
+                        ).set(
+                            'html',
+                            QUILocale.get(
+                                lg,
+                                'controls.password.share.info', {
+                                    passwordTitle: ShareData.title,
+                                    passwordId   : pwId
+                                }
+                            )
+                        );
+
+                        self.$ShareData = ShareData;
+
+                        self.$ActorSelectUsers = new ActorSelect({
+                            actorType       : 'users',
+                            securityClassIds: [ShareData.securityClassId],
+                            showEligibleOnly: true
+                        }).inject(ActorUsersElm);
+
+                        self.$ActorSelectGroups = new ActorSelect({
+                            actorType       : 'groups',
+                            securityClassIds: [ShareData.securityClassId],
+                            showEligibleOnly: true
+                        }).inject(ActorGroupsElm);
+
+                        self.$insertData();
+                        self.fireEvent('loaded');
+                    },
+                    function () {
+                        self.fireEvent('close');
+                    }
+                );
+            });
         },
 
         /**

@@ -1,6 +1,7 @@
 /**
  * Password Handler
- * Create and edit categories
+ *
+ * All methods for (authenticated) password handling
  *
  * @module package/sequry/core/bin/classes/Passwords
  * @author www.pcsg.de (Patrick Müller)
@@ -10,12 +11,16 @@
  */
 define('package/sequry/core/bin/classes/Passwords', [
 
+    'qui/controls/buttons/Button',
+
     'Ajax',
+    'Locale',
     'package/sequry/core/bin/AuthAjax'
 
-], function (QUIAjax, AuthAjax) {
+], function (QUIButton, QUIAjax, QUILocale, AuthAjax) {
     "use strict";
 
+    var lg  = 'sequry/core';
     var pkg = 'sequry/core';
 
     return new Class({
@@ -352,6 +357,70 @@ define('package/sequry/core/bin/classes/Passwords', [
                     onError  : reject
                 });
             });
+        },
+
+        /**
+         * Element that shows info if the User has no access to the Password
+         *
+         * @param {Object} AccessInfo
+         * @param {Object} Control - The Control the Element is shown in
+         * @return {HTMLElement}
+         */
+        getNoAccessInfoElm: function (AccessInfo, Control) {
+            var NoAccessElm = new Element('div', {
+                'class': 'pcsg-gpm-password-noaccess',
+                html   : '<div><h1>' +
+                QUILocale.get(lg, 'controls.password.access_info.title') +
+                '</h1>' +
+                '<p>' + QUILocale.get(lg, 'controls.password.access_info.text', AccessInfo.securityClass) + '</p>' +
+                '</p>' +
+                '</div>'
+            });
+
+            var Content = NoAccessElm.getElement('div');
+
+            if (!AccessInfo.missingAuthPlugins.length) {
+                new Element('p', {
+                    html: QUILocale.get(lg, 'controls.password.access_info.text_missing_authorization')
+                }).inject(Content);
+
+                return NoAccessElm;
+            }
+
+            new Element('p', {
+                html: QUILocale.get(lg, 'controls.password.access_info.text_missing_auth_plugins')
+            }).inject(Content);
+
+            // list all Authentication Plugins the user needs to register for
+            // in order to access this Password
+            var ListElm = new Element('ul').inject(Content);
+
+            for (var i = 0, len = AccessInfo.missingAuthPlugins.length; i < len; i++) {
+                new Element('li', {
+                    html: AccessInfo.missingAuthPlugins[i].title
+                }).inject(ListElm);
+            }
+
+            new QUIButton({
+                text     : QUILocale.get(lg, 'controls.password.access_info.btn.text'),
+                textimage: 'fa fa-key',
+                events   : {
+                    onClick: function () {
+                        require([
+                            'package/sequry/core/bin/controls/auth/Panel',
+                            'utils/Panels'
+                        ], function (AuthPanel, PanelUtils) {
+                            var AuthPanelControl = new AuthPanel();
+
+                            PanelUtils.openPanelInTasks(AuthPanelControl).then(function () {
+                                Control.fireEvent('close');
+                            });
+                        });
+                    }
+                }
+            }).inject(Content);
+
+            return NoAccessElm;
         }
     });
 });

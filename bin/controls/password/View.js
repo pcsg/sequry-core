@@ -4,30 +4,17 @@
  * @module package/sequry/core/bin/controls/password/View
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/controls/Control
- * @require qui/controls/buttons/Button
- * @require qui/controls/loader/Loader
- * @require Locale
- * @require package/sequry/core/bin/classes/Authentication
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/categories/public/Select
- * @require package/sequry/core/bin/controls/categories/private/Select
- * @require package/sequry/core/bin/Categories
- * @require ClipboardJS
- * @require css!package/sequry/core/bin/controls/password/View.css
- *
  * @event onLoaded
  * @event onClose
  */
 define('package/sequry/core/bin/controls/password/View', [
 
     'qui/controls/Control',
-    'qui/controls/buttons/Button',
     'qui/controls/loader/Loader',
 
     'Locale',
 
-    'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Actors',
     'package/sequry/core/bin/Passwords',
     'package/sequry/core/bin/controls/categories/public/Select',
     'package/sequry/core/bin/controls/categories/private/Select',
@@ -36,9 +23,8 @@ define('package/sequry/core/bin/controls/password/View', [
 
     'css!package/sequry/core/bin/controls/password/View.css'
 
-], function (QUIControl, QUIButton, QUILoader, QUILocale, Authentication,
-             Passwords, CategorySelect, CategorySelectPrivate, Categories,
-             InputButtons) {
+], function (QUIControl, QUILoader, QUILocale, Actors,
+             Passwords, CategorySelect, CategorySelectPrivate, Categories, InputButtons) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -65,8 +51,7 @@ define('package/sequry/core/bin/controls/password/View', [
                 onInject: this.$onInject
             });
 
-            this.Loader             = new QUILoader();
-            this.$CategoriesToolTip = null;
+            this.Loader = new QUILoader();
         },
 
         /**
@@ -95,63 +80,71 @@ define('package/sequry/core/bin/controls/password/View', [
          * Ask user for authentication information and load password data
          */
         $onInject: function () {
-            var self = this;
+            var self       = this;
+            var passwordId = this.getAttribute('passwordId');
 
-            Passwords.getView(self.getAttribute('passwordId')).then(
-                function (viewHtml) {
-                    if (!viewHtml) {
-                        return;
-                    }
-
-                    self.$Elm.set(
-                        'html',
-                        viewHtml
-                    );
-
-                    var CategoryPrivateElm = self.$Elm.getElement(
-                        '.pcsg-gpm-password-view-info-categories-private'
-                    );
-
-                    var CategoryPrivate = new CategorySelectPrivate({
-                        events: {
-                            onChange: self.$setPrivateCategories
-                        }
-                    }).inject(CategoryPrivateElm);
-
-                    var catIdsPrivate = CategoryPrivateElm.getProperty(
-                        'data-catids'
-                    );
-
-                    if (catIdsPrivate) {
-                        catIdsPrivate = catIdsPrivate.split(',');
-                        CategoryPrivate.setValue(catIdsPrivate);
-                    }
-
-                    // public categories
-                    var CategoriesPublicElm = self.$Elm.getElement(
-                        '.pcsg-gpm-password-view-info-categories-public'
-                    );
-
-                    var Categories = new CategorySelect({
-                        editMode: self.getAttribute('editPublicCategories')
-                    }).inject(CategoriesPublicElm);
-
-                    var catIdsPublic = CategoriesPublicElm.getProperty(
-                        'data-catids'
-                    );
-
-                    if (catIdsPublic) {
-                        catIdsPublic = catIdsPublic.split(',');
-                        Categories.setValue(catIdsPublic);
-                    }
-
-                    self.$parseView();
+            Actors.getPasswordAccessInfo(passwordId).then(function (AccessInfo) {
+                if (!AccessInfo.canAccess) {
+                    Passwords.getNoAccessInfoElm(AccessInfo, self).inject(self.$Elm);
                     self.fireEvent('loaded');
-                },
-                function () {
-                    self.fireEvent('close');
+                    return;
                 }
-            );
+
+                Passwords.getView(passwordId).then(function (viewHtml) {
+                        if (!viewHtml) {
+                            return;
+                        }
+
+                        self.$Elm.set(
+                            'html',
+                            viewHtml
+                        );
+
+                        var CategoryPrivateElm = self.$Elm.getElement(
+                            '.pcsg-gpm-password-view-info-categories-private'
+                        );
+
+                        var CategoryPrivate = new CategorySelectPrivate({
+                            events: {
+                                onChange: self.$setPrivateCategories
+                            }
+                        }).inject(CategoryPrivateElm);
+
+                        var catIdsPrivate = CategoryPrivateElm.getProperty(
+                            'data-catids'
+                        );
+
+                        if (catIdsPrivate) {
+                            catIdsPrivate = catIdsPrivate.split(',');
+                            CategoryPrivate.setValue(catIdsPrivate);
+                        }
+
+                        // public categories
+                        var CategoriesPublicElm = self.$Elm.getElement(
+                            '.pcsg-gpm-password-view-info-categories-public'
+                        );
+
+                        var Categories = new CategorySelect({
+                            editMode: self.getAttribute('editPublicCategories')
+                        }).inject(CategoriesPublicElm);
+
+                        var catIdsPublic = CategoriesPublicElm.getProperty(
+                            'data-catids'
+                        );
+
+                        if (catIdsPublic) {
+                            catIdsPublic = catIdsPublic.split(',');
+                            Categories.setValue(catIdsPublic);
+                        }
+
+                        self.$parseView();
+                        self.fireEvent('loaded');
+                    },
+                    function () {
+                        self.fireEvent('close');
+                    }
+                );
+            });
         },
 
         /**

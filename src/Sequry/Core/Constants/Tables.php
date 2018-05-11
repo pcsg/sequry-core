@@ -27,6 +27,7 @@ class Tables
 
     const USER_TO_GROUPS     = 'pcsg_gpm_user_group_access';
     const GROUP_TO_PASSWORDS = 'pcsg_gpm_group_data_access';
+    const GROUP_ADMINS       = 'pcsg_gpm_group_admins';
 
     const RECOVERY = 'pcsg_gpm_recovery';
 
@@ -152,5 +153,15 @@ class Tables
     public static function passwordLink()
     {
         return QUI::getDBTableName(self::PASSWORD_LINK);
+    }
+
+    /**
+     * Get group admins table
+     *
+     * @return string
+     */
+    public static function groupAdmins()
+    {
+        return QUI::getDBTableName(self::GROUP_ADMINS);
     }
 }

@@ -8,6 +8,7 @@ namespace Sequry\Core\Actors;
 
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Events;
+use Sequry\Core\Exception\Exception;
 use Sequry\Core\Password;
 use Sequry\Core\PasswordTypes\Handler as PasswordTypesHandler;
 use Sequry\Core\Security\AsymmetricCrypto;
@@ -30,6 +31,7 @@ use Sequry\Core\Constants\Tables;
 use QUI\Utils\Security\Orthos;
 use QUI\Permissions\Permission;
 use QUI\Cache\Manager as CacheManager;
+use QUI\Utils\Grid;
 
 /**
  * User Class
@@ -66,7 +68,7 @@ class CryptoUser extends QUI\Users\User
      * @return AuthKeyPair
      * @throws QUI\Exception
      */
-    public function getAuthKeyPair($AuthPlugin)
+    public function getAuthKeyPair(Plugin $AuthPlugin)
     {
         $result = QUI::getDataBase()->fetch(array(
             'select' => array(
@@ -94,6 +96,29 @@ class CryptoUser extends QUI\Users\User
         $data = current($result);
 
         return Authentication::getAuthKeyPair($data['id']);
+    }
+
+    /**
+     * Checks if the User has a KeyPair for an Authentication Plugin
+     *
+     * @param Plugin $AuthPlugin
+     * @return bool
+     */
+    public function hasAuthKeyPair(Plugin $AuthPlugin)
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'id'
+            ),
+            'from'   => Tables::keyPairsUser(),
+            'where'  => array(
+                'authPluginId' => $AuthPlugin->getId(),
+                'userId'       => $this->getId()
+            ),
+            'limit'  => 1
+        ));
+
+        return !empty($result);
     }
 
     /**
@@ -365,6 +390,44 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
+     * Get information about if and how this User can access a Password
+     *
+     * @param Password $Password
+     * @return array
+     * @throws QUI\Exception
+     */
+    public function getPasswordAccessInfo(Password $Password)
+    {
+        $SecurityClass = $Password->getSecurityClass();
+        $canAccess     = $Password->hasPasswordAccess($this);
+
+        $accessInfo = array(
+            'canAccess'          => $canAccess,
+            'missingAuthPlugins' => array(),
+            'securityClass'      => array(
+                'id'    => $SecurityClass->getId(),
+                'title' => $SecurityClass->getAttribute('title')
+            )
+        );
+
+        if ($canAccess) {
+            return $accessInfo;
+        }
+
+        // determine missing registrations for authentication plugins
+        foreach ($SecurityClass->getAuthPlugins() as $AuthPlugin) {
+            if (!$this->hasAuthKeyPair($AuthPlugin)) {
+                $accessInfo['missingAuthPlugins'][] = array(
+                    'id'    => $AuthPlugin->getId(),
+                    'title' => $AuthPlugin->getAttribute('title')
+                );
+            }
+        }
+
+        return $accessInfo;
+    }
+
+    /**
      * Get password access key via direct access
      *
      * @param $passwordId
@@ -552,7 +615,7 @@ class CryptoUser extends QUI\Users\User
      */
     public function getGroupAccessKey($CryptoGroup, $SecurityClass)
     {
-        if (!$CryptoGroup->hasCryptoUserAccess($this)) {
+        if (!$CryptoGroup->isUserInGroup($this)) {
             throw new QUI\Exception(array(
                 'sequry/core',
                 'exception.cryptouser.group.access.key.decrypt.user.has.no.access',
@@ -1058,6 +1121,10 @@ class CryptoUser extends QUI\Users\User
                     if (!(int)$row['allowPasswordLinks']) {
                         $passwords[$k]['canLink'] = false;
                     }
+
+                    $Password                   = Passwords::get($data['id']);
+                    $passwords[$k]['canAccess'] = $Password->hasPasswordAccess($this);
+
                     continue 2;
                 }
             }
@@ -1255,29 +1322,6 @@ class CryptoUser extends QUI\Users\User
             $authPluginAccessDirect[$row['dataId']] = true;
         }
 
-        // group access
-//        $authPluginAccessGroup = array();
-
-//        $result = QUI::getDataBase()->fetch(array(
-//            'select' => array(
-//                'groupId'
-//            ),
-//            'from'   => Tables::usersToGroups(),
-//            'where'  => array(
-//                'userId'        => $this->getId(),
-//                'userKeyPairId' => $AuthKeyPair->getId()
-//            )
-//        ));
-//
-//        foreach ($result as $row) {
-//            $CryptoGroup      = CryptoActors::getCryptoGroup($row['groupId']);
-//            $groupPasswordIds = $CryptoGroup->getPasswordIds();
-//
-//            foreach ($groupPasswordIds as $groupPasswordId) {
-//                $authPluginAccessGroup[$groupPasswordId] = true;
-//            }
-//        }
-
         // check which password ids apply
         $accessPasswordIds       = $this->getPasswordIds();
         $accessPasswordIdsDirect = $this->getPasswordIdsDirectAccess();
@@ -1303,87 +1347,6 @@ class CryptoUser extends QUI\Users\User
         QUI\Cache\Manager::set($cname, $passwordIds);
 
         return $passwordIds;
-    }
-
-    /**
-     * Get IDs of groups and security classes that are NOT encrypted with a specific
-     * authentication plugin
-     *
-     * @param Plugin $AuthPlugin
-     * @param bool $useCache (optional) - Get results from cache (data may be outdated) [default: true]
-     * @return array
-     */
-    public function getNonFullyAccessibleGroupAndSecurityClassIds(Plugin $AuthPlugin, $useCache = true)
-    {
-        if (!$AuthPlugin->isRegistered($this)) {
-            return array();
-        }
-
-        $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblegroupandsecurityclassids/' . $AuthPlugin->getId();
-
-        if (!$useCache !== false) {
-            try {
-                return QUI\Cache\Manager::get($cname);
-            } catch (\Exception $Exception) {
-                // nothing, determine ids
-            }
-        }
-
-        $AuthKeyPair = $this->getAuthKeyPair($AuthPlugin);
-
-        // group access
-        $groupAccess   = array();
-        $limitedAccess = array();
-
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
-                'groupId',
-                'securityClassId'
-            ),
-            'from'   => Tables::usersToGroups(),
-            'where'  => array(
-                'userId'        => $this->getId(),
-                'userKeyPairId' => $AuthKeyPair->getId()
-            )
-        ));
-
-        foreach ($result as $row) {
-            $groupId = $row['groupId'];
-
-            if (!isset($groupAccess[$groupId])) {
-                $groupAccess[$groupId] = array();
-            }
-
-            $groupAccess[$groupId][] = $row['securityClassId'];
-        }
-
-        $allAccessGroupIds = $this->getCryptoGroupIds();
-
-        foreach ($allAccessGroupIds as $groupId) {
-            $CryptoGroup          = CryptoActors::getCryptoGroup($groupId);
-            $groupSecurityClasses = $CryptoGroup->getSecurityClasses();
-
-            /** @var SecurityClass $SecurityClass */
-            foreach ($groupSecurityClasses as $SecurityClass) {
-                if (!in_array($AuthPlugin->getId(), $SecurityClass->getAuthPluginIds())) {
-                    continue;
-                }
-
-                if (!isset($groupAccess[$groupId])
-                    || !in_array($SecurityClass->getId(), $groupAccess[$groupId])
-                ) {
-                    if (!isset($limitedAccess[$groupId])) {
-                        $limitedAccess[$groupId] = array();
-                    }
-
-                    $limitedAccess[$groupId][] = $SecurityClass->getId();
-                }
-            }
-        }
-
-        QUI\Cache\Manager::set($cname, $limitedAccess);
-
-        return $limitedAccess;
     }
 
     /**
@@ -1498,7 +1461,7 @@ class CryptoUser extends QUI\Users\User
      */
     public function reEncryptGroupAccessKey(CryptoGroup $CryptoGroup, SecurityClass $SecurityClass)
     {
-        if (!$CryptoGroup->hasCryptoUserAccess($this)) {
+        if (!$CryptoGroup->isUserInGroup($this)) {
             // @todo fehlermeldung
             return;
         }
@@ -1935,13 +1898,32 @@ class CryptoUser extends QUI\Users\User
      */
     public function delete()
     {
+        // user that are group admins cannot be deleted
+        $adminGroups = $this->getAdminGroups();
+
+        if (!empty($adminGroups)) {
+            $groups = array();
+
+            foreach ($adminGroups as $CryptoGroup) {
+                $groups[] = $CryptoGroup->getName() . ' (#' . $CryptoGroup->getId() . ')';
+            }
+
+            throw new Exception(array(
+                'sequry/core',
+                'exception.cryptouser.delete.group_admins_cannot_be_deleted',
+                array(
+                    'groups' => implode(', ', $groups)
+                )
+            ));
+        }
+
         // users can only be deleted by themselves or super users
         $SessionUser = QUI::getUserBySession();
 
         if ((int)$SessionUser->getId() !== (int)$this->getId()
             && !$SessionUser->isSU()
         ) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.cryptouser.delete.no.permission'
             ));
@@ -1955,7 +1937,7 @@ class CryptoUser extends QUI\Users\User
             $userCount = (int)$CryptoGroup->countUser();
 
             if ($userCount <= 1) {
-                throw new QUI\Exception(array(
+                throw new Exception(array(
                     'sequry/core',
                     'exception.cryptouser.delete.last.group.member',
                     array(
@@ -2160,5 +2142,159 @@ class CryptoUser extends QUI\Users\User
                 );
             }
         }
+    }
+
+    /**
+     * Get all CryptoGroups this User is an admin of
+     *
+     * @return CryptoGroup[]
+     */
+    public function getAdminGroups()
+    {
+        $result = QUI::getDataBase()->fetch(array(
+            'select' => array(
+                'groupId'
+            ),
+            'from'   => Tables::groupAdmins(),
+            'where'  => array(
+                'userId' => $this->getId()
+            )
+        ));
+
+        $groups = array();
+
+        foreach ($result as $row) {
+            $groups[] = CryptoActors::getCryptoGroup($row['groupId']);
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Get list of all pending authorization processes for
+     * users that do not yet have full access to a CryptoGroup
+     *
+     * @param array $searchParams - search options
+     * @param bool $count (optional) - get count only
+     * @return array|int
+     * @throws \Sequry\Core\Exception\Exception
+     */
+    public function getAdminGroupsUnlockList($searchParams, $count = false)
+    {
+        $Grid       = new Grid($searchParams);
+        $gridParams = $Grid->parseDBParams($searchParams);
+
+        $binds = array();
+        $where = array(
+            '`userKeyPairId` IS NOT NULL',
+            '`groupKey` IS NULL'
+        );
+
+        if ($count) {
+            $sql = "SELECT COUNT(*)";
+        } else {
+            $sql = "SELECT `userId`, `groupId`, `userKeyPairId`, `securityClassId`";
+        }
+
+        $sql .= " FROM `" . Tables::usersToGroups() . "`";
+
+        // build WHERE query string
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(" AND ", $where);
+        }
+
+        // ORDER
+        if (!empty($searchParams['sortOn'])
+        ) {
+            $sortOn = Orthos::clear($searchParams['sortOn']);
+            $order  = "ORDER BY " . $sortOn;
+
+            if (isset($searchParams['sortBy']) &&
+                !empty($searchParams['sortBy'])
+            ) {
+                $order .= " " . Orthos::clear($searchParams['sortBy']);
+            } else {
+                $order .= " ASC";
+            }
+
+            $sql .= " " . $order;
+        } else {
+            $sql .= " ORDER BY id DESC";
+        }
+
+        // LIMIT
+        if (!empty($gridParams['limit'])
+            && !$count
+        ) {
+            $sql .= " LIMIT " . $gridParams['limit'];
+        } else {
+            if (!$count) {
+                $sql .= " LIMIT " . (int)20;
+            }
+        }
+
+        $Stmt = QUI::getPDO()->prepare($sql);
+
+        // bind search values
+        foreach ($binds as $var => $bind) {
+            $Stmt->bindValue(':' . $var, $bind['value'], $bind['type']);
+        }
+
+        try {
+            $Stmt->execute();
+            $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError(
+                self::class . ' :: search() -> ' . $Exception->getMessage()
+            );
+
+            return array();
+        }
+
+        if ($count) {
+            return (int)current(current($result));
+        }
+
+        $parsedEntries = array();
+        $factorCount   = array();
+
+        foreach ($result as $k => $row) {
+            $hash = md5($row['securityClassId'] . $row['groupId'] . $row['userId']);
+
+            if (!isset($factorCount[$hash])) {
+                $factorCount[$hash] = 0;
+            }
+
+            $factorCount[$hash]++;
+
+            $SecurityClass = Authentication::getSecurityClass($row['securityClassId']);
+            $CryptoGroup   = CryptoActors::getCryptoGroup($row['groupId']);
+            $CrpytoUser    = CryptoActors::getCryptoUser($row['userId']);
+
+            $row['securityClass'] = $SecurityClass->getAttribute('title') . ' (#' . $SecurityClass->getId() . ')';
+            $row['group']         = $CryptoGroup->getName() . ' (#' . $CryptoGroup->getId() . ')';
+            $row['userName']      = $CrpytoUser->getName();
+            $row['hash']          = $hash;
+
+            $result[$k] = $row;
+        }
+
+        foreach ($result as $k => $r) {
+            if (isset($parsedEntries[$r['hash']])) {
+                unset($result[$k]);
+                continue;
+            }
+
+            $SecurityClass = Authentication::getSecurityClass($r['securityClassId']);
+
+            if ($factorCount[$r['hash']] < $SecurityClass->getRequiredFactors()) {
+                unset($result[$k]);
+                continue;
+            }
+
+            $parsedEntries[$r['hash']] = true;
+        }
+
+        return $result;
     }
 }

@@ -1,22 +1,15 @@
 /**
  * @module package/sequry/core/bin/controls/actors/SelectItem
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/elements/Select
- * @require Ajax
- * @require Locale
  */
 define('package/sequry/core/bin/controls/actors/SelectItem', [
 
-    'qui/QUI',
     'qui/controls/elements/SelectItem',
-
     'package/sequry/core/bin/Actors',
 
     'Ajax'
 
-], function (QUI, QUIElementSelectItem, Actors) {
+], function (QUIElementSelectItem, Actors) {
     "use strict";
 
     return new Class({

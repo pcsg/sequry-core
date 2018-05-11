@@ -99,7 +99,7 @@ class Utils
      */
     public static function getSystemKeyPairAuthKey()
     {
-        $keyFile = ETC_DIR . 'plugins/pcsg/gpm_auth_keypairs.key';
+        $keyFile = ETC_DIR . 'plugins/sequry/gpm_auth_keypairs.key';
 
         // if key does not exit -> create
         if (!file_exists($keyFile)) {
@@ -125,7 +125,7 @@ class Utils
      */
     public static function getSystemPasswordAuthKey()
     {
-        $keyFile = ETC_DIR . 'plugins/pcsg/gpm_auth_passwords.key';
+        $keyFile = ETC_DIR . 'plugins/sequry/gpm_auth_passwords.key';
 
         // if key does not exit -> create
         if (!file_exists($keyFile)) {
@@ -151,7 +151,7 @@ class Utils
      */
     public static function getSystemPasswordLinkKey()
     {
-        $keyFile = ETC_DIR . 'plugins/pcsg/gpm_password_links.key';
+        $keyFile = ETC_DIR . 'plugins/sequry/gpm_password_links.key';
 
         // if key does not exit -> create
         if (!file_exists($keyFile)) {
@@ -259,7 +259,7 @@ class Utils
      * @param string $arrayData - Data to be decoded
      * @return array
      */
-    public static function saveJsonDecode($arrayData) {
+    public static function safeJsonDecode($arrayData) {
         if (!is_string($arrayData)) {
             return array();
         }

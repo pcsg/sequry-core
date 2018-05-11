@@ -75,18 +75,15 @@ class CryptoActors
      *
      * @param QUI\Groups\Group $Group
      * @param SecurityClass $SecurityClass - The security class that determines how the group key will be encrypted
-     * @param QUI\Users\User $User (optional) - Initial User that gets access to the group key
-     * (requires eligibility for given $SecurityClass) [default: Session user]
      * @return CryptoGroup
      *
      * @throws QUI\Exception
      */
     public static function createCryptoGroupKey(
         QUI\Groups\Group $Group,
-        SecurityClass $SecurityClass,
-        QUI\Users\User $User = null
+        SecurityClass $SecurityClass
     ) {
-        if (!QUIPermissions::hasPermission(Permissions::GROUP_EDIT)) {
+        if (!QUIPermissions::hasPermission(Permissions::GROUP_CREATE)) {
             throw new QUI\Exception(array(
                 'sequry/core',
                 'exception.cryptogroup.no.permission'
@@ -103,27 +100,37 @@ class CryptoActors
             ));
         }
 
-        if (is_null($User)) {
-            $User = QUI::getUserBySession();
+        // check eligibility for all Group admin users
+        /** @var CryptoUser $AdminUser */
+        $uneligibleUsers = array();
+        $adminUsers      = $CryptoGroup->getAdminUsers();
+
+        if (empty($adminUsers)) {
+            throw new Exception(array(
+                'sequry/core',
+                'exception.cryptoactors.createCryptoGroupKey.group_has_no_admins',
+                array(
+                    'groupId' => $Group->getId()
+                )
+            ));
         }
 
-        // check eligibility for all users
-        if (!$SecurityClass->areGroupUsersEligible($Group)) {
-            // if the inital group users are not eligible, check if the given $User is
-            if (!$SecurityClass->isUserEligible($User)) {
-                throw new QUI\Exception(array(
-                    'sequry/core',
-                    'exception.cryptoactors.addcryptogroup.users.not.eligible',
-                    array(
-                        'groupId'         => $Group->getId(),
-                        'securityClassId' => $SecurityClass->getId()
-                    )
-                ));
+        foreach ($adminUsers as $AdminUser) {
+            if (!$SecurityClass->isUserEligible($AdminUser)) {
+                $uneligibleUsers[] = $AdminUser->getUsername();
             }
+        }
 
-            // add user to group if he is eligible
-            $User->addToGroup($Group->getId());
-            $User->save(QUI::getUsers()->getSystemUser());
+        if (!empty($uneligibleUsers)) {
+            throw new QUI\Exception(array(
+                'sequry/core',
+                'exception.cryptoactors.addcryptogroup.users.not.eligible',
+                array(
+                    'groupId'         => $Group->getId(),
+                    'securityClassId' => $SecurityClass->getId(),
+                    'users'           => implode(', ', $uneligibleUsers)
+                )
+            ));
         }
 
         // generate key pair and encrypt group key for security class
@@ -162,9 +169,10 @@ class CryptoActors
             $SecurityClass->getRequiredFactors()
         );
 
-        foreach ($Group->getUsers() as $userData) {
-            $User         = CryptoActors::getCryptoUser($userData['id']);
-            $authKeyPairs = $User->getAuthKeyPairsBySecurityClass($SecurityClass);
+        // grant access to Group Admin Users
+        /** @var CryptoUser $AdminUser */
+        foreach ($adminUsers as $AdminUser) {
+            $authKeyPairs = $AdminUser->getAuthKeyPairsBySecurityClass($SecurityClass);
             $i            = 0;
 
             /** @var AuthKeyPair $AuthKeyPair */
@@ -175,7 +183,7 @@ class CryptoActors
                 );
 
                 $data = array(
-                    'userId'          => $User->getId(),
+                    'userId'          => $AdminUser->getId(),
                     'userKeyPairId'   => $AuthKeyPair->getId(),
                     'securityClassId' => $SecurityClass->getId(),
                     'groupId'         => $Group->getId(),
@@ -278,11 +286,22 @@ class CryptoActors
 
         $eligibleUserIds = false;
 
-        if (!empty($searchParams['securityClassId'])) {
-            $SecurityClass   = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
-            $eligibleUserIds = $SecurityClass->getEligibleUserIds();
+        if (!empty($searchParams['securityClassIds'])
+            && is_array($searchParams['securityClassIds'])) {
+            $eligibleUserIds = array();
 
-            if (!empty($searchParams['eligibleOnly'])) {
+            foreach ($searchParams['securityClassIds'] as $securityClassId) {
+                $SecurityClass     = Authentication::getSecurityClass((int)$securityClassId);
+                $eligibleUserIds[] = $SecurityClass->getEligibleUserIds();
+            }
+
+            if (count($eligibleUserIds) > 1) {
+                $eligibleUserIds = call_user_func_array('array_intersect', $eligibleUserIds);
+            } else {
+                $eligibleUserIds = current($eligibleUserIds);
+            }
+
+            if (!empty($searchParams['eligibleOnly']) && !empty($eligibleUserIds)) {
                 $where[] = 'users.`id` IN (' . implode(',', $eligibleUserIds) . ')';
             }
         }
@@ -457,11 +476,22 @@ class CryptoActors
 
         $eligibleGroupIds = false;
 
-        if (!empty($searchParams['securityClassId'])) {
-            $SecurityClass    = Authentication::getSecurityClass((int)$searchParams['securityClassId']);
-            $eligibleGroupIds = $SecurityClass->getGroupIds();
+        if (!empty($searchParams['securityClassIds'])
+            && is_array($searchParams['securityClassIds'])) {
+            $eligibleGroupIds = array();
 
-            if (!empty($searchParams['eligibleOnly'])) {
+            foreach ($searchParams['securityClassIds'] as $securityClassId) {
+                $SecurityClass      = Authentication::getSecurityClass((int)$securityClassId);
+                $eligibleGroupIds[] = $SecurityClass->getGroupIds();
+            }
+
+            if (count($eligibleGroupIds) > 1) {
+                $eligibleGroupIds = call_user_func_array('array_intersect', $eligibleGroupIds);
+            } else {
+                $eligibleGroupIds = current($eligibleGroupIds);
+            }
+
+            if (!empty($searchParams['eligibleOnly']) && !empty($eligibleGroupIds)) {
                 $where[] = 'groups.`id` IN (' . implode(',', $eligibleGroupIds) . ')';
             }
         }

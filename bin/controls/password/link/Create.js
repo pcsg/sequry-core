@@ -6,6 +6,7 @@
  *
  * @event onSubmit [this] - fires after a new PasswordLink has been successfully created
  * @event onLoaded [this] - fires after everything loaded
+ * @event onNoPasswordSites [this] - fires if every is loaded but no sites with the correct password link site type exist
  */
 define('package/sequry/core/bin/controls/password/link/Create', [
 
@@ -228,7 +229,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
                     );
 
                     VHostRowElm.destroy();
-                    self.fireEvent('loaded', [self]);
+                    self.fireEvent('noPasswordSites', [self]);
                     return;
                 }
 

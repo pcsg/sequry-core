@@ -4,19 +4,14 @@
  *
  * @module package/sequry/core/bin/classes/Actors
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/classes/DOM
- * @require Ajax
  */
 define('package/sequry/core/bin/classes/Actors', [
 
-    'qui/QUI',
     'qui/classes/DOM',
     'Ajax',
     'package/sequry/core/bin/AuthAjax'
 
-], function (QUI, QUIDOM, QUIAjax, AuthAjax) {
+], function (QUIDOM, QUIAjax, AuthAjax) {
     "use strict";
 
     var pkg = 'sequry/core';
@@ -55,7 +50,7 @@ define('package/sequry/core/bin/classes/Actors', [
          */
         addGroupSecurityClass: function (groupId, securityClassId, userId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.post('package_sequry_core_ajax_actors_addGroupSecurityClass', resolve, {
+                QUIAjax.post('package_sequry_core_ajax_actors_groups_addSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     groupId        : groupId,
@@ -75,7 +70,7 @@ define('package/sequry/core/bin/classes/Actors', [
          */
         removeGroupSecurityClass: function (groupId, securityClassId) {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_sequry_core_ajax_actors_removeGroupSecurityClass', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_actors_groups_removeSecurityClass', resolve, {
                     'package'      : pkg,
                     onError        : reject,
                     groupId        : groupId,
@@ -98,7 +93,7 @@ define('package/sequry/core/bin/classes/Actors', [
             return new Promise(function (resolve, reject) {
                 self.getGroupsSecurityClassIds([groupId]).then(function (securityClassIds) {
                     AuthAjax.post(
-                        'package_sequry_core_ajax_actors_addUsersToGroup', {
+                        'package_sequry_core_ajax_actors_groups_addUsers', {
                             securityClassIds: securityClassIds,
                             groupId         : groupId,
                             userIds         : JSON.encode(userIds)
@@ -205,6 +200,121 @@ define('package/sequry/core/bin/classes/Actors', [
                     'package'   : pkg,
                     searchParams: JSON.encode(SearchParams),
                     onError     : reject
+                });
+            });
+        },
+
+        /**
+         * Get access info of password
+         *
+         * @param {number} passwordId
+         * @returns {Promise}
+         */
+        getPasswordAccessInfo: function (passwordId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_actors_getPasswordAccessInfo', resolve, {
+                    'package' : pkg,
+                    onError   : reject,
+                    passwordId: passwordId
+                });
+            });
+        },
+
+        /**
+         * Add admin user to a group
+         *
+         * @param {Number} groupId
+         * @param {Array} userIds
+         * @returns {Promise}
+         */
+        addGroupAdminUsers: function (groupId, userIds) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_sequry_core_ajax_actors_groups_addAdminUsers', resolve, {
+                    'package': pkg,
+                    groupId  : groupId,
+                    userIds  : JSON.encode(userIds),
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Remove admin user from a group
+         *
+         * @param {Number} groupId
+         * @param {Number} userId
+         * @returns {Promise}
+         */
+        removeGroupAdminUser: function (groupId, userId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_sequry_core_ajax_actors_groups_removeAdminUser', resolve, {
+                    'package': pkg,
+                    groupId  : groupId,
+                    userId   : userId,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Get group administration information for current session user
+         *
+         * @return {Promise}
+         */
+        getGroupAdminStatus: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_actors_users_getGroupAdminStatus', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
+         * Get group administration information for current session user
+         *
+         * @param {Object} SearchParams
+         * @return {Promise}
+         */
+        getGroupAdminUnlockList: function (SearchParams) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_actors_groups_getUnlockList', resolve, {
+                    'package'   : pkg,
+                    searchParams: JSON.encode(SearchParams),
+                    onError     : reject
+                });
+            });
+        },
+
+        /**
+         * Authorize access for certain users for groups and securityclasses
+         *
+         * @param {Array} securityClassIds - SecurityClass IDs an authentication is required for
+         * @param {Object} unlockRequests
+         */
+        unlockUsersForGroups: function (securityClassIds, unlockRequests) {
+            return new Promise(function (resolve, reject) {
+                AuthAjax.post(
+                    'package_sequry_core_ajax_actors_groups_unlockUsers', {
+                        securityClassIds: securityClassIds,
+                        unlockRequests  : JSON.encode(unlockRequests)
+                    }
+                ).then(resolve, reject);
+            });
+        },
+
+        /**
+         * Check if current user is in a CryptoGroup
+         *
+         * @param {Number} groupId
+         * @return {Promise}
+         */
+        isUserInGroup: function (groupId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_actors_users_isInCryptoGroup', resolve, {
+                    'package': pkg,
+                    groupId  : groupId,
+                    onError  : reject
                 });
             });
         }

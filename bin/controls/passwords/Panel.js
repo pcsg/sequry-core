@@ -564,10 +564,16 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                 self.linkPassword(event.target.getProperty('data-pwid'));
             };
 
+            var noAccessRows = [];
+
             for (var i = 0, len = GridData.data.length; i < len; i++) {
                 var Data = GridData.data[i];
 
                 Row = Object.clone(Data);
+
+                if (!Data.canAccess) {
+                    noAccessRows.push(i);
+                }
 
                 // access type
                 Row.accessType = new Element('div', {
@@ -777,6 +783,10 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
             }
 
             this.$Grid.setData(GridData);
+
+            for (i = 0, len = noAccessRows.length; i < len; i++) {
+                this.$Grid.getRowElement(noAccessRows[i]).addClass('pcsg-gpm-passwords-panel-grid-noaccess');
+            }
         },
 
         /**
@@ -1750,7 +1760,9 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                                 }
                             });
 
-                            Input.focus();
+                            (function() {
+                                Input.focus();
+                            }).delay(200);
                         }
                     }
                 });

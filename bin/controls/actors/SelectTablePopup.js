@@ -39,7 +39,7 @@ define('package/sequry/core/bin/controls/actors/SelectTablePopup', [
         options: {
             icon             : 'fa fa-users',
             info             : '',       // info text that is shown above the table
-            securityClassId  : false,    // security class id the actors have to be eligible for
+            securityClassIds : [],    // security class ids the actors have to be eligible for
             multiselect      : false,
             actorType        : 'all',    // can be "all", "users" or "groups"
             filterActorIds   : [],       // IDs of actors that are filtered from list (entries must have
@@ -82,7 +82,7 @@ define('package/sequry/core/bin/controls/actors/SelectTablePopup', [
 
             this.$SelectTable = new SelectTable({
                 info             : this.getAttribute('info'),
-                securityClassId  : this.getAttribute('securityClassId'),
+                securityClassIds : this.getAttribute('securityClassIds'),
                 multiselect      : this.getAttribute('multiselect'),
                 actorType        : this.getAttribute('actorType'),
                 filterActorIds   : this.getAttribute('filterActorIds'),

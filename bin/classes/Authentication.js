@@ -31,10 +31,14 @@ define('package/sequry/core/bin/classes/Authentication', [
          * Authentication for a specific security class
          *
          * @param {number} securityClassId
+         * @param {Array} [hideAuthPluginIds] - IDs of authentication plugins that should
+         * not be displayed in the authentication window
          * @return {Promise}
          */
-        securityClassAuth: function (securityClassId) {
+        securityClassAuth: function (securityClassId, hideAuthPluginIds) {
             var self = this;
+
+            hideAuthPluginIds = hideAuthPluginIds || [];
 
             return new Promise(function (resolve, reject) {
                 require([
@@ -44,8 +48,14 @@ define('package/sequry/core/bin/classes/Authentication', [
                         self.getAuthPluginIdsBySecurityClass([securityClassId]),
                         self.getSecurityClassInfo(securityClassId)
                     ]).then(function (result) {
+                        var authPluginIds = result[0][securityClassId];
+
+                        for (var i = 0, len = hideAuthPluginIds.length; i < len; i++) {
+                            authPluginIds.erase(hideAuthPluginIds[i]);
+                        }
+
                         var Popup = new AuthWindow({
-                            authPluginIds: result[0][securityClassId],
+                            authPluginIds: authPluginIds,
                             required     : result[1].requiredFactors,
                             info         : QUILocale.get(lg,
                                 'classes.authentication.securityClassAuth.info', result[1]
@@ -96,17 +106,21 @@ define('package/sequry/core/bin/classes/Authentication', [
          * Authenticate for multiple security classes
          *
          * @param {Array} securityClassIds
+         * @param {String} [info] - Info text that is shown in the authentication popup (top)
+         * @param {Array} [hideAuthPluginIds] - IDs of authentication plugins that should
+         * not be displayed in authentication window
          * @return {Promise}
          */
-        multiSecurityClassAuth: function (securityClassIds) {
+        multiSecurityClassAuth: function (securityClassIds, info, hideAuthPluginIds) {
             return new Promise(function (resolve, reject) {
                 require([
                     'package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow'
                 ], function (MultiAuthWindow) {
                     new MultiAuthWindow({
-                        info            : 'Bitte für alle Sicherheitsklassen authentifizieren', // @todo Sprachvariable
-                        securityClassIds: securityClassIds,
-                        events          : {
+                        info             : info ? info : false,
+                        securityClassIds : securityClassIds,
+                        hideAuthPluginIds: hideAuthPluginIds,
+                        events           : {
                             onSubmit: function (Popup) {
                                 resolve();
                                 Popup.close();
@@ -294,27 +308,6 @@ define('package/sequry/core/bin/classes/Authentication', [
                     {
                         'package': pkg,
                         onError  : reject
-                    }
-                );
-            });
-        },
-
-        /**
-         * Get control to authenticate with authentication plugins of a specific
-         * security class
-         *
-         * @param {number} authPluginId - ID of authentication plugin that shall be synced
-         * @returns {Promise}
-         */
-        getAllowedSyncAuthPlugins: function (authPluginId) {
-            return new Promise(function (resolve, reject) {
-                QUIAjax.get(
-                    'package_sequry_core_ajax_auth_getAllowedSyncAuthPlugins',
-                    resolve,
-                    {
-                        'package'   : pkg,
-                        onError     : reject,
-                        authPluginId: authPluginId
                     }
                 );
             });

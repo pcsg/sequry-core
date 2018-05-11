@@ -39,21 +39,6 @@ function package_sequry_core_ajax_auth_syncAuthPlugin($authPluginId)
         return false;
     }
 
-    try {
-        $limitedGroupAccessData = $CryptoUser->getNonFullyAccessibleGroupAndSecurityClassIds($AuthPlugin);
-
-        foreach ($limitedGroupAccessData as $groupId => $securityClassIds) {
-            $CryptoGroup = CryptoActors::getCryptoGroup($groupId);
-
-            foreach ($securityClassIds as $securityClassId) {
-                $SecurityClass = Authentication::getSecurityClass($securityClassId);
-                $CryptoUser->reEncryptGroupAccessKey($CryptoGroup, $SecurityClass);
-            }
-        }
-    } catch (\Exception $Exception) {
-        QUI\System\Log::writeException($Exception);
-    }
-
     QUI::getMessagesHandler()->addSuccess(
         QUI::getLocale()->get(
             'sequry/core',

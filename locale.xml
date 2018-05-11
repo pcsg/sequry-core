@@ -154,6 +154,18 @@
             <de>
                 <![CDATA[Der Meta-Tabellen-Eintrag für den Benutzer "[userName]" (#[userId]) für das Passwort #[passwordId] kann nicht gelöscht werden, da der Benutzer noch Zugriff auf das Passwort hat.]]></de>
         </locale>
+        <locale name="message.password.share_user_not_found">
+            <de><![CDATA[Das Password ist mit Benutzer <b>#[userId]</b> geteilt. Der Benutzer konnte jedoch nicht gefunden werden und wurde daher aus dem Pool der Benutzer, mit denen das Passwort geteilt ist, entfernt.]]></de>
+        </locale>
+        <locale name="message.password.share_user_error">
+            <de><![CDATA[Das Password ist mit Benutzer <b>#[userId]</b> geteilt. Der Benutzer konnte jedoch nicht geladen werden und wurde daher aus dem Pool der Benutzer, mit denen das Passwort geteilt ist, entfernt. Bitte wenden Sie sich zur Prüfung an einen Administrator.]]></de>
+        </locale>
+        <locale name="message.password.share_group_not_found">
+            <de><![CDATA[Das Password ist mit der Gruppe <b>#[groupId]</b> geteilt. Die Gruppe konnte jedoch nicht gefunden werden und wurde daher aus dem Pool der Gruppen, mit denen das Passwort geteilt ist, entfernt.]]></de>
+        </locale>
+        <locale name="message.password.share_group_error">
+            <de><![CDATA[Das Password ist mit der Gruppe <b>#[groupId]</b> geteilt. Die Gruppe konnte jedoch nicht geladen werden und wurde daher aus dem Pool der Gruppen, mit denen das Passwort geteilt ist, entfernt. Bitte wenden Sie sich zur Prüfung an einen Administrator.]]></de>
+        </locale>
 
         <!-- Class: Handler/Passwords -->
         <locale name="exception.passwords.create.missing.data">
@@ -264,6 +276,10 @@
         <locale name="exception.cryptouser.getpasswordaccesskeygroup.error">
             <de><![CDATA[Der Passwort-Schlüssel für das Passwort #[passwordId] konnte nicht entschlüsselt werden. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.cryptouser.delete.group_admins_cannot_be_deleted" html="true">
+            <de><![CDATA[Der Benutzer kann nicht gelöscht werden, da er noch Gruppen-Administrator der folgenden Gruppen ist:<br><br>[groups].<br><br>Bitte entfernen Sie den Benutzer aus diesen Gruppen als Administrator, um ihn anschließend löschen zu können.]]></de>
+        </locale>
+
 
         <!-- Class: Actors\CryptoGroup -->
         <locale name="exception.cryptogroup.keypair.not.found">
@@ -287,9 +303,8 @@
         <locale name="exception.cryptogroup.keypair.decryption.authentication.error">
             <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error]]]></de>
         </locale>
-        <locale name="exception.cryptogroup.addsecurityclass.users.not.eligible">
-            <de>
-                <![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindesanzahl an nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+        <locale name="exception.cryptogroup.add_securityclass.not_all_admins_eligible">
+            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Administrator-Benutzer der Gruppe für die Sicherheitsklasse geeignet sind.]]></de>
         </locale>
         <locale name="exception.cryptogroup.setsecurityclass.users.has.no.group.access">
             <de><![CDATA[Der Benutzer #[userId] kann die Sicherheitsklasse #[securityClassId] der Gruppe #[groupId] nicht zuordnen, da der Benutzer der Gruppe nicht zugewiesen ist.]]></de>
@@ -306,8 +321,8 @@
         <locale name="exception.cryptogroup.remove.user.has.no.permission">
             <de><![CDATA[Der Benutzer #[userId] kann keine anderen Benutzer aus der Gruppe #[groupId] entfernen, da er dafür nicht die nötige Berechtigung besitzt.]]></de>
         </locale>
-        <locale name="exception.cryptogroup.no.group.access">
-            <de><![CDATA[Diese Operation kann nicht ausgeführt werden, da Sie nicht Teil der Gruppe "[groupName]" (#[groupId]) sind.]]></de>
+        <locale name="exception.cryptogroup.no_admin_permission">
+            <de><![CDATA[Diese Operation darf nur von Gruppen-Administratoren der Gruppe "[groupName]" (#[groupId]) ausgeführt werden.]]></de>
         </locale>
         <locale name="exception.cryptogroup.remove.user.has.no.permission">
             <de><![CDATA[Der Benutzer #[userId] besitzt nicht die nötige Berechtigung.]]></de>
@@ -353,6 +368,12 @@
             <de>
                 <![CDATA[Beim Verschlüsseln des Passwort-Schlüssels des Passworts #[passwordId] für die Gruppe "[groupName]" (#[groupId]) ist ein unerwarteter Fehler aufgetreten. Bitte wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.actors.cryptogroup.admin_user_not_eligible" html="true">
+            <de><![CDATA[Der Benutzer <b>[username] #[userId]</b> ist nicht für alle Sicherheitsklassen der Gruppe geeignet. Der Benutzer muss sich zunächst für alle Authentifizierungs-Faktoren der jeweiligen Sicherheitsklassen registrieren.]]></de>
+        </locale>
+        <locale name="exception.actors.cryptogroup.admin_user_required" html="true">
+            <de><![CDATA[Der Benutzer kann nicht als Gruppen-Administrator entfernt werden, da eine Gruppe, der eine odere mehrere Sicherheitsklassen zugewiesen sind, immer <b>mindestens einen Gruppen-Administrator</b> benötigt.]]></de>
+        </locale>
 
         <!-- Class: Security\Handler\CryptoActors -->
         <locale name="exception.cryptoactors.addcryptogroup.no.users">
@@ -360,14 +381,16 @@
                 <![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
-            <de>
-                <![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da nicht alle Benutzer der Gruppe für die Mindestanzahl der nötigen Authentifizierungs-Faktoren der Sicherheitsklasse registriert sind.]]></de>
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da folgende Gruppen-Administratoren nicht für die Sicherheitsklasse geeignet sind:<br><br>[users].]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.user.not.eligible">
             <de><![CDATA[Die Benutzer "[userName]" (#[userId]) ist nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet.]]></de>
         </locale>
         <locale name="exception.cryptogroup.securityclass.already.assigned">
             <de><![CDATA[Die Gruppe ist der Sicherheitsklasse bereits zugeordnet.]]></de>
+        </locale>
+        <locale name="exception.cryptoactors.createCryptoGroupKey.group_has_no_admins">
+            <de><![CDATA[Der Gruppe #[groupId] kann keine Sicherheitsklasse zugeordnet werden, da Sie noch keine Gruppen-Administratoren hat. Bitte fügen Sie Gruppen-Administratoren hinzu.]]></de>
         </locale>
 
         <!-- Class: Security\Authentication\Plugin -->
@@ -576,6 +599,18 @@
         <locale name="message.passwords.link.deactivate.error" html="true">
             <de><![CDATA[Der Passwort-Link #[linkId] konnte nicht deaktiviert werden:<br><br>[error]]]></de>
         </locale>
+        <locale name="message.ajax.actors.groups.addAdminUsers.error" html="true">
+            <de><![CDATA[Die Benutzer konnten nicht als Gruppen-Administratoren hinzugefügt werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.addAdminUsers.success">
+            <de><![CDATA[Die Benutzer wurden erfolgreich als Gruppen-Administratoren hinzugefügt.]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.removeAdminUser.error" html="true">
+            <de><![CDATA[Der Benutzer konnte nicht als Gruppen-Administrator entfernt werden:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.removeAdminUser.success">
+            <de><![CDATA[Der Benutzer wurde erfolgreich als Gruppen-Administrator entfernt.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -629,6 +664,9 @@
         </locale>
         <locale name="exception.events.add.users.to.group.info">
             <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Gruppe authentifizieren, bevor Sie dieser Gruppe Benutzer hinzufügen können.]]></de>
+        </locale>
+        <locale name="exception.events.add.users.to.group.info_authenticated">
+            <de><![CDATA[Sie sind für die nötigen Sicherheitsklassen für diese Operation bereits authentifiziert. Diese Nachricht kann ignoriert werden.]]></de>
         </locale>
         <locale name="exception.events.add.groups.to.user.info">
             <de><![CDATA[Sie müssen sich zunächst für alle Sicherheitsklassen der Passwort-Gruppen authentifizieren, bevor sie diese Gruppen dem Benutzer zuweisen können.]]></de>
@@ -756,24 +794,6 @@
             <de><![CDATA[Passwort]]></de>
         </locale>
 
-        <!-- Instructions -->
-        <locale name="exception.actors.sendinstructions.no.email.address">
-            <de>
-                <![CDATA[Die Anweisungen für den PasswortManager können nicht versendet werden, da der Benuzter "[userName]" (#[userId]) keine E-Mail-Addresse in seinem Benutzerprofil eingetragen hat.]]></de>
-        </locale>
-        <locale name="error.actors.sendinstructions">
-            <de><![CDATA[Die Anleitung konnte nicht verschickt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie einen Administrator.]]></de>
-        </locale>
-        <locale name="success.actors.sendinstructions">
-            <de><![CDATA[Die Anleitung wurde erfolgreich verschickt!]]></de>
-        </locale>
-        <locale name="actors.sendinstructions.subject">
-            <de><![CDATA[Anleitung für den QUIQQER PasswordManager]]></de>
-        </locale>
-        <locale name="actors.sendinstructions.instructions" html="true">
-            <de><![CDATA[Anleitungstext]]></de>
-        </locale>
-
         <!-- Handler\Categories -->
         <locale name="exception.handler.categories.category.not.found">
             <de><![CDATA[Die öffentliche Passwort-Kategorie #[id] wurde nicht gefunden.]]></de>
@@ -895,7 +915,6 @@ Freundliche Grüße!]]></de>
     </groups>
 
     <groups name="sequry/core" datatype="php,js">
-
         <!-- Site types -->
         <locale name="sitetype.passwordlink.title">
             <de><![CDATA[Passwort-Link]]></de>
@@ -906,10 +925,10 @@ Freundliche Grüße!]]></de>
 
         <!-- Setup -->
         <locale name="setup.securityclass.title">
-            <de><![CDATA[1-Faktor (QUIQQER Passwort)]]></de>
+            <de><![CDATA[1-Faktor (Login-Passwort)]]></de>
         </locale>
         <locale name="setup.securityclass.description">
-            <de><![CDATA[Authentifizierung per QUIQQER Login Passwort]]></de>
+            <de><![CDATA[Authentifizierung per Login Passwort]]></de>
         </locale>
 
         <locale name="password.create.template.passwordCategory">
@@ -1106,8 +1125,11 @@ Freundliche Grüße!]]></de>
         <locale name="permission.gpm.cryptogroup._header">
             <de><![CDATA[Passwort-Gruppen]]></de>
         </locale>
-        <locale name="permission.gpm.cryptogroup.edit">
+        <locale name="permission.gpm.cryptogroup.create">
             <de><![CDATA[Darf Passwort-Gruppen Sicherheitklassen zuweisen]]></de>
+        </locale>
+        <locale name="permission.gpm.cryptogroup.manage_admins">
+            <de><![CDATA[Darf Passwort-Gruppen-Administratoren hinzufügen und entfernen]]></de>
         </locale>
         <locale name="permission.gpm.securityclass._header">
             <de><![CDATA[Sicherheitsklassen]]></de>
@@ -1331,14 +1353,14 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Registrieren]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.initialRegistration.label">
-            <de><![CDATA[QUIQQER Login-Passwort]]></de>
+            <de><![CDATA[Login-Passwort]]></de>
         </locale>
         <locale name="controls.gpm.passwords.panel.view.button.edit">
             <de><![CDATA[Passwort bearbeiten]]></de>
         </locale>
         <locale name="controls.password.panel.setup_incomplete" html="true">
             <de><![CDATA[<h1>Sequry ist noch nicht einsatzbereit!</h1>
-<p>Sequry kann leider noch nicht benutzt werden, da noch nicht alle nötigen Konfigurationsschritte abgeschlossen sind. Bitte lesen Sie den Abschnitt <b>"Sequry einrichten"</b> in der Dokumentation und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>]]></de>
+<p>Sequry kann leider noch nicht benutzt werden, da noch nicht alle nötigen Konfigurationsschritte abgeschlossen sind. Bitte lesen Sie <a href="https://dev.quiqqer.com/sequry/core/wikis/setup-de" target="_blank"><b>"Sequry einrichten"</b></a> im Wiki und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>]]></de>
         </locale>
 
         <!-- Control: password/Create -->
@@ -1388,6 +1410,9 @@ Freundliche Grüße!]]></de>
         <locale name="controls.password.create.ownerselect.info">
             <de>
                 <![CDATA[Bitte wählen Sie einen Eigentümer, der das Passwort bearbeiten, teilen und löschen kann. Wenn eine Gruppe als Eigentümer gewählt wird, haben alle Benutzer dieser Gruppe die genannten Passwort-Berechtigungen.]]></de>
+        </locale>
+        <locale name="password.create.warning.no_access_on_owner_change" html="true">
+            <de><![CDATA[<b>Warnung:</b> Wenn Sie diesen Benutzer bzw. diese Gruppe als Passwort-Eigentümer setzen haben Sie selbst <b>keinen Zugriff</b> mehr auf dieses Passwort!]]></de>
         </locale>
 
         <!-- Control: password/Edit -->
@@ -1456,6 +1481,9 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="auth.panel.register.btn.register">
             <de><![CDATA[Registrieren]]></de>
+        </locale>
+        <locale name="auth.panel.sync_info">
+            <de><![CDATA[Sie haben sich für einen neuen Authentifizierungs-Faktor registriert. Um den Zugriff auf alle Passwörter freizuschalten, die mit diesem Faktor entschlüsselt werden können, authentifizieren Sie sich bitte einmalig für die folgenden Sicherheitsklassen.]]></de>
         </locale>
 
         <!-- Control: auth/Register -->
@@ -1552,6 +1580,21 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="controls.password.view.categories.tooltip">
             <de><![CDATA[Können unter "Passwort bearbeiten" angepasst werden]]></de>
+        </locale>
+        <locale name="controls.password.access_info.title">
+            <de><![CDATA[Der Zugriff auf dieses Passwort ist nicht möglich]]></de>
+        </locale>
+        <locale name="controls.password.access_info.text" html="true">
+            <de><![CDATA[Sie haben die Berechtigung, dieses Passwort anzusehen, sind jedoch noch nicht für die Sicherheitsklasse <b>[title]</b> freigeschaltet.<br/><br/>]]></de>
+        </locale>
+        <locale name="controls.password.access_info.text_missing_auth_plugins">
+            <de><![CDATA[Damit ein Administrator ihnen den Zugriff auf dieses Passwort ermöglichen kann, registrieren Sie sich bitte für folgende Authentifizierungs-Faktoren:]]></de>
+        </locale>
+        <locale name="controls.password.access_info.text_missing_authorization">
+            <de><![CDATA[Damit Sie auf dieses Passwort zugreifen können, müssen sie von einem Administrator freigeschaltet werden. Die zuständigen Administratoren wurden darüber benachrichtigt.]]></de>
+        </locale>
+        <locale name="controls.password.access_info.btn.text">
+            <de><![CDATA[Zu den Authentifizierungs-Faktoren]]></de>
         </locale>
 
         <!-- Control: password/Panel -->
@@ -1809,15 +1852,32 @@ Freundliche Grüße!]]></de>
         <locale name="actors.groups.edit.template.title">
             <de><![CDATA[Passwort-Gruppe "[groupName]" (#[groupId]) bearbeiten]]></de>
         </locale>
-        <locale name="actors.groups.edit.template.basicData">
+        <locale name="actors.groups.edit.template.headerSecurityClasses">
             <de><![CDATA[Sicherheitsklassen]]></de>
         </locale>
         <locale name="actors.groups.edit.template.securityclasses">
             <de><![CDATA[Zugeordnete Sicherheitsklassen]]></de>
         </locale>
-        <locale name="actors.groupedit.no.securityclass" html="true">
-            <de>
-                <![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen von Sequry verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
+        <locale name="actors.groups.edit.template.headerGroupAdmins">
+            <de><![CDATA[Gruppen-Administratoren]]></de>
+        </locale>
+        <locale name="actors.groups.edit.template.groupAdminDesc" html="true">
+            <de><![CDATA[Hier können Benutzer als <b>Gruppen-Administratoren</b> festgelegt werden. Gruppen-Administratoren können <b>andere Benutzer zu dieser Gruppe hinzufügen</b> und <b>andere Benutzer aus der Gruppe entfernen</b>. Sie bestimmen so, wer Zugriff auf alle Passwörter hat, auf die diese Gruppe Zugriff hat.<br><br>Zudem haben Gruppen-Administratoren die Möglichkeit, Benutzer freizuschalten, die dieser Gruppe zugewiesen sind, aber erst im Nachhinein die Eignung für eine Sicherheitsklasse dieser Gruppe erhalten.]]></de>
+        </locale>
+        <locale name="actors.groupedit.no_group_securityclass" html="true">
+            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, kann sie nur noch von SuperUsern wieder gelöscht werden.]]></de>
+        </locale>
+        <locale name="actors.groupedit.no_securityclasses" html="true">
+            <de><![CDATA[Es sind noch keine <b>Sicherheitsklassen</b> eingerichtet. Bitte richten sie <b>mindestens eine</b> Sicherheitsklasse ein und weisen Sie dieser Gruppe eine Sicherheitsklasse zu, damit Sie im Rahmen von Sequry verwendet werden kann.]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.remove_alt">
+            <de><![CDATA[Hier klicken, um diese Sicherheitsklasse aus der Gruppe zu entfernen]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.add_alt">
+            <de><![CDATA[Hier klicken, um diese Sicherheitsklasse der Gruppe hinzuzufügen]]></de>
+        </locale>
+        <locale name="actors.groupedit.securityclass.btn.add_alt_not_eligible">
+            <de><![CDATA[Diese Sicherheitsklasse kann der Gruppe nicht hinzugefügt werden, da nicht alle aktuellen Gruppen-Administratoren für diese Sicherheitsklasse geeignet sind]]></de>
         </locale>
         <locale name="actors.groupedit.not.in.group">
             <de><![CDATA[Sie können die Sicherheitsklasse dieser Gruppe nicht ändern, da Sie dieser Gruppe nicht zugewiesen sind.]]></de>
@@ -1838,6 +1898,9 @@ Freundliche Grüße!]]></de>
         <locale name="controls.actors.groupedit.addsecurityclass.selectactor.info">
             <de>
                 <![CDATA[Dieser Gruppe sind momentan keine Benutzer zugewiesen, die für die gewählte Sicherheitsklasse geeignet sind. Um die Sicherheitsklasse der Gruppe hinzuzufügen, wählen Sie bitte einen geeigneten Benutzer. Dieser wird der Gruppe automatisch hinzugefügt.]]></de>
+        </locale>
+        <locale name="actors.groupedit.no_group_admins">
+            <de><![CDATA[Diese Gruppe hat <b>noch keine Gruppen-Administatoren</b>. Bitte fügen Sie mindestens einen Benutzer als Gruppen-Administrator hinzu, damit Sie der Gruppe Sicherheitsklassen zuweisen können.]]></de>
         </locale>
 
         <!-- Control: auth/Panel -->
@@ -2065,7 +2128,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Name]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.header.notice">
-            <de><![CDATA[Eignung für Sicherheitsklasse "[securityClassTitle]"]]></de>
+            <de><![CDATA[Sicherheitsklasse(n): [securityClassTitles]]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.eligible">
             <de><![CDATA[geeignet]]></de>
@@ -2074,10 +2137,10 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[nicht geeignet]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.not.eligible.user" html="true">
-            <de><![CDATA[<i>(nicht für die Mindestanzahl an Authentifizierungs-Faktoren registriert)</i>]]></de>
+            <de><![CDATA[<i>(nicht für für alle nötigen Authentifizierungs-Faktoren registriert)</i>]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.not.eligible.group" html="true">
-            <de><![CDATA[<i>(nicht für die Sicherheitsklasse freigeschaltet)</i>]]></de>
+            <de><![CDATA[<i>(nicht für alle nötigen Sicherheitsklassen freigeschaltet)</i>]]></de>
         </locale>
         <locale name="controls.actors.selecttable.tbl.btn.users">
             <de><![CDATA[Benutzer]]></de>
@@ -2109,6 +2172,9 @@ Freundliche Grüße!]]></de>
         <!-- Class: Authentication -->
         <locale name="classes.authentication.securityClassAuth.info" html="true">
             <de><![CDATA[<b>Sicherheitsklasse:</b> [title]<br><b>Benötigte Faktoren:</b> [requiredFactors]]]></de>
+        </locale>
+        <locale name="exception.security.handler.authentication.keypair_not_found" html="true">
+            <de><![CDATA[Das Benutzer-Schlüsselpaar #[$id] wurde nicht gefunden.]]></de>
         </locale>
 
         <!-- Control: auth/recovery/Recovery -->
@@ -2311,6 +2377,45 @@ Freundliche Grüße!]]></de>
         <!-- Control: utils/InputButtons -->
         <locale name="controls.utils.inputbuttons.copy">
             <de><![CDATA[Kopiert!]]></de>
+        </locale>
+        <!-- Control: actors/groupadmins/GroupAdminButton -->
+        <locale name="controls.actors.groupadmins.GroupAdminButton.text">
+            <de><![CDATA[Gruppen-Freischaltungen ([openRequests] offene Anfragen)]]></de>
+        </locale>
+
+        <!-- Control: actors/groupadmins/Panel -->
+        <locale name="controls.actors.groupadmins.Panel.title">
+            <de><![CDATA[Sequry Gruppen-Freischaltungen]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.btn.unlockAll">
+            <de><![CDATA[Alle freischalten]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.btn.unlock">
+            <de><![CDATA[Markierte(n) freischalten]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.userName">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.group">
+            <de><![CDATA[Gruppe]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.securityClass">
+            <de><![CDATA[Sicherheitsklasse]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.tbl.header.authPlugin">
+            <de><![CDATA[Authentifizierungs-Faktor]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.unlock.popup.title">
+            <de><![CDATA[Benutzer für Gruppen / Sicherheitsklassen freischalten]]></de>
+        </locale>
+        <locale name="controls.actors.groupadmins.Panel.unlock.popup.info">
+            <de><![CDATA[Sind Sie sicher, dass sie folgenden Benutzern für die jeweilige Gruppe und Sicherheitsklasse Zugriff gewähren möchten?<br/><br>[requests]]]></de>
+        </locale>
+
+        <!-- Control: actors/GroupEdit -->
+        <locale name="controls.actors.groupselect.adminselect.info" html="true">
+            <de><![CDATA[Wählen Sie hier die Gruppen-Administratoren für die Gruppe <b>[groupName]</b> (#[groupId]). Gruppen-Administratoren dürfen dieser Gruppe Benutzer hinzufügen oder aus dieser entfernen. Zudem können sie den Gruppen-Zugriff für bestimmte Sicherheitsklassen für einzelne Benutzer im Nachhinein freischalten.]]></de>
+>>>>>>> groupadmin
         </locale>
 
     </groups>

@@ -1,16 +1,11 @@
 /**
+ * Select users or groups that are eligible for a specific SecurityClass
+ *
  * @module package/sequry/core/bin/controls/actors/Select
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/controls/elements/Select
- * @require package/sequry/core/bin/controls/actors/SelectTablePopup
- * @require Ajax
- * @require Locale
  */
 define('package/sequry/core/bin/controls/actors/Select', [
 
-    'qui/QUI',
     'qui/controls/elements/Select',
 
     'package/sequry/core/bin/controls/actors/SelectTablePopup',
@@ -18,7 +13,7 @@ define('package/sequry/core/bin/controls/actors/Select', [
     'Ajax',
     'Locale'
 
-], function (QUI, QUIElementSelect, SelectTablePopup, QUIAjax, QUILocale) {
+], function (QUIElementSelect, SelectTablePopup, QUIAjax, QUILocale) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -34,13 +29,13 @@ define('package/sequry/core/bin/controls/actors/Select', [
         ],
 
         options: {
-            popupInfo        : '',    // info that is shown in the ActorSelect Popup
-            actorType        : 'all', // "users", "groups", "all"
-            securityClassId  : false,  // id of security class this actors are searched for
+            popupInfo        : '',     // info that is shown in the ActorSelect Popup
+            actorType        : 'all',  // "users", "groups", "all"
+            securityClassIds : [],     // ids of security classes this actors are searched for
             Search           : false,
-            filterActorIds   : [],   // IDs of actors that are filtered from list (entries must have
+            filterActorIds   : [],     // IDs of actors that are filtered from list (entries must have
             // prefix "u" (user) or "g" (group)
-            showEligibleOnly : false,      // show eligible only or all
+            showEligibleOnly : false,  // show eligible only or all
             selectedActorType: 'users' // pre-selected actor type
         },
 
@@ -94,11 +89,11 @@ define('package/sequry/core/bin/controls/actors/Select', [
 
             return new Promise(function (resolve) {
                 QUIAjax.get('package_sequry_core_ajax_actors_suggestSearch', resolve, {
-                    'package'      : 'sequry/core',
-                    type           : self.getAttribute('actorType'),
-                    search         : value,
-                    securityClassId: self.getAttribute('securityClassId'),
-                    limit          : 10
+                    'package'       : 'sequry/core',
+                    type            : self.getAttribute('actorType'),
+                    search          : value,
+                    securityClassIds: JSON.encode(self.getAttribute('securityClassIds')),
+                    limit           : 10
                 });
             });
         },
@@ -156,7 +151,7 @@ define('package/sequry/core/bin/controls/actors/Select', [
 
             new SelectTablePopup({
                 info             : this.getAttribute('popupInfo'),
-                securityClassId  : this.getAttribute('securityClassId'),
+                securityClassIds : this.getAttribute('securityClassIds'),
                 multiselect      : this.getAttribute('multiple'),
                 actorType        : this.getAttribute('actorType'),
                 showEligibleOnly : this.getAttribute('showEligibleOnly'),

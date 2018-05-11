@@ -16,6 +16,7 @@ define('package/sequry/core/bin/controls/password/Create', [
 
     'package/sequry/core/bin/Passwords',
     'package/sequry/core/bin/Authentication',
+    'package/sequry/core/bin/Actors',
     'package/sequry/core/bin/controls/securityclasses/SelectSlider',
     'package/sequry/core/bin/controls/actors/Select',
     'package/sequry/core/bin/controls/passwordtypes/Content',
@@ -27,7 +28,7 @@ define('package/sequry/core/bin/controls/password/Create', [
     'text!package/sequry/core/bin/controls/password/Create.html',
     'css!package/sequry/core/bin/controls/password/Create.css'
 
-], function (QUI, QUIControl, QUILocale, Mustache, Passwords, Authentication,
+], function (QUI, QUIControl, QUILocale, Mustache, Passwords, Authentication, Actors,
              SecurityClassSelectSlider, ActorSelect, PasswordTypes, CategorySelect,
              CategorySelectPrivate, QUIAjax, template) {
     "use strict";
@@ -60,6 +61,7 @@ define('package/sequry/core/bin/controls/password/Create', [
             this.$OwnerSelect           = null;
             this.$OwnerSelectElm        = null;
             this.$OwnerInfoElm          = null;
+            this.$NoAccessWarningElm    = null;
             this.$loaded                = false;
             this.$CurrentOwner          = null;
             this.$Settings              = {};
@@ -89,7 +91,7 @@ define('package/sequry/core/bin/controls/password/Create', [
                     passwordPayload        : QUILocale.get(lg, lg_prefix + 'passwordPayload'),
                     payloadWarning         : QUILocale.get(lg, lg_prefix + 'payloadWarning'),
                     extra                  : QUILocale.get(lg, lg_prefix + 'extra'),
-                    passwordOwner          : QUILocale.get(lg, lg_prefix + 'passwordOwner'),
+                    passwordOwner          : QUILocale.get(lg, lg_prefix + 'passwordOwner')
                 })
             });
 
@@ -177,11 +179,11 @@ define('package/sequry/core/bin/controls/password/Create', [
             this.$OwnerSelectElm.set('html', '');
 
             var ActorSelectAttributes = {
-                popupInfo      : QUILocale.get(lg,
+                popupInfo       : QUILocale.get(lg,
                     'controls.password.create.ownerselect.info'
                 ),
-                max            : 1,
-                securityClassId: securityClassId,
+                max             : 1,
+                securityClassIds: [securityClassId],
 
                 events: {
                     onChange: this.$onOwnerChange
@@ -276,6 +278,7 @@ define('package/sequry/core/bin/controls/password/Create', [
          * On owner change
          */
         $onOwnerChange: function () {
+            var self   = this;
             var actors = this.$OwnerSelect.getActors();
 
             if (!actors.length) {
@@ -289,6 +292,37 @@ define('package/sequry/core/bin/controls/password/Create', [
             if (this.$OwnerInfoElm) {
                 this.$OwnerInfoElm.destroy();
             }
+
+            if (this.$NoAccessWarningElm) {
+                this.$NoAccessWarningElm.destroy();
+            }
+
+            // check if NoAccessWarning should be shown
+            if (this.$CurrentOwner.type === 'user' && this.$CurrentOwner.id != USER.id) {
+                this.$NoAccessWarningElm = new Element('div', {
+                    'class': 'pcsg-gpm-password-warning',
+                    styles : {
+                        marginTop: 10
+                    },
+                    html   : QUILocale.get(lg, 'password.create.warning.no_access_on_owner_change')
+                }).inject(this.$OwnerSelectElm);
+
+                return;
+            }
+
+            if (this.$CurrentOwner.type === 'group') {
+                Actors.isUserInGroup(this.$CurrentOwner.id).then(function (isInGroup) {
+                    if (!isInGroup) {
+                        self.$NoAccessWarningElm = new Element('div', {
+                            'class': 'pcsg-gpm-password-warning',
+                            styles : {
+                                marginTop: 10
+                            },
+                            html   : QUILocale.get(lg, 'password.create.warning.no_access_on_owner_change')
+                        }).inject(self.$OwnerSelectElm);
+                    }
+                });
+            }
         },
 
         /**
@@ -297,6 +331,10 @@ define('package/sequry/core/bin/controls/password/Create', [
         $showSetOwnerInformation: function () {
             if (this.$OwnerInfoElm) {
                 this.$OwnerInfoElm.destroy();
+            }
+
+            if (this.$NoAccessWarningElm) {
+                this.$NoAccessWarningElm.destroy();
             }
 
             this.$OwnerInfoElm = new Element('div', {

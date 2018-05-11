@@ -294,10 +294,11 @@ define('package/sequry/core/bin/controls/auth/Authenticate', [
                                 '</span>'
                             }).inject(
                                 PluginElm,
-                                'top'
+                                'bottom'
                             );
 
                             Control.setAttribute('eligibleForAuth', false);
+                            Control.hide();
                         } else {
                             eligibleAuthPluginsLoaded++;
                         }

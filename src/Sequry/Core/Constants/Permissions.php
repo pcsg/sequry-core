@@ -18,7 +18,8 @@ class Permissions
     const PASSWORDS_SHARE        = 'gpm.cryptodata.share';
     const PASSWORDS_SHARE_GROUP  = 'gpm.cryptodata.share_group';
 
-    const GROUP_EDIT = 'gpm.cryptogroup.edit';
+    const GROUP_CREATE        = 'gpm.cryptogroup.create';
+    const GROUP_MANAGE_ADMINS = 'gpm.cryptogroup.manage_admins';
 
     const SECURITY_CLASS_EDIT = 'gpm.securityclass.edit';
 
