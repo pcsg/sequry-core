@@ -74,6 +74,7 @@ define('package/sequry/core/bin/controls/password/Edit', [
             this.$OwnerSelectElm        = null;
             this.$CurrentOwner          = null;
             this.$groupOwner            = false;
+            this.$initialLoad           = true;
         },
 
         /**
@@ -231,6 +232,8 @@ define('package/sequry/core/bin/controls/password/Edit', [
                     html   : QUILocale.get(lg, 'password.edit.securityclass.change.warning')
                 }).inject(this.$OwnerSelectElm);
             }
+
+            this.$initialLoad = false;
         },
 
         /**
@@ -268,6 +271,10 @@ define('package/sequry/core/bin/controls/password/Edit', [
             }
 
             this.$OwnerSelect.addItem(ownerValue);
+
+            if (this.$initialLoad) {
+                return;
+            }
 
             Authentication.isActorEligibleForSecurityClass(
                 this.$CurrentOwner.id,
