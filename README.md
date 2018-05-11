@@ -1,73 +1,82 @@
-Passwort-Manager für Gruppen und Benutzer
+![Sequry](bin/images/Readme.jpg)
+
+Sequry
 ========
 
+Sequry is a password manager for teams intended for self-hosting. Sequry allows teams to share passwords like login credentials securely.
 
-
-Paketname:
+Package Name:
 
     sequry/core
 
 
-Features (Funktionen)
+Features
 --------
 
-Passwort-Manager zur Verwaltung von Passwörtern bzw. geheimen Daten:
-
-* Jeder Benutzer kann Passwörter erstellen und diese mit (geheimen) Daten füllen
-* Passwörter werden verschlüsselt abgespeichert
-* Passwörter können mit anderen Benutzern und Gruppen geteilt werden, so dass auch andere Benutzer diese Passwörter einsehen können
-* Der Zugriff erfolgt über konfigurierte Authentifizierungs-Module, welche eigene QUIQQER Module sind
-  * z.B.: pcsg/gpmauthpassword für die Authentifizierung über das QUIQQER Login-Passwort
-    
+* Manage your passwords, login credentials, secret data (etc.) securely
+* Safely share passwords with other Sequry users without the need of unsecure channels like chat or e-mail
+* Full control over who sees your passwords
+* Fine-grained permission system for adminstrators
+* Create Sequry groups that share password permissions
+* Modular authentication - Install special Sequry authentication modules that offer Sequry authentication with various data
+  * Currently available: `sequry/auth-password` (default), `sequry/auth-secondpassword`, `sequry-keyfile`
+* Create and assign Security Classes that determine which authentication modules are allowed for a password
+* Share passwords via URL with users outside of your ecosystem (PasswordLinks)
+* State-of-the-art cryptography
 
 Installation
 ------------
+The Package Name is: sequry/core
 
-Der Paketname ist: sequry/core
-
-
-Abhängigkeiten
+Dependencies
 ------------
+```bash
+// PHP bcmath
+$ sudo apt-get install php-bcmath
 
-* PHP >= 7.0
-* PHP-Modul `bcmath` -> `sudo apt-get install php-bcmath`
-* libsodium (**Reihenfolge beachten!**) [s. auch: https://paragonie.com/book/pecl-libsodium/read/00-intro.md#installing-libsodium]
-  1. `sudo apt-get install php-dev`
-  2. libsodium library installieren: Es wird **mindestens** Version `1.0.9` vorausgesetzt!
-    * Bei Ubuntu >= `16.10`: `sudo apt-get install libsodium-dev`
-    * Bei Ubuntu <= `16.04` muss selbst kompiliert werden:
-        * `sudo apt-get install build-essential`
-        * `git clone -b stable https://github.com/jedisct1/libsodium.git`
-        * `cd libsodium`
-        * `sudo ./configure && make check && make install`
-        * `cd /usr/lib/x86_64-linux-gnu/`
-        * Wenn der symlink `libsodium.so` schon existiert: `sudo rm libsodium.so`
-        * Wenn der symlink `libsodium.so.18` schon existiert: `sudo rm libsodium.so.18`
-        * `sudo ln -s /usr/local/lib/libsodium.so libsodium.so`
-        * `sudo ln -s /usr/local/lib/libsodium.so libsodium.so.18`
-        * `sudo pecl install libsodium`
-    * Alternativ können für die Installation von `libsodium-dev` für Ubuntu `16.04` zwei `.deb`-Pakete <a href="#">heruntergeladen werden</a>
-       * Nach dem Download: `sudo dpkg -i libsodium18-1.0.11.deb libsodium-dev-1.0.11.deb`
+// libsodium (>= 1.0.9 required!)
 
-Mitwirken
+=== Ubuntu >= 17.10 ===
+$ sudo apt-get install libsodium php-libsodium
+
+=== Ubuntu 16.10 ===
+$ sudo apt-get install sudo apt-get install libsodium-dev
+$ sudo pecl install libsodium
+
+=== Ubuntu 16.04 ===
+// Alternative 1 - Download .deb packages at XYZ
+$ sudo dpkg -i libsodium18-1.0.11.deb libsodium-dev-1.0.11.deb
+
+// Alternative 2
+$ sudo apt-get install build-essential
+$ git clone -b stable https://github.com/jedisct1/libsodium.git
+$ cd libsodium
+$ sudo ./configure && make check && make install
+$ cd /usr/lib/x86_64-linux-gnu/
+
+// If symlink libsodium.so exists
+$ sudo rm libsodium.so
+// If symlink libsodium.so.18 exists
+$ sudo rm libsodium.so.18
+
+$ sudo ln -s /usr/local/lib/libsodium.so libsodium.so
+$ sudo ln -s /usr/local/lib/libsodium.so libsodium.so.18
+```
+
+Contribute
 ----------
-
-- Issue Tracker:    https://dev.quiqqer.com/sequry/core/issues
-- Source Code:      https://dev.quiqqer.com/sequry/core/tree/dev
-
+- Project: https://dev.quiqqer.com/sequry/core
+- Issue Tracker: https://dev.quiqqer.com/sequry/core/issues
+- Source Code: https://dev.quiqqer.com/sequry/core/tree/master
 
 Support
 -------
+If you have found any errors, have wishes or suggestions for improvement,
+you can contact us by email at support@pcsg.de or create an issue in the issue tracker.
 
-Falls Sie ein Fehler gefunden haben, oder Verbesserungen wünschen,
-schreiben Sie eine E-Mail mit einer genauen Beschreibung an p.mueller@pcsg.de.
+We will try to meet your needs or send them to the responsible developers
+of the project.
 
-
-Lizenz
+License
 -------
-
-
-Entwickler
---------
-
-Patrick Müller (www.pcsg.de)
+GPL-3.0+
