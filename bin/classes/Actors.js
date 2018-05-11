@@ -301,6 +301,22 @@ define('package/sequry/core/bin/classes/Actors', [
                     }
                 ).then(resolve, reject);
             });
+        },
+
+        /**
+         * Check if current user is in a CryptoGroup
+         *
+         * @param {Number} groupId
+         * @return {Promise}
+         */
+        isUserInGroup: function (groupId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_actors_users_isInCryptoGroup', resolve, {
+                    'package': pkg,
+                    groupId  : groupId,
+                    onError  : reject
+                });
+            });
         }
     });
 });

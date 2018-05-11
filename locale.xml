@@ -1411,6 +1411,9 @@ Freundliche Grüße!]]></de>
             <de>
                 <![CDATA[Bitte wählen Sie einen Eigentümer, der das Passwort bearbeiten, teilen und löschen kann. Wenn eine Gruppe als Eigentümer gewählt wird, haben alle Benutzer dieser Gruppe die genannten Passwort-Berechtigungen.]]></de>
         </locale>
+        <locale name="password.create.warning.no_access_on_owner_change" html="true">
+            <de><![CDATA[<b>Warnung:</b> Wenn Sie diesen Benutzer bzw. diese Gruppe als Passwort-Eigentümer setzen haben Sie selbst <b>keinen Zugriff</b> mehr auf dieses Passwort!]]></de>
+        </locale>
 
         <!-- Control: password/Edit -->
         <locale name="edit.template.title">

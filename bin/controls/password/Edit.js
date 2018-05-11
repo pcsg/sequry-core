@@ -72,6 +72,7 @@ define('package/sequry/core/bin/controls/password/Edit', [
             this.$CategorySelectPrivate = null;
             this.$OwnerSelect           = null;
             this.$OwnerSelectElm        = null;
+            this.$NoAccessWarningElm    = null;
             this.$CurrentOwner          = null;
             this.$groupOwner            = false;
             this.$initialLoad           = true;
@@ -305,6 +306,7 @@ define('package/sequry/core/bin/controls/password/Edit', [
          * On owner change
          */
         $onOwnerChange: function () {
+            var self   = this;
             var actors = this.$OwnerSelect.getActors();
 
             if (!actors.length) {
@@ -318,6 +320,37 @@ define('package/sequry/core/bin/controls/password/Edit', [
             if (this.$OwnerInfoElm) {
                 this.$OwnerInfoElm.destroy();
             }
+
+            if (this.$NoAccessWarningElm) {
+                this.$NoAccessWarningElm.destroy();
+            }
+
+            // check if NoAccessWarning should be shown
+            if (this.$CurrentOwner.type === 'user' && this.$CurrentOwner.id != USER.id) {
+                this.$NoAccessWarningElm = new Element('div', {
+                    'class': 'pcsg-gpm-password-warning',
+                    styles : {
+                        marginTop: 10
+                    },
+                    html   : QUILocale.get(lg, 'password.create.warning.no_access_on_owner_change')
+                }).inject(this.$OwnerSelectElm);
+
+                return;
+            }
+
+            if (this.$CurrentOwner.type === 'group') {
+                Actors.isUserInGroup(this.$CurrentOwner.id).then(function (isInGroup) {
+                    if (!isInGroup) {
+                        self.$NoAccessWarningElm = new Element('div', {
+                            'class': 'pcsg-gpm-password-warning',
+                            styles : {
+                                marginTop: 10
+                            },
+                            html   : QUILocale.get(lg, 'password.create.warning.no_access_on_owner_change')
+                        }).inject(self.$OwnerSelectElm);
+                    }
+                });
+            }
         },
 
         /**
@@ -326,6 +359,10 @@ define('package/sequry/core/bin/controls/password/Edit', [
         $showSetOwnerInformation: function () {
             if (this.$OwnerInfoElm) {
                 this.$OwnerInfoElm.destroy();
+            }
+
+            if (this.$NoAccessWarningElm) {
+                this.$NoAccessWarningElm.destroy();
             }
 
             this.$OwnerInfoElm = new Element('div', {
