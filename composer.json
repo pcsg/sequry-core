@@ -2,7 +2,7 @@
   "name": "sequry/core",
   "type": "quiqqer-application",
   "description": "Password manager for sharing passwords in a team environment",
-  "version": "dev-dev",
+  "version": "dev-master",
   "license": "GPL-3.0+",
   "authors": [
     {
