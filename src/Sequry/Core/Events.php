@@ -605,7 +605,7 @@ class Events
     public static function onPasswordOwnerChange(Password $Password, $NewOwner)
     {
         // deactivate all PasswordLinks if new owner is not allowed to use them
-        if (!PasswordLinks::isUserAllowedToUsePasswordLinks($Password, $NewOwner)) {
+        if (!PasswordLinks::isActorAllowedToUsePasswordLinks($Password, $NewOwner)) {
             foreach (PasswordLinks::getLinksByPasswordId($Password->getId()) as $PasswordLink) {
                 $PasswordLink->deactivate(false);
             }

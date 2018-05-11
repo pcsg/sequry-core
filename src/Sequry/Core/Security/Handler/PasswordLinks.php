@@ -266,7 +266,46 @@ class PasswordLinks
     }
 
     /**
-     * Check is a user is allowed to user PasswordLinks for a specific password
+     * Check if an actor is allowed to use PasswordLinks for a specific password
+     *
+     * @param Password $Password
+     * @param CryptoUser|CryptoGroup $Actor
+     * @return bool
+     */
+    public static function isActorAllowedToUsePasswordLinks(Password $Password, $Actor)
+    {
+        if ($Actor instanceof CryptoUser) {
+            return self::isUserAllowedToUsePasswordLinks($Password, $Actor);
+        }
+
+        return self::isGroupAllowedToUsePasswordLinks($Password, $Actor);
+    }
+
+    /**
+     * Check if a CryptoGroup is allowed to use PasswordLinks for a specific password
+     *
+     * @param Password $Password
+     * @param CryptoGroup $Group
+     * @return bool
+     */
+    public static function isGroupAllowedToUsePasswordLinks(Password $Password, CryptoGroup $Group)
+    {
+        if (!$Password->getSecurityClass()->isPasswordLinksAllowed()) {
+            return false;
+        }
+
+        $PasswordOwner = $Password->getOwner();
+
+        if ($PasswordOwner instanceof CryptoGroup
+            && $PasswordOwner->getId() !== $Group->getId()) {
+            return false;
+        }
+
+        return $Group->hasPermission(Permissions::PASSWORDLINKS_ALLOWED);
+    }
+
+    /**
+     * Check is a CryptoUser is allowed to use PasswordLinks for a specific password
      *
      * @param Password $Password
      * @param CryptoUser $User (optional) - if omitted user session user

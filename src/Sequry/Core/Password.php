@@ -1363,7 +1363,6 @@ class Password extends QUI\QDOM
     public function hasPasswordAccess($CryptoActor)
     {
         if ($CryptoActor instanceof CryptoUser) {
-
             if (in_array($CryptoActor->getId(), $this->getDirectAccessUserIds())) {
                 return true;
             }
