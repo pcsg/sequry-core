@@ -127,6 +127,7 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                                 }
 
                                 self.$activeSecurityClassIds.push(securityClassId);
+                                self.$removeWarning();
                                 self.$buildGroupAdminSelect();
                             });
                             break;
@@ -144,6 +145,11 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                                 });
 
                                 self.$activeSecurityClassIds.erase(securityClassId);
+
+                                if (!self.$activeSecurityClassIds.length) {
+                                    self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_securityclass'));
+                                }
+
                                 self.$buildGroupAdminSelect();
                             });
                             break;
@@ -324,6 +330,10 @@ define('package/sequry/core/bin/controls/actors/GroupEdit', [
                         } else {
                             enableSecurityClassBtns();
                             self.$removeWarning();
+
+                            if (!self.$activeSecurityClassIds.length) {
+                                self.$showWarning(QUILocale.get(lg, 'actors.groupedit.no_group_securityclass'));
+                            }
                         }
                     });
                 },

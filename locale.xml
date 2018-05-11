@@ -1855,9 +1855,6 @@ Freundliche Grüße!]]></de>
         <locale name="actors.groups.edit.template.securityclasses">
             <de><![CDATA[Zugeordnete Sicherheitsklassen]]></de>
         </locale>
-        <locale name="actors.groupedit.no.securityclass" html="true">
-            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen von Sequry verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
-        </locale>
         <locale name="actors.groups.edit.template.headerGroupAdmins">
             <de><![CDATA[Gruppen-Administratoren]]></de>
         </locale>
@@ -1865,7 +1862,7 @@ Freundliche Grüße!]]></de>
             <de><![CDATA[Hier können Benutzer als <b>Gruppen-Administratoren</b> festgelegt werden. Gruppen-Administratoren können <b>andere Benutzer zu dieser Gruppe hinzufügen</b> und <b>andere Benutzer aus der Gruppe entfernen</b>. Sie bestimmen so, wer Zugriff auf alle Passwörter hat, auf die diese Gruppe Zugriff hat.<br><br>Zudem haben Gruppen-Administratoren die Möglichkeit, Benutzer freizuschalten, die dieser Gruppe zugewiesen sind, aber erst im Nachhinein die Eignung für eine Sicherheitsklasse dieser Gruppe erhalten.]]></de>
         </locale>
         <locale name="actors.groupedit.no_group_securityclass" html="true">
-            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, unterliegt sie einigen Einschränkungen. Sie muss immer mindestens einen Benutzer haben und kann nur von SuperUsern wieder gelöscht werden.]]></de>
+            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, kann sie nur noch von SuperUsern wieder gelöscht werden.]]></de>
         </locale>
         <locale name="actors.groupedit.no_securityclasses" html="true">
             <de><![CDATA[Es sind noch keine <b>Sicherheitsklassen</b> eingerichtet. Bitte richten sie <b>mindestens eine</b> Sicherheitsklasse ein und weisen Sie dieser Gruppe eine Sicherheitsklasse zu, damit Sie im Rahmen von Sequry verwendet werden kann.]]></de>
