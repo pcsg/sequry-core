@@ -3,3 +3,27 @@
     margin-top: 10px;
     width: 100%;
 }
+
+.pcsg-gpm-instructions-content {
+    border: 1px solid #9E9E9E;
+    clear: both;
+    float: left;
+    margin-top: 25px;
+    padding: 20px;
+    width: 100%;
+}
+
+.pcsg-gpm-instructions-content-info {
+    clear: both;
+    display: block;
+    border-top: 1px solid black;
+    float: left;
+    width: 100%;
+    margin-top: 50px;
+    padding-top: 20px;
+}
+
+.pcsg-gpm-instructions-content-info pre {
+    display: inline;
+    font-weight: bold;
+}

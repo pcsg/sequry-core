@@ -915,6 +915,24 @@ Freundliche Grüße!]]></de>
     </groups>
 
     <groups name="sequry/core" datatype="php,js">
+        <!-- Instructions -->
+        <locale name="exception.actors.sendinstructions.no.email.address">
+            <de>
+                <![CDATA[Die Anweisungen für den PasswortManager können nicht versendet werden, da der Benuzter "[userName]" (#[userId]) keine E-Mail-Addresse in seinem Benutzerprofil eingetragen hat.]]></de>
+        </locale>
+        <locale name="error.actors.sendinstructions">
+            <de><![CDATA[Die Anleitung konnte nicht verschickt werden. Bitte versuchen Sie es erneut oder kontaktieren Sie einen Administrator.]]></de>
+        </locale>
+        <locale name="success.actors.sendinstructions">
+            <de><![CDATA[Die Anleitung wurde erfolgreich verschickt!]]></de>
+        </locale>
+        <locale name="actors.sendinstructions.subject">
+            <de><![CDATA[Anleitung für den QUIQQER PasswordManager]]></de>
+        </locale>
+        <locale name="actors.sendinstructions.instructions" html="true">
+            <de><![CDATA[Anleitungstext]]></de>
+        </locale>
+
         <!-- Site types -->
         <locale name="sitetype.passwordlink.title">
             <de><![CDATA[Passwort-Link]]></de>
@@ -1976,6 +1994,9 @@ Freundliche Grüße!]]></de>
         </locale>
         <locale name="control.user.sendinstructions.force.sent">
             <de><![CDATA[Trotzdem versenden]]></de>
+        </locale>
+        <locale name="control.user.sendinstructions.info" html="true">
+            <de><![CDATA[Aktueller Anleitungstext (zur Änderung bitte Sprachvariable <pre>sequry/core - actors.sendinstructions.instructions</pre> anpassen)]]></de>
         </locale>
 
         <!-- Control: user/AuthPluginSettings -->
