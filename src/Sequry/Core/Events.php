@@ -6,8 +6,8 @@
 
 namespace Sequry\Core;
 
-use QUI;
 use Sequry\Core\Actors\CryptoGroup;
+use QUI;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Crypto;
 use QUI\Package\Package;
