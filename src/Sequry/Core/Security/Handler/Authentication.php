@@ -1,11 +1,7 @@
 <?php
 
 /**
-<<<<<<< HEAD:src/Sequry/Core/Security/Handler/Authentication.php
- * This file contains \Sequry\Core\Password
-=======
  * This file contains \Sequry\Core\Security\Handler\Authentication
->>>>>>> groupadmin:src/Sequry/Core/Security/Handler/Authentication.php
  */
 
 namespace Sequry\Core\Security\Handler;
