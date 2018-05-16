@@ -85,7 +85,7 @@ class Events
 
         try {
             Authentication::loadAuthPlugins();
-            self::initialSystemSetup();
+            //self::initialSystemSetup();
             //self::setDefaultAdminGroupPermissions();
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
