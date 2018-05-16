@@ -392,7 +392,11 @@ class Authentication
      */
     public static function loadAuthPlugins()
     {
+        \QUI\System\Log::writeRecursive("FIRE pcsgGpmLoadAuthPlugins");
+        
         QUI::getEvents()->fireEvent('pcsgGpmLoadAuthPlugins');
+        
+        \QUI\System\Log::writeRecursive("FIRE pcsgGpmLoadAuthPlugins END");
     }
 
     /**
