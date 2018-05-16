@@ -363,7 +363,9 @@ class PasswordLinks
             ))
         ));
 
-        $Mailer->setHTML($Engine->fetch(
+        $Mailer->setHTML(true);
+
+        $Mailer->setBody($Engine->fetch(
             QUI::getPackage($lg)->getDir() . 'templates/mail_passwordlink.html'
         ));
 

@@ -860,15 +860,15 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
 
         <!-- Security/Handler/PasswordLinks -->
-        <locale name="mail.passwordlink.greeting">
-            <de><![CDATA[Hallo!]]></de>
+        <locale name="mail.passwordlink.greeting" html="true">
+            <de><![CDATA[<h1>Hallo!</h1>]]></de>
         </locale>
         <locale name="mail.passwordlink.body" html="true">
-            <de><![CDATA[Folgender Passwort-Link wurde mit Ihnen geteilt:
+            <de><![CDATA[<p>Folgender Passwort-Link wurde mit Ihnen geteilt:</p>
 
-[url]
+<p><a href="[url]" target="_blank">[url]</a></p>
 
-Freundliche Grüße!]]></de>
+<p>Freundliche Grüße!</p>]]></de>
         </locale>
         <locale name="mail.passwordlink.subject">
             <de><![CDATA[Sequry Passwort-Link]]></de>
