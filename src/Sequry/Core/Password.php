@@ -561,7 +561,10 @@ class Password extends QUI\QDOM
      */
     public function setShareData($shareData)
     {
-        if (!$this->hasPermission(self::PERMISSION_SHARE)) {
+        $OwnerActor = $this->getOwner();
+        $permission = $OwnerActor instanceof CryptoUser ? self::PERMISSION_SHARE : self::PERMISSION_SHARE_GROUP;
+
+        if (!$this->hasPermission($permission)) {
             $this->permissionDenied();
         }
 
@@ -1647,14 +1650,15 @@ class Password extends QUI\QDOM
      */
     protected function hasPermission($permission)
     {
-        $ownerType = (int)$this->getAttribute('ownerType');
+        $OwnerActor   = $this->getOwner();
+        $PasswordUser = $this->getUser();
 
         switch ($permission) {
             case self::PERMISSION_VIEW:
-                return $this->hasPasswordAccess($this->getUser());
+                return $this->hasPasswordAccess($PasswordUser);
                 break;
             case self::PERMISSION_EDIT:
-                return $this->isOwner($this->getUser());
+                return $this->isOwner($PasswordUser);
                 break;
 
             case self::PERMISSION_DELETE:
@@ -1662,30 +1666,37 @@ class Password extends QUI\QDOM
                     return true;
                 }
 
-                if ($ownerType === self::OWNER_TYPE_USER) {
-                    return $this->isOwner($this->getUser());
+                if ($OwnerActor instanceof CryptoUser) {
+                    return $this->isOwner($PasswordUser);
                 }
 
-                if (!Permission::hasPermission(Permissions::PASSWORDS_DELETE_GROUP)) {
+                /** @var CryptoGroup $OwnerActor */
+                if (!$PasswordUser->isInGroup($OwnerActor->getId())) {
                     return false;
                 }
 
-                return $this->isOwner($this->getUser());
+                if (!Permission::hasPermission(Permissions::PASSWORDS_DELETE_GROUP)
+                    && !$OwnerActor->isAdminUser($PasswordUser)) {
+                    return false;
+                }
+
+                return true;
 
             case self::PERMISSION_SHARE:
                 if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE)) {
                     return false;
                 }
 
-                return $this->isOwner($this->getUser());
+                return $this->isOwner($PasswordUser);
                 break;
-
+            
             case self::PERMISSION_SHARE_GROUP:
-                if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE_GROUP)) {
+                if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE_GROUP)
+                    && !$OwnerActor->isAdminUser($PasswordUser)) {
                     return false;
                 }
 
-                return $this->isOwner($this->getUser());
+                return $this->isOwner($PasswordUser);
                 break;
 
             default:
