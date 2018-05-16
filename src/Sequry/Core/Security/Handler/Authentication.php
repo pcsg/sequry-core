@@ -6,6 +6,7 @@
 
 namespace Sequry\Core\Security\Handler;
 
+use QUI;
 use Sequry\Auth\Password\AuthPlugin as PasswordAuthPlugin;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
@@ -19,7 +20,6 @@ use Sequry\Core\Security\KDF;
 use Sequry\Core\Security\Keys\AuthKeyPair;
 use Sequry\Core\Security\Keys\Key;
 use Sequry\Core\Security\SymmetricCrypto;
-use QUI;
 use Sequry\Core\Security\Authentication\Cache as AuthCache;
 
 /**
