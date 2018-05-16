@@ -3,14 +3,6 @@
 
     <groups name="sequry/core" datatype="php">
 
-        <!-- Package -->
-        <locale name="package.title">
-            <de><![CDATA[Sequry Passwort-Manager]]></de>
-        </locale>
-        <locale name="package.description">
-            <de><![CDATA[Passwort-Manager für Teams zum sicheren Speichern und Teilen von geheimen Daten.]]></de>
-        </locale>
-
         <!-- Class: Manager -->
         <locale name="exception.manager.create.password.missing.title.description">
             <de><![CDATA[Der Passwort-Eintrag konnte nicht erstellt werden. Ein Passwort-Eintrag benötigt einen Titel und eine Kurzbeschreibung.]]></de>
@@ -915,6 +907,14 @@ Freundliche Grüße!]]></de>
     </groups>
 
     <groups name="sequry/core" datatype="php,js">
+        <!-- Package -->
+        <locale name="package.title">
+            <de><![CDATA[Sequry Passwort-Manager]]></de>
+        </locale>
+        <locale name="package.description">
+            <de><![CDATA[Passwort-Manager für Teams zum sicheren Speichern und Teilen von geheimen Daten.]]></de>
+        </locale>
+
         <!-- Instructions -->
         <locale name="exception.actors.sendinstructions.no.email.address">
             <de>
