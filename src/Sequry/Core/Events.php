@@ -84,7 +84,7 @@ class Events
         }
 
         try {
-            Authentication::loadAuthPlugins();
+            //Authentication::loadAuthPlugins();
             //self::initialSystemSetup();
             //self::setDefaultAdminGroupPermissions();
         } catch (\Exception $Exception) {
