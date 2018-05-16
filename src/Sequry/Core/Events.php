@@ -85,8 +85,8 @@ class Events
 
         try {
             Authentication::loadAuthPlugins();
-            //self::initialSystemSetup();
-            //self::setDefaultAdminGroupPermissions();
+            self::initialSystemSetup();
+            self::setDefaultAdminGroupPermissions();
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
@@ -108,14 +108,14 @@ class Events
 
         $CryptoGroup = CryptoActors::getCryptoGroup((int)$params['gid']);
         $userIds     = json_decode($params['userIds'], true);
-        $users       = array();
+        $users       = [];
 
         foreach ($userIds as $userId) {
             $CrpyotUser = CryptoActors::getCryptoUser((int)$userId);
-            $users[]    = array(
+            $users[]    = [
                 'userId'   => $CrpyotUser->getId(),
                 'userName' => $CrpyotUser->getName()
-            );
+            ];
         }
 
         $groupSecurityClassIds = $CryptoGroup->getSecurityClassIds();
@@ -140,13 +140,13 @@ class Events
 
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'addUsersByGroup',
-            array(
+            [
                 'groupId'          => $CryptoGroup->getId(),
                 'groupName'        => $CryptoGroup->getAttribute('name'),
                 'securityClassIds' => $CryptoGroup->getSecurityClassIds(),
                 'users'            => $users,
                 'userIds'          => $userIds
-            )
+            ]
         );
 
         self::$addUsersViaGroup = true;
@@ -166,10 +166,10 @@ class Events
             openssl_cipher_iv_length(Crypto::COMMUNICATION_ENCRYPTION_ALGO)
         );
 
-        $data = array(
+        $data = [
             'key' => bin2hex($commKey),
             'iv'  => bin2hex($iv)
-        );
+        ];
 
         QUI::getSession()->set('pcsg-gpm-comm-key', json_encode($data));
     }
@@ -186,32 +186,32 @@ class Events
     {
         if (self::$addUsersViaGroup) {
             if (self::$addUsersViaGroupAuthenticated) {
-                throw new Exception(array(
+                throw new Exception([
                     'sequry/core',
                     'exception.events.add.users.to.group.info_authenticated'
-                ));
+                ]);
             }
 
-            throw new Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.events.add.users.to.group.info'
-            ));
+            ]);
         }
 
         $CryptoUser = CryptoActors::getCryptoUser($User->getId());
 
         // get groups of user before edit
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'usergroup'
-            ),
+            ],
             'from'   => 'users',
-            'where'  => array(
+            'where'  => [
                 'id' => $User->getId()
-            )
-        ));
+            ]
+        ]);
 
-        $groupsBefore = array();
+        $groupsBefore = [];
 
         if (!empty($result)) {
             $groupsBefore = trim($result[0]['usergroup'], ',');
@@ -228,24 +228,24 @@ class Events
         $addedAdminUsers = false;
 
         if (!empty($groupsAdded)) {
-            $securityClassIds = array();
-            $groupIds         = array();
+            $securityClassIds = [];
+            $groupIds         = [];
 
             // get all crypto groups of the QUIQQER groups that are to be added
-            $result = QUI::getDataBase()->fetch(array(
-                'select' => array(
+            $result = QUI::getDataBase()->fetch([
+                'select' => [
                     'groupId'
-                ),
+                ],
                 'from'   => Tables::keyPairsGroup(),
-                'where'  => array(
-                    'groupId' => array(
+                'where'  => [
+                    'groupId' => [
                         'type'  => 'IN',
                         'value' => $groupsAdded
-                    )
-                )
-            ));
+                    ]
+                ]
+            ]);
 
-            $groupsHandled = array();
+            $groupsHandled = [];
 
             foreach ($result as $row) {
                 if (isset($groupsHandled[$row['groupId']])) {
@@ -292,13 +292,13 @@ class Events
                         QUI::getLocale()->get(
                             'sequry/core',
                             'attention.events.onusersavebegin.add.user.error',
-                            array(
+                            [
                                 'userId'    => $User->getId(),
                                 'userName'  => $User->getName(),
                                 'groupId'   => $CryptoGroup->getId(),
                                 'groupName' => $CryptoGroup->getAttribute('name'),
                                 'error'     => $Exception->getMessage()
-                            )
+                            ]
                         )
                     );
 
@@ -313,17 +313,17 @@ class Events
             ) {
                 QUI::getAjax()->triggerGlobalJavaScriptCallback(
                     'addGroupsToUser',
-                    array(
+                    [
                         'groupIds'         => $groupIds,
                         'securityClassIds' => array_values(array_unique($securityClassIds)),
                         'userId'           => $User->getId()
-                    )
+                    ]
                 );
 
-                throw new QUI\Exception(array(
+                throw new QUI\Exception([
                     'sequry/core',
                     'exception.events.add.groups.to.user.info'
-                ));
+                ]);
             }
         }
 
@@ -332,20 +332,20 @@ class Events
 
         if (!empty($groupsRemoved)) {
             // get all crypto groups of the QUIQQER groups that are to be removed
-            $result = QUI::getDataBase()->fetch(array(
-                'select' => array(
+            $result = QUI::getDataBase()->fetch([
+                'select' => [
                     'groupId'
-                ),
+                ],
                 'from'   => Tables::keyPairsGroup(),
-                'where'  => array(
-                    'groupId' => array(
+                'where'  => [
+                    'groupId' => [
                         'type'  => 'IN',
                         'value' => $groupsRemoved
-                    )
-                )
-            ));
+                    ]
+                ]
+            ]);
 
-            $groupsHandled = array();
+            $groupsHandled = [];
 
             foreach ($result as $row) {
                 if (isset($groupsHandled[$row['groupId']])) {
@@ -362,13 +362,13 @@ class Events
                         QUI::getLocale()->get(
                             'sequry/core',
                             'attention.events.onusersavebegin.remove.user.error',
-                            array(
+                            [
                                 'userId'    => $User->getId(),
                                 'userName'  => $User->getName(),
                                 'groupId'   => $CryptoGroup->getId(),
                                 'groupName' => $CryptoGroup->getAttribute('name'),
                                 'error'     => $Exception->getMessage()
-                            )
+                            ]
                         )
                     );
 
@@ -415,10 +415,10 @@ class Events
         if ((int)$User->getId() !== (int)$SessionUser->getId()
             && !$SessionUser->isSU()
         ) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.events.user.delete.no.permission'
-            ));
+            ]);
         }
 
         if (QUI::isSystem()) {
@@ -428,16 +428,16 @@ class Events
 
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'userDeleteConfirm',
-            array(
+            [
                 'userId'   => $User->getId(),
                 'userName' => $User->getUsername()
-            )
+            ]
         );
 
-        throw new QUI\Exception(array(
+        throw new QUI\Exception([
             'sequry/core',
             'exception.events.user.delete.info'
-        ));
+        ]);
     }
 
     /**
@@ -459,24 +459,24 @@ class Events
         $SessionUser = QUI::getUserBySession();
 
         if (!$SessionUser->isSU()) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.events.group.delete.no.permission'
-            ));
+            ]);
         }
 
         QUI::getAjax()->triggerGlobalJavaScriptCallback(
             'groupDeleteConfirm',
-            array(
+            [
                 'groupId'   => $Group->getId(),
                 'groupName' => $Group->getAttribute('name')
-            )
+            ]
         );
 
-        throw new QUI\Exception(array(
+        throw new QUI\Exception([
             'sequry/core',
             'exception.events.group.delete.info'
-        ));
+        ]);
     }
 
     /**
@@ -488,8 +488,8 @@ class Events
      */
     public static function onAdminLoad()
     {
-        $cssFile = URL_OPT_DIR . 'sequry/core/bin/style.css';
-        echo '<link href="' . $cssFile . '" rel="stylesheet" type="text/css"/>';
+        $cssFile = URL_OPT_DIR.'sequry/core/bin/style.css';
+        echo '<link href="'.$cssFile.'" rel="stylesheet" type="text/css"/>';
     }
 
     /**
@@ -501,8 +501,8 @@ class Events
      */
     public static function onAdminLoadFooter()
     {
-        $jsFile = URL_OPT_DIR . 'sequry/core/bin/onAdminLoadFooter.js';
-        echo '<script src="' . $jsFile . '"></script>';
+        $jsFile = URL_OPT_DIR.'sequry/core/bin/onAdminLoadFooter.js';
+        echo '<script src="'.$jsFile.'"></script>';
     }
 
     /**
@@ -516,11 +516,11 @@ class Events
         $Manager = QUI::getPermissionManager();
         $Manager->setPermissions(
             $Group,
-            array(
+            [
                 'gpm.cryptodata.create'      => true,
                 'gpm.cryptodata.share'       => true,
                 'gpm.cryptodata.share_group' => true
-            ),
+            ],
             QUI::getUsers()->getSystemUser()
         );
     }
@@ -550,12 +550,12 @@ class Events
         $L  = QUI::getLocale();
         $lg = 'sequry/core';
 
-        Authentication::createSecurityClass(array(
+        Authentication::createSecurityClass([
             'title'           => $L->get($lg, 'setup.securityclass.title'),
             'description'     => $L->get($lg, 'setup.securityclass.description'),
-            'authPluginIds'   => array($defaultPluginId),
+            'authPluginIds'   => [$defaultPluginId],
             'requiredFactors' => 1
-        ));
+        ]);
     }
 
     /**
@@ -568,7 +568,7 @@ class Events
         $Manager = QUI::getPermissionManager();
         $Manager->setPermissions(
             QUI::getGroups()->get(QUI::conf('globals', 'root')),
-            array(
+            [
                 'gpm.cryptodata.create'       => true,
                 'gpm.cryptodata.share'        => true,
                 'gpm.cryptodata.delete_group' => true,
@@ -576,7 +576,7 @@ class Events
                 'gpm.cryptogroup.create'      => true,
                 'gpm.securityclass.edit'      => true,
                 'gpm.categories.edit'         => true
-            ),
+            ],
             QUI::getUsers()->getSystemUser()
         );
     }
