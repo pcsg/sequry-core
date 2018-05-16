@@ -6,8 +6,8 @@
 
 namespace Sequry\Core\Security\Handler;
 
-use Sequry\Auth\Password\AuthPlugin as PasswordAuthPlugin;
 use QUI;
+use Sequry\Auth\Password\AuthPlugin as PasswordAuthPlugin;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Actors\CryptoUser;
