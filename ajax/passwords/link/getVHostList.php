@@ -38,5 +38,6 @@ QUI::$Ajax->registerFunction(
 
         return $validVhosts;
     },
-    false
+    [],
+    'Permission::checkAdminUser'
 );

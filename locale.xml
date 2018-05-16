@@ -603,6 +603,12 @@
         <locale name="message.ajax.actors.groups.removeAdminUser.success">
             <de><![CDATA[Der Benutzer wurde erfolgreich als Gruppen-Administrator entfernt.]]></de>
         </locale>
+        <locale name="message.passwords.link.createSite.error" html="true">
+            <de><![CDATA[Beim Erstellen der Passwort-Link Seite ist ein Fehler aufgetreten:<br><br>[error]]]></de>
+        </locale>
+        <locale name="message.passwords.link.createSite.success">
+            <de><![CDATA[Die Passwort-Link Seite wurde erfolgreich erstellt.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">
@@ -2292,6 +2298,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="controls.password.linkcreate.no_password_sites" html="true">
             <de><![CDATA[<b>Passwort-Links können z.Z. nicht erstellt werden!</b><br><p>In Ihrem Projekt befindet sich keine aktive Seite mit dem Seitentyp "Passwort-Link". Eine solche Seite ist notwendig, damit Besucher von Passwort-Links den Inhalt eines Passworts angezeigt bekommen können. Bitte legen Sie eine Seite mit dem Seitentyp "Passwort-Link" an und aktivieren Sie diese Seite.]]></de>
+        </locale>
+        <locale name="controls.password.linkcreate.btn.create_site">
+            <de><![CDATA[Passwort-Seite jetzt erstellen]]></de>
         </locale>
 
         <!-- Control: password/LinkList -->

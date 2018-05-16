@@ -435,6 +435,7 @@ define('package/sequry/core/bin/controls/password/link/List', [
                             events       : {
                                 onLoaded: function () {
                                     Popup.Loader.hide();
+                                    CreateBtn.enable();
                                 },
                                 onNoPasswordSites: function() {
                                     Popup.Loader.hide();

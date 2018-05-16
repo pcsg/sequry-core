@@ -232,6 +232,27 @@ define('package/sequry/core/bin/classes/Passwords', [
         },
 
         /**
+         * Create a PasswordLink Site
+         *
+         * @param {Object} ProjectData
+         * @param {Number} parentId - Parent Site ID
+         * @return {Promise}
+         */
+        createPasswordLinkSite: function (ProjectData, parentId) {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.post('package_sequry_core_ajax_passwords_link_createSite', resolve, {
+                    project  : JSON.encode({
+                        name: ProjectData.project,
+                        lang: ProjectData.lang
+                    }),
+                    parentId : parentId,
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
          * Delete a password object
          *
          * @param {number} passwordId - password ID

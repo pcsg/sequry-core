@@ -13,6 +13,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
     'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
+    'controls/projects/SelectWindow',
     'controls/email/Select',
 
     'package/sequry/core/bin/controls/utils/InputButtons',
@@ -26,7 +27,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
     'text!package/sequry/core/bin/controls/password/link/Create.html',
     'css!package/sequry/core/bin/controls/password/link/Create.css'
 
-], function (QUI, QUIControl, QUIButton, QUIMailSelect, InputButtons, QUIAjax,
+], function (QUI, QUIControl, QUIButton, QUIProjectSelectPopup, QUIMailSelect, InputButtons, QUIAjax,
              QUILocale, Mustache, Passwords, template) {
     "use strict";
 
@@ -40,7 +41,8 @@ define('package/sequry/core/bin/controls/password/link/Create', [
         Binds: [
             'create',
             'submit',
-            '$checkPasswordLength'
+            '$checkPasswordLength',
+            '$onCreatePasswordLinkSiteBtnClick'
         ],
 
         options: {
@@ -51,7 +53,8 @@ define('package/sequry/core/bin/controls/password/link/Create', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$PasswordInput = null;
+            this.$PasswordInput             = null;
+            this.$PasswordLinkSiteCreateBtn = null;
         },
 
         /**
@@ -180,8 +183,10 @@ define('package/sequry/core/bin/controls/password/link/Create', [
             });
 
             this.$PasswordInput.addEvents({
-                blur: function() {
-                    (function() {self.$checkPasswordLength();}.delay(200));
+                blur: function () {
+                    (function () {
+                        self.$checkPasswordLength();
+                    }.delay(200));
                 }
             });
 
@@ -225,8 +230,17 @@ define('package/sequry/core/bin/controls/password/link/Create', [
                         'html',
                         '<div class="pcsg-gpm-password-linkcreate-info">' +
                         QUILocale.get(lg, 'controls.password.linkcreate.no_password_sites') +
+                        '<div class="pcsg-gpm-password-linkcreate-info-btn"></div>' +
                         '</div>'
                     );
+
+                    self.$PasswordLinkSiteCreateBtn = new QUIButton({
+                        text     : QUILocale.get(lg, 'controls.password.linkcreate.btn.create_site'),
+                        textimage: 'fa fa-plus-circle',
+                        events   : {
+                            onClick: self.$onCreatePasswordLinkSiteBtnClick
+                        }
+                    }).inject(self.$Elm.getElement('.pcsg-gpm-password-linkcreate-info-btn'));
 
                     VHostRowElm.destroy();
                     self.fireEvent('noPasswordSites', [self]);
@@ -284,6 +298,50 @@ define('package/sequry/core/bin/controls/password/link/Create', [
             );
 
             return this.$Elm;
+        },
+
+        /**
+         * onClick for button that creates a PasswordLink Site
+         */
+        $onCreatePasswordLinkSiteBtnClick: function () {
+            var self = this;
+
+            this.$PasswordLinkSiteCreateBtn.disable();
+
+            new QUIProjectSelectPopup({
+                events: {
+                    onSubmit: function(Popup, ProjectData) {
+                        if (!ProjectData.project.length) {
+                            self.$PasswordLinkSiteCreateBtn.enable();
+                            Popup.close();
+
+                            return;
+                        }
+
+                        self.$PasswordLinkSiteCreateBtn.setAttribute('textimage', 'fa fa-spinner fa-spin');
+
+                        Popup.Loader.show();
+
+                        Passwords.createPasswordLinkSite(ProjectData).then(function(success) {
+                            Popup.Loader.hide();
+
+                            if (!success) {
+                                self.$PasswordLinkSiteCreateBtn.setAttribute('textimage', 'fa fa-plus-circle');
+                                self.$PasswordLinkSiteCreateBtn.enable();
+                                Popup.close();
+
+                                return;
+                            }
+
+                            self.create();
+                            Popup.close();
+                        });
+                    },
+                    onCancel: function() {
+                        self.$PasswordLinkSiteCreateBtn.enable();
+                    }
+                }
+            }).open();
         },
 
         /**
