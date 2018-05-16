@@ -336,7 +336,11 @@ class Authentication
      */
     public static function registerPlugin(IAuthPlugin $AuthPlugin)
     {
+        \QUI\System\Log::writeRecursive(1);
+        
         $class = '\\' . get_class($AuthPlugin);
+
+\QUI\System\Log::writeRecursive(2);
 
         if (!($AuthPlugin instanceof IAuthPlugin)) {
             throw new QUI\Exception(
@@ -344,11 +348,18 @@ class Authentication
                 . ' to implement IAuthPlugin interface.'
             );
         }
+        
+        \QUI\System\Log::writeRecursive(3);
 
         $titleLocaleData = $AuthPlugin->getNameLocaleData();
         $descLocaleData  = $AuthPlugin->getDescriptionLocaleData();
+        
+        \QUI\System\Log::writeRecursive(4);
 
         if (!self::isAuthPluginRegistered($AuthPlugin)) {
+            
+            \QUI\System\Log::writeRecursive(5);
+            
             QUI::getDataBase()->insert(
                 Tables::authPlugins(),
                 array(
@@ -357,7 +368,12 @@ class Authentication
                     'path'        => $class
                 )
             );
+            
+            \QUI\System\Log::writeRecursive(6);
+            
         } else {
+            \QUI\System\Log::writeRecursive(7);
+            
             QUI::getDataBase()->update(
                 Tables::authPlugins(),
                 array(
@@ -368,7 +384,11 @@ class Authentication
                     'path' => $class
                 )
             );
+            
+            \QUI\System\Log::writeRecursive(8);
         }
+        
+        \QUI\System\Log::writeRecursive(9);
     }
 
     /**
