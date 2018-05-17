@@ -4,17 +4,6 @@
  * @module package/sequry/core/bin/controls/user/SendInstructions
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/auth/Authenticate
- * @require package/sequry/core/bin/controls/user/Select
- * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
- * @require text!package/sequry/core/bin/controls/user/SendInstructions.html
- * @require css!package/sequry/core/bin/controls/user/SendInstructions.css
- *
  * @event onLoaded
  * @event onSuccess
  */
@@ -111,9 +100,9 @@ define('package/sequry/core/bin/controls/user/SendInstructions', [
                     }).inject(InfoElm);
 
                     new Element('input', {
-                        type: 'checkbox',
+                        type  : 'checkbox',
                         events: {
-                            change: function(event) {
+                            change: function (event) {
                                 if (event.target.checked) {
                                     self.$SendBtn.enable();
                                 } else {
@@ -122,11 +111,20 @@ define('package/sequry/core/bin/controls/user/SendInstructions', [
                             }
                         }
                     }).inject(Label);
-
-                    return;
+                } else {
+                    self.$SendBtn.enable();
                 }
 
-                self.$SendBtn.enable();
+                new Element('span', {
+                    'class': 'pcsg-gpm-instructions-content-info',
+                    html   : QUILocale.get(lg, 'control.user.sendinstructions.info')
+                }).inject(self.$Elm);
+
+                new Element('div', {
+                    'class': 'pcsg-gpm-instructions-content',
+                    html   : QUILocale.get(lg, 'actors.sendinstructions.instructions')
+                }).inject(self.$Elm);
+
             }).delay(500);
             // @todo
         }

@@ -34,7 +34,7 @@ class PasswordLinks
      *
      * @var array
      */
-    protected static $passwords = array();
+    protected static $passwords = [];
 
     /**
      * Create new PasswordLink
@@ -45,23 +45,23 @@ class PasswordLinks
      *
      * @throws \Sequry\Core\Exception\Exception
      */
-    public static function create($dataId, $settings = array())
+    public static function create($dataId, $settings = [])
     {
         // check if Password is eligible for linking
         $Password = Passwords::get($dataId);
 
         if (!$Password->getSecurityClass()->isPasswordLinksAllowed()) {
-            throw new Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.security.handler.passwordlinks.securityclass_links_not_allowed'
-            ));
+            ]);
         }
 
         if (!self::isUserAllowedToUsePasswordLinks($Password)) {
-            throw new Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.security.handler.passwordlinks.no_permission'
-            ));
+            ]);
         }
 
         // create link data
@@ -90,7 +90,7 @@ class PasswordLinks
 
         $CreateUser = QUI::getUserBySession();
 
-        $dataAccess = array(
+        $dataAccess = [
             'password'          => $password,
             'encryptionSalt'    => \Sodium\bin2hex($encryptionSalt),
             'hash'              => \Sodium\bin2hex($hash),
@@ -99,7 +99,7 @@ class PasswordLinks
             'createUserId'      => $CreateUser->getId(),
             'createUserName'    => $CreateUser->getName(),
             'callCount'         => 0,
-            'calls'             => array(),
+            'calls'             => [],
             'maxCalls'          => false,
             'validUntil'        => false,
             'title'             => empty($settings['title']) ? false : $settings['title'],
@@ -108,7 +108,7 @@ class PasswordLinks
             'passwordOwnerId'   => $Password->getOwner()->getId(),
             'passwordOwnerType' => $Password->getOwnerType(),
             'securityClassId'   => $Password->getSecurityClass()->getId()
-        );
+        ];
 
         // vhost
         if (!empty($settings['vhost'])) {
@@ -131,10 +131,10 @@ class PasswordLinks
         }
 
         if (!$dataAccess['maxCalls'] && !$dataAccess['validUntil']) {
-            throw new Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.passwordlink.create.no_limit_set'
-            ));
+            ]);
         }
 
         $dataAccess = new HiddenString(json_encode($dataAccess));
@@ -142,10 +142,10 @@ class PasswordLinks
 
         QUI::getDataBase()->insert(
             Tables::passwordLink(),
-            array(
+            [
                 'dataId'     => (int)$dataId,
                 'dataAccess' => $dataAccess
-            )
+            ]
         );
 
         $PasswordLink = new PasswordLink(QUI::getDataBase()->getPDO()->lastInsertId());
@@ -179,17 +179,17 @@ class PasswordLinks
      */
     public static function getLinksByPasswordId($passwordId)
     {
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id',
-            ),
+            ],
             'from'   => Tables::passwordLink(),
-            'where'  => array(
+            'where'  => [
                 'dataId' => (int)$passwordId
-            )
-        ));
+            ]
+        ]);
 
-        $passwordLinks = array();
+        $passwordLinks = [];
 
         foreach ($result as $row) {
             $passwordLinks[] = self::get($row['id']);
@@ -206,17 +206,17 @@ class PasswordLinks
      * @param bool $countOnly (optional) - get count only
      * @return array
      */
-    public static function getList($passwordId, $searchParams = array(), $countOnly = false)
+    public static function getList($passwordId, $searchParams = [], $countOnly = false)
     {
         // ORDER BY
         $order = '`id`';
 
         if (!empty($searchParams['sortOn'])) {
-            $order = '`' . Orthos::clear($searchParams['sortOn']) . '`';
+            $order = '`'.Orthos::clear($searchParams['sortOn']).'`';
         }
 
         if (!empty($searchParams['sortBy'])) {
-            $order .= " " . Orthos::clear($searchParams['sortBy']);
+            $order .= " ".Orthos::clear($searchParams['sortBy']);
         } else {
             $order .= " DESC";
         }
@@ -232,30 +232,30 @@ class PasswordLinks
             $limit = 20;
         }
 
-        $where = array(
+        $where = [
             'dataId' => $passwordId,
             'active' => 1
-        );
+        ];
 
         if (!empty($searchParams['showInactive'])) {
             unset($where['active']);
         }
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id',
-            ),
+            ],
             'from'   => Tables::passwordLink(),
             'where'  => $where,
             'order'  => $order,
             'limit'  => $limit
-        ));
+        ]);
 
         if ($countOnly) {
             return count($result);
         }
 
-        $list = array();
+        $list = [];
 
         foreach ($result as $row) {
             $PasswordLink = self::get($row['id']);
@@ -339,6 +339,55 @@ class PasswordLinks
     }
 
     /**
+     * Create a PasswordLink Site
+     *
+     * @param QUI\Projects\Project $Project
+     * @param int $parentSiteId - ID of parent Site
+     * @return void
+     * @throws \Sequry\Core\Exception\Exception
+     */
+    public static function createPasswordLinkSite($Project, $parentSiteId)
+    {
+        // check if a Site already exists
+        $sites = $Project->getSites([
+            'where' => [
+                'type' => PasswordLink::SITE_TYPE
+            ],
+            'limit' => 1
+        ]);
+
+        if (!empty($sites)) {
+            throw new Exception([
+                'sequry/core',
+                'exception.passwordlink.site_already_exists',
+                [
+                    'projectName' => $Project->getTitle(),
+                    'projectLang' => $Project->getLang()
+                ]
+            ]);
+        }
+
+        $ParentSite = new QUI\Projects\Site\Edit($Project, $parentSiteId);
+        $SystemUser = QUI::getUsers()->getSystemUser();
+
+        $passwordLinkSiteId = $ParentSite->createChild([
+            'name'  => 'password',
+            'title' => 'password'
+        ], [], $SystemUser);
+
+        $PasswordLinkSite = new QUI\Projects\Site\Edit($Project, $passwordLinkSiteId);
+
+        $PasswordLinkSite->setAttributes([
+            'type' => PasswordLink::SITE_TYPE
+        ]);
+
+        $PasswordLinkSite->activate($SystemUser);
+        $PasswordLinkSite->save($SystemUser);
+
+        QUI::getMessagesHandler()->clear();
+    }
+
+    /**
      * Send PasswordLink via mail(s)
      *
      * @param PasswordLink $PasswordLink
@@ -356,15 +405,17 @@ class PasswordLinks
         $L      = QUI::getLocale();
         $lg     = 'sequry/core';
 
-        $Engine->assign(array(
+        $Engine->assign([
             'greeting' => $L->get($lg, 'mail.passwordlink.greeting'),
-            'body'     => $L->get($lg, 'mail.passwordlink.body', array(
+            'body'     => $L->get($lg, 'mail.passwordlink.body', [
                 'url' => $PasswordLink->getUrl()
-            ))
-        ));
+            ])
+        ]);
 
-        $Mailer->setHTML($Engine->fetch(
-            QUI::getPackage($lg)->getDir() . 'templates/mail_passwordlink.html'
+        $Mailer->setHTML(true);
+
+        $Mailer->setBody($Engine->fetch(
+            QUI::getPackage($lg)->getDir().'templates/mail_passwordlink.html'
         ));
 
         $Mailer->setSubject($L->get($lg, 'mail.passwordlink.subject'));

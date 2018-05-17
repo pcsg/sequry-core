@@ -44,3 +44,11 @@
 .pcsg-gpm-password-linkcreate-create table {
     margin: 0;
 }
+
+.pcsg-gpm-password-linkcreate-info-btn {
+    margin-top: 25px;
+}
+
+.pcsg-gpm-password-linkcreate-info-btn button {
+    float: none !important;
+}

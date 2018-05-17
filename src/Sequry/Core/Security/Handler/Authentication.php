@@ -1,15 +1,12 @@
 <?php
 
 /**
-<<<<<<< HEAD:src/Sequry/Core/Security/Handler/Authentication.php
- * This file contains \Sequry\Core\Password
-=======
  * This file contains \Sequry\Core\Security\Handler\Authentication
->>>>>>> groupadmin:src/Sequry/Core/Security/Handler/Authentication.php
  */
 
 namespace Sequry\Core\Security\Handler;
 
+use QUI;
 use Sequry\Auth\Password\AuthPlugin as PasswordAuthPlugin;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
@@ -23,7 +20,6 @@ use Sequry\Core\Security\KDF;
 use Sequry\Core\Security\Keys\AuthKeyPair;
 use Sequry\Core\Security\Keys\Key;
 use Sequry\Core\Security\SymmetricCrypto;
-use QUI;
 use Sequry\Core\Security\Authentication\Cache as AuthCache;
 
 /**
@@ -344,10 +340,10 @@ class Authentication
                 . ' to implement IAuthPlugin interface.'
             );
         }
-
+        
         $titleLocaleData = $AuthPlugin->getNameLocaleData();
         $descLocaleData  = $AuthPlugin->getDescriptionLocaleData();
-
+        
         if (!self::isAuthPluginRegistered($AuthPlugin)) {
             QUI::getDataBase()->insert(
                 Tables::authPlugins(),

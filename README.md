@@ -1,4 +1,4 @@
-![Sequry](bin/images/Readme.jpg)
+![Sequry](bin/images/Readme.png)
 
 Sequry
 ========

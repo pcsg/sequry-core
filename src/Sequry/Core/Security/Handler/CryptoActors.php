@@ -9,7 +9,6 @@ namespace Sequry\Core\Security\Handler;
 use Sequry\Core\Actors\CryptoGroup;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Permissions;
-use Sequry\Core\Events;
 use Sequry\Core\Security\AsymmetricCrypto;
 use Sequry\Core\Security\Authentication\SecurityClass;
 use Sequry\Core\Security\HiddenString;
@@ -22,6 +21,7 @@ use QUI;
 use Sequry\Core\Constants\Tables;
 use QUI\Permissions\Permission as QUIPermissions;
 use QUI\Utils\Security\Orthos;
+use Sequry\Core\Exception\Exception;
 
 /**
  * Class for for managing system actors - users and groups
@@ -67,140 +67,6 @@ class CryptoActors
         self::$users[$userId] = new CryptoUser($userId);
 
         return self::$users[$userId];
-    }
-
-    /**
-     * Creates a CryptoGroup out of a standard QUIQQER Group, so it can be used
-     * in the password management system
-     *
-     * @param QUI\Groups\Group $Group
-     * @param SecurityClass $SecurityClass - The security class that determines how the group key will be encrypted
-     * @return CryptoGroup
-     *
-     * @throws QUI\Exception
-     */
-    public static function createCryptoGroupKey(
-        QUI\Groups\Group $Group,
-        SecurityClass $SecurityClass
-    ) {
-        if (!QUIPermissions::hasPermission(Permissions::GROUP_CREATE)) {
-            throw new QUI\Exception(array(
-                'sequry/core',
-                'exception.cryptogroup.no.permission'
-            ));
-        };
-
-        $CryptoGroup = self::getCryptoGroup($Group->getId());
-
-        // check if CryptoGroup already has a key for the given SecurityClass
-        if ($CryptoGroup->hasSecurityClass($SecurityClass)) {
-            throw new QUI\Exception(array(
-                'sequry/core',
-                'exception.cryptogroup.securityclass.already.assigned'
-            ));
-        }
-
-        // check eligibility for all Group admin users
-        /** @var CryptoUser $AdminUser */
-        $uneligibleUsers = array();
-        $adminUsers      = $CryptoGroup->getAdminUsers();
-
-        if (empty($adminUsers)) {
-            throw new Exception(array(
-                'sequry/core',
-                'exception.cryptoactors.createCryptoGroupKey.group_has_no_admins',
-                array(
-                    'groupId' => $Group->getId()
-                )
-            ));
-        }
-
-        foreach ($adminUsers as $AdminUser) {
-            if (!$SecurityClass->isUserEligible($AdminUser)) {
-                $uneligibleUsers[] = $AdminUser->getUsername();
-            }
-        }
-
-        if (!empty($uneligibleUsers)) {
-            throw new QUI\Exception(array(
-                'sequry/core',
-                'exception.cryptoactors.addcryptogroup.users.not.eligible',
-                array(
-                    'groupId'         => $Group->getId(),
-                    'securityClassId' => $SecurityClass->getId(),
-                    'users'           => implode(', ', $uneligibleUsers)
-                )
-            ));
-        }
-
-        // generate key pair and encrypt group key for security class
-        $GroupKeyPair    = AsymmetricCrypto::generateKeyPair();
-        $publicGroupKey  = $GroupKeyPair->getPublicKey()->getValue();
-        $privateGroupKey = $GroupKeyPair->getPrivateKey()->getValue();
-        $GroupAccessKey  = SymmetricCrypto::generateKey();
-
-        $privateGroupKeyEncrypted = SymmetricCrypto::encrypt(
-            $privateGroupKey,
-            $GroupAccessKey
-        );
-
-        // insert group key data into database
-        $DB = QUI::getDataBase();
-
-        $data = array(
-            'groupId'         => $Group->getId(),
-            'securityClassId' => $SecurityClass->getId(),
-            'publicKey'       => $publicGroupKey,
-            'privateKey'      => $privateGroupKeyEncrypted
-        );
-
-        // calculate group key MAC
-        $data['MAC'] = MAC::create(
-            new HiddenString(implode('', $data)),
-            Utils::getSystemKeyPairAuthKey()
-        );
-
-        $DB->insert(Tables::keyPairsGroup(), $data);
-
-        // split group access key into parts and share with group users
-        $groupAccessKeyParts = SecretSharing::splitSecret(
-            $GroupAccessKey->getValue(),
-            $SecurityClass->getAuthPluginCount(),
-            $SecurityClass->getRequiredFactors()
-        );
-
-        // grant access to Group Admin Users
-        /** @var CryptoUser $AdminUser */
-        foreach ($adminUsers as $AdminUser) {
-            $authKeyPairs = $AdminUser->getAuthKeyPairsBySecurityClass($SecurityClass);
-            $i            = 0;
-
-            /** @var AuthKeyPair $AuthKeyPair */
-            foreach ($authKeyPairs as $AuthKeyPair) {
-                $privateKeyEncryptionKeyPartEncrypted = AsymmetricCrypto::encrypt(
-                    new HiddenString($groupAccessKeyParts[$i++]),
-                    $AuthKeyPair
-                );
-
-                $data = array(
-                    'userId'          => $AdminUser->getId(),
-                    'userKeyPairId'   => $AuthKeyPair->getId(),
-                    'securityClassId' => $SecurityClass->getId(),
-                    'groupId'         => $Group->getId(),
-                    'groupKey'        => $privateKeyEncryptionKeyPartEncrypted
-                );
-
-                // calculate MAC
-                $data['MAC'] = MAC::create(
-                    new HiddenString(implode('', $data)),
-                    Utils::getSystemKeyPairAuthKey()
-                );
-
-                $DB->insert(Tables::usersToGroups(), $data);
-            }
-        }
-
-        return $CryptoGroup;
     }
 
     /**

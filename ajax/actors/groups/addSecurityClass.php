@@ -17,10 +17,10 @@ use Sequry\Core\Security\Handler\Authentication;
     'package_sequry_core_ajax_actors_groups_addSecurityClass',
     function ($groupId, $securityClassId, $userId = null) {
         try {
-            $Group         = QUI::getGroups()->get((int)$groupId);
+            $CryptoGroup   = CryptoActors::getCryptoGroup((int)$groupId);
             $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
 
-            CryptoActors::createCryptoGroupKey($Group, $SecurityClass);
+            $CryptoGroup->addSecurityClass($SecurityClass);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
@@ -28,13 +28,13 @@ use Sequry\Core\Security\Handler\Authentication;
                 QUI::getLocale()->get(
                     'sequry/core',
                     'error.cryptogroup.securityclass.add',
-                    array(
-                        'groupId'            => $Group->getId(),
-                        'groupName'          => $Group->getAttribute('name'),
+                    [
+                        'groupId'            => $CryptoGroup->getId(),
+                        'groupName'          => $CryptoGroup->getAttribute('name'),
                         'securityClassId'    => $SecurityClass->getId(),
                         'securityClassTitle' => $SecurityClass->getAttribute('title'),
                         'error'              => $Exception->getMessage()
-                    )
+                    ]
                 )
             );
 
@@ -45,17 +45,17 @@ use Sequry\Core\Security\Handler\Authentication;
             QUI::getLocale()->get(
                 'sequry/core',
                 'success.cryptogroup.securityclass.add',
-                array(
-                    'groupId'            => $Group->getId(),
-                    'groupName'          => $Group->getAttribute('name'),
+                [
+                    'groupId'            => $CryptoGroup->getId(),
+                    'groupName'          => $CryptoGroup->getAttribute('name'),
                     'securityClassId'    => $SecurityClass->getId(),
                     'securityClassTitle' => $SecurityClass->getAttribute('title')
-                )
+                ]
             )
         );
 
         return true;
     },
-    array('groupId', 'securityClassId', 'userId'),
+    ['groupId', 'securityClassId', 'userId'],
     'Permission::checkAdminUser'
 );

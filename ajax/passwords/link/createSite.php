@@ -3,43 +3,34 @@
 use Sequry\Core\Security\Handler\PasswordLinks;
 
 /**
- * Create a new PasswordLink
+ * Create a PasswordLink Site
  *
- * @param integer $passwordId - ID of password
- * @param array $linkData - settings for PasswordLink
  * @return bool - success
- *
  * @throws QUI\Exception
  */
 QUI::$Ajax->registerFunction(
-    'package_sequry_core_ajax_passwords_link_create',
-    function ($passwordId, $linkData) {
-        $passwordId = (int)$passwordId;
-
-        // create password link
+    'package_sequry_core_ajax_passwords_link_createSite',
+    function ($project) {
         try {
-            PasswordLinks::create(
-                $passwordId,
-                json_decode($linkData, true)
-            );
+            $Project = QUI::getProjectManager()->decode($project);
+            PasswordLinks::createPasswordLinkSite($Project, 1);
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'sequry/core',
-                    'message.passwords.link.create.error',
-                    array(
-                        'error'      => $Exception->getMessage(),
-                        'passwordId' => $passwordId
-                    )
+                    'message.passwords.link.createSite.error',
+                    [
+                        'error' => $Exception->getMessage()
+                    ]
                 )
             );
 
             return false;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_sequry_core_ajax_passwords_link_create'
+                'AJAX :: package_sequry_core_ajax_passwords_link_createSite'
             );
 
             QUI\System\Log::writeException($Exception);
@@ -57,15 +48,12 @@ QUI::$Ajax->registerFunction(
         QUI::getMessagesHandler()->addSuccess(
             QUI::getLocale()->get(
                 'sequry/core',
-                'message.passwords.link.create.success',
-                array(
-                    'passwordId' => $passwordId
-                )
+                'message.passwords.link.createSite.success'
             )
         );
 
         return true;
     },
-    array('passwordId', 'linkData'),
+    ['project'],
     'Permission::checkAdminUser'
 );

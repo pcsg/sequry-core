@@ -24,11 +24,9 @@
     "sequry/template": ">=1.0|dev-master|dev-dev"
   },
   "autoload": {
-    "psr-0": {
-      "Sequry": "src\/"
-    },
     "psr-4": {
-      "TQ\\Shamir\\": "lib\/tq\/shamir\/src\/"
+      "Sequry\\": "src/",
+      "TQ\\Shamir\\": "lib/tq/shamir/src/"
     }
   }
 }

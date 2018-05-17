@@ -12,10 +12,10 @@ use Sequry\Core\Security\Handler\CryptoActors;
     function () {
         $CryptoUser  = CryptoActors::getCryptoUser();
         $adminGroups = $CryptoUser->getAdminGroups();
-        $status      = array(
+        $status      = [
             'isGroupAdmin' => false,
             'openRequests' => 0
-        );
+        ];
 
         if (empty($adminGroups)) {
             return $status;
@@ -24,11 +24,11 @@ use Sequry\Core\Security\Handler\CryptoActors;
         $status['isGroupAdmin'] = true;
 
         foreach ($adminGroups as $CryptoGroup) {
-            $status ['openRequests'] += count($CryptoGroup->getNoAccessUserIds());
+            $status['openRequests'] += count($CryptoGroup->getNoAccessUserIds());
         }
 
         return $status;
     },
-    array(),
+    [],
     'Permission::checkAdminUser'
 );
