@@ -6,6 +6,7 @@
 
 namespace Sequry\Core;
 
+use Sequry\Core\Exception\PermissionDeniedException;
 use Sequry\Core\Security\HiddenString;
 use QUI\Cache\Manager as CacheManager;
 use Sequry\Core\Actors\CryptoGroup;
@@ -220,6 +221,7 @@ class Password extends QUI\QDOM
      * Returns password data for frontend view (contains payload!)
      *
      * @return array
+     * @throws \Sequry\Core\Exception\PermissionDeniedException
      */
     public function getViewData()
     {
@@ -1747,12 +1749,12 @@ class Password extends QUI\QDOM
     /**
      * Throws permission denied exception
      *
-     * @throws QUI\Exception
+     * @throws \Sequry\Core\Exception\PermissionDeniedException
      */
     protected function permissionDenied()
     {
         // @todo eigenen 401 fehlercode einfügen
-        throw new QUI\Exception([
+        throw new PermissionDeniedException([
             'sequry/core',
             'exception.password.permission.denied'
         ]);

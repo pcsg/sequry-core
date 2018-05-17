@@ -1048,9 +1048,11 @@ class CryptoUser extends QUI\Users\User
                 $row['canShare']  = $canShareOwn;
                 $row['canDelete'] = true;
             } else {
+                $isGroupAdminUser = CryptoActors::getCryptoGroup($row['ownerId'])->isAdminUser($this);
+
                 $row['access']    = 'group';
-                $row['canShare']  = $canShareGroup;
-                $row['canDelete'] = $canDeleteGroup;
+                $row['canShare']  = $canShareGroup || $isGroupAdminUser;
+                $row['canDelete'] = $canDeleteGroup || $isGroupAdminUser;
             }
 
             $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
@@ -2246,8 +2248,16 @@ class CryptoUser extends QUI\Users\User
 
         $parsedEntries = [];
         $factorCount   = [];
+        $CryptoUser    = CryptoActors::getCryptoUser();
 
         foreach ($result as $k => $row) {
+            $CryptoGroup = CryptoActors::getCryptoGroup($row['groupId']);
+
+            if (!$CryptoGroup->isAdminUser($CryptoUser)) {
+                unset($result[$k]);
+                continue;
+            }
+
             $hash = md5($row['securityClassId'].$row['groupId'].$row['userId']);
 
             if (!isset($factorCount[$hash])) {
@@ -2257,7 +2267,6 @@ class CryptoUser extends QUI\Users\User
             $factorCount[$hash]++;
 
             $SecurityClass = Authentication::getSecurityClass($row['securityClassId']);
-            $CryptoGroup   = CryptoActors::getCryptoGroup($row['groupId']);
             $CrpytoUser    = CryptoActors::getCryptoUser($row['userId']);
 
             $row['securityClass'] = $SecurityClass->getAttribute('title').' (#'.$SecurityClass->getId().')';

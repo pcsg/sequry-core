@@ -9,7 +9,6 @@ namespace Sequry\Core\Security\Handler;
 use Sequry\Core\Actors\CryptoGroup;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Permissions;
-use Sequry\Core\Events;
 use Sequry\Core\Security\AsymmetricCrypto;
 use Sequry\Core\Security\Authentication\SecurityClass;
 use Sequry\Core\Security\HiddenString;
@@ -22,6 +21,7 @@ use QUI;
 use Sequry\Core\Constants\Tables;
 use QUI\Permissions\Permission as QUIPermissions;
 use QUI\Utils\Security\Orthos;
+use Sequry\Core\Exception\Exception;
 
 /**
  * Class for for managing system actors - users and groups

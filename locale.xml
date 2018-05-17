@@ -296,7 +296,7 @@
             <de><![CDATA[Der Entschlüsselungsschlüssel der Gruppe #[groupId] kann vom Benutzer #[userId] nicht entschlüsselt werden:<br/><br/>[error]]]></de>
         </locale>
         <locale name="exception.cryptogroup.add_securityclass.not_all_admins_eligible">
-            <de><![CDATA[Die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) kann der Gruppe [groupName] (#[groupId]) nicht zugeordnet werden, da nicht alle Administrator-Benutzer der Gruppe für die Sicherheitsklasse geeignet sind.]]></de>
+            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da folgende Gruppen-Administratoren nicht für die Sicherheitsklasse geeignet sind:<br><br>[users].]]></de>
         </locale>
         <locale name="exception.cryptogroup.setsecurityclass.users.has.no.group.access">
             <de><![CDATA[Der Benutzer #[userId] kann die Sicherheitsklasse #[securityClassId] der Gruppe #[groupId] nicht zuordnen, da der Benutzer der Gruppe nicht zugewiesen ist.]]></de>
@@ -371,9 +371,6 @@
         <locale name="exception.cryptoactors.addcryptogroup.no.users">
             <de>
                 <![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da die Gruppe keine Benutzer hat. Eine Gruppe muss mindestens einen Benutzer haben, bevor sie einer Sicherheitsklasse zugeordnet werden kann.]]></de>
-        </locale>
-        <locale name="exception.cryptoactors.addcryptogroup.users.not.eligible">
-            <de><![CDATA[Die Gruppe #[groupId] kann der Sicherheitsklasse #[securityClassId] nicht zugeordnet werden, da folgende Gruppen-Administratoren nicht für die Sicherheitsklasse geeignet sind:<br><br>[users].]]></de>
         </locale>
         <locale name="exception.cryptoactors.addcryptogroup.user.not.eligible">
             <de><![CDATA[Die Benutzer "[userName]" (#[userId]) ist nicht für die Sicherheitsklasse "[securityClassTitle]" (#[securityClassId]) geeignet.]]></de>
@@ -608,6 +605,9 @@
         </locale>
         <locale name="message.passwords.link.createSite.success">
             <de><![CDATA[Die Passwort-Link Seite wurde erfolgreich erstellt.]]></de>
+        </locale>
+        <locale name="message.ajax.actors.groups.getUnlockList.error">
+            <de><![CDATA[Beim Freischalt-Vorgang ist ein Fehler aufgetreten:<br><br>[error]]]></de>
         </locale>
 
         <!-- System -->
@@ -1889,7 +1889,7 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Hier können Benutzer als <b>Gruppen-Administratoren</b> festgelegt werden. Gruppen-Administratoren können <b>andere Benutzer zu dieser Gruppe hinzufügen</b> und <b>andere Benutzer aus der Gruppe entfernen</b>. Sie bestimmen so, wer Zugriff auf alle Passwörter hat, auf die diese Gruppe Zugriff hat.<br><br>Zudem haben Gruppen-Administratoren die Möglichkeit, Benutzer freizuschalten, die dieser Gruppe zugewiesen sind, aber erst im Nachhinein die Eignung für eine Sicherheitsklasse dieser Gruppe erhalten.]]></de>
         </locale>
         <locale name="actors.groupedit.no_group_securityclass" html="true">
-            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen des Passwort-Managers verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, kann sie nur noch von SuperUsern wieder gelöscht werden.]]></de>
+            <de><![CDATA[Die Gruppe ist noch keiner Sicherheitsklasse zugeordnet. Weisen Sie der Gruppe eine Sicherheitsklasse zu, damit sie im Rahmen von Sequry verwendet werden kann.<br><br><b>Warnung:</b> Sobald eine Gruppe einer Sicherheitsklasse zugeordnet ist, kann sie nur noch von SuperUsern wieder gelöscht werden.]]></de>
         </locale>
         <locale name="actors.groupedit.no_securityclasses" html="true">
             <de><![CDATA[Es sind noch keine <b>Sicherheitsklassen</b> eingerichtet. Bitte richten sie <b>mindestens eine</b> Sicherheitsklasse ein und weisen Sie dieser Gruppe eine Sicherheitsklasse zu, damit Sie im Rahmen von Sequry verwendet werden kann.]]></de>
