@@ -10,11 +10,14 @@
             <locale group="sequry/core" var="package.description"/>
         </description>
 
-        <!--<image src="URL_OPT_DIR/quiqqer/frontend-users/bin/images/Logo.jpg"/>-->
+        <image src="URL_OPT_DIR/sequry/core/bin/images/Logo.jpg"/>
 
-        <!--<preview>-->
-            <!---->
-        <!--</preview>-->
+        <preview>
+            <image src="URL_OPT_DIR/sequry/core/bin/images/preview/Backend_Passwords_and_Categories.png"/>
+            <image src="URL_OPT_DIR/sequry/core/bin/images/preview/Backend_Password_Create.png"/>
+            <image src="URL_OPT_DIR/sequry/core/bin/images/preview/Backend_Group.png"/>
+            <image src="URL_OPT_DIR/sequry/core/bin/images/preview/Backend_Recovery_Code.png"/>
+        </preview>
 
         <support>
             <email><![CDATA[support@pcsg.de]]></email>
