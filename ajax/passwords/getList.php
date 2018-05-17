@@ -35,10 +35,7 @@ function package_sequry_core_ajax_passwords_getList($searchParams)
 
         return false;
     } catch (\Exception $Exception) {
-        QUI\System\Log::addError(
-            'AJAX :: package_sequry_core_ajax_passwords_delete -> '
-            . $Exception->getMessage()
-        );
+        QUI\System\Log::writeException($Exception);
 
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(

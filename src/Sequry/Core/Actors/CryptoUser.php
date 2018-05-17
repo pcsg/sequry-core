@@ -1048,7 +1048,11 @@ class CryptoUser extends QUI\Users\User
                 $row['canShare']  = $canShareOwn;
                 $row['canDelete'] = true;
             } else {
-                $isGroupAdminUser = CryptoActors::getCryptoGroup($row['ownerId'])->isAdminUser($this);
+                $isGroupAdminUser = false;
+
+                if ($row['ownerType'] === Password::OWNER_TYPE_GROUP) {
+                    $isGroupAdminUser = CryptoActors::getCryptoGroup($row['ownerId'])->isAdminUser($this);
+                }
 
                 $row['access']    = 'group';
                 $row['canShare']  = $canShareGroup || $isGroupAdminUser;
