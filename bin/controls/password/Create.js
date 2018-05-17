@@ -342,7 +342,9 @@ define('package/sequry/core/bin/controls/password/Create', [
                 styles : {
                     marginTop: 10
                 },
-                html   : QUILocale.get(lg, 'password.create.set.owner.info')
+                html   : this.$groupOwner ?
+                    QUILocale.get(lg, 'password.create.set.owner.info_group') :
+                    QUILocale.get(lg, 'password.create.set.owner.info_all')
             }).inject(this.$OwnerSelectElm);
         },
 
