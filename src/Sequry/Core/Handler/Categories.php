@@ -40,7 +40,7 @@ class Categories
      *
      * @param string $title - new category title
      * @param int $parentId (optional) - parent id; if omitted, create new root category
-     * @return void
+     * @return int - ID of new category
      */
     public static function createPublic($title, $parentId = null)
     {
@@ -53,6 +53,8 @@ class Categories
                 'parentId' => $parentId
             )
         );
+
+        return QUI::getDataBase()->getPDO()->lastInsertId();
     }
 
     /**

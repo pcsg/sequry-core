@@ -12,6 +12,7 @@ use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Exception\Exception;
+use Sequry\Core\Exception\PermissionDeniedException;
 use Sequry\Core\Security\Authentication\Plugin;
 use Sequry\Core\Security\Authentication\SecurityClass;
 use Sequry\Core\Security\HiddenString;
@@ -37,28 +38,28 @@ class Authentication
      *
      * @var array
      */
-    protected static $plugins = array();
+    protected static $plugins = [];
 
     /**
      * Runtime cache for SecurityClasses
      *
      * @var array
      */
-    protected static $securityClasses = array();
+    protected static $securityClasses = [];
 
     /**
      * Runtime cache for AuthKeyPairs
      *
      * @var array
      */
-    protected static $authKeyPairs = array();
+    protected static $authKeyPairs = [];
 
     /**
      * Runtime AuthKey cache
      *
      * @var Key[]
      */
-    protected static $authKeys = array();
+    protected static $authKeys = [];
 
     /**
      * Flag:
@@ -98,16 +99,16 @@ class Authentication
      */
     public static function getAuthPluginList()
     {
-        $list = array();
+        $list = [];
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id',
                 'title',
                 'description'
-            ),
+            ],
             'from'   => Tables::authPlugins()
-        ));
+        ]);
 
         $CryptoUser = CryptoActors::getCryptoUser();
         $L          = QUI::getLocale();
@@ -156,14 +157,14 @@ class Authentication
      */
     public static function isRegistered($User, $Plugin)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'count' => 1,
             'from'  => Tables::keyPairsUser(),
-            'where' => array(
+            'where' => [
                 'userId'       => $User->getId(),
                 'authPluginId' => $Plugin->getId()
-            )
-        ));
+            ]
+        ]);
 
         if (current(current($result)) == 0) {
             return false;
@@ -173,9 +174,9 @@ class Authentication
     }
 
     /**
-     * Get an authentication plugin by
+     * Get an authentication plugin by ID
      *
-     * @param $id
+     * @param int $id
      * @return Plugin
      * @throws \Sequry\Core\Exception\Exception
      */
@@ -191,6 +192,36 @@ class Authentication
     }
 
     /**
+     * Get an authentication plugin by class name
+     *
+     * @param string $class
+     * @return Plugin
+     * @throws \Sequry\Core\Exception\Exception
+     */
+    public static function getAuthPluginByClass($class)
+    {
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
+                'authPluginId'
+            ],
+            'from'   => Tables::keyPairsUser(),
+            'where'  => [
+                'path' => '\\'.$class
+            ],
+            'limit'  => 1
+        ]);
+
+        if (empty($result)) {
+            throw new Exception([
+                'sequry/core',
+                'exception.security.handler.authentication.keypair_not_found_by_class'
+            ], 404);
+        }
+
+        return self::getAuthPlugin($result[0]['authPluginId']);
+    }
+
+    /**
      * Get Authentication Plugin by User KeyPair ID
      *
      * @param int $userKeyPairId
@@ -199,24 +230,25 @@ class Authentication
      */
     public static function getAuthPluginByUserKeyPairId($userKeyPairId)
     {
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'authPluginId'
-            ),
+            ],
             'from'   => Tables::keyPairsUser(),
-            'where'  => array(
+            'where'  => [
                 'id' => $userKeyPairId
-            )
-        ));
+            ],
+            'limit'  => 1
+        ]);
 
         if (empty($result)) {
-            throw new Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.security.handler.authentication.keypair_not_found',
-                array(
+                [
                     'id' => $userKeyPairId
-                )
-            ), 404);
+                ]
+            ], 404);
         }
 
         return self::getAuthPlugin($result[0]['authPluginId']);
@@ -229,14 +261,14 @@ class Authentication
      */
     public static function getAuthPlugins()
     {
-        $authPlugins = array();
+        $authPlugins = [];
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id'
-            ),
+            ],
             'from'   => Tables::authPlugins(),
-        ));
+        ]);
 
         foreach ($result as $row) {
             $authPlugins[] = self::getAuthPlugin($row['id']);
@@ -254,47 +286,47 @@ class Authentication
      */
     public static function getAuthPluginsBySecurityClass($securityClassId)
     {
-        $plugins = array();
+        $plugins = [];
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'authPluginId'
-            ),
+            ],
             'from'   => Tables::securityClassesToAuthPlugins(),
-            'where'  => array(
+            'where'  => [
                 'securityClassId' => (int)$securityClassId
-            )
-        ));
+            ]
+        ]);
 
         if (empty($result)) {
             return $plugins;
         }
 
-        $authPluginIds = array();
+        $authPluginIds = [];
 
         foreach ($result as $row) {
             $authPluginIds[] = $row['authPluginId'];
         }
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id'
-            ),
+            ],
             'from'   => Tables::authPlugins(),
-            'where'  => array(
-                'id' => array(
+            'where'  => [
+                'id' => [
                     'type'  => 'IN',
                     'value' => $authPluginIds
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
 
         foreach ($result as $row) {
             try {
                 $plugins[] = new Plugin($row['id']);
             } catch (\Exception $Exception) {
                 QUI\System\Log::addError(
-                    'Could not load auth plugin: ' . $Exception->getMessage()
+                    'Could not load auth plugin: '.$Exception->getMessage()
                 );
             }
         }
@@ -310,12 +342,12 @@ class Authentication
      */
     protected static function isAuthPluginRegistered(IAuthPlugin $AuthPlugin)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'from'  => Tables::authPlugins(),
-            'where' => array(
-                'path' => '\\' . get_class($AuthPlugin)
-            )
-        ));
+            'where' => [
+                'path' => '\\'.get_class($AuthPlugin)
+            ]
+        ]);
 
         if (empty($result)) {
             return false;
@@ -332,43 +364,45 @@ class Authentication
      */
     public static function registerPlugin(IAuthPlugin $AuthPlugin)
     {
-        $class = '\\' . get_class($AuthPlugin);
+        $class = '\\'.get_class($AuthPlugin);
 
         if (!($AuthPlugin instanceof IAuthPlugin)) {
             throw new QUI\Exception(
-                'The plugin "' . $class . '" cannot be registered. The authentication class has'
-                . ' to implement IAuthPlugin interface.'
+                'The plugin "'.$class.'" cannot be registered. The authentication class has'
+                .' to implement IAuthPlugin interface.'
             );
         }
-        
+
         $titleLocaleData = $AuthPlugin->getNameLocaleData();
         $descLocaleData  = $AuthPlugin->getDescriptionLocaleData();
-        
+
         if (!self::isAuthPluginRegistered($AuthPlugin)) {
             QUI::getDataBase()->insert(
                 Tables::authPlugins(),
-                array(
+                [
                     'title'       => json_encode($titleLocaleData),
                     'description' => json_encode($descLocaleData),
                     'path'        => $class
-                )
+                ]
             );
         } else {
             QUI::getDataBase()->update(
                 Tables::authPlugins(),
-                array(
+                [
                     'title'       => json_encode($titleLocaleData),
                     'description' => json_encode($descLocaleData),
-                ),
-                array(
+                ],
+                [
                     'path' => $class
-                )
+                ]
             );
         }
     }
 
     /**
      * Loads all authentication plugins that are installed as quiqqer packages
+     *
+     * @throws \QUI\Exception
      */
     public static function loadAuthPlugins()
     {
@@ -380,57 +414,59 @@ class Authentication
      *
      * @param array $params
      * @return integer - security class id
-     * @throws QUI\Exception
+     * @throws \Sequry\Core\Exception\Exception
+     * @throws \Sequry\Core\Exception\PermissionDeniedException
+     * @throws \QUI\Exception
      */
     public static function createSecurityClass($params)
     {
         if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
-            throw new QUI\Exception(array(
+            throw new PermissionDeniedException([
                 'sequry/core',
                 'exception.securityclass.create.no.permission'
-            ));
+            ]);
         }
 
         if (empty($params['title'])
         ) {
-            throw new QUI\Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.securityclass.create.missing.title'
-            ));
+            ]);
         }
 
         if (empty($params['authPluginIds']
                   || !is_array($params['authPluginIds']))
         ) {
-            throw new QUI\Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.securityclass.create.missing.authplugins'
-            ));
+            ]);
         }
 
         if (empty($params['requiredFactors'])
         ) {
-            throw new QUI\Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.securityclass.create.missing.requiredFactors'
-            ));
+            ]);
         }
 
         if ((int)$params['requiredFactors'] > count($params['authPluginIds'])) {
-            throw new QUI\Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.securityclass.create.too.many.requiredFactors'
-            ));
+            ]);
         }
 
-        $authPlugins = array();
+        $authPlugins = [];
 
         foreach ($params['authPluginIds'] as $authPluginId) {
             try {
                 $authPlugins[] = self::getAuthPlugin($authPluginId);
             } catch (\Exception $Exception) {
                 QUI\System\Log::addError(
-                    'createSecurityClass :: error on getAuthPlugin -> ' . $Exception->getMessage()
+                    'createSecurityClass :: error on getAuthPlugin -> '.$Exception->getMessage()
                 );
             }
         }
@@ -444,12 +480,12 @@ class Authentication
         try {
             QUI::getDataBase()->insert(
                 Tables::securityClasses(),
-                array(
+                [
                     'title'              => $params['title'],
                     'description'        => $params['description'],
                     'requiredFactors'    => (int)$params['requiredFactors'],
                     'allowPasswordLinks' => $allowPasswordLinks
-                )
+                ]
             );
 
             $securityClassId = QUI::getDataBase()->getPDO()->lastInsertId();
@@ -458,22 +494,22 @@ class Authentication
             foreach ($authPlugins as $AuthPlugin) {
                 QUI::getDataBase()->insert(
                     Tables::securityClassesToAuthPlugins(),
-                    array(
+                    [
                         'securityClassId' => $securityClassId,
                         'authPluginId'    => $AuthPlugin->getId()
-                    )
+                    ]
                 );
             }
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'Authentication :: createSecurityClass -> Error on inserting security class data into database: '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
-            throw new QUI\Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.securityclass.create.error'
-            ));
+            ]);
         }
 
         $securityClasses = self::getSecurityClassesList();
@@ -496,31 +532,31 @@ class Authentication
      */
     public static function getSecurityClassesList()
     {
-        $list   = array();
-        $result = QUI::getDataBase()->fetch(array(
+        $list   = [];
+        $result = QUI::getDataBase()->fetch([
             'from' => Tables::securityClasses(),
-        ));
+        ]);
 
         foreach ($result as $row) {
             $id = (int)$row['id'];
 
-            $list[$id] = array(
+            $list[$id] = [
                 'id'              => $id,
                 'title'           => $row['title'],
                 'description'     => $row['description'],
-                'authPlugins'     => array(),
+                'authPlugins'     => [],
                 'requiredFactors' => $row['requiredFactors']
-            );
+            ];
 
             $authPlugins = self::getAuthPluginsBySecurityClass($id);
 
             /** @var Plugin $AuthPlugin */
             foreach ($authPlugins as $AuthPlugin) {
-                $list[$id]['authPlugins'][] = array(
+                $list[$id]['authPlugins'][] = [
                     'id'          => $AuthPlugin->getId(),
                     'title'       => $AuthPlugin->getAttribute('title'),
                     'description' => $AuthPlugin->getAttribute('description')
-                );
+                ];
             }
         }
 
@@ -568,7 +604,7 @@ class Authentication
         $currentAuthKeyData = json_decode($Session->get('quiqqer_gpm_authkeys'), true);
 
         if (empty($currentAuthKeyData)) {
-            $currentAuthKeyData = array();
+            $currentAuthKeyData = [];
         }
 
         if (!isset($currentAuthKeyData['starttime'])
@@ -644,7 +680,7 @@ class Authentication
         }
 
         if (empty($currentAuthKeyData)) {
-            $currentAuthKeyData = array();
+            $currentAuthKeyData = [];
         }
 
         if ($authMode === self::AUTH_MODE_TIME
@@ -699,7 +735,7 @@ class Authentication
      */
     protected static function getSessionEncryptionKey()
     {
-        $cacheName = 'pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId();
+        $cacheName = 'pcsg/gpm/authentication/session_key/'.QUI::getUserBySession()->getId();
 
         try {
             $keyValue = new HiddenString(AuthCache::get($cacheName));
@@ -723,7 +759,7 @@ class Authentication
     {
         QUI::getSession()->set('quiqqer_gpm_authkeys', false);
         QUI::getSession()->set('quiqqer_gpm_authmode', self::AUTH_MODE_SINGLE_ACTION);
-        AuthCache::clear('pcsg/gpm/authentication/session_key/' . QUI::getUserBySession()->getId());
+        AuthCache::clear('pcsg/gpm/authentication/session_key/'.QUI::getUserBySession()->getId());
     }
 
     /**
@@ -734,15 +770,15 @@ class Authentication
     public static function getDefaultAuthPluginId()
     {
         // get ID of basic quiqqer auth plugin
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id'
-            ),
+            ],
             'from'   => Tables::authPlugins(),
-            'where'  => array(
-                'path' => '\\' . PasswordAuthPlugin::class
-            )
-        ));
+            'where'  => [
+                'path' => '\\'.PasswordAuthPlugin::class
+            ]
+        ]);
 
         if (empty($result)) {
             return false;

@@ -1,6 +1,6 @@
 {
   "project": {
-    "name": "PasswordManager",
+    "name": "Sequry Password Manager",
     "languages": [
       "de",
       "en"
@@ -13,16 +13,16 @@
     },
     {
       "type": "vcs",
-      "url": "git@dev.quiqqer.com:pcsg/gpmauthpassword.git"
+      "url": "git@dev.quiqqer.com:sequry/auth-secondpassword.git"
     },
     {
       "type": "vcs",
-      "url": "git@dev.quiqqer.com:pcsg/gpmauthsecondpassword.git"
+      "url": "git@dev.quiqqer.com:sequry/auth-keyfile.git"
     }
   ],
   "packages": {
-    "sequry/core": "dev-master",
-    "pcsg/gpmauthpassword": "dev-master",
-    "pcsg/gpmauthsecondpassword": "dev-master"
+    "sequry/core": "1.*",
+    "sequry/auth-secondpassword": "1.*",
+    "sequry/auth-keyfile": "1.*"
   }
 }

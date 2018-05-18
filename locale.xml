@@ -2203,6 +2203,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="exception.security.handler.authentication.keypair_not_found" html="true">
             <de><![CDATA[Das Benutzer-Schlüsselpaar #[$id] wurde nicht gefunden.]]></de>
         </locale>
+        <locale name="exception.security.handler.authentication.keypair_not_found_by_class" html="true">
+            <de><![CDATA[Das Benutzer-Schlüsselpaar wurde nicht gefunden.]]></de>
+        </locale>
 
         <!-- Control: auth/recovery/Recovery -->
         <locale name="controls.auth.recovery.template.title">
