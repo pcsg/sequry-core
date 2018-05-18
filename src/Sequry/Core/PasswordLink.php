@@ -2,6 +2,7 @@
 
 namespace Sequry\Core;
 
+use ParagonIE\Halite\Alerts\InvalidKey;
 use Sequry\Core\Security\Handler\Authentication;
 use Sequry\Core\Security\Handler\CryptoActors;
 use Sequry\Core\Security\Handler\PasswordLinks;
@@ -226,6 +227,7 @@ class PasswordLink
      * @return Password
      *
      * @throws \Sequry\Core\Exception\Exception
+     * @throws InvalidKeyException
      */
     public function getPassword($hash, $decryptPass = null)
     {
