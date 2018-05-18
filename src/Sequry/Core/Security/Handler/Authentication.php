@@ -372,7 +372,7 @@ class Authentication
      */
     public static function loadAuthPlugins()
     {
-        QUI::getEvents()->fireEvent('pcsgGpmLoadAuthPlugins');
+        QUI::getEvents()->fireEvent('sequryLoadAuthPlugins');
     }
 
     /**
