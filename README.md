@@ -44,7 +44,7 @@ $ sudo apt-get install sudo apt-get install libsodium-dev
 $ sudo pecl install libsodium
 
 === Ubuntu 16.04 ===
-// Alternative 1 - Download .deb packages at XYZ
+// Alternative 1 - Download .deb packages at https://dev.quiqqer.com/sequry/core/wikis/libsodium-16.04
 $ sudo dpkg -i libsodium18-1.0.11.deb libsodium-dev-1.0.11.deb
 
 // Alternative 2
