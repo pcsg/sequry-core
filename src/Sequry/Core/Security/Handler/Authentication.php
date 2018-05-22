@@ -202,9 +202,9 @@ class Authentication
     {
         $result = QUI::getDataBase()->fetch([
             'select' => [
-                'authPluginId'
+                'id'
             ],
-            'from'   => Tables::keyPairsUser(),
+            'from'   => Tables::authPlugins(),
             'where'  => [
                 'path' => '\\'.$class
             ],
@@ -218,7 +218,7 @@ class Authentication
             ], 404);
         }
 
-        return self::getAuthPlugin($result[0]['authPluginId']);
+        return self::getAuthPlugin($result[0]['id']);
     }
 
     /**
