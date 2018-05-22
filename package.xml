@@ -10,7 +10,7 @@
             <locale group="sequry/core" var="package.description"/>
         </description>
 
-        <image src="URL_OPT_DIR/sequry/core/bin/images/Logo.jpg"/>
+        <image src="URL_OPT_DIR/sequry/core/bin/images/Logo.png"/>
 
         <preview>
             <image src="URL_OPT_DIR/sequry/core/bin/images/preview/Backend_Passwords_and_Categories.png"/>
