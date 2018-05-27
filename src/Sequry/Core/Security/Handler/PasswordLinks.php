@@ -421,6 +421,20 @@ class PasswordLinks
         $Mailer->setSubject($L->get($lg, 'mail.passwordlink.subject'));
 
         foreach ($recipients as $recipient) {
+            if (!Orthos::checkMailSyntax($recipient)) {
+                QUI::getMessagesHandler()->addAttention(
+                    QUI::getLocale()->get(
+                        'sequry/core',
+                        'message.security.handler.passwordlinks.mail_send_error_address',
+                        [
+                            'email' => $recipient
+                        ]
+                    )
+                );
+
+                continue;
+            }
+
             $Mailer->addRecipient($recipient);
         }
 

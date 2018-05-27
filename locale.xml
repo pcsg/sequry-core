@@ -882,6 +882,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="message.security.handler.passwordlinks.mail_send_error">
             <de><![CDATA[Das Versenden des Passwort-Links an die angegebenen E-Mail-Empfänger ist fehlgeschlagen. Bitte überprüfen Sie Ihre Mail-Server-Einstellungen oder wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="message.security.handler.passwordlinks.mail_send_error_address" html="true">
+            <de><![CDATA[Der Passwort-Link konnte nicht an den Empfänger <b>"[email]"</b> versandt werden, da dies keine gültige E-Mail-Adresse ist.]]></de>
+        </locale>
         <locale name="message.security.handler.passwordlinks.mail_send_success">
             <de><![CDATA[Der Passwort-Link wurde erfolgreich an die angegebenen E-Mail-Empfänger versandt.]]></de>
         </locale>
