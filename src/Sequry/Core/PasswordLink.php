@@ -197,6 +197,11 @@ class PasswordLink
 
         $access = json_decode($access->getString(), true);
 
+        $access['hash']           = \Sodium\hex2bin($access['hash']);
+        $access['encryptionSalt'] = \Sodium\hex2bin($access['encryptionSalt']);
+        $access['dataKey']        = new HiddenString(\Sodium\hex2bin($access['dataKey']));
+        $this->access             = $access;
+
         // check date
         if ($access['validUntil']) {
             $validUntil = strtotime($access['validUntil']);
@@ -212,11 +217,6 @@ class PasswordLink
         ) {
             $this->deactivate();
         }
-
-        $access['hash']           = \Sodium\hex2bin($access['hash']);
-        $access['encryptionSalt'] = \Sodium\hex2bin($access['encryptionSalt']);
-        $access['dataKey']        = new HiddenString(\Sodium\hex2bin($access['dataKey']));
-        $this->access             = $access;
     }
 
     /**
@@ -273,7 +273,10 @@ class PasswordLink
         }
 
         // if session user has permission to view password -> do not increase counter
-        if ($this->Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
+        $SessionUser = QUI::getUserBySession();
+
+        if ($SessionUser instanceof QUI\Users\User
+            && $this->Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
             return $this->Password;
         }
 
