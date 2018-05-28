@@ -794,7 +794,7 @@
 
         <!-- text -->
         <locale name="passwordtypes.Text.title">
-            <de><![CDATA[Textfekd]]></de>
+            <de><![CDATA[Textfeld]]></de>
         </locale>
         <locale name="passwordtypes.text.label.title">
             <de><![CDATA[Textfeld]]></de>
