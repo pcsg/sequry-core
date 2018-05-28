@@ -3,6 +3,7 @@
 namespace Sequry\Core;
 
 use ParagonIE\Halite\Alerts\InvalidKey;
+use Sequry\Core\Exception\PermissionDeniedException;
 use Sequry\Core\Security\Handler\Authentication;
 use Sequry\Core\Security\Handler\CryptoActors;
 use Sequry\Core\Security\Handler\PasswordLinks;
@@ -207,7 +208,7 @@ class PasswordLink
             $validUntil = strtotime($access['validUntil']);
 
             if (time() > $validUntil) {
-                $this->deactivate();
+                $this->deactivate(false);
             }
         }
 
@@ -215,7 +216,7 @@ class PasswordLink
         if ($access['maxCalls']
             && $access['callCount'] >= $access['maxCalls']
         ) {
-            $this->deactivate();
+            $this->deactivate(false);
         }
     }
 
@@ -383,6 +384,7 @@ class PasswordLink
      *
      * @param bool $checkPermission (optional) - check PasswordLink permission [default: true]
      * @return void
+     * @throws \Sequry\Core\Exception\PermissionDeniedException
      */
     public function deactivate($checkPermission = true)
     {
@@ -400,6 +402,7 @@ class PasswordLink
      * Permanently delete PasswordLink
      *
      * @return void
+     * @throws \Sequry\Core\Exception\PermissionDeniedException
      */
     public function delete()
     {
@@ -427,12 +430,12 @@ class PasswordLink
      * Check if the current session user has permission to edit this PasswordLink
      *
      * @return void
-     * @throws Exception
+     * @throws \Sequry\Core\Exception\PermissionDeniedException
      */
     protected function checkPermission()
     {
         if (!PasswordLinks::isUserAllowedToUsePasswordLinks($this->Password)) {
-            throw new Exception(array(
+            throw new PermissionDeniedException(array(
                 'sequry/core',
                 'exception.passwordlink.permission_denied'
             ));
