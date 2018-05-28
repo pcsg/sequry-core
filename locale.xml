@@ -1810,14 +1810,11 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
 
         <!-- Control: passwordtypes/Textarea -->
-        <locale name="password.types.Textarea.template.title">
+        <locale name="passwordtypes.text.label.title">
             <de><![CDATA[Geheimtext (Textfeld)]]></de>
         </locale>
-        <locale name="password.types.Textarea.template.password">
+        <locale name="passwordtypes.text.label.text">
             <de><![CDATA[Geheimtext]]></de>
-        </locale>
-        <locale name="password.types.Textarea.template.note">
-            <de><![CDATA[Notiz]]></de>
         </locale>
 
         <!-- Control: passwords/Search -->
