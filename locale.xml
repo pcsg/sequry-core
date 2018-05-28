@@ -792,6 +792,17 @@
             <de><![CDATA[Passwort]]></de>
         </locale>
 
+        <!-- text -->
+        <locale name="passwordtypes.Text.title">
+            <de><![CDATA[Textfekd]]></de>
+        </locale>
+        <locale name="passwordtypes.text.label.title">
+            <de><![CDATA[Textfeld]]></de>
+        </locale>
+        <locale name="passwordtypes.text.label.text">
+            <de><![CDATA[Geheimtext]]></de>
+        </locale>
+
         <!-- Handler\Categories -->
         <locale name="exception.handler.categories.category.not.found">
             <de><![CDATA[Die öffentliche Passwort-Kategorie #[id] wurde nicht gefunden.]]></de>
@@ -1809,13 +1820,6 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Notiz]]></de>
         </locale>
 
-        <!-- Control: passwordtypes/Textarea -->
-        <locale name="passwordtypes.text.label.title">
-            <de><![CDATA[Geheimtext (Textfeld)]]></de>
-        </locale>
-        <locale name="passwordtypes.text.label.text">
-            <de><![CDATA[Geheimtext]]></de>
-        </locale>
 
         <!-- Control: passwords/Search -->
         <locale name="password.search.template.title">
