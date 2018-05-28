@@ -904,13 +904,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @param {number} passwordId
          */
         viewPassword: function (passwordId) {
-            var self    = this;
-            var RowData = this.$getRowDataByPasswordId(passwordId);
-            var canEdit = false;
-
-            if (RowData) {
-                canEdit = RowData.isOwner;
-            }
+            var self = this;
 
             this.Loader.show();
 
@@ -922,7 +916,6 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
                         var View = new PasswordView({
                             passwordId: passwordId,
-                            //editPublicCategories: canEdit,
                             events    : {
                                 onLoaded: function () {
                                     self.Loader.hide();
@@ -934,31 +927,6 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                                 }
                             }
                         }).inject(Sheet.getContent());
-
-                        if (!canEdit) {
-                            return;
-                        }
-
-                        // edit btn
-                        new QUIButton({
-                            text     : QUILocale.get(lg,
-                                'controls.gpm.passwords.panel.view.button.edit'
-                            ),
-                            textimage: 'fa fa-edit',
-                            styles   : {
-                                float : 'none',
-                                margin: '12px 5px'
-                            },
-                            events   : {
-                                onClick: function () {
-                                    Sheet.destroy();
-                                    self.editPassword(passwordId);
-                                }
-                            }
-                        }).inject(
-                            Sheet.getButtons().getElement('.qui-panel-sheet-buttons'),
-                            'top'
-                        );
                     },
                     onClose: function (Sheet) {
                         Sheet.destroy();
@@ -1097,9 +1065,11 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
             });
 
             this.createSheet({
-                title : QUILocale.get(lg, 'gpm.passwords.panel.link.title'),
+                title : QUILocale.get(lg, 'gpm.passwords.panel.link.title', {
+                    passwordId: passwordId
+                }),
                 events: {
-                    onShow : function (Sheet) {
+                    onShow  : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
                         LinkList.addEvents({
@@ -1115,10 +1085,10 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
                         LinkList.inject(Sheet.getContent());
                     },
-                    onResize: function() {
+                    onResize: function () {
                         LinkList.resize();
                     },
-                    onClose: function (Sheet) {
+                    onClose : function (Sheet) {
                         Sheet.destroy();
                     }
                 }
@@ -1760,7 +1730,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                                 }
                             });
 
-                            (function() {
+                            (function () {
                                 Input.focus();
                             }).delay(200);
                         }

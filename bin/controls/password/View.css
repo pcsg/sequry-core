@@ -1,16 +1,16 @@
-.pcsg-gpm-password-view {
+.sequry-core-password-view {
     float: left;
     position: relative;
     height: 100%;
     width: 100%;
 }
 
-.pcsg-gpm-password-view-header {
+.sequry-core-password-view-header {
     float: left;
     width: 100%;
 }
 
-.pcsg-gpm-password-view-info-date {
+.sequry-core-password-view-info-date {
     bottom: 0;
     position: absolute;
     font-size: 10px;
@@ -18,53 +18,53 @@
     text-align: right;
 }
 
-.pcsg-gpm-password-view-payload {
+.sequry-core-password-view-payload {
     float: left;
     max-width: 500px;
 }
 
-.pcsg-gpm-password-view-info {
+.sequry-core-password-view-info {
     float: left;
     width: 100%;
 }
 
-.pcsg-gpm-password-view-info-datatype {
+.sequry-core-password-view-info-datatype {
     float: left;
     margin-bottom: 10px;
     font-style: italic;
 }
 
-.pcsg-gpm-password-view-info-description {
+.sequry-core-password-view-info-description {
     float: left;
 }
 
-.pcsg-gpm-password-view {
+.sequry-core-password-view {
     width: 100%;
 }
 
-.pcsg-gpm-password-view-info-categories {
+.sequry-core-password-view-info-categories {
     float: left;
     width: 100%;
 }
 
-.pcsg-gpm-password-view-info-categories-public {
+.sequry-core-password-view-info-categories-public {
     margin-bottom: 5px;
 }
 
-.pcsg-gpm-password-view-info-categories-public,
-.pcsg-gpm-password-view-info-categories-private {
+.sequry-core-password-view-info-categories-public,
+.sequry-core-password-view-info-categories-private {
     float: left;
     /*padding: 10px;*/
     width: 100%;
 }
 
-.pcsg-gpm-password-view-info-categories-public > span,
-.pcsg-gpm-password-view-info-categories-private > span {
+.sequry-core-password-view-info-categories-public > span,
+.sequry-core-password-view-info-categories-private > span {
     float: left;
     min-width: 200px;
 }
 
-.pcsg-gpm-password-view-info-title span {
+.sequry-core-password-view-info-title span {
     color: #aa1317;
 }
 
@@ -79,7 +79,7 @@ div.field-container-field {
     word-break: break-word;
 }
 
-/*.pcsg-gpm-password-view-copy-tooltip:hover span {*/
+/*.sequry-core-password-view-copy-tooltip:hover span {*/
 /*visibility: visible;*/
 /*opacity: 0.8;*/
 /*left: 100%;*/
@@ -88,3 +88,50 @@ div.field-container-field {
 /*margin-left: 15px;*/
 /*z-index: 999;*/
 /*}*/
+
+/**
+Content
+ */
+.sequry-core-password-view-content {
+    padding-left: 25px;
+}
+
+/**
+Menu
+ */
+.sequry-core-password-view-menu {
+    background-color: #ededed;
+    color: #0069b4;
+    float: left;
+    height: 100%;
+    width: 40px;
+}
+
+.sequry-core-password-view-menu-entry {
+    font-size: 20px;
+    float: left;
+    height: 40px;
+    padding: 6px;
+    text-align: center;
+    width: 100%;
+}
+
+.sequry-core-password-view-menu-entry:hover {
+    cursor:pointer;
+    background-color: #dedede;
+}
+
+.sequry-core-password-view-menu-entry-locked {
+    background-color: #ededed !important;
+    color: #aaa !important;
+}
+
+.sequry-core-password-view-menu-entry-locked:hover {
+    cursor: not-allowed !important;
+}
+
+.sequry-core-password-view-content {
+    float: left;
+    height: 100%;
+    width: calc(100% - 40px);
+}

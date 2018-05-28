@@ -1269,7 +1269,7 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Neues Passwort erstellen]]></de>
         </locale>
         <locale name="gpm.passwords.panel.link.title">
-            <de><![CDATA[Passwort-Link]]></de>
+            <de><![CDATA[Passwort-Links für Passwort #[passwordId]]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
@@ -1634,6 +1634,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="controls.password.access_info.btn.text">
             <de><![CDATA[Zu den Authentifizierungs-Faktoren]]></de>
         </locale>
+        <locale name="controls.passsword.view.template.loadingInfo">
+            <de><![CDATA[Sie müssen sich zuerst authentifizieren, bevor Passwort-Daten angezeigt werden können.]]></de>
+        </locale>
 
         <!-- Control: password/Panel -->
         <locale name="gpm.password.btn.save.text">
@@ -1854,11 +1857,6 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="password.search.template.uncategorizedPrivate">
             <de><![CDATA[Passwörter ohne persönliche Passwort-Kategorie]]></de>
-        </locale>
-
-        <!-- Control: password/View -->
-        <locale name="password.view.restricted.info">
-            <de><![CDATA[Sie müssen sich zuerst authentifizieren, bevor Passwort-Daten angezeigt werden können.]]></de>
         </locale>
 
         <!-- Control: actors/GroupEdit -->
