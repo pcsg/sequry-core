@@ -687,16 +687,15 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                         Share.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
                     }
 
-                    if (Data.canDelete) {
-                        Delete.addEvent('click', FuncActionDelete);
-                    } else {
-                        Delete.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
-                    }
-
                     Edit.addEvent('click', FuncActionEdit);
                 } else {
                     Share.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
                     Edit.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                }
+
+                if (Data.canDelete) {
+                    Delete.addEvent('click', FuncActionDelete);
+                } else {
                     Delete.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
                 }
 

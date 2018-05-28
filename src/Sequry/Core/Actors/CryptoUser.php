@@ -1040,14 +1040,16 @@ class CryptoUser extends QUI\Users\User
             $this
         );
 
+        $isSU = QUI::getUserBySession()->isSU();
+
         foreach ($result as $row) {
             $isOwner        = in_array($row['id'], $ownerPasswordIds);
             $row['isOwner'] = $isOwner;
 
             if (in_array($row['id'], $directAccessPasswordIds)) {
                 $row['access']    = 'user';
-                $row['canShare']  = $canShareOwn;
-                $row['canDelete'] = true;
+                $row['canShare']  = $isOwner && $canShareOwn;
+                $row['canDelete'] = $isOwner || $isSU;
             } else {
                 $isGroupAdminUser = false;
 
@@ -1057,7 +1059,7 @@ class CryptoUser extends QUI\Users\User
 
                 $row['access']    = 'group';
                 $row['canShare']  = $canShareGroup || $isGroupAdminUser;
-                $row['canDelete'] = $canDeleteGroup || $isGroupAdminUser;
+                $row['canDelete'] = $canDeleteGroup || $isGroupAdminUser || $isSU;
             }
 
             $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
@@ -1320,17 +1322,20 @@ class CryptoUser extends QUI\Users\User
         $data = current($result);
 
         $isOwner = in_array($data['id'], $ownerPasswordIds);
+        $isSU    = QUI::getUserBySession()->isSU();
 
         if ($isOwner) {
             $permissions[] = 'edit';
         }
 
         if (in_array($data['id'], $directAccessPasswordIds)) {
-            if ($canShareOwn) {
+            if ($isOwner && $canShareOwn) {
                 $permissions[] = 'share';
             }
 
-            $permissions[] = 'delete';
+            if ($isOwner || $isSU) {
+                $permissions[] = 'delete';
+            }
         } else {
             $isGroupAdminUser = false;
 
@@ -1342,7 +1347,7 @@ class CryptoUser extends QUI\Users\User
                 $permissions[] = 'share';
             }
 
-            if ($canDeleteGroup || $isGroupAdminUser) {
+            if ($canDeleteGroup || $isGroupAdminUser || $isSU) {
                 $permissions[] = 'delete';
             }
         }
