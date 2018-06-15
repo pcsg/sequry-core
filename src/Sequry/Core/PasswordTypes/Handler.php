@@ -253,7 +253,16 @@ class Handler
     public static function getFrontendPasswordTypeClass($type, $layout)
     {
         $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Layouts\\' . $layout . '\\Type';
+
+        if (!class_exists($class)) {
+            throw new QUI\Exception(array(
+                'sequry/core',
+                'exception.passwordtypes.templateutils.template.file.not.found'
+            ), 404);
+        }
+
         return new $class();
+
     }
 
     /**
