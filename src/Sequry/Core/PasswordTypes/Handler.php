@@ -244,6 +244,19 @@ class Handler
     }
 
     /**
+     * Get class of frontend password type
+     *
+     * @param string $type - password type (website, ftp, etc.)
+     * @param string $layout - frontend template name
+     * @return IPasswordType
+     */
+    public static function getFrontendPasswordTypeClass($type, $layout)
+    {
+        $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Layouts\\' . $layout . '\\Type';
+        return new $class();
+    }
+
+    /**
      * Return path to edit html template
      *
      * @param string $type - password type
@@ -251,17 +264,20 @@ class Handler
      * @return string - edit html path
      * @throws QUI\Exception
      */
-    public static function getEditTemplateFrontend($type, $layout = 'core')
+    public static function getEditTemplateFrontend($type, $layout = 'Core')
     {
-        $file = dirname(__FILE__) . '/'. $type . '/layouts/' . $layout . '/Edit.html';
 
-            if (!file_exists($file)) {
-                throw new QUI\Exception(array(
-                    'sequry/core',
-                    'exception.passwordtypes.templateutils.template.file.not.found'
-                ), 404);
-            }
+        $TypeClass = self::getFrontendPasswordTypeClass($type, $layout);
 
-        return $file;
+        $editHtml = $TypeClass->getEditHtml();
+
+        /*if (!file_exists($file)) {
+            throw new QUI\Exception(array(
+                'sequry/core',
+                'exception.passwordtypes.templateutils.template.file.not.found'
+            ), 404);
+        }*/
+
+        return $editHtml;
     }
 }
