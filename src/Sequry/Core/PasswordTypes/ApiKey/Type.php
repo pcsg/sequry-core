@@ -45,18 +45,11 @@ class Type implements IPasswordType
     /**
      * Get edit template (just HTML)
      *
-     * @param bool $frontned - parse template for frontend (true) or backend (false)
-     * @param string $layout - name of the template
      * @return string - HTML template
      */
-    public static function getEditHtml($frontned = false, $layout = 'core')
+    public static function getEditHtml()
     {
         $content = self::getTemplateTranslations();
-
-        if ($frontned) {
-            return TemplateUtils::parseTemplate(dirname(__FILE__) . '/layouts/' . $layout . '/Edit.html', $content);
-        }
-
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/Edit.html', $content);
     }
 

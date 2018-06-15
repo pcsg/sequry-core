@@ -242,20 +242,4 @@ class Handler
         $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
         return new $class();
     }
-
-    /**
-     * Return class
-     *
-     * @param string $type - password type
-     * @return string - edit html template
-     */
-    public static function getEditTemplateFrontend($type, $layout)
-    {
-        $TypeClass = self::getPasswordTypeClass($type);
-
-        $editHtml = $TypeClass->getEditHtml(true, $layout);
-
-
-        return $editHtml;
-    }
 }
