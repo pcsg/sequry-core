@@ -19,7 +19,7 @@ class Type implements IPasswordType
      * @param array $content (optional) - the content that is parsed into the template
      * @return string - HTML template
      */
-    public static function getViewHtml($content = array())
+    public static function getViewHtml($content = [])
     {
         if (isset($content['url'])
             && !empty($content['url'])
@@ -41,11 +41,18 @@ class Type implements IPasswordType
     /**
      * Get edit template (just HTML)
      *
+     * @param bool $frontned - parse template for frontend (true) or backend (false)
+     * @param string $layout - name of the template
      * @return string - HTML template
      */
-    public static function getEditHtml()
+    public static function getEditHtml($frontned = false, $layout = 'core')
     {
         $content = self::getTemplateTranslations();
+
+        if ($frontned) {
+            return TemplateUtils::parseTemplate(dirname(__FILE__) . '/layouts/' . $layout . '/Edit.html', $content);
+        }
+
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/Edit.html', $content);
     }
 
@@ -60,13 +67,13 @@ class Type implements IPasswordType
         $lg       = 'sequry/core';
         $lgPrefix = 'passwordtypes.website.label.';
 
-        return array(
+        return [
             'labelTitle'    => $L->get($lg, $lgPrefix . 'title'),
             'labelUser'     => $L->get($lg, $lgPrefix . 'user'),
             'labelPassword' => $L->get($lg, $lgPrefix . 'password'),
             'labelUrl'      => $L->get($lg, $lgPrefix . 'url'),
             'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
-        );
+        ];
     }
 
     /**
