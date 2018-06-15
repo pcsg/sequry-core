@@ -242,4 +242,26 @@ class Handler
         $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
         return new $class();
     }
+
+    /**
+     * Return path to edit html template
+     *
+     * @param string $type - password type
+     * @param string $layout - template name
+     * @return string - edit html path
+     * @throws QUI\Exception
+     */
+    public static function getEditTemplateFrontend($type, $layout = 'core')
+    {
+        $file = dirname(__FILE__) . '/'. $type . '/layouts/' . $layout . '/Edit.html';
+
+            if (!file_exists($file)) {
+                throw new QUI\Exception(array(
+                    'sequry/core',
+                    'exception.passwordtypes.templateutils.template.file.not.found'
+                ), 404);
+            }
+
+        return $file;
+    }
 }
