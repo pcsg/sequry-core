@@ -63,14 +63,12 @@ class Type implements IPasswordType
         $lgPrefix = 'sequry.panel.template.';
 
         return [
-            'userLabel'           => $L->get($lg, $lgPrefix . 'user'),
-            'userPlaceholder'     => $L->get($lg, $lgPrefix . 'userPlaceholder'),
-            'passwordLabel'       => $L->get($lg, $lgPrefix . 'password'),
-            'passwordPlaceholder' => $L->get($lg, $lgPrefix . 'passwordPlaceholder'),
-            'urlLabel'            => $L->get($lg, $lgPrefix . 'url'),
-            'urlPlaceholder'      => $L->get($lg, $lgPrefix . 'urlPlaceholder'),
-            'noteLabel'           => $L->get($lg, $lgPrefix . 'note'),
-            'notePlaceholder'     => $L->get($lg, $lgPrefix . 'notePlaceholder')
+            'urlLabel'        => $L->get($lg, $lgPrefix . 'url'),
+            'urlPlaceholder'  => $L->get($lg, $lgPrefix . 'urlPlaceholder'),
+            'keyLabel'        => $L->get($lg, $lgPrefix . 'keyLabel'),
+            'keyPlaceholder'  => $L->get($lg, $lgPrefix . 'keyPlaceholder'),
+            'noteLabel'       => $L->get($lg, $lgPrefix . 'note'),
+            'notePlaceholder' => $L->get($lg, $lgPrefix . 'notePlaceholder')
         ];
     }
 
