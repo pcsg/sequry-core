@@ -1,9 +1,20 @@
 <label class="password-field-row">
     <span class="password-field-row-left">
+        {{hostLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <input type="text" value="" name="host"
+               class="password-field-row-right-input"
+               placeholder="{{hostPlaceholder}}"/>
+    </div>
+</label>
+
+<label class="password-field-row">
+    <span class="password-field-row-left">
         {{userLabel}}
     </span>
     <div class="password-field-row-right">
-        <input type="text" value="" name="pw-username"
+        <input type="text" value="" name="user"
                class="password-field-row-right-input"
                placeholder="{{userPlaceholder}}"
                autocomplete="off"/>
@@ -15,22 +26,11 @@
         {{passwordLabel}}
     </span>
     <div class="password-field-row-right">
-        <input type="password" value="" name="pw-userpassword"
+        <input type="password" value="" name="password"
                class="password-field-row-right-input"
                placeholder="{{passwordPlaceholder}}"
                autocomplete="new-password"/>
         <button class="fa fa-eye password-show"></button>
-    </div>
-</label>
-
-<label class="password-field-row">
-    <span class="password-field-row-left">
-        {{urlLabel}}
-    </span>
-    <div class="password-field-row-right">
-        <input type="text" value="" name="pw-url"
-               class="password-field-row-right-input"
-               placeholder="{{urlPlaceholder}}"/>
     </div>
 </label>
 
@@ -39,7 +39,7 @@
         {{noteLabel}}
     </span>
     <div class="password-field-row-right">
-        <textarea name="pw-note" class="password-field-row-right-textarea"
+        <textarea name="note" class="password-field-row-right-textarea"
                   placeholder="{{notePlaceholder}}"></textarea>
     </div>
 </label>

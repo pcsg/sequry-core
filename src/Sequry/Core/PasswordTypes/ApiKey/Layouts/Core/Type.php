@@ -65,7 +65,7 @@ class Type implements IPasswordType
         return [
             'urlLabel'        => $L->get($lg, $lgPrefix . 'url'),
             'urlPlaceholder'  => $L->get($lg, $lgPrefix . 'urlPlaceholder'),
-            'keyLabel'        => $L->get($lg, $lgPrefix . 'keyLabel'),
+            'keyLabel'        => $L->get($lg, $lgPrefix . 'key'),
             'keyPlaceholder'  => $L->get($lg, $lgPrefix . 'keyPlaceholder'),
             'noteLabel'       => $L->get($lg, $lgPrefix . 'note'),
             'notePlaceholder' => $L->get($lg, $lgPrefix . 'notePlaceholder')
