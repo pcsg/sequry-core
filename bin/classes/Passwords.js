@@ -371,9 +371,9 @@ define('package/sequry/core/bin/classes/Passwords', [
          *
          * @return {Promise}
          */
-        isSetupComplete: function () {
+        getSetupStatus: function () {
             return new Promise(function (resolve, reject) {
-                QUIAjax.get('package_sequry_core_ajax_isSetupComplete', resolve, {
+                QUIAjax.get('package_sequry_core_ajax_getSetupStatus', resolve, {
                     'package': pkg,
                     onError  : reject
                 });

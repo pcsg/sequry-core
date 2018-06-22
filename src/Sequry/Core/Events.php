@@ -85,8 +85,6 @@ class Events
 
         try {
             Authentication::loadAuthPlugins();
-            self::initialSystemSetup();
-            self::setDefaultAdminGroupPermissions();
         } catch (\Exception $Exception) {
             QUI\System\Log::writeException($Exception);
         }
@@ -513,72 +511,20 @@ class Events
      */
     public static function onGroupCreate(QUI\Groups\Group $Group)
     {
-        $Manager = QUI::getPermissionManager();
-        $Manager->setPermissions(
-            $Group,
-            [
-                'gpm.cryptodata.create'      => true,
-                'gpm.cryptodata.share'       => true,
-                'gpm.cryptodata.share_group' => true
-            ],
-            QUI::getUsers()->getSystemUser()
-        );
-    }
-
-    /**
-     * Performs an initial system setup for first time use of the
-     * password manager
-     *
-     * @return void
-     */
-    public static function initialSystemSetup()
-    {
-        // Basic security class
-        $securityClasses = Authentication::getSecurityClassesList();
-
-        if (!empty($securityClasses)) {
-            return;
+        try {
+            $Manager = QUI::getPermissionManager();
+            $Manager->setPermissions(
+                $Group,
+                [
+                    'gpm.cryptodata.create'      => true,
+                    'gpm.cryptodata.share'       => true,
+                    'gpm.cryptodata.share_group' => true
+                ],
+                QUI::getUsers()->getSystemUser()
+            );
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
         }
-
-        // get ID of basic quiqqer auth plugin
-        $defaultPluginId = Authentication::getDefaultAuthPluginId();
-
-        if (empty($defaultPluginId)) {
-            return;
-        }
-
-        $L  = QUI::getLocale();
-        $lg = 'sequry/core';
-
-        Authentication::createSecurityClass([
-            'title'           => $L->get($lg, 'setup.securityclass.title'),
-            'description'     => $L->get($lg, 'setup.securityclass.description'),
-            'authPluginIds'   => [$defaultPluginId],
-            'requiredFactors' => 1
-        ]);
-    }
-
-    /**
-     * Set default permissions for the admin (root) group
-     *
-     * @return void
-     */
-    public static function setDefaultAdminGroupPermissions()
-    {
-        $Manager = QUI::getPermissionManager();
-        $Manager->setPermissions(
-            QUI::getGroups()->get(QUI::conf('globals', 'root')),
-            [
-                'gpm.cryptodata.create'       => true,
-                'gpm.cryptodata.share'        => true,
-                'gpm.cryptodata.delete_group' => true,
-                'gpm.cryptodata.share_group'  => true,
-                'gpm.cryptogroup.create'      => true,
-                'gpm.securityclass.edit'      => true,
-                'gpm.categories.edit'         => true
-            ],
-            QUI::getUsers()->getSystemUser()
-        );
     }
 
     /**
