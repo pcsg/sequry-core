@@ -191,6 +191,15 @@
     background: rgba(255, 255, 255, 0.7);
 }
 
+.pcsg-gpm-passwords-panel-setupincomplete button {
+    height: 40px;
+    float: none !important;
+    font-size: 15px;
+    margin-top: 20px;
+    outline: 0px;
+    width: 100%;
+}
+
 .pcsg-gpm-passwords-panel-setupincomplete > div {
     background-color: #FAF6D4;
     border: 1px solid #E6C26E;

@@ -357,8 +357,8 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
             this.Loader.show();
 
-            Passwords.isSetupComplete().then(function (setupComplete) {
-                if (setupComplete) {
+            Passwords.getSetupStatus().then(function (SetupStatus) {
+                if (SetupStatus.setupComplete) {
                     self.refresh().then(function () {
                         var pwId = self.getAttribute('passwordId');
 
@@ -375,12 +375,36 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
                 self.getButtons('add').disable();
 
-                new Element('div', {
-                    'class': 'pcsg-gpm-passwords-panel-setupincomplete',
-                    html   : '<div>' +
-                    QUILocale.get(lg, 'controls.password.panel.setup_incomplete') +
-                    '</div>'
-                }).inject(self.$Elm);
+                if (SetupStatus.setupWizardInstalled) {
+                    var Info = new Element('div', {
+                        'class': 'pcsg-gpm-passwords-panel-setupincomplete',
+                        html   : '<div>' +
+                        QUILocale.get(lg, 'controls.password.panel.setup_incomplete_wizard') +
+                        '</div>'
+                    }).inject(self.$Elm);
+
+                    new QUIButton({
+                        text     : QUILocale.get('sequry/setup-wizard', 'controls.SetupPanel.title'),
+                        textimage: 'fa fa-map-signs',
+                        events   : {
+                            onClick: function () {
+                                require([
+                                    'package/sequry/setup-wizard/bin/controls/SetupPanel',
+                                    'utils/Panels'
+                                ], function (SetupPanel, PanelUtils) {
+                                    PanelUtils.openPanelInTasks(new SetupPanel());
+                                }.bind(this));
+                            }
+                        }
+                    }).inject(Info.getElement('div'));
+                } else {
+                    new Element('div', {
+                        'class': 'pcsg-gpm-passwords-panel-setupincomplete',
+                        html   : '<div>' +
+                        QUILocale.get(lg, 'controls.password.panel.setup_incomplete') +
+                        '</div>'
+                    }).inject(self.$Elm);
+                }
             });
         },
 
@@ -1099,7 +1123,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
             this.createSheet({
                 title : QUILocale.get(lg, 'gpm.passwords.panel.link.title'),
                 events: {
-                    onShow : function (Sheet) {
+                    onShow  : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
                         LinkList.addEvents({
@@ -1115,10 +1139,10 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
                         LinkList.inject(Sheet.getContent());
                     },
-                    onResize: function() {
+                    onResize: function () {
                         LinkList.resize();
                     },
-                    onClose: function (Sheet) {
+                    onClose : function (Sheet) {
                         Sheet.destroy();
                     }
                 }
@@ -1760,7 +1784,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                                 }
                             });
 
-                            (function() {
+                            (function () {
                                 Input.focus();
                             }).delay(200);
                         }
