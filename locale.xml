@@ -1087,10 +1087,10 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="auth.recoverycodewindow.date">
             <de><![CDATA[Datum]]></de>
         </locale>
-        <locale name="auth.recoverycodewindow.print.btn.text">
+        <locale name="auth.recoverycodewindow.print.btn">
             <de><![CDATA[Drucken]]></de>
         </locale>
-        <locale name="auth.recoverycodewindow.close.btn.text">
+        <locale name="auth.recoverycodewindow.close.btn">
             <de><![CDATA[Schließen]]></de>
         </locale>
         <locale name="auth.recoverycodewindow.popup.recoverycode.btn.text.countdown">
@@ -1387,7 +1387,12 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="controls.password.panel.setup_incomplete" html="true">
             <de><![CDATA[<h1>Sequry ist noch nicht einsatzbereit!</h1>
-<p>Sequry kann leider noch nicht benutzt werden, da noch nicht alle nötigen Konfigurationsschritte abgeschlossen sind. Bitte lesen Sie <a href="https://dev.quiqqer.com/sequry/core/wikis/setup-de" target="_blank"><b>"Sequry einrichten"</b></a> im Wiki und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>]]></de>
+<p>Sequry kann leider noch nicht benutzt werden, da <b>noch nicht alle nötigen Konfigurationsschritte</b> abgeschlossen sind. Bitte lesen Sie <a href="https://dev.quiqqer.com/sequry/core/wikis/setup-de" target="_blank"><b>"Sequry einrichten"</b></a> im Wiki und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>]]></de>
+        </locale>
+        <locale name="controls.password.panel.setup_incomplete_wizard" html="true">
+            <de><![CDATA[<h1>Sequry ist noch nicht einsatzbereit!</h1>
+<p>Sequry kann leider noch nicht benutzt werden, da <b>noch nicht alle nötigen Konfigurationsschritte</b> abgeschlossen sind. Bitte öffnen Sie den <b>Sequry-Einrichtungsassistenten</b> und führen die dort genannten Schritte aus, um das System einsatzfähig zu machen. Sobald die Einrichtung abgeschlossen ist, laden Sie einfach diese Seite neu.</p>
+]]></de>
         </locale>
 
         <!-- Control: password/Create -->
