@@ -3,12 +3,13 @@
 use Sequry\Core\PasswordTypes\Handler;
 use Sequry\Core\Security\Handler\Passwords;
 use QUI\Utils\Security\Orthos;
+use Sequry\Core\Security\Handler\CryptoActors;
 
 /**
  * Get a single password object
  *
  * @param integer $passwordId - the id of the password object
- * @return string|false - view html; false on error
+ * @return array|false - view data; false on error
  */
 function package_sequry_core_ajax_passwords_getView($passwordId)
 {
@@ -24,7 +25,12 @@ function package_sequry_core_ajax_passwords_getView($passwordId)
             }
         }
 
-        return Handler::getViewHtml($Password->getDataType(), $viewData);
+        $CryptoUser = CryptoActors::getCryptoUser();
+
+        return [
+            'viewHtml'    => Handler::getViewHtml($Password->getDataType(), $viewData),
+            'permissions' => $CryptoUser->getPasswordPermissions($passwordId)
+        ];
     } catch (QUI\Exception $Exception) {
         QUI\System\Log::writeException($Exception);
 

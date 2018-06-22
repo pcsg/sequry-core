@@ -1,15 +1,13 @@
 <?php
 
-namespace Sequry\Core\PasswordTypes\Website;
+namespace Sequry\Core\PasswordTypes\Text;
 
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
 use Sequry\Core\PasswordTypes\IPasswordType;
 
 /**
- * Type class for Website password input type
- *
- * @package Sequry\Core\PasswordTypes
+ * Type class for Text password input type
  */
 class Type implements IPasswordType
 {
@@ -21,20 +19,7 @@ class Type implements IPasswordType
      */
     public static function getViewHtml($content = array())
     {
-        if (isset($content['url'])
-            && !empty($content['url'])
-        ) {
-            $url = $content['url'];
-
-            if (mb_strpos($url, '//') !== false) {
-                $url = '<a href="' . $url . '" target="_blank">' . $url . '</a>';
-            }
-
-            $content['url'] = $url;
-        }
-
         $content = array_merge($content, self::getTemplateTranslations());
-
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
     }
 
@@ -58,14 +43,26 @@ class Type implements IPasswordType
     {
         $L        = QUI::getLocale();
         $lg       = 'sequry/core';
-        $lgPrefix = 'passwordtypes.website.label.';
+        $lgPrefix = 'passwordtypes.text.label.';
 
         return array(
-            'labelTitle'    => $L->get($lg, $lgPrefix . 'title'),
-            'labelUser'     => $L->get($lg, $lgPrefix . 'user'),
-            'labelPassword' => $L->get($lg, $lgPrefix . 'password'),
-            'labelUrl'      => $L->get($lg, $lgPrefix . 'url'),
-            'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
+            'labelText'  => $L->get($lg, $lgPrefix . 'text'),
+            'labelTitle' => $L->get($lg, $lgPrefix . 'title')
         );
+    }
+
+    /**
+     * Get content that is copied by a copy action
+     *
+     * @param array $payload - password payload
+     * @return string - copy content
+     */
+    public static function getCopyContent($payload)
+    {
+        if (isset($payload['text'])) {
+            return $payload['text'];
+        }
+
+        return '';
     }
 }

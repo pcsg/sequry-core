@@ -55,6 +55,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
 
             this.$PasswordInput             = null;
             this.$PasswordLinkSiteCreateBtn = null;
+            this.$currentEmailReceiverValue = null;
         },
 
         /**
@@ -211,13 +212,22 @@ define('package/sequry/core/bin/controls/password/link/Create', [
                 'input[name="email"]'
             );
 
-            new QUIMailSelect({
+            this.$EmailReceiverSelect = new QUIMailSelect({
                 events: {
                     onChange: function (Control) {
                         EmailsInput.value = Control.getValue();
                     }
                 }
             }).imports(this.$Elm.getElement('.pcsg-gpm-password-linkcreate-emails'));
+
+            this.$EmailReceiverSelect.getElm().getElement('input.qui-elements-select-list-search').addEvents({
+                keyup: function(event) {
+                    self.$currentEmailReceiverValue = event.target.value;
+                },
+                click: function() {
+                    self.$currentEmailReceiverValue = '';
+                }
+            });
 
             // vhosts
             var VHostRowElm = this.$Elm.getElement(
@@ -310,7 +320,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
 
             new QUIProjectSelectPopup({
                 events: {
-                    onSubmit: function(Popup, ProjectData) {
+                    onSubmit: function (Popup, ProjectData) {
                         if (!ProjectData.project.length) {
                             self.$PasswordLinkSiteCreateBtn.enable();
                             Popup.close();
@@ -322,7 +332,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
 
                         Popup.Loader.show();
 
-                        Passwords.createPasswordLinkSite(ProjectData).then(function(success) {
+                        Passwords.createPasswordLinkSite(ProjectData).then(function (success) {
                             Popup.Loader.hide();
 
                             if (!success) {
@@ -337,7 +347,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
                             Popup.close();
                         });
                     },
-                    onCancel: function() {
+                    onCancel: function () {
                         self.$PasswordLinkSiteCreateBtn.enable();
                     }
                 }
@@ -396,6 +406,17 @@ define('package/sequry/core/bin/controls/password/link/Create', [
                 }
 
                 LinkCreateData[FormElm.get('name')] = FormElm.value;
+            }
+
+            if (this.$currentEmailReceiverValue) {
+                var emails = [];
+
+                if (LinkCreateData.email) {
+                    emails = LinkCreateData.email.split(',');
+                }
+
+                emails.push(this.$currentEmailReceiverValue);
+                LinkCreateData.email = emails.join(',');
             }
 
             return Passwords.createLink(

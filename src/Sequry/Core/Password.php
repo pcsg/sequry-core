@@ -157,7 +157,7 @@ class Password extends QUI\QDOM
 
         if (!MAC::compare($passwordDataMAC, $passwordDataMACActual)) {
             QUI\System\Log::addCritical(
-                'Password data #'.$id.' is possibly altered! MAC mismatch!'
+                'Password data #' . $id . ' is possibly altered! MAC mismatch!'
             );
 
             // @todo eigenen 401 error code
@@ -445,11 +445,11 @@ class Password extends QUI\QDOM
         }
 
         foreach ($data['ownerUserIds'] as $k => $v) {
-            $data['ownerUserIds'][$k] = 'u'.$v;
+            $data['ownerUserIds'][$k] = 'u' . $v;
         }
 
         foreach ($data['ownerGroupIds'] as $k => $v) {
-            $data['ownerGroupIds'][$k] = 'g'.$v;
+            $data['ownerGroupIds'][$k] = 'g' . $v;
         }
 
         // check if share users / groups stil exist
@@ -465,8 +465,8 @@ class Password extends QUI\QDOM
             } catch (\Exception $Exception) {
                 if ($Exception->getCode() === 404) {
                     QUI\System\Log::addNotice(
-                        'User #'.$userId.' was removed from password #'.$this->getId()
-                        .' because user could not be found.'
+                        'User #' . $userId . ' was removed from password #' . $this->getId()
+                        . ' because user could not be found.'
                     );
 
                     QUI::getMessagesHandler()->addAttention(
@@ -480,9 +480,9 @@ class Password extends QUI\QDOM
                     );
                 } else {
                     QUI\System\Log::addWarning(
-                        'User #'.$userId.' was removed from password #'.$this->getId()
-                        .' because an error occurred when the user was loaded: '
-                        .$Exception->getMessage()
+                        'User #' . $userId . ' was removed from password #' . $this->getId()
+                        . ' because an error occurred when the user was loaded: '
+                        . $Exception->getMessage()
                     );
 
                     QUI::getMessagesHandler()->addAttention(
@@ -507,8 +507,8 @@ class Password extends QUI\QDOM
             } catch (\Exception $Exception) {
                 if ($Exception->getCode() === 404) {
                     QUI\System\Log::addNotice(
-                        'Group #'.$groupId.' was removed from password #'.$this->getId()
-                        .' because group could not be found.'
+                        'Group #' . $groupId . ' was removed from password #' . $this->getId()
+                        . ' because group could not be found.'
                     );
 
                     QUI::getMessagesHandler()->addAttention(
@@ -522,9 +522,9 @@ class Password extends QUI\QDOM
                     );
                 } else {
                     QUI\System\Log::addWarning(
-                        'Group #'.$groupId.' was removed from password #'.$this->getId()
-                        .' because an error occurred when the group was loaded: '
-                        .$Exception->getMessage()
+                        'Group #' . $groupId . ' was removed from password #' . $this->getId()
+                        . ' because an error occurred when the group was loaded: '
+                        . $Exception->getMessage()
                     );
 
                     QUI::getMessagesHandler()->addAttention(
@@ -599,8 +599,8 @@ class Password extends QUI\QDOM
                         $newShareUserIds[] = $CryptoUser->getId();
                     } catch (\Exception $Exception) {
                         QUI\System\Log::addError(
-                            'Could not share with user #'.$shareActor['id'].': '
-                            .$Exception->getMessage()
+                            'Could not share with user #' . $shareActor['id'] . ': '
+                            . $Exception->getMessage()
                         );
 
                         // @todo msg an user
@@ -623,8 +623,8 @@ class Password extends QUI\QDOM
                         $newShareGroupIds[] = $Group->getId();
                     } catch (\Exception $Exception) {
                         QUI\System\Log::addError(
-                            'Could not share with group #'.$shareActor['id'].': '
-                            .$Exception->getMessage()
+                            'Could not share with group #' . $shareActor['id'] . ': '
+                            . $Exception->getMessage()
                         );
 
                         // @todo msg an user
@@ -739,14 +739,14 @@ class Password extends QUI\QDOM
         $categoriesEntry = null;
 
         if (!empty($categories)) {
-            $categoriesEntry = ','.implode(',', $categories).',';
+            $categoriesEntry = ',' . implode(',', $categories) . ',';
         }
 
         $assignedCategoryIds     = $this->getAttribute('categoryIds');
         $categoriesAssignedEntry = null;
 
         if (!empty($assignedCategoryIds)) {
-            $categoriesAssignedEntry = ','.implode(',', $assignedCategoryIds).',';
+            $categoriesAssignedEntry = ',' . implode(',', $assignedCategoryIds) . ',';
         }
 
         // owner
@@ -814,7 +814,7 @@ class Password extends QUI\QDOM
             );
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'Could not write password data to db: '.$Exception->getMessage()
+                'Could not write password data to db: ' . $Exception->getMessage()
             );
 
             // @todo abbrechen
@@ -875,7 +875,7 @@ class Password extends QUI\QDOM
             );
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'Password #'.$this->id.' delete error: '.$Exception->getMessage()
+                'Password #' . $this->id . ' delete error: ' . $Exception->getMessage()
             );
 
             throw new QUI\Exception([
@@ -1019,8 +1019,8 @@ class Password extends QUI\QDOM
                     $this->removeUserPasswordAccess($CryptoUser);
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addError(
-                        'Could not delete access data for user #'.$CryptoUser->getId().': '
-                        .$Exception->getMessage()
+                        'Could not delete access data for user #' . $CryptoUser->getId() . ': '
+                        . $Exception->getMessage()
                     );
 
                     // @todo abbrechen
@@ -1034,8 +1034,8 @@ class Password extends QUI\QDOM
                     $this->removeGroupPasswordAccess($CryptoGroup);
                 } catch (\Exception $Exception) {
                     QUI\System\Log::addError(
-                        'Could not delete access data for group #'.$CryptoGroup->getId().': '
-                        .$Exception->getMessage()
+                        'Could not delete access data for group #' . $CryptoGroup->getId() . ': '
+                        . $Exception->getMessage()
                     );
 
                     // @todo abbrechen
@@ -1320,7 +1320,7 @@ class Password extends QUI\QDOM
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::addError(
                     'Password :: setSecurityClass() -> could not set password access key for user #'
-                    .$CryptoUser->getId().': '.$Exception->getMessage()
+                    . $CryptoUser->getId() . ': ' . $Exception->getMessage()
                 );
             }
         }
@@ -1342,7 +1342,7 @@ class Password extends QUI\QDOM
             } catch (QUI\Exception $Exception) {
                 QUI\System\Log::addError(
                     'Password :: setSecurityClass() -> could not set password access key for group #'
-                    .$CryptoGroup->getId().': '.$Exception->getMessage()
+                    . $CryptoGroup->getId() . ': ' . $Exception->getMessage()
                 );
             }
         }
@@ -1691,7 +1691,7 @@ class Password extends QUI\QDOM
 
                 return $this->isOwner($PasswordUser);
                 break;
-            
+
             case self::PERMISSION_SHARE_GROUP:
                 if (!Permission::hasPermission(Permissions::PASSWORDS_SHARE_GROUP)
                     && !$OwnerActor->isAdminUser($PasswordUser)) {
@@ -1846,9 +1846,8 @@ class Password extends QUI\QDOM
             return;
         }
 
-        $this->SecurityClass->checkAuthentication();
-
         if (is_null($Key)) {
+            $this->SecurityClass->checkAuthentication();
             $PasswordKey = $this->getPasswordKey();
         } else {
             $PasswordKey = $Key;

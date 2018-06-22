@@ -150,16 +150,14 @@ define('package/sequry/core/bin/controls/utils/InputButtons', [
                 text: function () {
                     var Elm = this.getAttribute('Elm');
 
+                    console.log(Elm.nodeName);
+
                     if (Elm.nodeName === 'INPUT') {
                         return Elm.value;
                     }
 
                     if (Elm.nodeName === 'DIV') {
-                        var children = Elm.getChildren();
-
-                        if (children.length) {
-                            return children[0].innerHTML.trim();
-                        }
+                        return Elm.innerHTML.replace(/<br\s*\/?>/mg,"\n");
                     }
 
                     return Elm.innerHTML.trim();
