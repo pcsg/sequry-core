@@ -2467,7 +2467,14 @@ Viel Spaß mit Sequry!</p>
         <!-- Control: actors/GroupEdit -->
         <locale name="controls.actors.groupselect.adminselect.info" html="true">
             <de><![CDATA[Wählen Sie hier die Gruppen-Administratoren für die Gruppe <b>[groupName]</b> (#[groupId]). Gruppen-Administratoren dürfen dieser Gruppe Benutzer hinzufügen oder aus dieser entfernen. Zudem können sie den Gruppen-Zugriff für bestimmte Sicherheitsklassen für einzelne Benutzer im Nachhinein freischalten.]]></de>
->>>>>>> groupadmin
+        </locale>
+        
+        <!-- Control: auth/RegisterPopup -->
+        <locale name="controls.auth.RegisterPopup.template.info">
+            <de><![CDATA[Bitte registrieren!]]></de>
+        </locale>
+        <locale name="controls.auth.RegisterPopup.btn.register">
+            <de><![CDATA[Jetzt registrieren]]></de>
         </locale>
 
     </groups>

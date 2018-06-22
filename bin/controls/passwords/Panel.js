@@ -477,6 +477,16 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @return {Promise}
          */
         refresh: function () {
+
+
+            require([
+                'package/sequry/core/bin/controls/auth/RegisterPopup'
+            ], function(RegisterPopup) {
+                new RegisterPopup({
+                    authPluginId: 3
+                }).open();
+            });
+
             var SearchIcon = this.$SearchInput.getElement('span');
 
             if (this.$searchUsed) {
