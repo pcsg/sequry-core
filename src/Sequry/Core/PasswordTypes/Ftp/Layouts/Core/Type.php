@@ -1,13 +1,13 @@
 <?php
 
-namespace Sequry\Core\PasswordTypes\ApiKey\Layouts\Core;
+namespace Sequry\Core\PasswordTypes\Ftp\Layouts\Core;
 
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
 use Sequry\Core\PasswordTypes\IPasswordType;
 
 /**
- * Type class for SecretKey password input type
+ * Type class for Website password input type
  *
  * @package Sequry\Core\PasswordTypes
  */
@@ -63,12 +63,14 @@ class Type implements IPasswordType
         $lgPrefix = 'sequry.panel.template.';
 
         return [
-            'urlLabel'        => $L->get($lg, $lgPrefix . 'url'),
-            'urlPlaceholder'  => $L->get($lg, $lgPrefix . 'urlPlaceholder'),
-            'keyLabel'        => $L->get($lg, $lgPrefix . 'key'),
-            'keyPlaceholder'  => $L->get($lg, $lgPrefix . 'keyPlaceholder'),
-            'noteLabel'       => $L->get($lg, $lgPrefix . 'note'),
-            'notePlaceholder' => $L->get($lg, $lgPrefix . 'notePlaceholder')
+            'hostLabel'           => $L->get($lg, $lgPrefix . 'host'),
+            'hostPlaceholder'     => $L->get($lg, $lgPrefix . 'hostPlaceholder'),
+            'userLabel'           => $L->get($lg, $lgPrefix . 'user'),
+            'userPlaceholder'     => $L->get($lg, $lgPrefix . 'userPlaceholder'),
+            'passwordLabel'       => $L->get($lg, $lgPrefix . 'password'),
+            'passwordPlaceholder' => $L->get($lg, $lgPrefix . 'passwordPlaceholder'),
+            'noteLabel'           => $L->get($lg, $lgPrefix . 'note'),
+            'notePlaceholder'     => $L->get($lg, $lgPrefix . 'notePlaceholder')
         ];
     }
 
