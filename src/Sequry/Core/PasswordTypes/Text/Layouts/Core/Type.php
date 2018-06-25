@@ -1,13 +1,13 @@
 <?php
 
-namespace Sequry\Core\PasswordTypes\ApiKey\Layouts\Core;
+namespace Sequry\Core\PasswordTypes\Text\Layouts\Core;
 
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
 use Sequry\Core\PasswordTypes\IPasswordType;
 
 /**
- * Type class for ApiKey password input type
+ * Type class for Text password input type
  *
  * @package Sequry\Core\PasswordTypes
  */
@@ -63,12 +63,8 @@ class Type implements IPasswordType
         $lgPrefix = 'sequry.panel.template.';
 
         return [
-            'urlLabel'        => $L->get($lg, $lgPrefix . 'url'),
-            'urlPlaceholder'  => $L->get($lg, $lgPrefix . 'urlPlaceholder'),
-            'keyLabel'        => $L->get($lg, $lgPrefix . 'key'),
-            'keyPlaceholder'  => $L->get($lg, $lgPrefix . 'keyPlaceholder'),
-            'noteLabel'       => $L->get($lg, $lgPrefix . 'note'),
-            'notePlaceholder' => $L->get($lg, $lgPrefix . 'notePlaceholder')
+            'textLabel'           => $L->get($lg, $lgPrefix . 'text'),
+            'textPlaceholder'     => $L->get($lg, $lgPrefix . 'textPlaceholder')
         ];
     }
 

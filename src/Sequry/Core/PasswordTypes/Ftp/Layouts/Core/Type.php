@@ -7,7 +7,7 @@ use QUI;
 use Sequry\Core\PasswordTypes\IPasswordType;
 
 /**
- * Type class for Website password input type
+ * Type class for Ftp password input type
  *
  * @package Sequry\Core\PasswordTypes
  */
