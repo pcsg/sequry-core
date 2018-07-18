@@ -19,24 +19,12 @@ class Type implements IPasswordType
      * @param array $content (optional) - the content that is parsed into the template
      * @return string - HTML template
      */
-    public static function getViewHtml($content = [])
+    public static function getViewHtml($content = array())
     {
-        //todo
-        /*if (isset($content['url'])
-            && !empty($content['url'])
-        ) {
-            $url = $content['url'];
+        // at the moment there is no needed for frontend $content
+        $content = self::getTemplateTranslations();
 
-            if (mb_strpos($url, '//') !== false) {
-                $url = '<a href="' . $url . '" target="_blank">' . $url . '</a>';
-            }
-
-            $content['url'] = $url;
-        }
-
-        $content = array_merge($content, self::getTemplateTranslations());
-
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);*/
+        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
     }
 
     /**
@@ -72,20 +60,5 @@ class Type implements IPasswordType
             'noteLabel'           => $L->get($lg, $lgPrefix . 'note'),
             'notePlaceholder'     => $L->get($lg, $lgPrefix . 'notePlaceholder')
         ];
-    }
-
-    /**
-     * Get content that is copied by a copy action
-     *
-     * @param array $payload - password payload
-     * @return string - copy content
-     */
-    public static function getCopyContent($payload)
-    {
-        /*if (isset($payload['password'])) {
-            return $payload['password'];
-        }
-
-        return '';*/
     }
 }

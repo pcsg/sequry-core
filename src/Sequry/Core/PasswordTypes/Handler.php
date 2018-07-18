@@ -289,4 +289,29 @@ class Handler
 
         return $editHtml;
     }
+
+    /**
+     * Return path to view html template
+     *
+     * @param string $type - password type
+     * @param string $layout - template name
+     * @return string - edit html path
+     * @throws QUI\Exception
+     */
+    public static function getViewTemplateFrontend($type, $layout = 'Core')
+    {
+
+        $TypeClass = self::getFrontendPasswordTypeClass($type, $layout);
+
+        $editHtml = $TypeClass->getViewHtml();
+
+        /*if (!file_exists($file)) {
+            throw new QUI\Exception(array(
+                'sequry/core',
+                'exception.passwordtypes.templateutils.template.file.not.found'
+            ), 404);
+        }*/
+
+        return $editHtml;
+    }
 }
