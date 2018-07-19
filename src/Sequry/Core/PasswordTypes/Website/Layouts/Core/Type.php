@@ -21,7 +21,7 @@ class Type implements IPasswordType
      */
     public static function getViewHtml($content = array())
     {
-        // at the moment there is no needed for frontend $content
+        // $content is no needed for frontend at the moment
         $content = self::getTemplateTranslations();
 
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
