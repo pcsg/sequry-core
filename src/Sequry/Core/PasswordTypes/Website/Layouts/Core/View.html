@@ -6,7 +6,8 @@
         <input type="text" value="" name="user"
                class="password-field-row-right-input password-field-value"
                placeholder="{{userPlaceholder}}"
-               autocomplete="off"/>
+               readonly />
+        <button class="fa fa-copy password-copy"></button>
     </div>
 </label>
 
@@ -18,8 +19,10 @@
         <input type="password" value="" name="password"
                class="password-field-row-right-input password-field-value"
                placeholder="{{passwordPlaceholder}}"
-               autocomplete="new-password"/>
+               autocomplete="new-password"
+               readonly />
         <button class="fa fa-eye password-show"></button>
+        <button class="fa fa-copy password-copy"></button>
     </div>
 </label>
 
@@ -30,7 +33,10 @@
     <div class="password-field-row-right">
         <input type="text" value="" name="url"
                class="password-field-row-right-input password-field-value"
-               placeholder="{{urlPlaceholder}}"/>
+               placeholder="{{urlPlaceholder}}" readonly />
+        <button class="fa fa-share password-openurl"></button>
+        <button class="fa fa-copy password-copy"></button>
+
     </div>
 </label>
 
@@ -38,8 +44,7 @@
     <span class="password-field-row-left">
         {{noteLabel}}
     </span>
-    <div class="password-field-row-right">
-        <textarea name="note" class="password-field-row-right-textarea password-field-value"
-                  placeholder="{{notePlaceholder}}"></textarea>
+    <div class="password-field-row-right" >
+        <p class="note-container password-field-value" name="note"></p>
     </div>
 </label>
