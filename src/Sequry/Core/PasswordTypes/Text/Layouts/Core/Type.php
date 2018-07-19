@@ -21,22 +21,10 @@ class Type implements IPasswordType
      */
     public static function getViewHtml($content = [])
     {
-        //todo
-        /*if (isset($content['url'])
-            && !empty($content['url'])
-        ) {
-            $url = $content['url'];
-
-            if (mb_strpos($url, '//') !== false) {
-                $url = '<a href="' . $url . '" target="_blank">' . $url . '</a>';
-            }
-
-            $content['url'] = $url;
-        }
-
+        // $content is no needed for frontend at the moment
         $content = array_merge($content, self::getTemplateTranslations());
 
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);*/
+        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
     }
 
     /**
