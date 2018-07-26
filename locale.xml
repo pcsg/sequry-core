@@ -718,23 +718,6 @@
             <de><![CDATA[Die Template-Datei wurde nicht gefunden.]]></de>
         </locale>
 
-        <!-- ftp -->
-        <locale name="passwordtypes.ftp.label.title">
-            <de><![CDATA[FTP-Server]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.host">
-            <de><![CDATA[Host]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.url">
-            <de><![CDATA[URL]]></de>
-        </locale>
-
         <!-- Handler\Categories -->
         <locale name="exception.handler.categories.category.not.found">
             <de><![CDATA[Die öffentliche Passwort-Kategorie #[id] wurde nicht gefunden.]]></de>
@@ -1203,6 +1186,23 @@ Viel Spaß mit Sequry!</p>
         </locale>
         <locale name="passwordtypes.apikey.label.key">
             <de><![CDATA[Schlüssel]]></de>
+        </locale>
+
+        <!-- ftp -->
+        <locale name="passwordtypes.ftp.label.title">
+            <de><![CDATA[FTP-Server]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.host">
+            <de><![CDATA[Host]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.url">
+            <de><![CDATA[URL]]></de>
         </locale>
 
         <!-- credentials -->
