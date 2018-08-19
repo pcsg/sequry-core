@@ -1,0 +1,37 @@
+<label class="password-field-row">
+    <span class="password-field-row-left" title="{{urlLabel}}">
+        {{urlLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <input type="text" value="" name="url"
+               class="password-field-row-right-input password-field-value"
+               placeholder="{{urlPlaceholder}}"
+               readonly />
+        <button class="fa fa-share password-openurl"></button>
+        <button class="fa fa-copy password-copy"></button>
+    </div>
+</label>
+
+<label class="password-field-row">
+    <span class="password-field-row-left">
+        {{keyLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <input type="password" value="" name="key"
+               class="password-field-row-right-input password-field-value"
+               placeholder="{{keyPlaceholder}}"
+               autocomplete="new-password"
+               readonly />
+        <button class="fa fa-eye password-show"></button>
+        <button class="fa fa-copy password-copy"></button>
+    </div>
+</label>
+
+<label class="password-field-row password-field-row-alignTop password-field-row-note">
+    <span class="password-field-row-left">
+        {{noteLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <p class="note-container password-field-value" name="note"></p>
+    </div>
+</label>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sequry\Core\PasswordTypes\Website;
+namespace Sequry\Core\PasswordTypes\Website\Layouts\Core;
 
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
@@ -21,19 +21,8 @@ class Type implements IPasswordType
      */
     public static function getViewHtml($content = array())
     {
-        if (isset($content['url'])
-            && !empty($content['url'])
-        ) {
-            $url = $content['url'];
-
-            if (mb_strpos($url, '//') !== false) {
-                $url = '<a href="' . $url . '" target="_blank">' . $url . '</a>';
-            }
-
-            $content['url'] = $url;
-        }
-
-        $content = array_merge($content, self::getTemplateTranslations());
+        // $content is no needed for frontend at the moment
+        $content = self::getTemplateTranslations();
 
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
     }
@@ -46,6 +35,7 @@ class Type implements IPasswordType
     public static function getEditHtml()
     {
         $content = self::getTemplateTranslations();
+
         return TemplateUtils::parseTemplate(dirname(__FILE__) . '/Edit.html', $content);
     }
 
@@ -57,15 +47,18 @@ class Type implements IPasswordType
     protected static function getTemplateTranslations()
     {
         $L        = QUI::getLocale();
-        $lg       = 'sequry/core';
-        $lgPrefix = 'passwordtypes.website.label.';
+        $lg       = 'sequry/template';
+        $lgPrefix = 'sequry.panel.template.';
 
-        return array(
-            'labelTitle'    => $L->get($lg, $lgPrefix . 'title'),
-            'labelUser'     => $L->get($lg, $lgPrefix . 'user'),
-            'labelPassword' => $L->get($lg, $lgPrefix . 'password'),
-            'labelUrl'      => $L->get($lg, $lgPrefix . 'url'),
-            'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
-        );
+        return [
+            'userLabel'           => $L->get($lg, $lgPrefix . 'user'),
+            'userPlaceholder'     => $L->get($lg, $lgPrefix . 'userPlaceholder'),
+            'passwordLabel'       => $L->get($lg, $lgPrefix . 'password'),
+            'passwordPlaceholder' => $L->get($lg, $lgPrefix . 'passwordPlaceholder'),
+            'urlLabel'            => $L->get($lg, $lgPrefix . 'url'),
+            'urlPlaceholder'      => $L->get($lg, $lgPrefix . 'urlPlaceholder'),
+            'noteLabel'           => $L->get($lg, $lgPrefix . 'note'),
+            'notePlaceholder'     => $L->get($lg, $lgPrefix . 'notePlaceholder')
+        ];
     }
 }

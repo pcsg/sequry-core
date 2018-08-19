@@ -1,0 +1,60 @@
+<label class="password-field-row">
+    <span class="password-field-row-left">
+        {{hostLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <input type="text" value="" name="host"
+               class="password-field-row-right-input password-field-value"
+               placeholder="{{hostPlaceholder}}"
+               readonly />
+        <button class="fa fa-copy password-copy"></button>
+    </div>
+</label>
+
+<label class="password-field-row">
+    <span class="password-field-row-left">
+        {{userLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <input type="text" value="" name="user"
+               class="password-field-row-right-input password-field-value"
+               placeholder="{{userPlaceholder}}"
+               autocomplete="off"
+               readonly />
+        <button class="fa fa-copy password-copy"></button>
+    </div>
+</label>
+
+<label class="password-field-row">
+    <span class="password-field-row-left">
+        {{passwordLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <input type="password" value="" name="password"
+               class="password-field-row-right-input password-field-value"
+               placeholder="{{passwordPlaceholder}}"
+               autocomplete="new-password"
+               readonly />
+        <button class="fa fa-eye password-show"></button>
+        <button class="fa fa-copy password-copy"></button>
+    </div>
+</label>
+
+<label class="password-field-row password-field-row-alignTop password-field-row-note">
+    <span class="password-field-row-left">
+        {{keyLabel}}
+    </span>
+    <div class="password-field-row-right password-field-textToCopy">
+        <p class="password-field-value" name="key"></p>
+        <button class="fa fa-copy password-copy"></button>
+    </div>
+</label>
+
+<label class="password-field-row password-field-row-alignTop password-field-row-note">
+    <span class="password-field-row-left">
+        {{noteLabel}}
+    </span>
+    <div class="password-field-row-right">
+        <p class="note-container password-field-value" name="note"></p>
+    </div>
+</label>

@@ -718,91 +718,6 @@
             <de><![CDATA[Die Template-Datei wurde nicht gefunden.]]></de>
         </locale>
 
-        <!-- ftp -->
-        <locale name="passwordtypes.ftp.label.title">
-            <de><![CDATA[FTP-Server]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.host">
-            <de><![CDATA[Host]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.url">
-            <de><![CDATA[URL]]></de>
-        </locale>
-
-        <!-- website -->
-        <locale name="passwordtypes.website.label.title">
-            <de><![CDATA[Website-Login]]></de>
-        </locale>
-        <locale name="passwordtypes.website.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.website.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="passwordtypes.website.label.url">
-            <de><![CDATA[URL]]></de>
-        </locale>
-
-        <!-- secretkey -->
-        <locale name="passwordtypes.secretkey.label.title">
-            <de><![CDATA[SSH-Schlüssel]]></de>
-        </locale>
-        <locale name="passwordtypes.credentials.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-
-        <locale name="passwordtypes.secretkey.label.host">
-            <de><![CDATA[Server]]></de>
-        </locale>
-        <locale name="passwordtypes.secretkey.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.secretkey.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="passwordtypes.secretkey.label.key">
-            <de><![CDATA[Schlüssel]]></de>
-        </locale>
-
-        <!-- apikey -->
-        <locale name="passwordtypes.apikey.label.title">
-            <de><![CDATA[API-Schlüssel]]></de>
-        </locale>
-        <locale name="passwordtypes.apikey.label.url">
-            <de><![CDATA[URL]]></de>
-        </locale>
-        <locale name="passwordtypes.apikey.label.key">
-            <de><![CDATA[Schlüssel]]></de>
-        </locale>
-
-        <!-- credentials -->
-        <locale name="passwordtypes.credentials.label.title">
-            <de><![CDATA[Zugangsdaten]]></de>
-        </locale>
-        <locale name="passwordtypes.credentials.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.credentials.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-
-        <!-- text -->
-        <locale name="passwordtypes.Text.title">
-            <de><![CDATA[Textfeld]]></de>
-        </locale>
-        <locale name="passwordtypes.text.label.title">
-            <de><![CDATA[Textfeld]]></de>
-        </locale>
-        <locale name="passwordtypes.text.label.text">
-            <de><![CDATA[Geheimtext]]></de>
-        </locale>
-
         <!-- Handler\Categories -->
         <locale name="exception.handler.categories.category.not.found">
             <de><![CDATA[Die öffentliche Passwort-Kategorie #[id] wurde nicht gefunden.]]></de>
@@ -1225,6 +1140,91 @@ Viel Spaß mit Sequry!</p>
         </locale>
         <locale name="cron.delete_passwordlinks.description">
             <de><![CDATA[Deaktiviert alle Passwort-Links, deren Ablaufdatum (sofern eingestellt) erreicht ist]]></de>
+        </locale>
+
+        <!-- website -->
+        <locale name="passwordtypes.website.label.title">
+            <de><![CDATA[Website-Login]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+
+        <!-- secretkey -->
+        <locale name="passwordtypes.secretkey.label.title">
+            <de><![CDATA[SSH-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+
+        <locale name="passwordtypes.secretkey.label.host">
+            <de><![CDATA[Server]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.key">
+            <de><![CDATA[Schlüssel]]></de>
+        </locale>
+
+        <!-- apikey -->
+        <locale name="passwordtypes.apikey.label.title">
+            <de><![CDATA[API-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.apikey.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+        <locale name="passwordtypes.apikey.label.key">
+            <de><![CDATA[Schlüssel]]></de>
+        </locale>
+
+        <!-- ftp -->
+        <locale name="passwordtypes.ftp.label.title">
+            <de><![CDATA[FTP-Server]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.host">
+            <de><![CDATA[Host]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+
+        <!-- credentials -->
+        <locale name="passwordtypes.credentials.label.title">
+            <de><![CDATA[Zugangsdaten]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+
+        <!-- text -->
+        <locale name="passwordtypes.Text.title">
+            <de><![CDATA[Textfeld]]></de>
+        </locale>
+        <locale name="passwordtypes.text.label.title">
+            <de><![CDATA[Textfeld]]></de>
+        </locale>
+        <locale name="passwordtypes.text.label.text">
+            <de><![CDATA[Geheimtext]]></de>
         </locale>
     </groups>
 
@@ -2467,7 +2467,14 @@ Viel Spaß mit Sequry!</p>
         <!-- Control: actors/GroupEdit -->
         <locale name="controls.actors.groupselect.adminselect.info" html="true">
             <de><![CDATA[Wählen Sie hier die Gruppen-Administratoren für die Gruppe <b>[groupName]</b> (#[groupId]). Gruppen-Administratoren dürfen dieser Gruppe Benutzer hinzufügen oder aus dieser entfernen. Zudem können sie den Gruppen-Zugriff für bestimmte Sicherheitsklassen für einzelne Benutzer im Nachhinein freischalten.]]></de>
->>>>>>> groupadmin
+        </locale>
+        
+        <!-- Control: auth/RegisterPopup -->
+        <locale name="controls.auth.RegisterPopup.template.info">
+            <de><![CDATA[Bitte registrieren!]]></de>
+        </locale>
+        <locale name="controls.auth.RegisterPopup.btn.register">
+            <de><![CDATA[Jetzt registrieren]]></de>
         </locale>
 
     </groups>

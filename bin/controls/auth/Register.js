@@ -4,14 +4,6 @@
  * @module package/sequry/core/bin/controls/auth/Register
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Locale
- * @require Mustache
- * @require package/sequry/core/bin/controls/securityclasses/Select
- * @require text!package/sequry/core/bin/controls/auth/Register.html
- * @require css!package/sequry/core/bin/controls/auth/Register.css
- *
  * @event onFinish
  */
 define('package/sequry/core/bin/controls/auth/Register', [
@@ -41,7 +33,7 @@ define('package/sequry/core/bin/controls/auth/Register', [
         ],
 
         options: {
-            'authPluginId': false // id of auth plugin the registration is for
+            authPluginId: false // id of auth plugin the registration is for
         },
 
         initialize: function (options) {
@@ -85,6 +77,8 @@ define('package/sequry/core/bin/controls/auth/Register', [
                         AuthPluginControlElm
                     );
 
+                    self.$AuthPluginControl.focus();
+
                     self.fireEvent('finish');
                 });
             });
@@ -107,7 +101,7 @@ define('package/sequry/core/bin/controls/auth/Register', [
         submit: function () {
             return Authentication.registerUser(
                 this.getAttribute('authPluginId'),
-                this.$AuthPluginControl.getRegistrationData()
+                this.$AuthPluginControl.getAuthData()
             );
         }
     });

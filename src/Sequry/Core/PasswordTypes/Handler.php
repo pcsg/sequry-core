@@ -242,4 +242,76 @@ class Handler
         $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
         return new $class();
     }
+
+    /**
+     * Get class of frontend password type
+     *
+     * @param string $type - password type (website, ftp, etc.)
+     * @param string $layout - frontend template name
+     * @return IPasswordType
+     */
+    public static function getFrontendPasswordTypeClass($type, $layout)
+    {
+        $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Layouts\\' . $layout . '\\Type';
+
+        if (!class_exists($class)) {
+            throw new QUI\Exception(array(
+                'sequry/core',
+                'exception.passwordtypes.templateutils.template.file.not.found'
+            ), 404);
+        }
+
+        return new $class();
+
+    }
+
+    /**
+     * Return path to edit html template
+     *
+     * @param string $type - password type
+     * @param string $layout - template name
+     * @return string - edit html path
+     * @throws QUI\Exception
+     */
+    public static function getEditTemplateFrontend($type, $layout = 'Core')
+    {
+
+        $TypeClass = self::getFrontendPasswordTypeClass($type, $layout);
+
+        $editHtml = $TypeClass->getEditHtml();
+
+        /*if (!file_exists($file)) {
+            throw new QUI\Exception(array(
+                'sequry/core',
+                'exception.passwordtypes.templateutils.template.file.not.found'
+            ), 404);
+        }*/
+
+        return $editHtml;
+    }
+
+    /**
+     * Return path to view html template
+     *
+     * @param string $type - password type
+     * @param string $layout - template name
+     * @return string - edit html path
+     * @throws QUI\Exception
+     */
+    public static function getViewTemplateFrontend($type, $layout = 'Core')
+    {
+
+        $TypeClass = self::getFrontendPasswordTypeClass($type, $layout);
+
+        $editHtml = $TypeClass->getViewHtml();
+
+        /*if (!file_exists($file)) {
+            throw new QUI\Exception(array(
+                'sequry/core',
+                'exception.passwordtypes.templateutils.template.file.not.found'
+            ), 404);
+        }*/
+
+        return $editHtml;
+    }
 }
