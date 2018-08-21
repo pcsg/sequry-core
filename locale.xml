@@ -1562,6 +1562,13 @@ Viel Spaß mit Sequry!</p>
         <locale name="auth.change.btn.recovery">
             <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
+        <locale name="controls.auth.Change.old_auth_data_empty">
+            <de><![CDATA[Bitte geben Sie Ihre aktuellen Zugangsdaten ein, um fortzufahren.]]></de>
+        </locale>
+        <locale name="controls.auth.Change.new_auth_data_empty">
+            <de><![CDATA[Bitte geben Sie Ihre neuen Zugangsdaten ein, um fortzufahren.]]></de>
+        </locale>
+        
         <locale name="auth.recovery.information">
             <de><![CDATA[Sie können Ihre aktuellen Zugangsdaten mit dem Wiederherstellungscode, der bei Registrierung mit diesem Authentifizierungs-Faktor angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Zugangsdaten dafür leer.]]></de>
         </locale>

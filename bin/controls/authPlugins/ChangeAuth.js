@@ -64,6 +64,16 @@ define('package/sequry/core/bin/controls/authPlugins/ChangeAuth', [
         },
 
         /**
+         * Checks if the new authentication information input is correct
+         *
+         * @return {boolean} - Correctness of information
+         */
+        checkAuthData: function() {
+            // to be implemented by class
+            return true;
+        },
+
+        /**
          * Return authentication information
          *
          * @return {string}
