@@ -123,6 +123,7 @@ define('package/sequry/core/bin/controls/password/link/Create', [
 
             ActiveValidDate.addEvent('change', function () {
                 ValidDateSelect.disabled = !ValidDateSelect.disabled;
+                ValidDateInput.disabled  = ValidDateSelect.disabled;
             });
 
             var ActiveMaxCalls = this.$Elm.getElement(
@@ -221,10 +222,10 @@ define('package/sequry/core/bin/controls/password/link/Create', [
             }).imports(this.$Elm.getElement('.pcsg-gpm-password-linkcreate-emails'));
 
             this.$EmailReceiverSelect.getElm().getElement('input.qui-elements-select-list-search').addEvents({
-                keyup: function(event) {
+                keyup: function (event) {
                     self.$currentEmailReceiverValue = event.target.value;
                 },
-                click: function() {
+                click: function () {
                     self.$currentEmailReceiverValue = '';
                 }
             });
@@ -294,7 +295,12 @@ define('package/sequry/core/bin/controls/password/link/Create', [
                     onClick: function (Btn) {
                         Btn.disable();
 
-                        self.submit.then(function () {
+                        self.submit().then(function (success) {
+                            if (!success) {
+                                Btn.enabled();
+                                return;
+                            }
+
                             self.fireEvent('submit', [self]);
                         }, function () {
                             Btn.enable();

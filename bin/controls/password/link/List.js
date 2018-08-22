@@ -407,7 +407,12 @@ define('package/sequry/core/bin/controls/password/link/List', [
                     onClick: function () {
                         Popup.Loader.show();
 
-                        LinkCreateControl.submit().then(function () {
+                        LinkCreateControl.submit().then(function (success) {
+                            if (!success) {
+                                Popup.Loader.hide();
+                                return;
+                            }
+
                             Popup.close();
                             self.refresh();
                         }, function () {
