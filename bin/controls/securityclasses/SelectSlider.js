@@ -4,17 +4,6 @@
  * @module package/sequry/core/bin/controls/securityclasses/SelectSlider
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/auth/Authenticate
- * @require package/sequry/core/bin/controls/securityclasses/Select
- * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
- * @require text!package/sequry/core/bin/controls/securityclasses/SelectSlider.html
- * @require css!package/sequry/core/bin/controls/securityclasses/SelectSlider.css
- *
  * @event onLoaded [this] - fires when the control has finished loading
  * @event onChange [securityClassId, this] - fires if the user selects a security class
  */
@@ -23,7 +12,7 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
     'qui/controls/Control',
     'qui/controls/loader/Loader',
 
-    'html5tooltips',
+    'package/quiqqer/tooltips/bin/html5tooltips',
     URL_OPT_DIR + 'bin/nouislider/distribute/nouislider.js',
 
     'package/sequry/core/bin/Authentication',
