@@ -17,7 +17,8 @@ function send400()
 if (empty($_REQUEST['id'])
     || empty($_REQUEST['hash'])
 ) {
-    send400();
+    //todo @peat ist das nötig? Es gibt auch template für error.
+//    send400();
 }
 
 $error              = false;
@@ -55,13 +56,15 @@ try {
             }
         }
 
-        $TypeClass   = PasswordTypesHandler::getPasswordTypeClass($Password->getDataType());
-        $payloadHtml = $TypeClass->getViewHtml($data['payload']);
+//        $TypeClass   = PasswordTypesHandler::getPasswordTypeClass($Password->getDataType());
+//        $TypeClass   = PasswordTypesHandler::getFrontendPasswordTypeClass($Password->getDataType(), 'Core');
+//        $payloadHtml = $TypeClass->getViewHtml($data['payload']);
 
         $Engine->assign(array(
+            'type'        => $Password->getDataType(),
+            'payLoadData' => json_encode($data['payload']),
             'title'       => $PasswordLink->getContentTitle(),
-            'message'     => $PasswordLink->getContentMessage(),
-            'payloadHtml' => $payloadHtml
+            'message'     => $PasswordLink->getContentMessage()
         ));
     }
 } catch (InvalidKeyException $Exception) {
