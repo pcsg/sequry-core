@@ -76,9 +76,9 @@ class Halite3 implements ISymmetricCrypto
     {
         try {
             $HiddenCipherText = new ParagonieHiddenString($cipherText);
-            $HiddenKey        = new ParagonieHiddenString($Key->getValue());
+            $HiddenKey        = new ParagonieHiddenString($Key->getValue()->getString());
             $SecretKey        = new EncryptionKey($HiddenKey);
-            $HiddenPlainText  = Crypto::decrypt($HiddenCipherText, $SecretKey, true);
+            $HiddenPlainText  = Crypto::decrypt($cipherText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 self::class . ' :: Ciphertext decryption failed: '

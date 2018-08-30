@@ -7,7 +7,7 @@ use ParagonIE\Halite\HiddenString as ParagonieHiddenString;
 use Sequry\Core\Security\Keys\Key;
 use QUI;
 use ParagonIE\Halite\KeyFactory;
-use ParagonIE\Halite\Util;
+use ParagonIE\ConstantTime\Binary;
 use Sequry\Core\Security\HiddenString;
 
 /**
@@ -29,8 +29,8 @@ class Halite3 implements IKDF
             $salt = \Sodium\randombytes_buf(\Sodium\CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
-            if (Util::safeStrlen($salt) > \Sodium\CRYPTO_PWHASH_SALTBYTES) {
-                $salt = Util::safeSubstr($salt, 0, \Sodium\CRYPTO_PWHASH_SALTBYTES);
+            if (Binary::safeStrlen($salt) > \Sodium\CRYPTO_PWHASH_SALTBYTES) {
+                $salt = Binary::safeSubstr($salt, 0, \Sodium\CRYPTO_PWHASH_SALTBYTES);
             }
         }
 

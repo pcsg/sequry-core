@@ -55,10 +55,26 @@ class Halite3 implements IAsymmetricCrypto
     public static function decrypt($cipherText, KeyPair $KeyPair)
     {
         try {
+
+            \QUI\System\Log::writeRecursive(0);
+
             $HiddenCypherText = new ParagonieHiddenString($cipherText);
+
+            \QUI\System\Log::writeRecursive($KeyPair->getPrivateKey()/*->getValue()->getString()*/);
+            \QUI\System\Log::writeRecursive(1);
+
             $HiddenPrivateKey = new ParagonieHiddenString($KeyPair->getPrivateKey()->getValue()->getString());
+
+            \QUI\System\Log::writeRecursive(2);
+
             $PrivateKey       = new EncryptionSecretKey($HiddenPrivateKey);
+
+
+            \QUI\System\Log::writeRecursive(111);
+
             $HiddenPlainText  = Crypto::unseal($HiddenCypherText, $PrivateKey, true);
+
+            \QUI\System\Log::writeRecursive(222);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 self::class . ' :: Ciphertext decryption with private key failed: '
