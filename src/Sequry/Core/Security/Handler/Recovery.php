@@ -163,7 +163,7 @@ class Recovery
      *
      * @return void
      *
-     * @throws QUI\Exception
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function recoverEntry(
         $AuthPlugin,
@@ -185,7 +185,7 @@ class Recovery
         ));
 
         if (empty($result)) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.recovery.recover.entry.not.found',
                 array(
@@ -196,6 +196,13 @@ class Recovery
         }
 
         $data = current($result);
+
+        if (empty($data['recoveryToken'])) {
+            throw new Exception(array(
+                'sequry/core',
+                'exception.recovery.recover.no_token_generated'
+            ));
+        }
 
         // check MAC
         $MACExpected = $data['MAC'];
@@ -217,7 +224,7 @@ class Recovery
                 'Recovery :: recoverSecret() #' . $data['id'] . ' possibly altered. MAC mismatch!'
             );
 
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.recovery.recover.entry.mac.mismatch'
             ));
@@ -230,14 +237,14 @@ class Recovery
                 Utils::getSystemPasswordAuthKey()
             );
         } catch (\Exception $Exception) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.recovery.wrong_token'
             ));
         }
 
         if ($recoveryToken->getString() !== $realToken->getString()) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.recovery.wrong_token'
             ));
@@ -249,7 +256,7 @@ class Recovery
         try {
             $recoveredSecret = SymmetricCrypto::decrypt($data['recoveryData'], $RecoveryKey);
         } catch (\Exception $Exception) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.recovery.wrong_code'
             ));

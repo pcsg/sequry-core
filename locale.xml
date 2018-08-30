@@ -692,6 +692,9 @@
         <locale name="exception.recovery.mail_send_error">
             <de><![CDATA[Beim Versenden des Wiederherstellungs-Tokens ist ein Fehler aufgetreten. Bitte wiederholen Sie den Vorgang oder wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.recovery.recover.no_token_generated">
+            <de><![CDATA[Bitte generieren Sie zuerst ein Wiederherstellungs-Token.]]></de>
+        </locale>
 
         <!-- PasswordTypes -->
         <locale name="passwordtypes.Ftp.title">
