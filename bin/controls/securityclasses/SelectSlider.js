@@ -12,7 +12,7 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
     'qui/controls/Control',
     'qui/controls/loader/Loader',
 
-    'html5tooltips',
+    'package/bin/html5tooltipsjs/html5tooltips',
     URL_OPT_DIR + 'bin/nouislider/distribute/nouislider.js',
 
     'package/sequry/core/bin/Authentication',
