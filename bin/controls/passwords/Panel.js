@@ -1135,8 +1135,8 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @param {number|false} catId - ID or false if no category
          */
         setSearchCategory: function (catId) {
-            this.$SearchParams.categoryIds       = catId ? [catId] : false;
-            this.$SearchParams.categoryIdPrivate = false;
+            this.$SearchParams.categoryIds        = catId ? [catId] : false;
+            this.$SearchParams.categoryIdsPrivate = false;
         },
 
         /**
@@ -1145,8 +1145,8 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @param {number|false} catId - ID or false if no category
          */
         setSearchCategoryPrivate: function (catId) {
-            this.$SearchParams.categoryIdPrivate = catId;
-            this.$SearchParams.categoryIds       = false;
+            this.$SearchParams.categoryIdsPrivate = catId ? [catId] : false;
+            this.$SearchParams.categoryIds        = false;
         },
 
         /**

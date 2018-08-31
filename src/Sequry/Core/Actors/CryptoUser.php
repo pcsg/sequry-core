@@ -792,11 +792,11 @@ class CryptoUser extends QUI\Users\User
         $gridParams  = $Grid->parseDBParams($searchParams);
 
         // private category filter
-        if (isset($searchParams['categoryIdPrivate']) &&
-            !empty($searchParams['categoryIdPrivate'])
+        if (isset($searchParams['categoryIdsPrivate']) &&
+            !empty($searchParams['categoryIdsPrivate'])
         ) {
-            $categoryPasswordIds = $this->getPrivatePasswordIdsByCategory(
-                $searchParams['categoryIdPrivate']
+            $categoryPasswordIds = $this->getPrivatePasswordIdsByCategoies(
+                $searchParams['categoryIdsPrivate']
             );
 
             $passwordIds = array_intersect($passwordIds, $categoryPasswordIds);
@@ -1076,16 +1076,21 @@ class CryptoUser extends QUI\Users\User
 
             $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
 
-            switch ((int)$row['ownerType']) {
-                case Password::OWNER_TYPE_USER:
-                    $row['canLink']   = $isOwner;
-                    $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getName();
-                    break;
+            try {
+                switch ((int)$row['ownerType']) {
+                    case Password::OWNER_TYPE_USER:
+                        $row['canLink']   = $isOwner;
+                        $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getName();
+                        break;
 
-                case Password::OWNER_TYPE_GROUP:
-                    $row['canLink']   = $isOwner && $canLinkPassword;
-                    $row['ownerName'] = QUI::getGroups()->get($row['ownerId'])->getName();
-                    break;
+                    case Password::OWNER_TYPE_GROUP:
+                        $row['canLink']   = $isOwner && $canLinkPassword;
+                        $row['ownerName'] = QUI::getGroups()->get($row['ownerId'])->getName();
+                        break;
+                }
+            } catch (\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+                continue;
             }
 
             $passwords[] = $row;
@@ -1190,27 +1195,39 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
-     * Get IDs of all passwords belonging to a private password category
+     * Get IDs of all passwords in the given (private!) category IDs
      *
-     * @param $categoryId
+     * @param int[] $categoryIds
      * @param QUI\Users\User $User (optional) - category owner (if omitted = session user)
      * @return array
      */
-    public function getPrivatePasswordIdsByCategory($categoryId, $User = null)
+    public function getPrivatePasswordIdsByCategoies($categoryIds, $User = null)
     {
-        $result = QUI::getDataBase()->fetch([
-            'select' => [
-                'dataId'
-            ],
-            'from'   => Tables::usersToPasswordMeta(),
-            'where'  => [
-                'userId'     => $this->id,
-                'categories' => [
-                    'type'  => '%LIKE%',
-                    'value' => ','.(int)$categoryId.','
-                ]
-            ]
-        ]);
+        $PDO = QUI::getDataBase()->getPDO();
+
+        $sql     = "SELECT `dataId` FROM ".Tables::usersToPasswordMeta();
+        $where   = [
+            '`userId` = '.$this->id
+        ];
+        $whereOr = [];
+
+        foreach ($categoryIds as $categoryId) {
+            $whereOr[] = '`categories` LIKE "%,'.(int)$categoryId.',%"';
+        }
+
+        $where[] = '('.implode(" OR ", $whereOr).')';
+        $sql     .= " WHERE ".implode(" AND ", $where);
+
+        $Stmt = $PDO->prepare($sql);
+
+        try {
+            $Stmt->execute();
+            $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError('CryptoUser getPasswords() Database error :: '.$Exception->getMessage());
+
+            return [];
+        }
 
         $passwordIds = [];
 
