@@ -2,22 +2,23 @@
 
 namespace Sequry\Core\PasswordTypes\Ftp;
 
+use Sequry\Core\PasswordTypes\AbstractPasswordType;
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
-use Sequry\Core\PasswordTypes\IPasswordType;
 
 /**
  * Type class for Ftp password input type
  *
  * @package Sequry\Core\PasswordTypes
  */
-class Type implements IPasswordType
+class Type extends AbstractPasswordType
 {
     /**
      * Get view template
      *
      * @param array $content (optional) - the content that is parsed into the template
      * @return string - HTML template
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function getViewHtml($content = array())
     {
@@ -43,14 +44,13 @@ class Type implements IPasswordType
     }
 
     /**
-     * Get edit template (just HTML)
+     * Get password type icon (Fontawesome)
      *
-     * @return string - HTML template
+     * @return string - Full fontawesome icon class name
      */
-    public static function getEditHtml()
+    public static function getIcon()
     {
-        $content = self::getTemplateTranslations();
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/Edit.html', $content);
+        return 'fa fa-server';
     }
 
     /**

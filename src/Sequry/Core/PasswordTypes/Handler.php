@@ -41,21 +41,21 @@ class Handler
         foreach ($files as $fileName) {
             $file = $dir . '/' . $fileName;
 
-            // skip certain types, because they are no longer available
-            // but have to be kept for legacy reasons
-//            switch ($fileName) {
-//                case 'Credentials': // removed: 2017-21-02
-//                    continue 2;
-//                    break;
-//            }
-
             if (is_dir($file)) {
+                try {
+                    $TypeClass = self::getPasswordTypeClass($fileName);
+                } catch (\Exception $Exception) {
+                    QUI\System\Log::writeException($Exception);
+                    continue;
+                }
+
                 $types[] = array(
                     'name'  => $fileName,
                     'title' => QUI::getLocale()->get(
                         'sequry/core',
                         'passwordtypes.' . $fileName . '.title'
-                    )
+                    ),
+                    'icon' => $TypeClass::getIcon()
                 );
             }
         }
@@ -131,6 +131,8 @@ class Handler
      * @param string $type - password type
      * @param array $viewData - password view data
      * @return string - parsed view html template
+     * @throws \Sequry\Core\Exception\Exception
+     * @throws \QUI\Exception
      */
     public static function getViewHtml($type, $viewData)
     {
@@ -223,13 +225,18 @@ class Handler
     /**
      * Get class of password type
      *
-     * @param $type
-     * @return IPasswordType
+     * @param string $type
+     * @param string $layout (optional) - Layout of the given type
+     * @return PasswordTypeInterface
      * @throws \Sequry\Core\Exception\Exception
      */
-    public static function getPasswordTypeClass($type)
+    public static function getPasswordTypeClass($type, $layout = null)
     {
-        $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
+        if (is_null($layout)) {
+            $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
+        } else {
+            $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type\\Layouts\\' . $layout;
+        }
 
         if (!class_exists($class)) {
             throw new Exception(array(
@@ -239,78 +246,33 @@ class Handler
         }
 
         return new $class();
-    }
-
-    /**
-     * Get class of frontend password type
-     *
-     * @param string $type - password type (website, ftp, etc.)
-     * @param string $layout - frontend template name
-     * @return IPasswordType
-     * @throws \Sequry\Core\Exception\Exception
-     */
-    public static function getFrontendPasswordTypeClass($type, $layout)
-    {
-        $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Layouts\\' . $layout . '\\Type';
-
-        if (!class_exists($class)) {
-            throw new Exception(array(
-                'sequry/core',
-                'exception.passwordtypes.templateutils.template.file.not.found'
-            ), 404);
-        }
-
-        return new $class();
-
     }
 
     /**
      * Return path to edit html template
      *
      * @param string $type - password type
-     * @param string $layout - template name
+     * @param string $layout (optional) - template name [default: "Core"]
      * @return string - edit html path
      * @throws QUI\Exception
      */
     public static function getEditTemplateFrontend($type, $layout = 'Core')
     {
-
-        $TypeClass = self::getFrontendPasswordTypeClass($type, $layout);
-
-        $editHtml = $TypeClass->getEditHtml();
-
-        /*if (!file_exists($file)) {
-            throw new QUI\Exception(array(
-                'sequry/core',
-                'exception.passwordtypes.templateutils.template.file.not.found'
-            ), 404);
-        }*/
-
-        return $editHtml;
+        $TypeClass = self::getPasswordTypeClass($type, $layout);
+        return $TypeClass->getEditHtml();
     }
 
     /**
      * Return path to view html template
      *
      * @param string $type - password type
-     * @param string $layout - template name
+     * @param string $layout (optional) - template name [default: "Core"]
      * @return string - edit html path
      * @throws QUI\Exception
      */
     public static function getViewTemplateFrontend($type, $layout = 'Core')
     {
-
-        $TypeClass = self::getFrontendPasswordTypeClass($type, $layout);
-
-        $editHtml = $TypeClass->getViewHtml();
-
-        /*if (!file_exists($file)) {
-            throw new QUI\Exception(array(
-                'sequry/core',
-                'exception.passwordtypes.templateutils.template.file.not.found'
-            ), 404);
-        }*/
-
-        return $editHtml;
+        $TypeClass = self::getPasswordTypeClass($type, $layout);
+        return $TypeClass->getViewHtml();
     }
 }

@@ -2,36 +2,22 @@
 
 namespace Sequry\Core\PasswordTypes\Text;
 
-use Sequry\Core\PasswordTypes\TemplateUtils;
+use Sequry\Core\PasswordTypes\AbstractPasswordType;
 use QUI;
-use Sequry\Core\PasswordTypes\IPasswordType;
 
 /**
  * Type class for Text password input type
  */
-class Type implements IPasswordType
+class Type extends AbstractPasswordType
 {
     /**
-     * Get view template
+     * Get password type icon (Fontawesome)
      *
-     * @param array $content (optional) - the content that is parsed into the template
-     * @return string - HTML template
+     * @return string - Full fontawesome icon class name
      */
-    public static function getViewHtml($content = array())
+    public static function getIcon()
     {
-        $content = array_merge($content, self::getTemplateTranslations());
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
-    }
-
-    /**
-     * Get edit template (just HTML)
-     *
-     * @return string - HTML template
-     */
-    public static function getEditHtml()
-    {
-        $content = self::getTemplateTranslations();
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/Edit.html', $content);
+        return 'fa fa-file-text-o';
     }
 
     /**

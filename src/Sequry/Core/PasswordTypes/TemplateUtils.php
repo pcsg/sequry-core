@@ -4,6 +4,7 @@ namespace Sequry\Core\PasswordTypes;
 
 use QUI;
 use QUI\Utils\Security\Orthos;
+use Sequry\Core\Exception\Exception;
 
 /**
  * Class TemplateUtils
@@ -22,12 +23,12 @@ class TemplateUtils
      * @param bool $nl2br (optional) - apply nl2br to placeholder values
      * @return string - template HTML with replaced values
      *
-     * @throws QUI\Exception
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function parseTemplate($templateFile, $templateContent, $nl2br = false)
     {
         if (!file_exists($templateFile)) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.passwordtypes.templateutils.template.file.not.found'
             ), 404);
