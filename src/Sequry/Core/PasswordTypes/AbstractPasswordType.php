@@ -53,7 +53,7 @@ abstract class AbstractPasswordType implements PasswordTypeInterface
      *
      * @return string
      */
-    private static function getDir()
+    protected static function getDir()
     {
         try {
             $Reflection = new \ReflectionClass(static::class);
