@@ -5,6 +5,7 @@ namespace Sequry\Core\PasswordTypes;
 use QUI;
 use QUI\Utils\System\File;
 use QUI\Utils\Security\Orthos;
+use Sequry\Core\Exception\Exception;
 
 /**
  * Class Handler
@@ -203,6 +204,7 @@ class Handler
      *
      * @param string $type - password type
      * @return string - edit html template
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function getEditTemplate($type)
     {
@@ -219,27 +221,23 @@ class Handler
     }
 
     /**
-     * Get content that is copied by a copy action
-     *
-     * @param string $type - password type
-     * @param array $payload - password payload
-     * @return string - copy content
-     */
-    public static function getCopyContent($type, $payload)
-    {
-        $TypeClass = self::getPasswordTypeClass($type);
-        return $TypeClass->getCopyContent($payload);
-    }
-
-    /**
      * Get class of password type
      *
      * @param $type
      * @return IPasswordType
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function getPasswordTypeClass($type)
     {
         $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
+
+        if (!class_exists($class)) {
+            throw new Exception(array(
+                'sequry/core',
+                'exception.passwordtypes.templateutils.template.file.not.found'
+            ), 404);
+        }
+
         return new $class();
     }
 
@@ -249,13 +247,14 @@ class Handler
      * @param string $type - password type (website, ftp, etc.)
      * @param string $layout - frontend template name
      * @return IPasswordType
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function getFrontendPasswordTypeClass($type, $layout)
     {
         $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Layouts\\' . $layout . '\\Type';
 
         if (!class_exists($class)) {
-            throw new QUI\Exception(array(
+            throw new Exception(array(
                 'sequry/core',
                 'exception.passwordtypes.templateutils.template.file.not.found'
             ), 404);
