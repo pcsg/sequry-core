@@ -40,7 +40,7 @@ class Type extends AbstractPasswordType
 
         $content = array_merge($content, self::getTemplateTranslations());
 
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
+        return TemplateUtils::parseTemplate(self::getDir() . '/View.html', $content, true);
     }
 
     /**

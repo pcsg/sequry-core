@@ -235,7 +235,7 @@ class Handler
         if (is_null($layout)) {
             $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type';
         } else {
-            $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Type\\Layouts\\' . $layout;
+            $class = 'Sequry\\Core\\PasswordTypes\\' . $type . '\\Layouts\\' . $layout . '\\Type';
         }
 
         if (!class_exists($class)) {
