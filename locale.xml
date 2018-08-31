@@ -1147,7 +1147,7 @@ Viel Spaß mit Sequry!</p>
 
         <!-- website -->
         <locale name="passwordtypes.website.label.title">
-            <de><![CDATA[Website-Login]]></de>
+            <de><![CDATA[Zugangsdaten]]></de>
         </locale>
         <locale name="passwordtypes.website.label.user">
             <de><![CDATA[Benutzer]]></de>
