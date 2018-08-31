@@ -28,16 +28,16 @@ use Sequry\Core\Security\Utils;
             $CryptoUser->save();
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX: actors/addGroupsToUser error: ' . $Exception->getMessage()
+                'AJAX: actors/addGroupsToUser error: '.$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'error.actors.addgroupstouser',
-                    array(
+                    [
                         'userId' => (int)$userId
-                    )
+                    ]
                 )
             );
 
@@ -48,15 +48,15 @@ use Sequry\Core\Security\Utils;
             QUI::getLocale()->get(
                 'sequry/core',
                 'success.actors.addgroupstouser',
-                array(
+                [
                     'userId'   => $CryptoUser->getId(),
                     'userName' => $CryptoUser->getName()
-                )
+                ]
             )
         );
 
         return true;
     },
-    array('userId', 'groupIds'),
+    ['userId', 'groupIds'],
     'Permission::checkAdminUser'
 );

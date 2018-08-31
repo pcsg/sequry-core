@@ -20,9 +20,9 @@ QUI::$Ajax->registerFunction(
             foreach ($passwordIds as $pwId) {
                 try {
                     $Password = Passwords::get((int)$pwId);
-                    $Password->setData(array(
+                    $Password->setData([
                         'categoryIds' => $categoryIds
-                    ));
+                    ]);
                 } catch (QUI\Exception $Exception) {
                     // nothing, just continue
                 }
@@ -30,7 +30,7 @@ QUI::$Ajax->registerFunction(
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_passwords_categories_public_setToPasswords -> '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -52,6 +52,6 @@ QUI::$Ajax->registerFunction(
 
         return true;
     },
-    array('passwordIds', 'categoryIds'),
-    'Permission::checkAdminUser'
+    ['passwordIds', 'categoryIds'],
+    'Permission::checkUser'
 );

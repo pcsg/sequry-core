@@ -8,14 +8,12 @@ use \Sequry\Core\Security\Handler\Authentication;
  * @param integer $authPluginId - id of auth plugin
  * @return string - path to javascript control
  */
-function package_sequry_core_ajax_auth_getChangeAuthenticationControl($authPluginId)
-{
-    $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
-    return $AuthPlugin->getChangeAuthenticationControl();
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getChangeAuthenticationControl',
-    array('authPluginId'),
-    'Permission::checkAdminUser'
+    function ($authPluginId) {
+        $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
+        return $AuthPlugin->getChangeAuthenticationControl();
+    },
+    ['authPluginId'],
+    'Permission::checkUser'
 );

@@ -18,14 +18,14 @@ QUI::$Ajax->registerFunction(
         $Password = Passwords::get((int)$passwordId);
 
         if ($Password->hasPasswordAccess(CryptoActors::getCryptoUser())) {
-            return array(
+            return [
                 'title'       => $Password->getAttribute('title'),
                 'description' => $Password->getAttribute('description')
-            );
+            ];
         }
 
-        return array();
+        return [];
     },
-    array('passwordId'),
-    'Permission::checkAdminUser'
+    ['passwordId'],
+    'Permission::checkUser'
 );

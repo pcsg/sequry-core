@@ -12,6 +12,6 @@ QUI::$Ajax->registerFunction(
     function () {
         return Categories::getPrivateList();
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

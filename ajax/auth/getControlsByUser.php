@@ -13,23 +13,23 @@ use Sequry\Core\Security\Handler\Authentication;
     function () {
         $CryptoUser     = CryptoActors::getCryptoUser();
         $authKeyPairIds = $CryptoUser->getAuthKeyPairIds();
-        $controls       = array();
+        $controls       = [];
 
         /** @var \Sequry\Core\Security\Keys\AuthKeyPair $AuthKeyPair */
         foreach ($authKeyPairIds as $authKeyPairId) {
             $AuthKeyPair = Authentication::getAuthKeyPair($authKeyPairId);
             $AuthPlugin  = $AuthKeyPair->getAuthPlugin();
 
-            $controls[] = array(
+            $controls[] = [
                 'authPluginId' => $AuthPlugin->getId(),
                 'title'        => $AuthPlugin->getAttribute('title'),
                 'control'      => $AuthPlugin->getAuthenticationControl(),
                 'registered'   => $AuthPlugin->isRegistered()
-            );
+            ];
         }
 
         return $controls;
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

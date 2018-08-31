@@ -13,6 +13,6 @@
             'reEncryptEnabled'
         ));
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

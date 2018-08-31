@@ -12,6 +12,6 @@ use Sequry\Core\Security\Handler\CryptoActors;
     function ($groupId) {
         return CryptoActors::getCryptoUser()->isInGroup((int)$groupId);
     },
-    array('groupId'),
-    'Permission::checkAdminUser'
+    ['groupId'],
+    'Permission::checkUser'
 );

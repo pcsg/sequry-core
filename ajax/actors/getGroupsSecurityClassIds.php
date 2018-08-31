@@ -17,7 +17,7 @@ use Sequry\Core\Security\Handler\CryptoActors;
             return false;
         }
 
-        $securityClassIds = array();
+        $securityClassIds = [];
 
         try {
             foreach ($groupIds as $groupId) {
@@ -34,6 +34,6 @@ use Sequry\Core\Security\Handler\CryptoActors;
             return false;
         }
     },
-    array('groupIds'),
+    ['groupIds'],
     'Permission::checkAdminUser'
 );

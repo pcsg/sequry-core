@@ -8,26 +8,24 @@ use Sequry\Core\Security\Handler\Authentication;
  * @param integer $securityClassId - ID of security class
  * @return array
  */
-function package_sequry_core_ajax_auth_getEligibleUsers($securityClassId)
-{
-    $SecurityClass    = Authentication::getSecurityClass((int)$securityClassId);
-    $eligibleUserIds  = $SecurityClass->getEligibleUserIds();
-    $eligibleUserData = array();
-
-    foreach ($eligibleUserIds as $userId) {
-        $User = QUI::getUsers()->get($userId);
-
-        $eligibleUserData[] = array(
-            'id'       => $User->getId(),
-            'username' => $User->getName()
-        );
-    }
-
-    return $eligibleUserData;
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getEligibleUsers',
-    array('securityClassId'),
-    'Permission::checkAdminUser'
+    function ($securityClassId) {
+        $SecurityClass    = Authentication::getSecurityClass((int)$securityClassId);
+        $eligibleUserIds  = $SecurityClass->getEligibleUserIds();
+        $eligibleUserData = [];
+
+        foreach ($eligibleUserIds as $userId) {
+            $User = QUI::getUsers()->get($userId);
+
+            $eligibleUserData[] = [
+                'id'       => $User->getId(),
+                'username' => $User->getName()
+            ];
+        }
+
+        return $eligibleUserData;
+    },
+    ['securityClassId'],
+    'Permission::checkUser'
 );

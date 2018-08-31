@@ -12,6 +12,6 @@ QUI::$Ajax->registerFunction(
     function () {
         return Categories::getPublicList();
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

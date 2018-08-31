@@ -24,10 +24,10 @@ QUI::$Ajax->registerFunction(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'message.ajax.passwords.categories.private.setToPassword.error',
-                    array(
+                    [
                         'error'      => $Exception->getMessage(),
                         'passwordId' => $passwordId
-                    )
+                    ]
                 )
             );
 
@@ -35,7 +35,7 @@ QUI::$Ajax->registerFunction(
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_passwords_categories_private_setToPassword -> '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -52,14 +52,14 @@ QUI::$Ajax->registerFunction(
             QUI::getLocale()->get(
                 'sequry/core',
                 'message.ajax.passwords.categories.private.setToPassword.success',
-                array(
+                [
                     'passwordId' => $passwordId
-                )
+                ]
             )
         );
 
         return true;
     },
-    array('passwordId', 'categoryIds'),
-    'Permission::checkAdminUser'
+    ['passwordId', 'categoryIds'],
+    'Permission::checkUser'
 );

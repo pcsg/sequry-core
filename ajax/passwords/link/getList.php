@@ -27,6 +27,6 @@ QUI::$Ajax->registerFunction(
             PasswordLinks::getList((int)$passwordId, $searchParams, true)
         );
     },
-    array('passwordId', 'searchParams'),
-    'Permission::checkAdminUser'
+    ['passwordId', 'searchParams'],
+    'Permission::checkUser'
 );

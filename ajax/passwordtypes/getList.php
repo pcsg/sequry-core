@@ -13,5 +13,5 @@ use Sequry\Core\PasswordTypes\Handler;
         return Handler::getList();
     },
     [],
-    'Permission::checkAdminUser'
+    'Permission::checkUser'
 );

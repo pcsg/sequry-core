@@ -11,10 +11,10 @@
         $Conf     = QUI::getPackage('sequry/core')->getConfig();
         $settings = $Conf->getSection('settings');
 
-        return array(
+        return [
             'actorTypePasswordCreate' => $settings['actorTypePasswordCreate']
-        );
+        ];
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

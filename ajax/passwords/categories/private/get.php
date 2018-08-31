@@ -15,6 +15,6 @@ QUI::$Ajax->registerFunction(
         $ids = Orthos::clearArray(json_decode($ids, true));
         return Categories::getPrivate($ids);
     },
-    array('ids'),
-    'Permission::checkAdminUser'
+    ['ids'],
+    'Permission::checkUser'
 );

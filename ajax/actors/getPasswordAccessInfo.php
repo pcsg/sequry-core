@@ -12,11 +12,10 @@ use \Sequry\Core\Security\Handler\CryptoActors;
  */
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_actors_getPasswordAccessInfo',
-    function ($passwordId)
-    {
+    function ($passwordId) {
         $Password = Passwords::get((int)$passwordId);
         return CryptoActors::getCryptoUser()->getPasswordAccessInfo($Password);
     },
-    array('passwordId'),
-    'Permission::checkAdminUser'
+    ['passwordId'],
+    'Permission::checkUser'
 );

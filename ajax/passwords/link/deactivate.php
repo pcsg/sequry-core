@@ -23,10 +23,10 @@ QUI::$Ajax->registerFunction(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'message.passwords.link.deactivate.error',
-                    array(
+                    [
                         'error'  => $Exception->getMessage(),
                         'linkId' => $linkId
-                    )
+                    ]
                 )
             );
 
@@ -52,14 +52,14 @@ QUI::$Ajax->registerFunction(
             QUI::getLocale()->get(
                 'sequry/core',
                 'message.passwords.link.deactivate.success',
-                array(
+                [
                     'linkId' => $linkId
-                )
+                ]
             )
         );
 
         return true;
     },
-    array('linkId'),
-    'Permission::checkAdminUser'
+    ['linkId'],
+    'Permission::checkUser'
 );

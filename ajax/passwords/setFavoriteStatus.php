@@ -12,15 +12,14 @@ use Sequry\Core\Security\Handler\CryptoActors;
  */
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_passwords_setFavoriteStatus',
-    function ($passwordId, $status)
-    {
+    function ($passwordId, $status) {
         try {
             $CryptoUser = CryptoActors::getCryptoUser();
             $CryptoUser->setPasswordFavoriteStatus((int)$passwordId, $status);
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_passwords_setFavoriteStatus -> '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -35,6 +34,6 @@ use Sequry\Core\Security\Handler\CryptoActors;
 
         return boolval($status);
     },
-    array('passwordId', 'status'),
-    'Permission::checkAdminUser'
+    ['passwordId', 'status'],
+    'Permission::checkUser'
 );

@@ -49,6 +49,6 @@ QUI::$Ajax->registerFunction(
 
         return true;
     },
-    array('authPluginId', 'token', 'code'),
-    'Permission::checkAdminUser'
+    ['authPluginId', 'token', 'code'],
+    'Permission::checkUser'
 );

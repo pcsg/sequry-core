@@ -21,6 +21,6 @@ use QUI\Utils\Grid;
             CryptoActors::searchActors($searchParams, true)
         );
     },
-    array('searchParams'),
-    'Permission::checkAdminUser'
+    ['searchParams'],
+    'Permission::checkUser'
 );

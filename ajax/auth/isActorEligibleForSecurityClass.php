@@ -26,7 +26,7 @@ QUI::$Ajax->registerFunction(
             }
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'AJAX :: package_sequry_core_ajax_auth_isActorEligibleForSecurityClass -> ' . $Exception->getMessage()
+                'AJAX :: package_sequry_core_ajax_auth_isActorEligibleForSecurityClass -> '.$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -39,6 +39,6 @@ QUI::$Ajax->registerFunction(
             return false;
         }
     },
-    array('actorId', 'actorType', 'securityClassId'),
-    'Permission::checkAdminUser'
+    ['actorId', 'actorType', 'securityClassId'],
+    'Permission::checkUser'
 );

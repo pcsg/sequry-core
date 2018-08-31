@@ -8,14 +8,12 @@ use Sequry\Core\Security\Handler\Authentication;
  *
  * @param integer $groupId - ID of QUIQQER group
  * @param integer $securityClassId - ID of security class
- * @param integer $userId (optional) - ID of the User that is eligible for SecurityClass
- * [default: Session user]
  *
  * @return bool - success
  */
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_actors_groups_addSecurityClass',
-    function ($groupId, $securityClassId, $userId = null) {
+    function ($groupId, $securityClassId) {
         try {
             $CryptoGroup   = CryptoActors::getCryptoGroup((int)$groupId);
             $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);

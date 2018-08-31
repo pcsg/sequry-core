@@ -20,9 +20,9 @@ use QUI\Utils\Security\Orthos;
         $securityClassIds = json_decode($securityClassIds, true);
         $search           = Orthos::clear($search);
         $limit            = (int)$limit;
-        $users            = array();
-        $groups           = array();
-        $allActors        = array();
+        $users            = [];
+        $groups           = [];
+        $allActors        = [];
 
         foreach ($securityClassIds as $securityClassId) {
             $securityClassId = (int)$securityClassId;
@@ -30,8 +30,8 @@ use QUI\Utils\Security\Orthos;
             $actors          = $SecurityClass->suggestSearchEligibleActors($search, $type, $limit);
             $allActors       = array_merge($allActors, $actors);
 
-            $users[$securityClassId]  = array();
-            $groups[$securityClassId] = array();
+            $users[$securityClassId]  = [];
+            $groups[$securityClassId] = [];
 
             foreach ($actors as $actor) {
                 switch ($actor['type']) {
@@ -50,7 +50,7 @@ use QUI\Utils\Security\Orthos;
         if (count($securityClassIds) > 1) {
             $eligibleUserIds  = call_user_func_array('array_intersect', array_values($users));
             $eligibleGroupIds = call_user_func_array('array_intersect', array_values($groups));
-            $eligibleActors   = array();
+            $eligibleActors   = [];
 
             // users
             foreach ($eligibleUserIds as $userId) {
@@ -84,12 +84,12 @@ use QUI\Utils\Security\Orthos;
 //                }
 
                     $actor['icon'] = 'fa fa-user';
-                    $actor['id']   = 'u' . $actor['id'];
+                    $actor['id']   = 'u'.$actor['id'];
                     break;
 
                 case 'group':
                     $actor['icon'] = 'fa fa-users';
-                    $actor['id']   = 'g' . $actor['id'];
+                    $actor['id']   = 'g'.$actor['id'];
                     break;
             }
 
@@ -99,6 +99,6 @@ use QUI\Utils\Security\Orthos;
 
         return array_values($eligibleActors);
     },
-    array('search', 'type', 'securityClassIds', 'limit'),
-    'Permission::checkAdminUser'
+    ['search', 'type', 'securityClassIds', 'limit'],
+    'Permission::checkUser'
 );

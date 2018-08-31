@@ -10,13 +10,11 @@ use Sequry\Core\PasswordTypes\Handler;
  *
  * @throws QUI\Exception
  */
-function package_sequry_core_ajax_passwordtypes_getEditHtml($type)
-{
-    return Handler::getEditTemplate($type);
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_passwordtypes_getEditHtml',
-    array('type'),
-    'Permission::checkAdminUser'
+    function ($type) {
+        return Handler::getEditTemplate($type);
+    },
+    ['type'],
+    'Permission::checkUser'
 );

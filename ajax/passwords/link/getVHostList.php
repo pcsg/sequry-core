@@ -15,17 +15,17 @@ QUI::$Ajax->registerFunction(
         $Conf = QUI::getPackage('sequry/core')->getConfig();
 
         $VhostManager = new \QUI\System\VhostManager();
-        $validVhosts  = array();
+        $validVhosts  = [];
 
         foreach ($VhostManager->getList() as $vhost => $v) {
             $Project = $VhostManager->getProjectByHost($vhost);
 
-            $sites = $Project->getSites(array(
-                'where' => array(
+            $sites = $Project->getSites([
+                'where' => [
                     'type' => PasswordLink::SITE_TYPE
-                ),
+                ],
                 'limit' => 1
-            ));
+            ]);
 
             if (!empty($sites)) {
                 $validVhosts[] = $vhost;
@@ -39,5 +39,5 @@ QUI::$Ajax->registerFunction(
         return $validVhosts;
     },
     [],
-    'Permission::checkAdminUser'
+    'Permission::checkUser'
 );

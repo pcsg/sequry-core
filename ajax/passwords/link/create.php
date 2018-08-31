@@ -29,10 +29,10 @@ QUI::$Ajax->registerFunction(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'message.passwords.link.create.error',
-                    array(
+                    [
                         'error'      => $Exception->getMessage(),
                         'passwordId' => $passwordId
-                    )
+                    ]
                 )
             );
 
@@ -58,14 +58,14 @@ QUI::$Ajax->registerFunction(
             QUI::getLocale()->get(
                 'sequry/core',
                 'message.passwords.link.create.success',
-                array(
+                [
                     'passwordId' => $passwordId
-                )
+                ]
             )
         );
 
         return true;
     },
-    array('passwordId', 'linkData'),
-    'Permission::checkAdminUser'
+    ['passwordId', 'linkData'],
+    'Permission::checkUser'
 );

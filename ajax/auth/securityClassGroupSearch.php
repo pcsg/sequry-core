@@ -11,28 +11,26 @@ use QUI\Utils\Security\Orthos;
  * @param integer $limit
  * @return array
  */
-function package_sequry_core_ajax_auth_securityClassGroupSearch($search, $securityClassId, $limit)
-{
-    $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
-
-    $search = Orthos::clear($search);
-    $limit  = (int)$limit;
-
-    $actors = $SecurityClass->searchGroupsToAdd($search, $limit);
-
-    foreach ($actors as $k => $actor) {
-        $actor['icon']  = 'fa fa-users';
-        $actor['id']    = 'g' . $actor['id'];
-        $actor['title'] = $actor['name'];
-
-        $actors[$k] = $actor;
-    }
-
-    return $actors;
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_securityClassGroupSearch',
-    array('search', 'securityClassId', 'limit'),
+    function ($search, $securityClassId, $limit) {
+        $SecurityClass = Authentication::getSecurityClass((int)$securityClassId);
+
+        $search = Orthos::clear($search);
+        $limit  = (int)$limit;
+
+        $actors = $SecurityClass->searchGroupsToAdd($search, $limit);
+
+        foreach ($actors as $k => $actor) {
+            $actor['icon']  = 'fa fa-users';
+            $actor['id']    = 'g'.$actor['id'];
+            $actor['title'] = $actor['name'];
+
+            $actors[$k] = $actor;
+        }
+
+        return $actors;
+    },
+    ['search', 'securityClassId', 'limit'],
     'Permission::checkAdminUser'
 );

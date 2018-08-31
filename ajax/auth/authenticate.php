@@ -4,7 +4,6 @@
 use Sequry\Core\Security\Handler\Authentication;
 use Sequry\Core\Exception\Exception;
 use Sequry\Core\Security\HiddenString;
-use Sequry\Core\Exception\InvalidAuthDataException;
 
 /**
  * Authenticate for a security class
@@ -21,10 +20,10 @@ QUI::$Ajax->registerFunction(
         $authData = json_decode($authData, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.ajax.authenticate.decode.error'
-            ));
+            ]);
         }
 
         $sessioncache = !empty($authData['sessioncache']);
@@ -53,6 +52,6 @@ QUI::$Ajax->registerFunction(
 
         return true;
     },
-    array('securityClassId', 'authData'),
-    'Permission::checkAdminUser'
+    ['securityClassId', 'authData'],
+    'Permission::checkUser'
 );

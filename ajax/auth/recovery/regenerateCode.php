@@ -26,9 +26,9 @@ QUI::$Ajax->registerFunction(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'message.ajax.auth.recovery.regenerateCode.error',
-                    array(
+                    [
                         'error' => $Exception->getMessage()
-                    )
+                    ]
                 )
             );
 
@@ -36,7 +36,7 @@ QUI::$Ajax->registerFunction(
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_auth_recovery_regenerateCode -> '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -51,6 +51,6 @@ QUI::$Ajax->registerFunction(
 
         return $recoveryCode;
     },
-    array('authPluginId', 'authData'),
-    'Permission::checkAdminUser'
+    ['authPluginId', 'authData'],
+    'Permission::checkUser'
 );

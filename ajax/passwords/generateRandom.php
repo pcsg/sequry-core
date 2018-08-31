@@ -12,6 +12,6 @@ QUI::$Ajax->registerFunction(
     function () {
         return Utils::generatePassword();
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

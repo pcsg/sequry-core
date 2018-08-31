@@ -10,14 +10,14 @@ use Sequry\Core\Security\Handler\Authentication;
  */
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getCommKey',
-    function() {
+    function () {
         $key = Authentication::getSessionCommunicationKey();
 
         $key['key'] = array_values(unpack('C*', $key['key']));
-        $key['iv'] = array_values(unpack('C*', $key['iv']));
+        $key['iv']  = array_values(unpack('C*', $key['iv']));
 
         return $key;
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

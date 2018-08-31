@@ -10,20 +10,19 @@ use \Sequry\Core\Security\Handler\Authentication;
  */
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getControlsBySecurityClass',
-    function ($securityClassId)
-    {
+    function ($securityClassId) {
         $SecurityClass = Authentication::getSecurityClass($securityClassId);
         $authPlugins   = $SecurityClass->getAuthPlugins();
-        $controls      = array();
+        $controls      = [];
 
         /** @var \Sequry\Core\Security\Authentication\Plugin $AuthPlugin */
         foreach ($authPlugins as $AuthPlugin) {
-            $controls[] = array(
+            $controls[] = [
                 'authPluginId' => $AuthPlugin->getId(),
                 'title'        => $AuthPlugin->getAttribute('title'),
                 'control'      => $AuthPlugin->getAuthenticationControl(),
                 'registered'   => $AuthPlugin->isRegistered()
-            );
+            ];
         }
 
         // sort by user priority
@@ -72,6 +71,6 @@ use \Sequry\Core\Security\Handler\Authentication;
 
         return $controls;
     },
-    array('securityClassId'),
-    'Permission::checkAdminUser'
+    ['securityClassId'],
+    'Permission::checkUser'
 );
