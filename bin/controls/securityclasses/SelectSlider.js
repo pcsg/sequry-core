@@ -44,16 +44,13 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
                 onInject: this.$onInject
             });
 
-            this.Loader                 = new QUILoader();
-            this.$RequiredFactorsSelect = null;
-            this.$Slider                = null;
-            this.$SecurityClasses       = {};
-            this.$RequiredFactorsElm    = null;
-            this.$InfoElm               = null;
-            this.$securityClassId       = null; // currently selected security class id
-            this.$sliderNumber          = null;
-            this.$dragging              = false;
-            this.$CurrentToolTip        = null;
+            this.Loader           = new QUILoader();
+            this.$Slider          = null;
+            this.$SecurityClasses = {};
+            this.$InfoElm         = null;
+            this.$securityClassId = null; // currently selected security class id
+            this.$dragging        = false;
+            this.$CurrentToolTip  = null;
         },
 
         /**
@@ -65,8 +62,8 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
             this.$Elm = new Element('div', {
                 'class': 'pcsg-gpm-securityclasses-selectslider',
                 html   : '<div class="pcsg-gpm-securityclasses-selectslider-slider">' +
-                '</div>' +
-                '<div class="pcsg-gpm-securityclasses-selectslider-info"></div>'
+                    '</div>' +
+                    '<div class="pcsg-gpm-securityclasses-selectslider-info"></div>'
             });
 
             this.$InfoElm = this.$Elm.getElement(
@@ -110,7 +107,7 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
                         color          : "tangerine",
                         stickTo        : "bottom",
                         contentText    : '<b>' + SecurityClass.title + '</b><br>' +
-                        SecurityClass.description,
+                            SecurityClass.description,
                         targetSelector : '.pcsg-gpm-securityclasses-selectslider-info'
                     });
 
@@ -158,7 +155,7 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
                         continue;
                     }
 
-                    SecurityClass   = SecurityClasses[id];
+                    SecurityClass       = SecurityClasses[id];
                     var sliderNumberId  = 'pcsg-gpm-securityclasses-selectslider-number-' + i;
                     var SliderNumberElm = sliderNumberElms[i - 1];
 
@@ -177,7 +174,7 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
                         color          : "tangerine",
                         stickTo        : "bottom",
                         contentText    : '<b>' + SecurityClass.title + '</b><br>' +
-                        SecurityClass.description,
+                            SecurityClass.description,
                         targetSelector : '#' + sliderNumberId
                     });
                 }
@@ -198,7 +195,7 @@ define('package/sequry/core/bin/controls/securityclasses/SelectSlider', [
                     self.$CurrentToolTip = new Element('div', {
                         'class': 'pcsg-gpm-tooltip-top',
                         html   : '<span><b>' + SecurityClass.title + '</b><br>' +
-                        SecurityClass.description + '</span>'
+                            SecurityClass.description + '</span>'
                     }).inject(SliderHandle);
                 });
 

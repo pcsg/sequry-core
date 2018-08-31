@@ -27,6 +27,8 @@ function package_sequry_core_ajax_auth_changeAuthenticationInformation(
         // generate recovery code
         $recoveryCode = Recovery::createEntry($AuthPlugin, $newAuthInfo);
     } catch (QUI\Exception $Exception) {
+        QUI\System\Log::writeDebugException($Exception);
+
         QUI::getMessagesHandler()->addError(
             QUI::getLocale()->get(
                 'sequry/core',
