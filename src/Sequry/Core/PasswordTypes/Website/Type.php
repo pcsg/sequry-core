@@ -2,22 +2,23 @@
 
 namespace Sequry\Core\PasswordTypes\Website;
 
+use Sequry\Core\PasswordTypes\AbstractPasswordType;
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
-use Sequry\Core\PasswordTypes\IPasswordType;
 
 /**
  * Type class for Website password input type
  *
  * @package Sequry\Core\PasswordTypes
  */
-class Type implements IPasswordType
+class Type extends AbstractPasswordType
 {
     /**
      * Get view template
      *
      * @param array $content (optional) - the content that is parsed into the template
      * @return string - HTML template
+     * @throws \Sequry\Core\Exception\Exception
      */
     public static function getViewHtml($content = array())
     {
@@ -35,18 +36,17 @@ class Type implements IPasswordType
 
         $content = array_merge($content, self::getTemplateTranslations());
 
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/View.html', $content, true);
+        return TemplateUtils::parseTemplate(self::getDir() . '/View.html', $content, true);
     }
 
     /**
-     * Get edit template (just HTML)
+     * Get password type icon (Fontawesome)
      *
-     * @return string - HTML template
+     * @return string - Full fontawesome icon class name
      */
-    public static function getEditHtml()
+    public static function getIcon()
     {
-        $content = self::getTemplateTranslations();
-        return TemplateUtils::parseTemplate(dirname(__FILE__) . '/Edit.html', $content);
+        return 'fa fa-globe';
     }
 
     /**
@@ -67,20 +67,5 @@ class Type implements IPasswordType
             'labelUrl'      => $L->get($lg, $lgPrefix . 'url'),
             'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
         );
-    }
-
-    /**
-     * Get content that is copied by a copy action
-     *
-     * @param array $payload - password payload
-     * @return string - copy content
-     */
-    public static function getCopyContent($payload)
-    {
-        if (isset($payload['password'])) {
-            return $payload['password'];
-        }
-
-        return '';
     }
 }

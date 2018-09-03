@@ -9,25 +9,23 @@ use \Sequry\Core\Security\Handler\CryptoActors;
  * @param string $type - "user" or "group"
  * @return bool - success
  */
-function package_sequry_core_ajax_actors_delete($id, $type)
-{
-    switch ($type) {
-        case 'user':
-            $Actor = CryptoActors::getCryptoUser((int)$id);
-            $Actor->delete();
-            break;
-
-        case 'group':
-            $Actor = CryptoActors::getCryptoGroup((int)$id);
-            $Actor->delete();
-            break;
-    }
-
-    return true;
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_actors_delete',
-    array('id', 'type'),
+    function ($id, $type) {
+        switch ($type) {
+            case 'user':
+                $Actor = CryptoActors::getCryptoUser((int)$id);
+                $Actor->delete();
+                break;
+
+            case 'group':
+                $Actor = CryptoActors::getCryptoGroup((int)$id);
+                $Actor->delete();
+                break;
+        }
+
+        return true;
+    },
+    ['id', 'type'],
     'Permission::checkAdminUser'
 );

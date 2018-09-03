@@ -9,6 +9,7 @@
  */
 define('package/sequry/core/bin/controls/auth/Change', [
 
+    'qui/QUI',
     'qui/controls/Control',
     'qui/controls/buttons/Button',
     'qui/controls/loader/Loader',
@@ -22,7 +23,7 @@ define('package/sequry/core/bin/controls/auth/Change', [
     'text!package/sequry/core/bin/controls/auth/Change.html',
     'css!package/sequry/core/bin/controls/auth/Change.css'
 
-], function (QUIControl, QUIButton, QUILoader, QUILocale, Mustache,
+], function (QUI, QUIControl, QUIButton, QUILoader, QUILocale, Mustache,
              Authentication, RecoveryCodePopup, template) {
     "use strict";
 
@@ -161,10 +162,41 @@ define('package/sequry/core/bin/controls/auth/Change', [
             var self         = this;
             var authPluginId = this.getAttribute('authPluginId');
 
+            var oldAuthData = self.$AuthControl.getAuthData();
+            var newAuthData = self.$ChangeAuthControl.getAuthData();
+
+            if (oldAuthData === '') {
+                QUI.getMessageHandler().then(function(MH) {
+                    MH.addError(
+                        QUILocale.get(lg, 'controls.auth.Change.old_auth_data_empty')
+                    );
+                });
+
+                self.$AuthControl.focus();
+
+                return;
+            }
+
+            if (newAuthData === '') {
+                QUI.getMessageHandler().then(function(MH) {
+                    MH.addError(
+                        QUILocale.get(lg, 'controls.auth.Change.new_auth_data_empty')
+                    );
+                });
+
+                self.$ChangeAuthControl.focus();
+
+                return;
+            }
+
+            if (!self.$ChangeAuthControl.checkAuthData()) {
+                return;
+            }
+
             Authentication.changeAuthInformation(
                 authPluginId,
-                self.$AuthControl.getAuthData(),
-                self.$ChangeAuthControl.getAuthData()
+                oldAuthData,
+                newAuthData
             ).then(function (RecoveryCodeData) {
                 if (!RecoveryCodeData) {
                     return;

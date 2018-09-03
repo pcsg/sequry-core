@@ -692,6 +692,9 @@
         <locale name="exception.recovery.mail_send_error">
             <de><![CDATA[Beim Versenden des Wiederherstellungs-Tokens ist ein Fehler aufgetreten. Bitte wiederholen Sie den Vorgang oder wenden Sie sich an einen Administrator.]]></de>
         </locale>
+        <locale name="exception.recovery.recover.no_token_generated">
+            <de><![CDATA[Bitte generieren Sie zuerst ein Wiederherstellungs-Token.]]></de>
+        </locale>
 
         <!-- PasswordTypes -->
         <locale name="passwordtypes.Ftp.title">
@@ -716,80 +719,6 @@
         </locale>
         <locale name="exception.passwordtypes.templateutils.template.file.not.found">
             <de><![CDATA[Die Template-Datei wurde nicht gefunden.]]></de>
-        </locale>
-
-        <!-- ftp -->
-        <locale name="passwordtypes.ftp.label.title">
-            <de><![CDATA[FTP-Server]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.host">
-            <de><![CDATA[Host]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="passwordtypes.ftp.label.url">
-            <de><![CDATA[URL]]></de>
-        </locale>
-
-        <!-- website -->
-        <locale name="passwordtypes.website.label.title">
-            <de><![CDATA[Website-Login]]></de>
-        </locale>
-        <locale name="passwordtypes.website.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.website.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="passwordtypes.website.label.url">
-            <de><![CDATA[URL]]></de>
-        </locale>
-
-        <!-- secretkey -->
-        <locale name="passwordtypes.secretkey.label.title">
-            <de><![CDATA[SSH-Schlüssel]]></de>
-        </locale>
-        <locale name="passwordtypes.credentials.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-
-        <locale name="passwordtypes.secretkey.label.host">
-            <de><![CDATA[Server]]></de>
-        </locale>
-        <locale name="passwordtypes.secretkey.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.secretkey.label.password">
-            <de><![CDATA[Passwort]]></de>
-        </locale>
-        <locale name="passwordtypes.secretkey.label.key">
-            <de><![CDATA[Schlüssel]]></de>
-        </locale>
-
-        <!-- apikey -->
-        <locale name="passwordtypes.apikey.label.title">
-            <de><![CDATA[API-Schlüssel]]></de>
-        </locale>
-        <locale name="passwordtypes.apikey.label.url">
-            <de><![CDATA[URL]]></de>
-        </locale>
-        <locale name="passwordtypes.apikey.label.key">
-            <de><![CDATA[Schlüssel]]></de>
-        </locale>
-
-        <!-- credentials -->
-        <locale name="passwordtypes.credentials.label.title">
-            <de><![CDATA[Zugangsdaten]]></de>
-        </locale>
-        <locale name="passwordtypes.credentials.label.user">
-            <de><![CDATA[Benutzer]]></de>
-        </locale>
-        <locale name="passwordtypes.credentials.label.password">
-            <de><![CDATA[Passwort]]></de>
         </locale>
 
         <!-- Handler\Categories -->
@@ -939,7 +868,24 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Anleitung für den QUIQQER PasswordManager]]></de>
         </locale>
         <locale name="actors.sendinstructions.instructions" html="true">
-            <de><![CDATA[Anleitungstext]]></de>
+            <de><![CDATA[<p>Hallo [userName]!<br/>
+<br/>
+Du bist herzlich eingeladen, den Sequry Passwort-Manager zu benutzen. Für dich wurde ein Benutzerkonto mit dem Benutzernamen <b>[userName]</b> angelegt. Das Passwort für den erstmaligen Login ist ebenfalls dein Benutzername. Folge bitte diesen Anweisungen:</p>
+
+<ol>
+	<li>Besuche <a href="[url]">[url]</a> und logge dich ein.</li>
+	<li>Anschließend wirst du aufgefordet, dein Passwort zu ändern. Bitte wäe hierbei ein <strong>sicheres</strong> Master-Passwort, welches du auch in Zukunft für Sequry verwenden möchtest und mit welchem du dich in Zukunft einloggst.</li>
+	<li>Danach erscheint ein <strong>Willkommens-Fenster</strong>, welches dich auffordert, dein soeben festgelegtes Master-Passwort ("Login-Passwort") erneut einzutippen. Dies ist notwendig, damit Sequry einen geheimen Schlüssel für dich erstellen kann, mit dem deine Passwörter verschlüsselt werden. Lege das Passwort fest.</li>
+	<li>Im Anschluss erscheint ein <strong>Wiederherstellungs-Code</strong>. Bitte drucke diesen aus und verwahre ihn an einem sicheren Ort!</li>
+	<li>Gehe dann im Menü auf <b>Verwaltung</b> -> <b>Passwort-Manager</b> -> <b>Authentifizierung</b>. Dort siehst du eine Auflistung von Authentifizierungs-Faktoren. Ein Authentifizierungs-Faktor beschreibt eine Art, sich für den Zugriff auf ein Passwort zu authentifizieren. Manche Passwörter verlangen <strong>zwei</strong> dieser Faktoren ("Zwei-Faktor-Authentifizierung"). Damit für dich ein solcher zweiter Faktor (neben dem eben festgelegten Master-Passwort) zur Verfügung steht, musst du dich für einen weiteren Authentifizierungs-Faktor <strong>registrieren</strong>. Dabei kannst du zwischen der Authentifizierung per <strong>Zweit-Passwort</strong> oder per <strong>Schlüssel-Datei</strong> entscheiden (oder dich einfach für beide registrieren).</li>
+	<li>Klicke die jeweiligen Authentifizierungs-Faktoren an und auf den Button <strong>Registrieren. WICHTIG:</strong> Drucke alle angezeigten Wiederherstellungs-Codes aus!</li>
+	<li>Du kannst nun deine persönlichen Passwörter mit Sequry speichern. Sie sind für keinen außer dich einsehbar (außer, du teilst sie explizit mit anderen Benutzern!).</li>
+	<li>Wenn du Bugs findest oder dir ein Feature wünschst, klicke im Menü einfach auf <strong>Bug melden</strong> und lege ein Ticket an!</li>
+</ol>
+
+<p>
+Viel Spaß mit Sequry!</p>
+]]></de>
         </locale>
 
         <!-- Site types -->
@@ -1198,6 +1144,91 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="cron.delete_passwordlinks.description">
             <de><![CDATA[Deaktiviert alle Passwort-Links, deren Ablaufdatum (sofern eingestellt) erreicht ist]]></de>
         </locale>
+
+        <!-- website -->
+        <locale name="passwordtypes.website.label.title">
+            <de><![CDATA[Zugangsdaten]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.website.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+
+        <!-- secretkey -->
+        <locale name="passwordtypes.secretkey.label.title">
+            <de><![CDATA[SSH-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+
+        <locale name="passwordtypes.secretkey.label.host">
+            <de><![CDATA[Server]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.secretkey.label.key">
+            <de><![CDATA[Schlüssel]]></de>
+        </locale>
+
+        <!-- apikey -->
+        <locale name="passwordtypes.apikey.label.title">
+            <de><![CDATA[API-Schlüssel]]></de>
+        </locale>
+        <locale name="passwordtypes.apikey.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+        <locale name="passwordtypes.apikey.label.key">
+            <de><![CDATA[Schlüssel]]></de>
+        </locale>
+
+        <!-- ftp -->
+        <locale name="passwordtypes.ftp.label.title">
+            <de><![CDATA[FTP-Server]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.host">
+            <de><![CDATA[Host]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+        <locale name="passwordtypes.ftp.label.url">
+            <de><![CDATA[URL]]></de>
+        </locale>
+
+        <!-- credentials -->
+        <locale name="passwordtypes.credentials.label.title">
+            <de><![CDATA[Zugangsdaten]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.user">
+            <de><![CDATA[Benutzer]]></de>
+        </locale>
+        <locale name="passwordtypes.credentials.label.password">
+            <de><![CDATA[Passwort]]></de>
+        </locale>
+
+        <!-- text -->
+        <locale name="passwordtypes.Text.title">
+            <de><![CDATA[Textfeld]]></de>
+        </locale>
+        <locale name="passwordtypes.text.label.title">
+            <de><![CDATA[Textfeld]]></de>
+        </locale>
+        <locale name="passwordtypes.text.label.text">
+            <de><![CDATA[Geheimtext]]></de>
+        </locale>
     </groups>
 
     <groups name="sequry/core" datatype="js">
@@ -1258,7 +1289,7 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Neues Passwort erstellen]]></de>
         </locale>
         <locale name="gpm.passwords.panel.link.title">
-            <de><![CDATA[Passwort-Link]]></de>
+            <de><![CDATA[Passwort-Links für Passwort #[passwordId]]]></de>
         </locale>
         <locale name="controls.gpm.passwords.btn.add">
             <de><![CDATA[Neues Passwort]]></de>
@@ -1539,6 +1570,13 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="auth.change.btn.recovery">
             <de><![CDATA[Zugangsdaten vergessen]]></de>
         </locale>
+        <locale name="controls.auth.Change.old_auth_data_empty">
+            <de><![CDATA[Bitte geben Sie Ihre aktuellen Zugangsdaten ein, um fortzufahren.]]></de>
+        </locale>
+        <locale name="controls.auth.Change.new_auth_data_empty">
+            <de><![CDATA[Bitte geben Sie Ihre neuen Zugangsdaten ein, um fortzufahren.]]></de>
+        </locale>
+        
         <locale name="auth.recovery.information">
             <de><![CDATA[Sie können Ihre aktuellen Zugangsdaten mit dem Wiederherstellungscode, der bei Registrierung mit diesem Authentifizierungs-Faktor angezeigt wurde, wiederherstellen. Geben Sie den 5-teiligen Code dazu in die Eingabefelder unten ein. Lassen sie die Eingabe für ihre alten Zugangsdaten dafür leer.]]></de>
         </locale>
@@ -1627,6 +1665,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="controls.password.access_info.btn.text">
             <de><![CDATA[Zu den Authentifizierungs-Faktoren]]></de>
+        </locale>
+        <locale name="controls.passsword.view.template.loadingInfo">
+            <de><![CDATA[Sie müssen sich zuerst authentifizieren, bevor Passwort-Daten angezeigt werden können.]]></de>
         </locale>
 
         <!-- Control: password/Panel -->
@@ -1814,16 +1855,6 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
             <de><![CDATA[Notiz]]></de>
         </locale>
 
-        <!-- Control: passwordtypes/Textarea -->
-        <locale name="password.types.Textarea.template.title">
-            <de><![CDATA[Geheimtext (Textfeld)]]></de>
-        </locale>
-        <locale name="password.types.Textarea.template.password">
-            <de><![CDATA[Geheimtext]]></de>
-        </locale>
-        <locale name="password.types.Textarea.template.note">
-            <de><![CDATA[Notiz]]></de>
-        </locale>
 
         <!-- Control: passwords/Search -->
         <locale name="password.search.template.title">
@@ -1858,11 +1889,6 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         </locale>
         <locale name="password.search.template.uncategorizedPrivate">
             <de><![CDATA[Passwörter ohne persönliche Passwort-Kategorie]]></de>
-        </locale>
-
-        <!-- Control: password/View -->
-        <locale name="password.view.restricted.info">
-            <de><![CDATA[Sie müssen sich zuerst authentifizieren, bevor Passwort-Daten angezeigt werden können.]]></de>
         </locale>
 
         <!-- Control: actors/GroupEdit -->
@@ -2456,7 +2482,14 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <!-- Control: actors/GroupEdit -->
         <locale name="controls.actors.groupselect.adminselect.info" html="true">
             <de><![CDATA[Wählen Sie hier die Gruppen-Administratoren für die Gruppe <b>[groupName]</b> (#[groupId]). Gruppen-Administratoren dürfen dieser Gruppe Benutzer hinzufügen oder aus dieser entfernen. Zudem können sie den Gruppen-Zugriff für bestimmte Sicherheitsklassen für einzelne Benutzer im Nachhinein freischalten.]]></de>
->>>>>>> groupadmin
+        </locale>
+        
+        <!-- Control: auth/RegisterPopup -->
+        <locale name="controls.auth.RegisterPopup.template.info">
+            <de><![CDATA[Bitte registrieren!]]></de>
+        </locale>
+        <locale name="controls.auth.RegisterPopup.btn.register">
+            <de><![CDATA[Jetzt registrieren]]></de>
         </locale>
 
     </groups>

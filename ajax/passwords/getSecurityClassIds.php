@@ -15,6 +15,6 @@ use QUI\Utils\Security\Orthos;
         $passwordIds = Orthos::clearArray(json_decode($passwordIds, true));
         return Passwords::getSecurityClassIds($passwordIds);
     },
-    array('passwordIds'),
-    'Permission::checkAdminUser'
+    ['passwordIds'],
+    'Permission::checkUser'
 );

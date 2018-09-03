@@ -11,7 +11,7 @@ use \Sequry\Core\Security\Handler\Authentication;
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getAuthPluginIdsBySecurityClass',
     function ($securityClassIds) {
-        $authPluginIds    = array();
+        $authPluginIds    = [];
         $securityClassIds = json_decode($securityClassIds, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -30,6 +30,6 @@ use \Sequry\Core\Security\Handler\Authentication;
 
         return $authPluginIds;
     },
-    array('securityClassIds'),
-    'Permission::checkAdminUser'
+    ['securityClassIds'],
+    'Permission::checkUser'
 );

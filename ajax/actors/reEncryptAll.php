@@ -11,16 +11,16 @@ use Sequry\Core\Security\Handler\CryptoActors;
     'package_sequry_core_ajax_actors_reEncryptAll',
     function () {
         try {
-            $CryptoUser     = CryptoActors::getCryptoUser();
+            $CryptoUser = CryptoActors::getCryptoUser();
             $CryptoUser->reEncryptAllKeys();
         } catch (QUI\Exception $Exception) {
             QUI::getMessagesHandler()->addError(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'message.ajax.reEncryptAll.error',
-                    array(
+                    [
                         'error' => $Exception->getMessage()
-                    )
+                    ]
                 )
             );
 
@@ -28,7 +28,7 @@ use Sequry\Core\Security\Handler\CryptoActors;
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_actors_reEncryptAll -> '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -50,6 +50,6 @@ use Sequry\Core\Security\Handler\CryptoActors;
 
         return true;
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

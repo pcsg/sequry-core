@@ -15,6 +15,6 @@ use Sequry\Core\Security\Handler\Recovery;
         $AuthPlugin = Authentication::getAuthPlugin((int)$authPluginId);
         return Recovery::getRecoveryCodeId($AuthPlugin);
     },
-    array('authPluginId'),
-    'Permission::checkAdminUser'
+    ['authPluginId'],
+    'Permission::checkUser'
 );

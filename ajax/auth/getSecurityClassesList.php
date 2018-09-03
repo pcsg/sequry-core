@@ -7,13 +7,11 @@ use Sequry\Core\Security\Handler\Authentication;
  *
  * @return array
  */
-function package_sequry_core_ajax_auth_getSecurityClassesList()
-{
-    return Authentication::getSecurityClassesList();
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getSecurityClassesList',
-    array(),
-    'Permission::checkAdminUser'
+    function () {
+        return Authentication::getSecurityClassesList();
+    },
+    [],
+    'Permission::checkUser'
 );

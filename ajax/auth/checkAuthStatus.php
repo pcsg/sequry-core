@@ -12,10 +12,10 @@ use \Sequry\Core\Security\Authentication\Plugin;
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_checkAuthStatus',
     function ($authPluginIds) {
-        $authStatus = array(
-            'authPlugins'      => array(),
+        $authStatus = [
+            'authPlugins'      => [],
             'authenticatedAll' => false
-        );
+        ];
 
         $authPluginIds = json_decode($authPluginIds, true);
         $authCounter   = 0;
@@ -47,6 +47,6 @@ use \Sequry\Core\Security\Authentication\Plugin;
 
         return $authStatus;
     },
-    array('authPluginIds'),
-    'Permission::checkAdminUser'
+    ['authPluginIds'],
+    'Permission::checkUser'
 );

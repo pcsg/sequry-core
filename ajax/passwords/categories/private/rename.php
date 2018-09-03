@@ -22,9 +22,9 @@ QUI::$Ajax->registerFunction(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'message.ajax.passwords.categories.private.rename.error',
-                    array(
+                    [
                         'error' => $Exception->getMessage()
-                    )
+                    ]
                 )
             );
 
@@ -32,7 +32,7 @@ QUI::$Ajax->registerFunction(
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_passwords_categories_private_rename'
-                . ' -> ' . $Exception->getMessage()
+                .' -> '.$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -54,6 +54,6 @@ QUI::$Ajax->registerFunction(
 
         return true;
     },
-    array('id', 'title'),
-    'Permission::checkAdminUser'
+    ['id', 'title'],
+    'Permission::checkUser'
 );

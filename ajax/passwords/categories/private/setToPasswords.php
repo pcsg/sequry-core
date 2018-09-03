@@ -29,7 +29,7 @@ QUI::$Ajax->registerFunction(
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_passwords_categories_private_setToPasswords -> '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -51,6 +51,6 @@ QUI::$Ajax->registerFunction(
 
         return true;
     },
-    array('passwordIds', 'categoryIds'),
-    'Permission::checkAdminUser'
+    ['passwordIds', 'categoryIds'],
+    'Permission::checkUser'
 );

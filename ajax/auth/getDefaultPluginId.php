@@ -9,9 +9,9 @@ use Sequry\Core\Security\Handler\Authentication;
  */
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getDefaultPluginId',
-    function() {
+    function () {
         return Authentication::getDefaultAuthPluginId();
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

@@ -8,15 +8,13 @@ use Sequry\Core\Security\Handler\Passwords;
  * @param integer $passwordId - ID of password
  * @return array - password data
  */
-function package_sequry_core_ajax_passwords_getShareData($passwordId)
-{
-    $passwordId = (int)$passwordId;
-    // get password data
-    return Passwords::get($passwordId)->getShareData();
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_passwords_getShareData',
-    array('passwordId'),
-    'Permission::checkAdminUser'
+    function ($passwordId) {
+        $passwordId = (int)$passwordId;
+        // get password data
+        return Passwords::get($passwordId)->getShareData();
+    },
+    ['passwordId'],
+    'Permission::checkUser'
 );

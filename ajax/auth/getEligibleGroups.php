@@ -8,26 +8,25 @@ use Sequry\Core\Security\Handler\Authentication;
  * @param integer $securityClassId - ID of security class
  * @return array
  */
-function package_sequry_core_ajax_auth_getEligibleGroups($securityClassId)
-{
-    $SecurityClass     = Authentication::getSecurityClass((int)$securityClassId);
-    $eligibleGroupIds  = $SecurityClass->getGroupIds();
-    $eligibleGroupData = array();
-
-    foreach ($eligibleGroupIds as $groupId) {
-        $Group = QUI::getGroups()->get($groupId);
-
-        $eligibleGroupData[] = array(
-            'id'   => $Group->getId(),
-            'name' => $Group->getAttribute('name')
-        );
-    }
-
-    return $eligibleGroupData;
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getEligibleGroups',
-    array('securityClassId'),
-    'Permission::checkAdminUser'
+    function ($securityClassId)
+    {
+        $SecurityClass     = Authentication::getSecurityClass((int)$securityClassId);
+        $eligibleGroupIds  = $SecurityClass->getGroupIds();
+        $eligibleGroupData = [];
+
+        foreach ($eligibleGroupIds as $groupId) {
+            $Group = QUI::getGroups()->get($groupId);
+
+            $eligibleGroupData[] = [
+                'id'   => $Group->getId(),
+                'name' => $Group->getAttribute('name')
+            ];
+        }
+
+        return $eligibleGroupData;
+    },
+    ['securityClassId'],
+    'Permission::checkUser'
 );

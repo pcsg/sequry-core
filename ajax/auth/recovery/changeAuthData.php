@@ -34,9 +34,9 @@ QUI::$Ajax->registerFunction(
                 QUI::getLocale()->get(
                     'sequry/core',
                     'error.auth.changeauth',
-                    array(
+                    [
                         'error' => $Exception->getMessage()
-                    )
+                    ]
                 )
             );
 
@@ -44,7 +44,7 @@ QUI::$Ajax->registerFunction(
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'AJAX :: package_sequry_core_ajax_auth_recovery_changeAuthData -> '
-                . $Exception->getMessage()
+                .$Exception->getMessage()
             );
 
             QUI::getMessagesHandler()->addError(
@@ -66,6 +66,6 @@ QUI::$Ajax->registerFunction(
 
         return $recoveryCode;
     },
-    array('authPluginId', 'newAuthData'),
-    'Permission::checkAdminUser'
+    ['authPluginId', 'newAuthData'],
+    'Permission::checkUser'
 );

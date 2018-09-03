@@ -357,8 +357,8 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
             this.Loader.show();
 
-            Passwords.isSetupComplete().then(function (setupComplete) {
-                if (setupComplete) {
+            Passwords.getSetupStatus().then(function (SetupStatus) {
+                if (SetupStatus.setupComplete) {
                     self.refresh().then(function () {
                         var pwId = self.getAttribute('passwordId');
 
@@ -375,12 +375,36 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
                 self.getButtons('add').disable();
 
-                new Element('div', {
-                    'class': 'pcsg-gpm-passwords-panel-setupincomplete',
-                    html   : '<div>' +
-                    QUILocale.get(lg, 'controls.password.panel.setup_incomplete') +
-                    '</div>'
-                }).inject(self.$Elm);
+                if (SetupStatus.setupWizardInstalled) {
+                    var Info = new Element('div', {
+                        'class': 'pcsg-gpm-passwords-panel-setupincomplete',
+                        html   : '<div>' +
+                            QUILocale.get(lg, 'controls.password.panel.setup_incomplete_wizard') +
+                            '</div>'
+                    }).inject(self.$Elm);
+
+                    new QUIButton({
+                        text     : QUILocale.get('sequry/setup-wizard', 'controls.SetupPanel.title'),
+                        textimage: 'fa fa-map-signs',
+                        events   : {
+                            onClick: function () {
+                                require([
+                                    'package/sequry/setup-wizard/bin/controls/SetupPanel',
+                                    'utils/Panels'
+                                ], function (SetupPanel, PanelUtils) {
+                                    PanelUtils.openPanelInTasks(new SetupPanel());
+                                }.bind(this));
+                            }
+                        }
+                    }).inject(Info.getElement('div'));
+                } else {
+                    new Element('div', {
+                        'class': 'pcsg-gpm-passwords-panel-setupincomplete',
+                        html   : '<div>' +
+                            QUILocale.get(lg, 'controls.password.panel.setup_incomplete') +
+                            '</div>'
+                    }).inject(self.$Elm);
+                }
             });
         },
 
@@ -453,6 +477,17 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @return {Promise}
          */
         refresh: function () {
+
+
+            // @todo just testing RegisterPopup
+            //require([
+            //    'package/sequry/core/bin/controls/auth/RegisterPopup'
+            //], function(RegisterPopup) {
+            //    new RegisterPopup({
+            //        authPluginId: 3
+            //    }).open();
+            //});
+
             var SearchIcon = this.$SearchInput.getElement('span');
 
             if (this.$searchUsed) {
@@ -687,16 +722,15 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                         Share.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
                     }
 
-                    if (Data.canDelete) {
-                        Delete.addEvent('click', FuncActionDelete);
-                    } else {
-                        Delete.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
-                    }
-
                     Edit.addEvent('click', FuncActionEdit);
                 } else {
                     Share.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
                     Edit.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
+                }
+
+                if (Data.canDelete) {
+                    Delete.addEvent('click', FuncActionDelete);
+                } else {
                     Delete.addClass('pcsg-gpm-passwords-panel-table-action-disabled');
                 }
 
@@ -707,18 +741,18 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                             Row.owner = new Element('div', {
                                 'class': 'pcsg-gpm-passwords-panel-table-owner',
                                 html   : '<span class="fa fa-user"></span>' +
-                                '<span>' +
-                                QUILocale.get(
-                                    lg,
-                                    'controls.gpm.passwords.panel.tbl.owner.myself'
-                                ) +
-                                '</span>'
+                                    '<span>' +
+                                    QUILocale.get(
+                                        lg,
+                                        'controls.gpm.passwords.panel.tbl.owner.myself'
+                                    ) +
+                                    '</span>'
                             });
                         } else {
                             Row.owner = new Element('div', {
                                 'class': 'pcsg-gpm-passwords-panel-table-owner',
                                 html   : '<span class="fa fa-user"></span>' +
-                                '<span>' + Data.ownerName + '</span>'
+                                    '<span>' + Data.ownerName + '</span>'
                             });
                         }
                         break;
@@ -727,7 +761,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                         Row.owner = new Element('div', {
                             'class': 'pcsg-gpm-passwords-panel-table-owner',
                             html   : '<span class="fa fa-users"></span>' +
-                            '<span>' + Data.ownerName + '</span>'
+                                '<span>' + Data.ownerName + '</span>'
                         });
                         break;
                 }
@@ -858,16 +892,16 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                 maxWidth   : 500,
                 closeButton: true,
                 content    : '<div class="pcsg-gpm-passwords-delete-info">' +
-                '<h1 class="pcsg-gpm-passwords-delete-info-title">' +
-                QUILocale.get(lg, 'gpm.passwords.panel.delete.popup.info.title') +
-                '</h1>' +
-                '<span class="pcsg-gpm-passwords-delete-info-description">' +
-                QUILocale.get(lg, 'gpm.passwords.panel.delete.popup.info.description', {
-                    passwordId   : RowData.id,
-                    passwordTitle: RowData.title
-                }) +
-                '</span>' +
-                '</div>'
+                    '<h1 class="pcsg-gpm-passwords-delete-info-title">' +
+                    QUILocale.get(lg, 'gpm.passwords.panel.delete.popup.info.title') +
+                    '</h1>' +
+                    '<span class="pcsg-gpm-passwords-delete-info-description">' +
+                    QUILocale.get(lg, 'gpm.passwords.panel.delete.popup.info.description', {
+                        passwordId   : RowData.id,
+                        passwordTitle: RowData.title
+                    }) +
+                    '</span>' +
+                    '</div>'
             });
 
             DeletePopup.open();
@@ -904,13 +938,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @param {number} passwordId
          */
         viewPassword: function (passwordId) {
-            var self    = this;
-            var RowData = this.$getRowDataByPasswordId(passwordId);
-            var canEdit = false;
-
-            if (RowData) {
-                canEdit = RowData.isOwner;
-            }
+            var self = this;
 
             this.Loader.show();
 
@@ -922,7 +950,6 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
                         var View = new PasswordView({
                             passwordId: passwordId,
-                            //editPublicCategories: canEdit,
                             events    : {
                                 onLoaded: function () {
                                     self.Loader.hide();
@@ -934,31 +961,6 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                                 }
                             }
                         }).inject(Sheet.getContent());
-
-                        if (!canEdit) {
-                            return;
-                        }
-
-                        // edit btn
-                        new QUIButton({
-                            text     : QUILocale.get(lg,
-                                'controls.gpm.passwords.panel.view.button.edit'
-                            ),
-                            textimage: 'fa fa-edit',
-                            styles   : {
-                                float : 'none',
-                                margin: '12px 5px'
-                            },
-                            events   : {
-                                onClick: function () {
-                                    Sheet.destroy();
-                                    self.editPassword(passwordId);
-                                }
-                            }
-                        }).inject(
-                            Sheet.getButtons().getElement('.qui-panel-sheet-buttons'),
-                            'top'
-                        );
                     },
                     onClose: function (Sheet) {
                         Sheet.destroy();
@@ -1097,9 +1099,11 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
             });
 
             this.createSheet({
-                title : QUILocale.get(lg, 'gpm.passwords.panel.link.title'),
+                title : QUILocale.get(lg, 'gpm.passwords.panel.link.title', {
+                    passwordId: passwordId
+                }),
                 events: {
-                    onShow : function (Sheet) {
+                    onShow  : function (Sheet) {
                         Sheet.getContent().setStyle('padding', 20);
 
                         LinkList.addEvents({
@@ -1115,10 +1119,10 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
 
                         LinkList.inject(Sheet.getContent());
                     },
-                    onResize: function() {
+                    onResize: function () {
                         LinkList.resize();
                     },
-                    onClose: function (Sheet) {
+                    onClose : function (Sheet) {
                         Sheet.destroy();
                     }
                 }
@@ -1131,8 +1135,8 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @param {number|false} catId - ID or false if no category
          */
         setSearchCategory: function (catId) {
-            this.$SearchParams.categoryId        = catId;
-            this.$SearchParams.categoryIdPrivate = false;
+            this.$SearchParams.categoryIds        = catId ? [catId] : false;
+            this.$SearchParams.categoryIdsPrivate = false;
         },
 
         /**
@@ -1141,8 +1145,8 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
          * @param {number|false} catId - ID or false if no category
          */
         setSearchCategoryPrivate: function (catId) {
-            this.$SearchParams.categoryIdPrivate = catId;
-            this.$SearchParams.categoryId        = false;
+            this.$SearchParams.categoryIdsPrivate = catId ? [catId] : false;
+            this.$SearchParams.categoryIds        = false;
         },
 
         /**
@@ -1760,7 +1764,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                                 }
                             });
 
-                            (function() {
+                            (function () {
                                 Input.focus();
                             }).delay(200);
                         }

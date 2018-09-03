@@ -5,3 +5,12 @@
 .pcsg-gpm-password-payload-table {
     border: 1px solid #4C7BFF;
 }
+
+.sequry-core-password-create-payload {
+    border: 2px solid #aa1317;
+}
+
+.sequry-core-password-create-payload > thead th {
+    background-color: #aa1317;
+    color: #f2f2f2;
+}

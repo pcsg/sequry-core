@@ -12,9 +12,9 @@ use \Sequry\Core\Security\Handler\Authentication;
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_checkSecurityClassAuthStatus',
     function ($securityClassIds) {
-        $authStatus = array(
+        $authStatus = [
             'authenticatedAll' => false
-        );
+        ];
 
         $securityClassIds = json_decode($securityClassIds, true);
         $authCounter      = 0;
@@ -38,6 +38,6 @@ use \Sequry\Core\Security\Handler\Authentication;
 
         return $authStatus;
     },
-    array('securityClassIds'),
-    'Permission::checkAdminUser'
+    ['securityClassIds'],
+    'Permission::checkUser'
 );

@@ -6,6 +6,7 @@
 
 namespace Sequry\Core\Actors;
 
+use League\CLImate\TerminalObject\Basic\Table;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Events;
 use Sequry\Core\Exception\Exception;
@@ -786,19 +787,18 @@ class CryptoUser extends QUI\Users\User
         $binds     = [];
         $where     = [];
 
-        $passwordIds = $this->getPasswordIds();
-        $Grid        = new QUI\Utils\Grid($searchParams);
-        $gridParams  = $Grid->parseDBParams($searchParams);
+        $passwordIds                = $this->getPasswordIds();
+        $Grid                       = new QUI\Utils\Grid($searchParams);
+        $gridParams                 = $Grid->parseDBParams($searchParams);
+        $privateCategoryPasswordIds = [];
 
         // private category filter
-        if (isset($searchParams['categoryIdPrivate']) &&
-            !empty($searchParams['categoryIdPrivate'])
+        if (isset($searchParams['categoryIdsPrivate']) &&
+            !empty($searchParams['categoryIdsPrivate'])
         ) {
-            $categoryPasswordIds = $this->getPrivatePasswordIdsByCategory(
-                $searchParams['categoryIdPrivate']
+            $privateCategoryPasswordIds = $this->getPrivatePasswordIdsByCategoies(
+                $searchParams['categoryIdsPrivate']
             );
-
-            $passwordIds = array_intersect($passwordIds, $categoryPasswordIds);
         }
 
         // check if passwords found for this user - if not return empty list
@@ -880,12 +880,32 @@ class CryptoUser extends QUI\Users\User
             }
         }
 
-        if (!empty($searchParams['categoryId'])) {
-            $where[]             = 'data.`categories` LIKE :categoryId';
-            $binds['categoryId'] = [
-                'value' => '%,'.(int)$searchParams['categoryId'].',%',
-                'type'  => \PDO::PARAM_STR
-            ];
+        if (!empty($searchParams['categoryIds'])
+            && is_array($searchParams['categoryIds'])) {
+            $whereOR = [];
+            $i       = 0;
+
+            foreach ($searchParams['categoryIds'] as $categoryId) {
+                $whereOR[]              = 'data.`categories` LIKE :categoryId'.$i;
+                $binds['categoryId'.$i] = [
+                    'value' => '%,'.(int)$categoryId.',%',
+                    'type'  => \PDO::PARAM_STR
+                ];
+
+                $i++;
+            }
+
+            if (!empty($whereOR)) {
+                if (!empty($privateCategoryPasswordIds)) {
+                    $whereOR[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
+                }
+
+                $where[] = '('.implode(' OR ', $whereOR).')';
+            } elseif (!empty($privateCategoryPasswordIds)) {
+                $where[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
+            }
+        } elseif (!empty($privateCategoryPasswordIds)) {
+            $where[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
         }
 
         if (!empty($searchParams['search']['uncategorized'])) {
@@ -1039,14 +1059,16 @@ class CryptoUser extends QUI\Users\User
             $this
         );
 
+        $isSU = QUI::getUserBySession()->isSU();
+
         foreach ($result as $row) {
             $isOwner        = in_array($row['id'], $ownerPasswordIds);
             $row['isOwner'] = $isOwner;
 
             if (in_array($row['id'], $directAccessPasswordIds)) {
                 $row['access']    = 'user';
-                $row['canShare']  = $canShareOwn;
-                $row['canDelete'] = true;
+                $row['canShare']  = $isOwner && $canShareOwn;
+                $row['canDelete'] = $isOwner || $isSU;
             } else {
                 $isGroupAdminUser = false;
 
@@ -1056,21 +1078,26 @@ class CryptoUser extends QUI\Users\User
 
                 $row['access']    = 'group';
                 $row['canShare']  = $canShareGroup || $isGroupAdminUser;
-                $row['canDelete'] = $canDeleteGroup || $isGroupAdminUser;
+                $row['canDelete'] = $canDeleteGroup || $isGroupAdminUser || $isSU;
             }
 
             $row['dataType'] = PasswordTypesHandler::getTypeTitle($row['dataType']);
 
-            switch ((int)$row['ownerType']) {
-                case Password::OWNER_TYPE_USER:
-                    $row['canLink']   = $isOwner;
-                    $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getName();
-                    break;
+            try {
+                switch ((int)$row['ownerType']) {
+                    case Password::OWNER_TYPE_USER:
+                        $row['canLink']   = $isOwner;
+                        $row['ownerName'] = QUI::getUsers()->get($row['ownerId'])->getName();
+                        break;
 
-                case Password::OWNER_TYPE_GROUP:
-                    $row['canLink']   = $isOwner && $canLinkPassword;
-                    $row['ownerName'] = QUI::getGroups()->get($row['ownerId'])->getName();
-                    break;
+                    case Password::OWNER_TYPE_GROUP:
+                        $row['canLink']   = $isOwner && $canLinkPassword;
+                        $row['ownerName'] = QUI::getGroups()->get($row['ownerId'])->getName();
+                        break;
+                }
+            } catch (\Exception $Exception) {
+                QUI\System\Log::writeException($Exception);
+                continue;
             }
 
             $passwords[] = $row;
@@ -1175,27 +1202,39 @@ class CryptoUser extends QUI\Users\User
     }
 
     /**
-     * Get IDs of all passwords belonging to a private password category
+     * Get IDs of all passwords in the given (private!) category IDs
      *
-     * @param $categoryId
+     * @param int[] $categoryIds
      * @param QUI\Users\User $User (optional) - category owner (if omitted = session user)
      * @return array
      */
-    public function getPrivatePasswordIdsByCategory($categoryId, $User = null)
+    public function getPrivatePasswordIdsByCategoies($categoryIds, $User = null)
     {
-        $result = QUI::getDataBase()->fetch([
-            'select' => [
-                'dataId'
-            ],
-            'from'   => Tables::usersToPasswordMeta(),
-            'where'  => [
-                'userId'     => $this->id,
-                'categories' => [
-                    'type'  => '%LIKE%',
-                    'value' => ','.(int)$categoryId.','
-                ]
-            ]
-        ]);
+        $PDO = QUI::getDataBase()->getPDO();
+
+        $sql     = "SELECT `dataId` FROM ".Tables::usersToPasswordMeta();
+        $where   = [
+            '`userId` = '.$this->id
+        ];
+        $whereOr = [];
+
+        foreach ($categoryIds as $categoryId) {
+            $whereOr[] = '`categories` LIKE "%,'.(int)$categoryId.',%"';
+        }
+
+        $where[] = '('.implode(" OR ", $whereOr).')';
+        $sql     .= " WHERE ".implode(" AND ", $where);
+
+        $Stmt = $PDO->prepare($sql);
+
+        try {
+            $Stmt->execute();
+            $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::addError('CryptoUser getPasswords() Database error :: '.$Exception->getMessage());
+
+            return [];
+        }
 
         $passwordIds = [];
 
@@ -1264,6 +1303,108 @@ class CryptoUser extends QUI\Users\User
         }
 
         return $nonRegisteredAuthPluginIds;
+    }
+
+    /**
+     * Get permission list for a specific password
+     *
+     * @param int $passwordId
+     * @return string[]
+     * @throws \Sequry\Core\Exception\Exception
+     */
+    public function getPasswordPermissions($passwordId)
+    {
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
+                'id',
+                'ownerId',
+                'ownerType',
+                'securityClassId'
+            ],
+            'from'   => Tables::passwords(),
+            'where'  => [
+                'id' => $passwordId
+            ]
+        ]);
+
+        if (empty($result)) {
+            return [];
+        }
+
+        $permissions             = [];
+        $ownerPasswordIds        = $this->getOwnerPasswordIds();
+        $directAccessPasswordIds = $this->getPasswordIdsDirectAccess();
+
+        $canShareOwn = Permission::hasPermission(
+            Permissions::PASSWORDS_SHARE,
+            $this
+        );
+
+        $canShareGroup = Permission::hasPermission(
+            Permissions::PASSWORDS_SHARE_GROUP,
+            $this
+        );
+
+        $canDeleteGroup = Permission::hasPermission(
+            Permissions::PASSWORDS_DELETE_GROUP,
+            $this
+        );
+
+        $canLinkPassword = Permission::hasPermission(
+            Permissions::PASSWORDS_DELETE_GROUP,
+            $this
+        );
+
+        $data = current($result);
+
+        $isOwner = in_array($data['id'], $ownerPasswordIds);
+        $isSU    = QUI::getUserBySession()->isSU();
+
+        if ($isOwner) {
+            $permissions[] = 'edit';
+        }
+
+        if (in_array($data['id'], $directAccessPasswordIds)) {
+            if ($isOwner && $canShareOwn) {
+                $permissions[] = 'share';
+            }
+
+            if ($isOwner || $isSU) {
+                $permissions[] = 'delete';
+            }
+        } else {
+            $isGroupAdminUser = false;
+
+            if ($data['ownerType'] === Password::OWNER_TYPE_GROUP) {
+                $isGroupAdminUser = CryptoActors::getCryptoGroup($data['ownerId'])->isAdminUser($this);
+            }
+
+            if ($canShareGroup || $isGroupAdminUser) {
+                $permissions[] = 'share';
+            }
+
+            if ($canDeleteGroup || $isGroupAdminUser || $isSU) {
+                $permissions[] = 'delete';
+            }
+        }
+
+        switch ((int)$data['ownerType']) {
+            case Password::OWNER_TYPE_USER:
+                if ($isOwner) {
+                    $permissions[] = 'link';
+                }
+                break;
+
+            case Password::OWNER_TYPE_GROUP:
+                $SecurityClass = Authentication::getSecurityClass($data['securityClassId']);
+
+                if ($isOwner && $canLinkPassword && $SecurityClass->isPasswordLinksAllowed()) {
+                    $permissions[] = 'link';
+                }
+                break;
+        }
+
+        return $permissions;
     }
 
     /**

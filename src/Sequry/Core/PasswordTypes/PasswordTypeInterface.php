@@ -3,13 +3,13 @@
 namespace Sequry\Core\PasswordTypes;
 
 /**
- * Interface IPasswordType
+ * Interface PasswordTypeInterface
  *
  * Interface for different password input types
  *
  * @package Sequry\Core\PasswordTypes
  */
-interface IPasswordType
+interface PasswordTypeInterface
 {
     /**
      * Get view template (just HTML, no data inserted)
@@ -27,10 +27,9 @@ interface IPasswordType
     public static function getEditHtml();
 
     /**
-     * Get content that is copied by a copy action
+     * Get password type icon (Fontawesome)
      *
-     * @param array $payload - password payload
-     * @return string - copy content
+     * @return string - Full fontawesome icon class name
      */
-    public static function getCopyContent($payload);
+    public static function getIcon();
 }

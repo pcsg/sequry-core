@@ -10,10 +10,9 @@ use \Sequry\Core\Security\Handler\CryptoActors;
  */
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_actors_canUsePasswordManager',
-    function ()
-    {
+    function () {
         return CryptoActors::getCryptoUser()->canUsePasswordManager();
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );

@@ -4,8 +4,8 @@
  * @module package/sequry/core/bin/controls/password/View
  * @author www.pcsg.de (Patrick Müller)
  *
- * @event onLoaded
- * @event onClose
+ * @event onLoaded [this]
+ * @event onClose [this]
  */
 define('package/sequry/core/bin/controls/password/View', [
 
@@ -21,10 +21,13 @@ define('package/sequry/core/bin/controls/password/View', [
     'package/sequry/core/bin/Categories',
     'package/sequry/core/bin/controls/utils/InputButtons',
 
+    'Mustache',
+
+    'text!package/sequry/core/bin/controls/password/View.html',
     'css!package/sequry/core/bin/controls/password/View.css'
 
-], function (QUIControl, QUILoader, QUILocale, Actors,
-             Passwords, CategorySelect, CategorySelectPrivate, Categories, InputButtons) {
+], function (QUIControl, QUILoader, QUILocale, Actors, Passwords, CategorySelect, CategorySelectPrivate,
+             Categories, InputButtons, Mustache, template) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -36,12 +39,13 @@ define('package/sequry/core/bin/controls/password/View', [
 
         Binds: [
             '$onInject',
-            '$setPrivateCategories'
+            '$setPrivateCategories',
+            '$onMenuItemClick'
         ],
 
         options: {
-            'passwordId'          : false,   // id of the password
-            'editPublicCategories': false // can edit public categories
+            passwordId          : false,   // id of the password
+            editPublicCategories: false // can edit public categories
         },
 
         initialize: function (options) {
@@ -51,7 +55,9 @@ define('package/sequry/core/bin/controls/password/View', [
                 onInject: this.$onInject
             });
 
-            this.Loader = new QUILoader();
+            this.$PayloadContent = null;
+            this.$Menu           = null;
+            this.Loader          = new QUILoader();
         },
 
         /**
@@ -62,12 +68,19 @@ define('package/sequry/core/bin/controls/password/View', [
         create: function () {
             this.$Elm = this.parent();
 
+            var lgPrefix = 'controls.passsword.view.template.';
+
             this.$Elm.set({
-                'class': 'pcsg-gpm-password-view',
-                html   : '<p class="pcsg-gpm-password-view-payload">' +
-                QUILocale.get(lg, 'password.view.restricted.info') +
-                '</p>'
+                'class': 'sequry-core-password-view',
+                html   : Mustache.render(template, {
+                    loadingInfo: QUILocale.get(lg, lgPrefix + 'loadingInfo')
+                })
             });
+
+            this.$Menu           = this.$Elm.getElement('.sequry-core-password-view-menu');
+            this.$PayloadContent = this.$Elm.getElement('.sequry-core-password-view-content');
+
+            this.$Menu.getElements('.sequry-core-password-view-menu-entry').addEvent('click', this.$onMenuItemClick);
 
             this.Loader.inject(this.$Elm);
 
@@ -90,18 +103,31 @@ define('package/sequry/core/bin/controls/password/View', [
                     return;
                 }
 
-                Passwords.getView(passwordId).then(function (viewHtml) {
-                        if (!viewHtml) {
+                Passwords.getView(passwordId).then(function (ViewData) {
+                        if (!ViewData) {
                             return;
                         }
 
-                        self.$Elm.set(
+                        self.$PayloadContent.set(
                             'html',
-                            viewHtml
+                            ViewData.viewHtml
                         );
 
+                        // enable menu buttons
+                        for (var i = 0, len = ViewData.permissions.length; i < len; i++) {
+                            var MenuBtn = self.$Menu.getElement(
+                                '.sequry-core-password-view-menu-entry[data-action="' + ViewData.permissions[i] + '"]'
+                            );
+
+                            if (MenuBtn) {
+                                MenuBtn.removeClass('sequry-core-password-view-menu-entry-locked');
+                            }
+                        }
+
+                        // category handling
+
                         var CategoryPrivateElm = self.$Elm.getElement(
-                            '.pcsg-gpm-password-view-info-categories-private'
+                            '.sequry-core-password-view-info-categories-private'
                         );
 
                         var CategoryPrivate = new CategorySelectPrivate({
@@ -121,7 +147,7 @@ define('package/sequry/core/bin/controls/password/View', [
 
                         // public categories
                         var CategoriesPublicElm = self.$Elm.getElement(
-                            '.pcsg-gpm-password-view-info-categories-public'
+                            '.sequry-core-password-view-info-categories-public'
                         );
 
                         var Categories = new CategorySelect({
@@ -138,13 +164,49 @@ define('package/sequry/core/bin/controls/password/View', [
                         }
 
                         self.$parseView();
-                        self.fireEvent('loaded');
+                        self.fireEvent('loaded', [self]);
                     },
                     function () {
-                        self.fireEvent('close');
+                        self.fireEvent('close', [self]);
                     }
                 );
             });
+        },
+
+        /**
+         * Event: onClick of a Password action menu item
+         *
+         * @param {Object} event
+         */
+        $onMenuItemClick: function (event) {
+            var MenuItem;
+            var passwordId = this.getAttribute('passwordId');
+
+            if (event.target.hasClass('sequry-core-password-view-menu-entry')) {
+                MenuItem = event.target;
+            } else {
+                MenuItem = event.target.getParent('.sequry-core-password-view-menu-entry');
+            }
+
+            switch (MenuItem.get('data-action')) {
+                case 'edit':
+                    window.PasswordList.editPassword(passwordId);
+                    break;
+
+                case 'share':
+                    window.PasswordList.sharePassword(passwordId);
+                    break;
+
+                case 'link':
+                    window.PasswordList.linkPassword(passwordId);
+                    break;
+
+                case 'delete':
+                    window.PasswordList.deletePassword(passwordId);
+                    break;
+            }
+
+            this.fireEvent('close', [this]);
         },
 
         /**

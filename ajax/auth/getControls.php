@@ -11,7 +11,7 @@ use \Sequry\Core\Security\Handler\Authentication;
 \QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_getControls',
     function ($authPluginIds) {
-        $controls      = array();
+        $controls      = [];
         $authPluginIds = json_decode($authPluginIds, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -26,12 +26,12 @@ use \Sequry\Core\Security\Handler\Authentication;
                 continue;
             }
 
-            $controls[] = array(
+            $controls[] = [
                 'authPluginId' => $AuthPlugin->getId(),
                 'title'        => $AuthPlugin->getAttribute('title'),
                 'control'      => $AuthPlugin->getAuthenticationControl(),
                 'registered'   => $AuthPlugin->isRegistered()
-            );
+            ];
         }
 
         // sort by user priority
@@ -82,6 +82,6 @@ use \Sequry\Core\Security\Handler\Authentication;
 
         return $controls;
     },
-    array('authPluginIds'),
-    'Permission::checkAdminUser'
+    ['authPluginIds'],
+    'Permission::checkUser'
 );

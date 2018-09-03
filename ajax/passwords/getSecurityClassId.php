@@ -8,19 +8,17 @@ use Sequry\Core\Security\Handler\Passwords;
  * @param integer $passwordId - the id of the password object
  * @return int
  */
-function package_sequry_core_ajax_passwords_getSecurityClassId($passwordId)
-{
-    $securityClassIds = Passwords::getSecurityClassIds(array($passwordId));
-
-    if (empty($securityClassIds)) {
-        return false;
-    }
-
-    return current($securityClassIds);
-}
-
-\QUI::$Ajax->register(
+\QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_passwords_getSecurityClassId',
-    array('passwordId'),
-    'Permission::checkAdminUser'
+    function ($passwordId) {
+        $securityClassIds = Passwords::getSecurityClassIds([$passwordId]);
+
+        if (empty($securityClassIds)) {
+            return false;
+        }
+
+        return current($securityClassIds);
+    },
+    ['passwordId'],
+    'Permission::checkUser'
 );

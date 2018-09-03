@@ -1,7 +1,7 @@
 require.config({
     paths: {
         "ClipboardJS"  : URL_OPT_DIR + 'bin/clipboard/dist/clipboard',
-        "html5tooltips": URL_OPT_DIR + 'quiqqer/tooltips/bin/html5tooltips'
+        "html5tooltips": URL_OPT_DIR + 'bin/html5tooltipsjs/html5tooltips'
     }
 });
 
@@ -150,16 +150,14 @@ define('package/sequry/core/bin/controls/utils/InputButtons', [
                 text: function () {
                     var Elm = this.getAttribute('Elm');
 
+                    console.log(Elm.nodeName);
+
                     if (Elm.nodeName === 'INPUT') {
                         return Elm.value;
                     }
 
                     if (Elm.nodeName === 'DIV') {
-                        var children = Elm.getChildren();
-
-                        if (children.length) {
-                            return children[0].innerHTML.trim();
-                        }
+                        return Elm.innerHTML.replace(/<br\s*\/?>/mg,"\n");
                     }
 
                     return Elm.innerHTML.trim();

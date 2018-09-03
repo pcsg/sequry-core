@@ -8,7 +8,7 @@
 QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_passwords_link_generatePin',
     function () {
-        $pin = array();
+        $pin = [];
 
         for ($i = 0; $i < 6; $i++) {
             $pin[] = random_int(0, 9);
@@ -18,6 +18,6 @@ QUI::$Ajax->registerFunction(
 
         return implode('', $pin);
     },
-    array(),
-    'Permission::checkAdminUser'
+    [],
+    'Permission::checkUser'
 );
