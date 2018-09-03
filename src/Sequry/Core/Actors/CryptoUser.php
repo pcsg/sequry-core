@@ -787,19 +787,18 @@ class CryptoUser extends QUI\Users\User
         $binds     = [];
         $where     = [];
 
-        $passwordIds = $this->getPasswordIds();
-        $Grid        = new QUI\Utils\Grid($searchParams);
-        $gridParams  = $Grid->parseDBParams($searchParams);
+        $passwordIds                = $this->getPasswordIds();
+        $Grid                       = new QUI\Utils\Grid($searchParams);
+        $gridParams                 = $Grid->parseDBParams($searchParams);
+        $privateCategoryPasswordIds = [];
 
         // private category filter
         if (isset($searchParams['categoryIdsPrivate']) &&
             !empty($searchParams['categoryIdsPrivate'])
         ) {
-            $categoryPasswordIds = $this->getPrivatePasswordIdsByCategoies(
+            $privateCategoryPasswordIds = $this->getPrivatePasswordIdsByCategoies(
                 $searchParams['categoryIdsPrivate']
             );
-
-            $passwordIds = array_intersect($passwordIds, $categoryPasswordIds);
         }
 
         // check if passwords found for this user - if not return empty list
@@ -897,8 +896,16 @@ class CryptoUser extends QUI\Users\User
             }
 
             if (!empty($whereOR)) {
+                if (!empty($privateCategoryPasswordIds)) {
+                    $whereOR[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
+                }
+
                 $where[] = '('.implode(' OR ', $whereOR).')';
+            } elseif (!empty($privateCategoryPasswordIds)) {
+                $where[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
             }
+        } elseif (!empty($privateCategoryPasswordIds)) {
+            $where[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
         }
 
         if (!empty($searchParams['search']['uncategorized'])) {
