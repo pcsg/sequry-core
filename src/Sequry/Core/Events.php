@@ -516,9 +516,11 @@ class Events
             $Manager->setPermissions(
                 $Group,
                 [
-                    'gpm.cryptodata.create'      => true,
-                    'gpm.cryptodata.share'       => true,
-                    'gpm.cryptodata.share_group' => true
+                    'gpm.cryptodata.create'                          => true,
+                    'gpm.cryptodata.share'                           => true,
+                    'gpm.cryptodata.share_group'                     => true,
+                    'quiqqer.frontendUsers.profile.view.user.data'   => true,
+                    'quiqqer.frontendUsers.profile.view.user.avatar' => true
                 ],
                 QUI::getUsers()->getSystemUser()
             );
