@@ -25,7 +25,6 @@ define('package/sequry/core/bin/controls/password/Edit', [
     'package/sequry/core/bin/controls/categories/public/Select',
     'package/sequry/core/bin/controls/categories/private/Select',
 
-
     'text!package/sequry/core/bin/controls/password/Edit.html'
     //'css!package/sequry/core/bin/controls/password/Edit.css'
 
@@ -180,9 +179,9 @@ define('package/sequry/core/bin/controls/password/Edit', [
                 events: {
                     onLoaded: function () {
                         self.$insertData();
+                        self.$SecurityClassSelect.addEvent('onChange', self.$onSecurityClassChange);
                         self.fireEvent('loaded');
-                    },
-                    onChange: this.$onSecurityClassChange
+                    }
                 }
             }).inject(
                 SecurityClassElm
@@ -200,7 +199,9 @@ define('package/sequry/core/bin/controls/password/Edit', [
             }
 
             // set security class
-            this.$SecurityClassSelect.setValue(this.$PasswordData.securityClassId);
+            (function () {
+                self.$SecurityClassSelect.setValue(self.$PasswordData.securityClassId);
+            }).delay(500);
 
             // set category
             this.$CategorySelect.setValue(this.$PasswordData.categoryIds);
