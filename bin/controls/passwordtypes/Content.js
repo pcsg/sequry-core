@@ -4,17 +4,6 @@
  * @module package/sequry/core/bin/controls/passwordtypes/Content
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/auth/Authenticate
- * @require package/sequry/core/bin/controls/securityclasses/Select
- * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
- * @require text!package/sequry/core/bin/controls/passwordtypes/Content.html
- * @require css!package/sequry/core/bin/controls/passwordtypes/Content.css
- *
  * @event onLoaded
  */
 define('package/sequry/core/bin/controls/passwordtypes/Content', [
