@@ -78,6 +78,18 @@ define('package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow', [
 
             this.$Elm.addClass('pcsg-gpm-multisecurityclassauth');
 
+            this.addButton(new QUIButton({
+                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort.text'),
+                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
+                events: {
+                    onClick: function () {
+                        self.fireEvent('abort', [self]);
+                        self.close();
+                    }
+                }
+            }));
+
             this.$AuthBtn = new QUIButton({
                 'class': 'btn-green',
                 text   : QUILocale.get(lg, 'controls.authenticate.popup.btn.text'),
@@ -91,18 +103,6 @@ define('package/sequry/core/bin/controls/auth/MultiSecurityClassAuthWindow', [
             });
 
             this.addButton(this.$AuthBtn);
-
-            this.addButton(new QUIButton({
-                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort.text'),
-                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
-                title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
-                events: {
-                    onClick: function () {
-                        self.fireEvent('abort', [self]);
-                        self.close();
-                    }
-                }
-            }));
 
             // add authenticate button that is only enabled
             // when user has authenticated with all SecurityClasses

@@ -121,15 +121,6 @@ define('package/sequry/core/bin/controls/auth/AuthenticateAll', [
             AuthPopup.open();
 
             AuthPopup.addButton(new QUIButton({
-                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.text'),
-                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
-                title : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
-                events: {
-                    onClick: submitFunc
-                }
-            }));
-
-            AuthPopup.addButton(new QUIButton({
                 text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort.text'),
                 alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
                 title : QUILocale.get(lg, 'controls.authenticate.popup.btn.abort'),
@@ -138,6 +129,15 @@ define('package/sequry/core/bin/controls/auth/AuthenticateAll', [
                         self.fireEvent('abort');
                         AuthPopup.close();
                     }
+                }
+            }));
+
+            AuthPopup.addButton(new QUIButton({
+                text  : QUILocale.get(lg, 'controls.authenticate.popup.btn.text'),
+                alt   : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                title : QUILocale.get(lg, 'controls.authenticate.popup.btn'),
+                events: {
+                    onClick: submitFunc
                 }
             }));
 
