@@ -4,7 +4,7 @@ namespace Sequry\Core\Security\Modules\Hash;
 
 use Sequry\Core\Security\Interfaces\IHash;
 use QUI;
-use ParagonIE\Halite\Util;
+use ParagonIE\ConstantTime\Binary;
 use Sequry\Core\Security\HiddenString;
 
 /**
@@ -27,8 +27,8 @@ class Argon2 implements IHash
             $salt = \Sodium\randombytes_buf(\Sodium\CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
-            if (Util::safeStrlen($salt) > \Sodium\CRYPTO_PWHASH_SALTBYTES) {
-                $salt = Util::safeSubstr($salt, 0, \Sodium\CRYPTO_PWHASH_SALTBYTES);
+            if (Binary::safeStrlen($salt) > \Sodium\CRYPTO_PWHASH_SALTBYTES) {
+                $salt = Binary::safeSubstr($salt, 0, \Sodium\CRYPTO_PWHASH_SALTBYTES);
             }
         }
 

@@ -15,9 +15,9 @@ use Sequry\Core\Security\HiddenString;
 /**
  * This class provides a symmetric encryption API for the sequry/core module
  *
- * Uses asymmetric encryption from paragonie/halite 3.*
+ * Uses asymmetric encryption from paragonie/halite 4.*
  */
-class Halite3 implements IAsymmetricCrypto
+class Halite4 implements IAsymmetricCrypto
 {
     /**
      * Encrypts a plaintext string

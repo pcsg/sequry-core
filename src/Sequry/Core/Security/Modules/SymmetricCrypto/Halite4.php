@@ -14,9 +14,9 @@ use Sequry\Core\Security\Keys\Key;
 /**
  * This class provides an ecnryption API for the sequry/core module
  *
- * Uses symmetric encryption from paragonie/halite 3.*
+ * Uses symmetric encryption from paragonie/halite 4.*
  */
-class Halite3 implements ISymmetricCrypto
+class Halite4 implements ISymmetricCrypto
 {
     /**
      * Encrypts a plaintext string
@@ -76,9 +76,9 @@ class Halite3 implements ISymmetricCrypto
     {
         try {
             $HiddenCipherText = new ParagonieHiddenString($cipherText);
-            $HiddenKey        = new ParagonieHiddenString($Key->getValue());
+            $HiddenKey        = new ParagonieHiddenString($Key->getValue()->getString());
             $SecretKey        = new EncryptionKey($HiddenKey);
-            $HiddenPlainText  = Crypto::decrypt($HiddenCipherText, $SecretKey, true);
+            $HiddenPlainText  = Crypto::decrypt($cipherText, $SecretKey, true);
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 self::class . ' :: Ciphertext decryption failed: '

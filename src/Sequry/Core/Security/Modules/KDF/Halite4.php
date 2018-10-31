@@ -7,13 +7,13 @@ use ParagonIE\Halite\HiddenString as ParagonieHiddenString;
 use Sequry\Core\Security\Keys\Key;
 use QUI;
 use ParagonIE\Halite\KeyFactory;
-use ParagonIE\Halite\Util;
+use ParagonIE\ConstantTime\Binary;
 use Sequry\Core\Security\HiddenString;
 
 /**
  * This class provides a KDF (key derivation function) API for the sequry/core module
  */
-class Halite3 implements IKDF
+class Halite4 implements IKDF
 {
     /**
      * Derives a key from a string (and a salt)
@@ -26,11 +26,11 @@ class Halite3 implements IKDF
     public static function createKey(HiddenString $str, $salt = null)
     {
         if (is_null($salt)) {
-            $salt = \Sodium\randombytes_buf(\Sodium\CRYPTO_PWHASH_SALTBYTES);
+            $salt = \Sodium\randombytes_buf(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
-            if (Util::safeStrlen($salt) > \Sodium\CRYPTO_PWHASH_SALTBYTES) {
-                $salt = Util::safeSubstr($salt, 0, \Sodium\CRYPTO_PWHASH_SALTBYTES);
+            if (Binary::safeStrlen($salt) > \SODIUM_CRYPTO_PWHASH_SALTBYTES) {
+                $salt = Binary::safeSubstr($salt, 0, \SODIUM_CRYPTO_PWHASH_SALTBYTES);
             }
         }
 

@@ -17,7 +17,7 @@
     "quiqqer\/quiqqer": ">=1.1|dev-master|dev-dev",
     "quiqqer\/tooltips": ">=1.0|dev-master|dev-dev",
     "phpseclib\/phpseclib": "2.0.0",
-    "paragonie\/halite": "3.2.0",
+    "paragonie\/halite": "^4",
     "ext-bcmath": "*",
     "npm-asset\/clipboard": "1.5.16",
     "sequry/auth-password": ">=1.0|dev-master|dev-dev",
@@ -25,7 +25,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Sequry\\": "src/",
+      "Sequry\\Core\\": "src/Sequry/Core/",
       "TQ\\Shamir\\": "lib/tq/shamir/src/"
     }
   }
