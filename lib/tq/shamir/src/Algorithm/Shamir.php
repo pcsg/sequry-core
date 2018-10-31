@@ -14,6 +14,19 @@ use TQ\Shamir\Random\PhpGenerator;
  * @link    http://www.kennynet.co.uk/misc/shamir.class.txt
  *
  * @package TQ\Shamir\Algorithm
+ *
+ *
+ * Manual patches added:
+ *
+ * ------------------------------------------------------------------------
+ * [31.10.2018]
+ *
+ * All bcmod() results have to be typecast to int because since PHP7.2
+ * it returns a float.
+ *
+ * see Changelog: http://php.net/manual/en/function.bcmod.php
+ *
+ * ------------------------------------------------------------------------
  */
 class Shamir implements Algorithm, RandomGeneratorAware {
 
@@ -228,7 +241,7 @@ class Shamir implements Algorithm, RandomGeneratorAware {
 	 */
 	protected function modulo( $number ) {
 
-		$modulo = bcmod( $number, $this->prime );
+		$modulo = (int)bcmod( $number, $this->prime );
 
 		return ( $modulo < 0 ) ? bcadd( $modulo, $this->prime ) : $modulo;
 	}
@@ -247,7 +260,7 @@ class Shamir implements Algorithm, RandomGeneratorAware {
 			return array( $a, 1, 0 );
 		} else {
 			$div = floor( bcdiv( $a, $b ) );
-			$mod = bcmod( $a, $b );
+			$mod = (int)bcmod( $a, $b );
 			$decomp = $this->gcdD( $b, $mod );
 			return array( $decomp[0], $decomp[2], $decomp[1] - $decomp[2] * $div );
 		}
@@ -262,11 +275,11 @@ class Shamir implements Algorithm, RandomGeneratorAware {
 	 */
 	protected function inverseModulo( $number ) {
 
-		$number = bcmod( $number, $this->prime );
+		$number = (int)bcmod( $number, $this->prime );
 		$r = $this->gcdD( $this->prime, abs( $number ) );
 		$r = ( $number < 0 ) ? -$r[2] : $r[2];
 
-		return bcmod( bcadd( $this->prime, $r ), $this->prime );
+		return (int)bcmod( bcadd( $this->prime, $r ), $this->prime );
 	}
 
 
@@ -389,7 +402,7 @@ class Shamir implements Algorithm, RandomGeneratorAware {
 			return $toBase[$base10];
 		}
 		while($base10 != '0') {
-			$retVal = $toBase[bcmod( $base10, $toLen )] . $retVal;
+			$retVal = $toBase[(int)bcmod( $base10, $toLen )] . $retVal;
 			$base10 = bcdiv( $base10, $toLen, 0 );
 		}
 
@@ -560,7 +573,7 @@ class Shamir implements Algorithm, RandomGeneratorAware {
 			}
 			// convert each byte back into char
 			for( $byte = 1; $byte <= $bytes; ++$byte ) {
-				$char = bcmod( $temp, 256 );
+				$char = (int)bcmod( $temp, 256 );
 				$secret .= chr( $char );
 				$temp = bcdiv( bcsub( $temp, $char ), 256 );
 			}
