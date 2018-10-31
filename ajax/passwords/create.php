@@ -28,6 +28,9 @@ function package_sequry_core_ajax_passwords_create($passwordData)
 
         return false;
     } catch (\Exception $Exception) {
+
+        \QUI\System\Log::writeException($Exception);
+
         QUI\System\Log::addError(
             'AJAX :: package_sequry_core_ajax_passwords_create -> '
             . $Exception->getMessage()

@@ -11,7 +11,7 @@ use QUI;
  */
 class AsymmetricCrypto
 {
-    const CRYPTO_MODULE = 'Halite3'; // @todo in config auslagern
+    const CRYPTO_MODULE = 'Halite4'; // @todo in config auslagern
 
     /**
      * HashWrapper Class Object for the configured hash module
