@@ -13,10 +13,10 @@
     }
   ],
   "require": {
-    "php": ">=7.0",
+    "php": "^7.2",
     "quiqqer\/quiqqer": "^1.1|dev-master|dev-dev",
-    "quiqqer\/tooltips": "^1.0|*@dev",
-    "phpseclib\/phpseclib": "2.0.0",
+    "quiqqer\/tooltips": "^1|*@dev",
+    "phpseclib\/phpseclib": "^2",
     "paragonie\/halite": "^4",
     "ext-bcmath": "*",
     "npm-asset\/clipboard": "1.5.16",
