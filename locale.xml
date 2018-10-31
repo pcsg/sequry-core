@@ -609,6 +609,9 @@
         <locale name="message.ajax.actors.groups.getUnlockList.error">
             <de><![CDATA[Beim Freischalt-Vorgang ist ein Fehler aufgetreten:<br><br>[error]]]></de>
         </locale>
+        <locale name="message.ajax.actors.groups.getUnlockList.success">
+            <de><![CDATA[Die Freischaltungen wurden erfolgreich durchgeführt. Die jeweiligen Benutzer können nun auf alle Passwörter zugreifen, für die Sie eine Berechtigung haben.]]></de>
+        </locale>
 
         <!-- System -->
         <locale name="exception.system.auth.key.file.not.found">

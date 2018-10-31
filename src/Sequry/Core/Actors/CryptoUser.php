@@ -471,8 +471,8 @@ class CryptoUser extends QUI\Users\User
 
             if (!MAC::compare($accessDataMAC, $accessDataMACCheck)) {
                 QUI\System\Log::addCritical(
-                    'Password access data (uid #'.$row['userId'].', dataId #'.$row['dataId']
-                    .', keyPairId #'.$row['keyPairId'].' is possibly altered! MAC mismatch!'
+                    'Password access data (uid #' . $row['userId'] . ', dataId #' . $row['dataId']
+                    . ', keyPairId #' . $row['keyPairId'] . ' is possibly altered! MAC mismatch!'
                 );
 
                 // @todo eigenen 401 error code
@@ -568,7 +568,7 @@ class CryptoUser extends QUI\Users\User
 
         if (!MAC::compare($MACActual, $MACExpected)) {
             QUI\System\Log::addCritical(
-                'Group password key #'.$data['id'].' possibly altered. MAC mismatch!'
+                'Group password key #' . $data['id'] . ' possibly altered. MAC mismatch!'
             );
 
             // @todo eigenen 401 error code
@@ -591,8 +591,8 @@ class CryptoUser extends QUI\Users\User
             return new Key($passwordKeyDecryptedValue);
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'Could not build password key for password #'.$passwordId
-                .' with user #'.$this->getId()
+                'Could not build password key for password #' . $passwordId
+                . ' with user #' . $this->getId()
             );
 
             throw new QUI\Exception([
@@ -672,7 +672,7 @@ class CryptoUser extends QUI\Users\User
 
             if (!MAC::compare($MACActual, $MACExcpected)) {
                 QUI\System\Log::addCritical(
-                    'Group key part #'.$row['id'].' possibly altered. MAC mismatch!'
+                    'Group key part #' . $row['id'] . ' possibly altered. MAC mismatch!'
                 );
 
                 throw new QUI\Exception([
@@ -714,8 +714,8 @@ class CryptoUser extends QUI\Users\User
             return new Key(SecretSharing::recoverSecret($accessKeyParts));
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'Could not decrypt group key with user #'.$this->getId().' for group #'.$CryptoGroup->getId()
-                .' for securityclass #'.$SecurityClass->getId()
+                'Could not decrypt group key with user #' . $this->getId() . ' for group #' . $CryptoGroup->getId()
+                . ' for securityclass #' . $SecurityClass->getId()
             );
 
             throw new QUI\Exception([
@@ -756,8 +756,8 @@ class CryptoUser extends QUI\Users\User
             return new KeyPair($GroupKeyPair->getPublicKey()->getValue(), $groupPrivateKeyDecrypted);
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                'Could not decrypt group key pair (group #'.$CryptoGroup->getId().' | security class #'
-                .$SecurityClass->getId().'): '.$Exception->getMessage()
+                'Could not decrypt group key pair (group #' . $CryptoGroup->getId() . ' | security class #'
+                . $SecurityClass->getId() . '): ' . $Exception->getMessage()
             );
 
             throw new QUI\Exception([
@@ -820,16 +820,16 @@ class CryptoUser extends QUI\Users\User
                 'meta.`favorite`'
             ];
 
-            $sql = "SELECT ".implode(',', $selectFields);
+            $sql = "SELECT " . implode(',', $selectFields);
         }
 
         // JOIN user access meta table with password data table
-        $sql .= " FROM `".Tables::passwords()."` data, ";
-        $sql .= " `".Tables::usersToPasswordMeta()."` meta";
+        $sql .= " FROM `" . Tables::passwords() . "` data, ";
+        $sql .= " `" . Tables::usersToPasswordMeta() . "` meta";
 
         $where[] = 'data.`id` = meta.`dataId`';
-        $where[] = 'meta.`userId` = '.$this->id;
-        $where[] = 'data.`id` IN ('.implode(',', $passwordIds).')';
+        $where[] = 'meta.`userId` = ' . $this->id;
+        $where[] = 'data.`id` IN (' . implode(',', $passwordIds) . ')';
 
         if (!empty($searchParams['search']['searchterm'])) {
             $whereOR    = [];
@@ -846,7 +846,7 @@ class CryptoUser extends QUI\Users\User
             if ($searchTitle) {
                 $whereOR[]      = 'data.`title` LIKE :title';
                 $binds['title'] = [
-                    'value' => '%'.$searchTerm.'%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 ];
             }
@@ -854,13 +854,13 @@ class CryptoUser extends QUI\Users\User
             if ($searchDescription) {
                 $whereOR[]            = 'data.`description` LIKE :description';
                 $binds['description'] = [
-                    'value' => '%'.$searchTerm.'%',
+                    'value' => '%' . $searchTerm . '%',
                     'type'  => \PDO::PARAM_STR
                 ];
             }
 
             if (!empty($whereOR)) {
-                $where[] = '('.implode(' OR ', $whereOR).')';
+                $where[] = '(' . implode(' OR ', $whereOR) . ')';
             }
         }
 
@@ -875,7 +875,7 @@ class CryptoUser extends QUI\Users\User
                 }
 
                 if (!empty($pwTypes)) {
-                    $where[] = 'data.`dataType` IN (\''.implode('\',\'', $pwTypes).'\')';
+                    $where[] = 'data.`dataType` IN (\'' . implode('\',\'', $pwTypes) . '\')';
                 }
             }
         }
@@ -886,9 +886,9 @@ class CryptoUser extends QUI\Users\User
             $i       = 0;
 
             foreach ($searchParams['categoryIds'] as $categoryId) {
-                $whereOR[]              = 'data.`categories` LIKE :categoryId'.$i;
-                $binds['categoryId'.$i] = [
-                    'value' => '%,'.(int)$categoryId.',%',
+                $whereOR[]                = 'data.`categories` LIKE :categoryId' . $i;
+                $binds['categoryId' . $i] = [
+                    'value' => '%,' . (int)$categoryId . ',%',
                     'type'  => \PDO::PARAM_STR
                 ];
 
@@ -897,15 +897,15 @@ class CryptoUser extends QUI\Users\User
 
             if (!empty($whereOR)) {
                 if (!empty($privateCategoryPasswordIds)) {
-                    $whereOR[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
+                    $whereOR[] = 'data.`id` IN (' . implode(',', $privateCategoryPasswordIds) . ')';
                 }
 
-                $where[] = '('.implode(' OR ', $whereOR).')';
+                $where[] = '(' . implode(' OR ', $whereOR) . ')';
             } elseif (!empty($privateCategoryPasswordIds)) {
-                $where[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
+                $where[] = 'data.`id` IN (' . implode(',', $privateCategoryPasswordIds) . ')';
             }
         } elseif (!empty($privateCategoryPasswordIds)) {
-            $where[] = 'data.`id` IN ('.implode(',', $privateCategoryPasswordIds).')';
+            $where[] = 'data.`id` IN (' . implode(',', $privateCategoryPasswordIds) . ')';
         }
 
         if (!empty($searchParams['search']['uncategorized'])) {
@@ -926,7 +926,7 @@ class CryptoUser extends QUI\Users\User
                             break;
 
                         case 'owned':
-                            $where[] = 'data.`ownerId` = '.$this->id;
+                            $where[] = 'data.`ownerId` = ' . $this->id;
                             break;
                     }
                 }
@@ -940,7 +940,7 @@ class CryptoUser extends QUI\Users\User
                         continue;
                     }
 
-                    $whereOr[]    = 'data.`dataType` = :'.$type;
+                    $whereOr[]    = 'data.`dataType` = :' . $type;
                     $binds[$type] = [
                         'value' => $type,
                         'type'  => \PDO::PARAM_STR
@@ -948,14 +948,14 @@ class CryptoUser extends QUI\Users\User
                 }
 
                 if (!empty($whereOr)) {
-                    $where[] = '('.implode(' OR ', $whereOr).')';
+                    $where[] = '(' . implode(' OR ', $whereOr) . ')';
                 }
             }
         }
 
         // build WHERE query string
         if (!empty($where)) {
-            $sql .= " WHERE ".implode(" AND ", $where);
+            $sql .= " WHERE " . implode(" AND ", $where);
         }
 
         $orderFields = [];
@@ -988,12 +988,12 @@ class CryptoUser extends QUI\Users\User
                 default:
             }
 
-            $order = $orderPrefix.Orthos::clear($searchParams['sortOn']).'`';
+            $order = $orderPrefix . Orthos::clear($searchParams['sortOn']) . '`';
 
             if (isset($searchParams['sortBy']) &&
                 !empty($searchParams['sortBy'])
             ) {
-                $order .= " ".Orthos::clear($searchParams['sortBy']);
+                $order .= " " . Orthos::clear($searchParams['sortBy']);
             } else {
                 $order .= " ASC";
             }
@@ -1002,16 +1002,16 @@ class CryptoUser extends QUI\Users\User
         }
 
         if (!empty($orderFields)) {
-            $sql .= " ORDER BY ".implode(',', $orderFields);
+            $sql .= " ORDER BY " . implode(',', $orderFields);
         }
 
         if (!empty($gridParams['limit'])
             && !$countOnly
         ) {
-            $sql .= " LIMIT ".$gridParams['limit'];
+            $sql .= " LIMIT " . $gridParams['limit'];
         } else {
             if (!$countOnly) {
-                $sql .= " LIMIT ".(int)20;
+                $sql .= " LIMIT " . (int)20;
             }
         }
 
@@ -1019,7 +1019,7 @@ class CryptoUser extends QUI\Users\User
 
         // bind search values
         foreach ($binds as $var => $bind) {
-            $Stmt->bindValue(':'.$var, $bind['value'], $bind['type']);
+            $Stmt->bindValue(':' . $var, $bind['value'], $bind['type']);
         }
 
         // fetch information for all corresponding passwords
@@ -1027,7 +1027,7 @@ class CryptoUser extends QUI\Users\User
             $Stmt->execute();
             $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError('CryptoUser getPasswords() Database error :: '.$Exception->getMessage());
+            QUI\System\Log::addError('CryptoUser getPasswords() Database error :: ' . $Exception->getMessage());
 
             return [];
         }
@@ -1212,18 +1212,18 @@ class CryptoUser extends QUI\Users\User
     {
         $PDO = QUI::getDataBase()->getPDO();
 
-        $sql     = "SELECT `dataId` FROM ".Tables::usersToPasswordMeta();
+        $sql     = "SELECT `dataId` FROM " . Tables::usersToPasswordMeta();
         $where   = [
-            '`userId` = '.$this->id
+            '`userId` = ' . $this->id
         ];
         $whereOr = [];
 
         foreach ($categoryIds as $categoryId) {
-            $whereOr[] = '`categories` LIKE "%,'.(int)$categoryId.',%"';
+            $whereOr[] = '`categories` LIKE "%,' . (int)$categoryId . ',%"';
         }
 
-        $where[] = '('.implode(" OR ", $whereOr).')';
-        $sql     .= " WHERE ".implode(" AND ", $where);
+        $where[] = '(' . implode(" OR ", $whereOr) . ')';
+        $sql     .= " WHERE " . implode(" AND ", $where);
 
         $Stmt = $PDO->prepare($sql);
 
@@ -1231,7 +1231,7 @@ class CryptoUser extends QUI\Users\User
             $Stmt->execute();
             $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $Exception) {
-            QUI\System\Log::addError('CryptoUser getPasswords() Database error :: '.$Exception->getMessage());
+            QUI\System\Log::addError('CryptoUser getPasswords() Database error :: ' . $Exception->getMessage());
 
             return [];
         }
@@ -1427,7 +1427,7 @@ class CryptoUser extends QUI\Users\User
             return [];
         }
 
-        $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblepasswordids/'.$AuthPlugin->getId();
+        $cname = 'pcsg/gpm/cryptouser/nonfullyaccessiblepasswordids/' . $AuthPlugin->getId();
 
         if ($useCache !== false) {
             try {
@@ -1574,7 +1574,7 @@ class CryptoUser extends QUI\Users\User
             } catch (\Exception $Exception) {
                 QUI\System\Log::addError(
                     'CryptoUser :: reEncryptPasswordAccessKey() :: Error writing password key parts to database: '
-                    .$Exception->getMessage()
+                    . $Exception->getMessage()
                 );
 
                 throw new QUI\Exception([
@@ -1672,7 +1672,7 @@ class CryptoUser extends QUI\Users\User
                 $DB->insert(Tables::usersToGroups(), $data);
             } catch (\Exception $Exception) {
                 QUI\System\Log::addError(
-                    'Error writing group key parts to database: '.$Exception->getMessage()
+                    'Error writing group key parts to database: ' . $Exception->getMessage()
                 );
 
                 QUI::getDataBase()->delete(
@@ -1750,7 +1750,7 @@ class CryptoUser extends QUI\Users\User
             $macValue = MAC::create(
                 new HiddenString(
                     $AuthKeyPair->getPublicKey()->getValue()->getString()
-                    .$privateKeyEncrypted
+                    . $privateKeyEncrypted
                 ),
                 Utils::getSystemKeyPairAuthKey()
             );
@@ -2041,7 +2041,7 @@ class CryptoUser extends QUI\Users\User
             $groups = [];
 
             foreach ($adminGroups as $CryptoGroup) {
-                $groups[] = $CryptoGroup->getName().' (#'.$CryptoGroup->getId().')';
+                $groups[] = $CryptoGroup->getName() . ' (#' . $CryptoGroup->getId() . ')';
             }
 
             throw new Exception([
@@ -2179,7 +2179,7 @@ class CryptoUser extends QUI\Users\User
      */
     public function hasAccessToPasswordsInPublicCategory($categoryId)
     {
-        $cacheName = 'sequry/core/publiccategoryaccess/'.$this->id.'/'.$categoryId;
+        $cacheName = 'sequry/core/publiccategoryaccess/' . $this->id . '/' . $categoryId;
 
         try {
             return CacheManager::get($cacheName);
@@ -2205,7 +2205,7 @@ class CryptoUser extends QUI\Users\User
      */
     public function hasAccessToPasswordsInPrivateCategory($categoryId)
     {
-        $cacheName = 'sequry/core/privatecategoryaccess/'.$this->id.'/'.$categoryId;
+        $cacheName = 'sequry/core/privatecategoryaccess/' . $this->id . '/' . $categoryId;
 
         try {
             return CacheManager::get($cacheName);
@@ -2219,7 +2219,7 @@ class CryptoUser extends QUI\Users\User
                 'userId'     => $this->id,
                 'categories' => [
                     'type'  => '%LIKE%',
-                    'value' => ','.$categoryId.','
+                    'value' => ',' . $categoryId . ','
                 ]
             ],
             'count' => 1
@@ -2326,34 +2326,29 @@ class CryptoUser extends QUI\Users\User
             '`groupKey` IS NULL'
         ];
 
-        if ($count) {
-            $sql = "SELECT COUNT(*)";
-        } else {
-            $sql = "SELECT `userId`, `groupId`, `userKeyPairId`, `securityClassId`";
-        }
-
-        $sql .= " FROM `".Tables::usersToGroups()."`";
+        $sql = "SELECT `userId`, `groupId`, `userKeyPairId`, `securityClassId`";
+        $sql .= " FROM `" . Tables::usersToGroups() . "`";
 
         // build WHERE query string
         if (!empty($where)) {
-            $sql .= " WHERE ".implode(" AND ", $where);
+            $sql .= " WHERE " . implode(" AND ", $where);
         }
 
         // ORDER
         if (!empty($searchParams['sortOn'])
         ) {
             $sortOn = Orthos::clear($searchParams['sortOn']);
-            $order  = "ORDER BY ".$sortOn;
+            $order  = "ORDER BY " . $sortOn;
 
             if (isset($searchParams['sortBy']) &&
                 !empty($searchParams['sortBy'])
             ) {
-                $order .= " ".Orthos::clear($searchParams['sortBy']);
+                $order .= " " . Orthos::clear($searchParams['sortBy']);
             } else {
                 $order .= " ASC";
             }
 
-            $sql .= " ".$order;
+            $sql .= " " . $order;
         } else {
             $sql .= " ORDER BY id DESC";
         }
@@ -2362,10 +2357,10 @@ class CryptoUser extends QUI\Users\User
         if (!empty($gridParams['limit'])
             && !$count
         ) {
-            $sql .= " LIMIT ".$gridParams['limit'];
+            $sql .= " LIMIT " . $gridParams['limit'];
         } else {
             if (!$count) {
-                $sql .= " LIMIT ".(int)20;
+                $sql .= " LIMIT " . (int)20;
             }
         }
 
@@ -2373,7 +2368,7 @@ class CryptoUser extends QUI\Users\User
 
         // bind search values
         foreach ($binds as $var => $bind) {
-            $Stmt->bindValue(':'.$var, $bind['value'], $bind['type']);
+            $Stmt->bindValue(':' . $var, $bind['value'], $bind['type']);
         }
 
         try {
@@ -2381,14 +2376,10 @@ class CryptoUser extends QUI\Users\User
             $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                self::class.' :: search() -> '.$Exception->getMessage()
+                self::class . ' :: search() -> ' . $Exception->getMessage()
             );
 
             return [];
-        }
-
-        if ($count) {
-            return (int)current(current($result));
         }
 
         $parsedEntries = [];
@@ -2403,7 +2394,7 @@ class CryptoUser extends QUI\Users\User
                 continue;
             }
 
-            $hash = md5($row['securityClassId'].$row['groupId'].$row['userId']);
+            $hash = md5($row['securityClassId'] . $row['groupId'] . $row['userId']);
 
             if (!isset($factorCount[$hash])) {
                 $factorCount[$hash] = 0;
@@ -2414,8 +2405,8 @@ class CryptoUser extends QUI\Users\User
             $SecurityClass = Authentication::getSecurityClass($row['securityClassId']);
             $CrpytoUser    = CryptoActors::getCryptoUser($row['userId']);
 
-            $row['securityClass'] = $SecurityClass->getAttribute('title').' (#'.$SecurityClass->getId().')';
-            $row['group']         = $CryptoGroup->getName().' (#'.$CryptoGroup->getId().')';
+            $row['securityClass'] = $SecurityClass->getAttribute('title') . ' (#' . $SecurityClass->getId() . ')';
+            $row['group']         = $CryptoGroup->getName() . ' (#' . $CryptoGroup->getId() . ')';
             $row['userName']      = $CrpytoUser->getName();
             $row['hash']          = $hash;
 
@@ -2436,6 +2427,10 @@ class CryptoUser extends QUI\Users\User
             }
 
             $parsedEntries[$r['hash']] = true;
+        }
+
+        if ($count) {
+            return count($result);
         }
 
         return $result;

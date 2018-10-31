@@ -22,10 +22,7 @@ use Sequry\Core\Security\Handler\CryptoActors;
         }
 
         $status['isGroupAdmin'] = true;
-
-        foreach ($adminGroups as $CryptoGroup) {
-            $status['openRequests'] += count($CryptoGroup->getNoAccessUserIds());
-        }
+        $status['openRequests'] = $CryptoUser->getAdminGroupsUnlockList([], true);
 
         return $status;
     },

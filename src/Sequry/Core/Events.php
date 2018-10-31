@@ -329,29 +329,11 @@ class Events
         $groupsRemoved = array_diff($groupsBefore, $groupsNow);
 
         if (!empty($groupsRemoved)) {
-            // get all crypto groups of the QUIQQER groups that are to be removed
-            $result = QUI::getDataBase()->fetch([
-                'select' => [
-                    'groupId'
-                ],
-                'from'   => Tables::keyPairsGroup(),
-                'where'  => [
-                    'groupId' => [
-                        'type'  => 'IN',
-                        'value' => $groupsRemoved
-                    ]
-                ]
-            ]);
-
             $groupsHandled = [];
 
-            foreach ($result as $row) {
-                if (isset($groupsHandled[$row['groupId']])) {
-                    continue;
-                }
-
-                $CryptoGroup                    = CryptoActors::getCryptoGroup($row['groupId']);
-                $groupsHandled[$row['groupId']] = true;
+            foreach ($groupsRemoved as $groupId) {
+                $CryptoGroup             = CryptoActors::getCryptoGroup($groupId);
+                $groupsHandled[$groupId] = true;
 
                 try {
                     $CryptoGroup->removeCryptoUser($CryptoUser);
@@ -486,8 +468,8 @@ class Events
      */
     public static function onAdminLoad()
     {
-        $cssFile = URL_OPT_DIR.'sequry/core/bin/style.css';
-        echo '<link href="'.$cssFile.'" rel="stylesheet" type="text/css"/>';
+        $cssFile = URL_OPT_DIR . 'sequry/core/bin/style.css';
+        echo '<link href="' . $cssFile . '" rel="stylesheet" type="text/css"/>';
     }
 
     /**
@@ -499,8 +481,8 @@ class Events
      */
     public static function onAdminLoadFooter()
     {
-        $jsFile = URL_OPT_DIR.'sequry/core/bin/onAdminLoadFooter.js';
-        echo '<script src="'.$jsFile.'"></script>';
+        $jsFile = URL_OPT_DIR . 'sequry/core/bin/onAdminLoadFooter.js';
+        echo '<script src="' . $jsFile . '"></script>';
     }
 
     /**
