@@ -1,0 +1,10 @@
+.sequry-core-authplugins-settings-registration-plugin {
+    float: left;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+.sequry-core-authplugins-settings-registration-plugin label,
+.sequry-core-authplugins-settings-registration-plugin select {
+    width: 100% !important;
+}

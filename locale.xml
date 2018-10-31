@@ -983,6 +983,18 @@ Viel Spaß mit Sequry!</p>
         <locale name="settings.module_settings.showPasswordLinkVHostSelect.description">
             <de><![CDATA[Ermöglicht bei Erstellung eines Passwort-Links den VHost anzugeben, der für die Generierung der Passwort-Link URL verwendet werden soll (nur möglich, wenn mehr als ein VHost im System angelegt ist)]]></de>
         </locale>
+        <locale name="settings.category.auth_plugins.title">
+            <de><![CDATA[Authentifizierungs-Faktoren]]></de>
+        </locale>
+        <locale name="settings.auth_plugins.title">
+            <de><![CDATA[Authentifizierungs-Faktoren]]></de>
+        </locale>
+        <locale name="settings.auth_plugins.registration.title">
+            <de><![CDATA[Registrierungs-Aufforderung]]></de>
+        </locale>
+        <locale name="settings.auth_plugins.registration.description">
+            <de><![CDATA[Legen Sie für jeden Authentifizierungs-Faktor fest, inwiefern Benutzer automatisch zur Registrierung aufgefordert werden.]]></de>
+        </locale>
 
         <locale name="user.gpm.title">
             <de><![CDATA[Sequry]]></de>
@@ -2488,6 +2500,23 @@ Viel Spaß mit Sequry!</p>
         </locale>
         <locale name="controls.auth.RegisterPopup.btn.register">
             <de><![CDATA[Jetzt registrieren]]></de>
+        </locale>
+
+        <!-- Control: authPlugins/settings/Registration -->
+        <locale name="controls.authPlugins.settings.Registration.template.optionNoPrompt">
+            <de><![CDATA[Keine automatische Registrierungs-Aufforderung (Benutzer müssen sich eigenständig registrieren)]]></de>
+        </locale>
+        <locale name="controls.authPlugins.settings.Registration.template.optionPromptIfRequired">
+            <de><![CDATA[Automatische Registrierungs-Aufforderung, sobald ein Passwort dies voraussetzt bzw. erlaubt (keine Registrierungspflicht)]]></de>
+        </locale>
+        <locale name="controls.authPlugins.settings.Registration.template.optionPromptIfRequiredRegistration">
+            <de><![CDATA[Automatische Registrierungs-Aufforderung, sobald ein Passwort dies voraussetzt bzw. erlaubt (Registrierungspflicht)]]></de>
+        </locale>
+        <locale name="controls.authPlugins.settings.Registration.template.optionPromptAlways">
+            <de><![CDATA[Automatische Registrierungs-Aufforderung (keine Registrierungspflicht)]]></de>
+        </locale>
+        <locale name="controls.authPlugins.settings.Registration.template.optionPromptAlwaysRegistration">
+            <de><![CDATA[Automatische Registrierungs-Aufforderung (Registrierungspflicht)]]></de>
         </locale>
 
     </groups>

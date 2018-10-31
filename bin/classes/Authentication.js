@@ -206,6 +206,20 @@ define('package/sequry/core/bin/classes/Authentication', [
         },
 
         /**
+         * Get information for all authentication plugins for the registration prompt
+         *
+         * @returns {Promise}
+         */
+        getRegistrationPromptList: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_auth_registrationPrompt_getPluginList', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
          * Get control to authenticate with a specific authentication plugin
          *
          * @param {number} authPluginId - ID of authentication plugin
