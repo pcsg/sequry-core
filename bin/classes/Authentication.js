@@ -220,6 +220,20 @@ define('package/sequry/core/bin/classes/Authentication', [
         },
 
         /**
+         * Check if the registration prompt window for authentication plugins should be shown
+         *
+         * @returns {Promise}
+         */
+        showRegistrationPrompt: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_auth_registrationPrompt_showRegistrationPrompt', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
+        },
+
+        /**
          * Get control to authenticate with a specific authentication plugin
          *
          * @param {number} authPluginId - ID of authentication plugin

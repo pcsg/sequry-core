@@ -11,9 +11,10 @@ require([
     'qui/controls/windows/Confirm',
     'package/sequry/core/bin/Passwords',
     'package/sequry/core/bin/Actors',
+    'package/sequry/core/bin/Authentication',
     'package/sequry/core/bin/controls/auth/registrationPrompt/Popup',
     'Locale'
-], function (QUI, QUIAjax, QUIConfirm, Passwords, Actors, RegistrationPromptPopup, QUILocale) {
+], function (QUI, QUIAjax, QUIConfirm, Passwords, Actors, Authentication, RegistrationPromptPopup, QUILocale) {
     "use strict";
 
     var lg  = 'sequry/core';
@@ -224,5 +225,9 @@ require([
         });
     });
 
-    new RegistrationPromptPopup().open();
+    Authentication.showRegistrationPrompt().then(function(show) {
+        if (show) {
+            new RegistrationPromptPopup().open();
+        }
+    });
 });

@@ -32,8 +32,6 @@ use Sequry\Core\Security\Handler\Authentication;
             $list[$k]['registrationRequired'] = $required;
         }
 
-        \QUI\System\Log::writeRecursive($list);
-
         return $list;
     },
     [],

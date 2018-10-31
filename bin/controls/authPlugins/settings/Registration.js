@@ -96,7 +96,7 @@ define('package/sequry/core/bin/controls/authPlugins/settings/Registration', [
                 })
             });
 
-            Entry.getElement('select').addEvent('onchange', this.$writeSettings);
+            Entry.getElement('select').addEvent('change', this.$writeSettings);
 
             return Entry;
         },
@@ -105,6 +105,8 @@ define('package/sequry/core/bin/controls/authPlugins/settings/Registration', [
          * Read settings for all auth plugins and write to this.$Input
          */
         $writeSettings: function () {
+            console.log(1);
+
             var entries = this.$Content.getElements(
                 '.sequry-core-authplugins-settings-registration-plugin'
             );
