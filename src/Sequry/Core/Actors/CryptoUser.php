@@ -1415,7 +1415,7 @@ class CryptoUser extends QUI\Users\User
      * If a password is assigned to a security class that requires an authentication plugin
      * the user previously has not been registered with, the user can re-encrypt all those
      * passwords IF he decides to register with said authentication plugin. In case of a
-     * registration this method can be used to get all password IDs that need such a re-encryption.
+     * registration this method can be used to get all password IDs that require such a re-encryption.
      *
      * @param Plugin $AuthPlugin
      * @param bool $useCache (optional) - get results from cache [default: true]

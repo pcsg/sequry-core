@@ -11,26 +11,31 @@ use Sequry\Core\Security\Handler\CryptoActors;
 QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_registrationPrompt_showRegistrationPrompt',
     function () {
-        $Config         = QUI::getPackage('sequry/core')->getConfig();
-        $promptSettings = json_decode($Config->get('auth_plugins', 'registration'), true);
-        $CryptoUser     = CryptoActors::getCryptoUser();
+        $Config                    = QUI::getPackage('sequry/core')->getConfig();
+        $promptSettings            = json_decode($Config->get('auth_plugins', 'registration'), true);
+        $CryptoUser                = CryptoActors::getCryptoUser();
+        $unregisteredAuthPluginIds = $CryptoUser->getNonRegisteredAuthPluginIds();
+        $passwordIds               = $CryptoUser->getPasswordIds();
 
         foreach ($promptSettings as $authPluginId => $setting) {
             switch ($setting) {
                 case 'promptIfRequired':
                 case 'promptIfRequiredRegistration':
-                    $AuthPlugin   = Authentication::getAuthPlugin($authPluginId);
-                    $nonAccessIds = $CryptoUser->getNonFullyAccessiblePasswordIds($AuthPlugin, false);
+                    if (!in_array($authPluginId, $unregisteredAuthPluginIds)) {
+                        continue 2;
+                    }
 
-                    if (!empty($nonAccessIds)) {
-                        return true;
+                    foreach ($passwordIds as $passwordId) {
+                        $SecurityClass = Authentication::getSecurityClassByPasswordId($passwordId);
+
+                        if (in_array($authPluginId, $SecurityClass->getAuthPluginIds())) {
+                            return true;
+                        }
                     }
                     break;
 
                 case 'promptAlways':
                 case 'promptAlwaysRegistration':
-                    $unregisteredAuthPluginIds = $CryptoUser->getNonRegisteredAuthPluginIds();
-
                     if (in_array($authPluginId, $unregisteredAuthPluginIds)) {
                         return true;
                     }

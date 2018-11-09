@@ -593,6 +593,34 @@ class Authentication
     }
 
     /**
+     * Get SecurityClass by password ID
+     *
+     * @param int $id - Password ID
+     * @return SecurityClass
+     * @throws Exception
+     */
+    public static function getSecurityClassByPasswordId($id)
+    {
+        $result = QUI::getDataBase()->fetch([
+            'select' => ['securityClassId'],
+            'from'   => Tables::passwords(),
+            'where'  => [
+                'id' => $id
+            ],
+            'limit'  => 1
+        ]);
+
+        if (empty($result)) {
+            throw new Exception(
+                'Security class #'.$id.' not found.',
+                404
+            );
+        }
+
+        return self::getSecurityClass($result[0]['securityClassId']);
+    }
+
+    /**
      * Save derived key from authenticated plugin to user session
      *
      * @param int $authPluginId
