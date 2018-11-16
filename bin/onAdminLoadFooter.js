@@ -200,22 +200,22 @@ require([
 
     QUIAjax.registerGlobalJavaScriptCallback(
         'refreshGroupAdminPanels',
-        function() {
-            require(['package/sequry/core/bin/Actors'], function(Actors) {
+        function () {
+            require(['package/sequry/core/bin/Actors'], function (Actors) {
                 Actors.fireEvent('refreshGroupAdminPanels');
             });
         }
     );
 
-    window.addEvent('quiqqerLoaded', function() {
-        Actors.getGroupAdminStatus().then(function(Status) {
+    window.addEvent('quiqqerLoaded', function () {
+        Actors.getGroupAdminStatus().then(function (Status) {
             if (!Status.isGroupAdmin) {
                 return;
             }
 
             require([
                 'package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton'
-            ], function(GroupAdminButton) {
+            ], function (GroupAdminButton) {
                 new GroupAdminButton({
                     openRequests: Status.openRequests
                 }).inject(
@@ -225,7 +225,7 @@ require([
         });
     });
 
-    Authentication.showRegistrationPrompt().then(function(show) {
+    Authentication.showRegistrationPrompt().then(function (show) {
         if (show) {
             new RegistrationPromptPopup().open();
         }

@@ -70,9 +70,19 @@ define('package/sequry/core/bin/controls/authPlugins/settings/Registration', [
 
             this.Loader.show();
 
-            Authentication.getAuthPlugins().then(function (result) {
-                for (var i = 0, len = result.length; i < len; i++) {
-                    self.$getEntry(result[i]).inject(self.$Content);
+            Promise.all([
+                Authentication.getAuthPlugins(),
+                Authentication.getDefaultAuthPluginId()
+            ]).then(function (result) {
+                var authPlugins     = result[0],
+                    defaultPluginId = result[1];
+
+                for (var i = 0, len = authPlugins.length; i < len; i++) {
+                    if (parseInt(authPlugins[i].id) === parseInt(defaultPluginId)) {
+                        continue;
+                    }
+
+                    self.$getEntry(authPlugins[i]).inject(self.$Content);
                 }
 
                 self.$readSettings();

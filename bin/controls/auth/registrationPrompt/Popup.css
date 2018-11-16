@@ -1,3 +1,12 @@
+.sequry-core-auth-registrationprompt-popup .qui-window-popup-sheet-buttons button {
+    float: none;
+    margin: 0 5px;
+}
+
+.sequry-core-auth-registrationprompt-popup h1 {
+    font-size: 15px;
+}
+
 .sequry-core-auth-registrationprompt-popup-authplugins-entry {
     border: 1px solid #dedede;
     float: left;

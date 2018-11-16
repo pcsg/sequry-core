@@ -11,11 +11,27 @@ use Sequry\Core\Security\Handler\CryptoActors;
 QUI::$Ajax->registerFunction(
     'package_sequry_core_ajax_auth_registrationPrompt_showRegistrationPrompt',
     function () {
-        $Config                    = QUI::getPackage('sequry/core')->getConfig();
-        $promptSettings            = json_decode($Config->get('auth_plugins', 'registration'), true);
         $CryptoUser                = CryptoActors::getCryptoUser();
         $unregisteredAuthPluginIds = $CryptoUser->getNonRegisteredAuthPluginIds();
-        $passwordIds               = $CryptoUser->getPasswordIds();
+        $defaultPluginId           = Authentication::getDefaultAuthPluginId();
+
+        // First: Check if User has registered for the default authentication plugin
+        // If not -> Do not show registration prompt because in this case a sepcial
+        // "Welcome"-window is shown
+        if (in_array($defaultPluginId, $unregisteredAuthPluginIds)) {
+            return false;
+        }
+
+        $Config         = QUI::getPackage('sequry/core')->getConfig();
+        $promptSettings = json_decode($Config->get('auth_plugins', 'registration'), true);
+
+        // do not show prompt if settings have not been set yet
+        if (empty($promptSettings)) {
+            return false;
+        }
+
+
+        $passwordIds = $CryptoUser->getPasswordIds();
 
         foreach ($promptSettings as $authPluginId => $setting) {
             switch ($setting) {

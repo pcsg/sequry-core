@@ -4,7 +4,7 @@
  * @module package/sequry/core/bin/controls/auth/Register
  * @author www.pcsg.de (Patrick Müller)
  *
- * @event onFinish
+ * @event onFinish [self] - Fires if the control has finished loading
  */
 define('package/sequry/core/bin/controls/auth/Register', [
 
@@ -79,7 +79,7 @@ define('package/sequry/core/bin/controls/auth/Register', [
 
                     self.$AuthPluginControl.focus();
 
-                    self.fireEvent('finish');
+                    self.fireEvent('finish', [self]);
                 });
             });
 

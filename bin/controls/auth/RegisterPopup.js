@@ -3,6 +3,8 @@
  *
  * @module package/sequry/core/bin/controls/auth/RegisterPopup
  * @author www.pcsg.de (Patrick Müller)
+ *
+ * @event onSuccess [this] - Fires on successful authentication
  */
 define('package/sequry/core/bin/controls/auth/RegisterPopup', [
 
@@ -14,11 +16,13 @@ define('package/sequry/core/bin/controls/auth/RegisterPopup', [
 
     'package/sequry/core/bin/Authentication',
     'package/sequry/core/bin/controls/auth/Register',
+    'package/sequry/core/bin/controls/auth/recovery/CodePopup',
 
     'text!package/sequry/core/bin/controls/auth/RegisterPopup.html',
     'css!package/sequry/core/bin/controls/auth/RegisterPopup.css'
 
-], function (QUI, QUIPopup, QUIButton, QUILocale, Mustache, Authentication, RegisterControl, template) {
+], function (QUI, QUIPopup, QUIButton, QUILocale, Mustache, Authentication, RegisterControl,
+             RecoveryCodePopup, template) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -37,17 +41,19 @@ define('package/sequry/core/bin/controls/auth/RegisterPopup', [
             maxHeight         : 400,
             maxWidth          : 600,
             icon              : 'fa fa-user',
-            title             : 'Test-Titel',
             'class'           : 'sequry-auth-registerpopup',
-            backgroundClosable: false,
+            backgroundClosable: true,
 
             // buttons
             buttons         : true,
-            closeButton     : false,
-            titleCloseButton: false
+            closeButton     : true,
+            titleCloseButton: true
         },
 
         initialize: function (options) {
+            options.title           = QUILocale.get(lg, 'controls.auth.RegisterPopup.title');
+            options.closeButtonText = QUILocale.get(lg, 'controls.auth.RegisterPopup.close_btn');
+
             this.parent(options);
 
             this.addEvents({
@@ -61,7 +67,7 @@ define('package/sequry/core/bin/controls/auth/RegisterPopup', [
         $onOpen: function () {
             var self     = this;
             var Content  = this.getContent();
-            var lgPrefix = 'controls.auth.RegisterPopup.template.info';
+            var lgPrefix = 'controls.auth.RegisterPopup.template.';
 
             this.setContent(Mustache.render(template, {
                 info: QUILocale.get(lg, lgPrefix + 'info')
@@ -75,14 +81,24 @@ define('package/sequry/core/bin/controls/auth/RegisterPopup', [
                 text     : QUILocale.get(lg, 'controls.auth.RegisterPopup.btn.register'),
                 textimage: 'fa fa-check',
                 events   : {
-                    onClick: function (Button) {
+                    onClick: function () {
                         self.Loader.show();
                         Registration.submit().then(function (RecoveryCodeData) {
                             self.Loader.hide();
 
-                            if (RecoveryCodeData) {
-                                
+                            if (!RecoveryCodeData) {
+                                return;
                             }
+
+                            new RecoveryCodePopup({
+                                RecoveryCodeData: RecoveryCodeData,
+                                events          : {
+                                    onClose: function () {
+                                        self.fireEvent('success', [self]);
+                                        self.close();
+                                    }
+                                }
+                            }).open();
                         });
                     }
                 }
