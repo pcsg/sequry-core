@@ -3,7 +3,6 @@
 namespace Sequry\Core\Security\Modules\CSPRNG;
 
 use Sequry\Core\Security\Interfaces\ICSPRNG;
-use QUI;
 
 /**
  * This class provides a hashing API for the sequry/core module

@@ -421,6 +421,8 @@ class PasswordLinks
         $Mailer->setSubject($L->get($lg, 'mail.passwordlink.subject'));
 
         foreach ($recipients as $recipient) {
+            $recipient = trim($recipient);
+
             if (!Orthos::checkMailSyntax($recipient)) {
                 QUI::getMessagesHandler()->addAttention(
                     QUI::getLocale()->get(

@@ -10,7 +10,7 @@ use Sequry\Core\Security\Keys\Key;
  */
 class KDF
 {
-    const KDF_MODULE = 'Halite3'; // @todo in config auslagern
+    const KDF_MODULE = 'Halite4'; // @todo in config auslagern
 
     /**
      * KDF Class Object for the configured hash module

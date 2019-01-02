@@ -115,7 +115,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         if (!MAC::compare($MACActual, $MACExpected)) {
             QUI\System\Log::addCritical(
-                'Group key pair #'.$data['id'].' possibly altered. MAC mismatch!'
+                'Group key pair #' . $data['id'] . ' possibly altered. MAC mismatch!'
             );
 
             throw new QUI\Exception([
@@ -577,7 +577,7 @@ class CryptoGroup extends QUI\Groups\Group
 
         // if the user that is to be removed is the last user of this group,
         // the user cannot be deleted
-        if ($userCount <= 1) {
+        if ($userCount <= 1 && count($this->getSecurityClassIds()) > 0) {
             throw new QUI\Exception([
                 'sequry/core',
                 'exception.cryptogroup.cannot.remove.last.user',
@@ -851,7 +851,20 @@ class CryptoGroup extends QUI\Groups\Group
             $User = QUI::getUserBySession();
         }
 
-        $userIds = $this->getCryptoUserIds();
+        $securityClassIds = $this->getSecurityClassIds();
+
+        /**
+         * If the group has no SecurityClass assigned yet, then
+         * there are no CryptoUsers assigned to it yet. In this case
+         * just check if the user id is in the user ids of the standard
+         * QUIQQER group.
+         */
+        if (empty($securityClassIds)) {
+            $userIds = $this->getUserIds();
+        } else {
+            $userIds = $this->getCryptoUserIds();
+        }
+
         return in_array($User->getId(), $userIds);
     }
 
@@ -995,38 +1008,6 @@ class CryptoGroup extends QUI\Groups\Group
     }
 
     /**
-     * Get IDs of users that are part of this group but are
-     * not yet unlocked for all group SecurityClasses
-     *
-     * @return int[]
-     */
-    public function getNoAccessUserIds()
-    {
-        $result = QUI::getDataBase()->fetch([
-            'select' => [
-                'userId'
-            ],
-            'from'   => Tables::usersToGroups(),
-            'where'  => [
-                'userKeyPairId' => [
-                    'type'  => 'NOT',
-                    'value' => null
-                ],
-                'groupKey'      => null,
-                'groupId'       => $this->getId()
-            ]
-        ]);
-
-        $userIds = [];
-
-        foreach ($result as $row) {
-            $userIds[] = (int)$row['userId'];
-        }
-
-        return $userIds;
-    }
-
-    /**
      * Checks if the current Group CryptoUser is part of this group AND has permission to edit it
      *
      * @return void
@@ -1147,7 +1128,7 @@ class CryptoGroup extends QUI\Groups\Group
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
                 'CryptoGroup :: reEncryptPasswordAccessKey() :: Error writing password key parts to database: '
-                .$Exception->getMessage()
+                . $Exception->getMessage()
             );
 
             throw new QUI\Exception([

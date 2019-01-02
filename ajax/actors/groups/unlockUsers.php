@@ -47,6 +47,13 @@ QUI::$Ajax->registerFunction(
             return false;
         }
 
+        QUI::getMessagesHandler()->addSuccess(
+            QUI::getLocale()->get(
+                'sequry/core',
+                'message.ajax.actors.groups.getUnlockList.success'
+            )
+        );
+
         return true;
     },
     array('unlockRequests'),

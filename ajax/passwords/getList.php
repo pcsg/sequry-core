@@ -12,10 +12,6 @@
         try {
             $CryptoUser = \Sequry\Core\Security\Handler\CryptoActors::getCryptoUser();
 
-            \QUI\System\Log::writeRecursive($CryptoUser->getPermission(
-                'quiqqer.frontendUsers.profile.view.user.address'
-            ));
-
             $searchParams = \QUI\Utils\Security\Orthos::clearArray(
                 json_decode($searchParams, true)
             );

@@ -317,6 +317,20 @@ define('package/sequry/core/bin/classes/Actors', [
                     onError  : reject
                 });
             });
+        },
+
+        /**
+         * Checks if the current user is authenticated (has a session)
+         *
+         * @return {Promise}
+         */
+        checkAuthentication: function () {
+            return new Promise(function (resolve, reject) {
+                QUIAjax.get('package_sequry_core_ajax_actors_checkAuthentication', resolve, {
+                    'package': pkg,
+                    onError  : reject
+                });
+            });
         }
     });
 });

@@ -149,18 +149,17 @@ define('package/sequry/core/bin/controls/utils/InputButtons', [
             new Clipboard(CopyBtn.getElm(), {
                 text: function () {
                     var Elm = this.getAttribute('Elm');
-
-                    console.log(Elm.nodeName);
+                    var val;
 
                     if (Elm.nodeName === 'INPUT') {
-                        return Elm.value;
+                        val = Elm.value;
+                    } else if (Elm.nodeName === 'DIV') {
+                        val = Elm.innerHTML.replace(/<br\s*\/?>/mg, "\n");
+                    } else {
+                        val = Elm.innerHTML;
                     }
 
-                    if (Elm.nodeName === 'DIV') {
-                        return Elm.innerHTML.replace(/<br\s*\/?>/mg,"\n");
-                    }
-
-                    return Elm.innerHTML.trim();
+                    return val.trim();
                 }.bind(CopyBtn)
             });
         },

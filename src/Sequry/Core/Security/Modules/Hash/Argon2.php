@@ -4,7 +4,7 @@ namespace Sequry\Core\Security\Modules\Hash;
 
 use Sequry\Core\Security\Interfaces\IHash;
 use QUI;
-use ParagonIE\Halite\Util;
+use ParagonIE\ConstantTime\Binary;
 use Sequry\Core\Security\HiddenString;
 
 /**
@@ -24,21 +24,21 @@ class Argon2 implements IHash
     public static function create(HiddenString $str, $salt = null)
     {
         if (is_null($salt)) {
-            $salt = \Sodium\randombytes_buf(\Sodium\CRYPTO_PWHASH_SALTBYTES);
+            $salt = \Sodium\randombytes_buf(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
-            if (Util::safeStrlen($salt) > \Sodium\CRYPTO_PWHASH_SALTBYTES) {
-                $salt = Util::safeSubstr($salt, 0, \Sodium\CRYPTO_PWHASH_SALTBYTES);
+            if (Binary::safeStrlen($salt) > \SODIUM_CRYPTO_PWHASH_SALTBYTES) {
+                $salt = Binary::safeSubstr($salt, 0, \SODIUM_CRYPTO_PWHASH_SALTBYTES);
             }
         }
 
         try {
             $hash = \Sodium\crypto_pwhash(
-                \Sodium\CRYPTO_STREAM_KEYBYTES,
+                \SODIUM_CRYPTO_STREAM_KEYBYTES,
                 $str->getString(),
                 $salt,
-                \Sodium\CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
-                \Sodium\CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
+                \SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
+                \SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(

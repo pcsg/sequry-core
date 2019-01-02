@@ -30,37 +30,12 @@ The Package Name is: sequry/core
 
 Dependencies
 ------------
+
+Sequry requires PHP >=7.2 since the cryptograhic library that is used (`sodium`) is part of the PHP core since that version.
+
 ```bash
 // PHP bcmath
 $ sudo apt-get install php-bcmath
-
-// libsodium (>= 1.0.9 required!)
-
-=== Ubuntu >= 17.10 ===
-$ sudo apt-get install libsodium php-libsodium
-
-=== Ubuntu 16.10 ===
-$ sudo apt-get install sudo apt-get install libsodium-dev
-$ sudo pecl install libsodium
-
-=== Ubuntu 16.04 ===
-// Alternative 1 - Download .deb packages at https://dev.quiqqer.com/sequry/core/wikis/libsodium-16.04
-$ sudo dpkg -i libsodium18-1.0.11.deb libsodium-dev-1.0.11.deb
-
-// Alternative 2
-$ sudo apt-get install build-essential
-$ git clone -b stable https://github.com/jedisct1/libsodium.git
-$ cd libsodium
-$ sudo ./configure && make check && make install
-$ cd /usr/lib/x86_64-linux-gnu/
-
-// If symlink libsodium.so exists
-$ sudo rm libsodium.so
-// If symlink libsodium.so.18 exists
-$ sudo rm libsodium.so.18
-
-$ sudo ln -s /usr/local/lib/libsodium.so libsodium.so
-$ sudo ln -s /usr/local/lib/libsodium.so libsodium.so.18
 ```
 
 Contribute

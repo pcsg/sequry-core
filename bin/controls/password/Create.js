@@ -95,44 +95,6 @@ define('package/sequry/core/bin/controls/password/Create', [
                 })
             });
 
-            // insert security class select
-            var SecurityClassElm = this.$Elm.getElement(
-                'span.pcsg-gpm-security-classes'
-            );
-
-            this.$OwnerSelectElm = this.$Elm.getElement(
-                'div.pcsg-gpm-password-owner'
-            );
-
-            this.$SecurityClassSelect = new SecurityClassSelectSlider({
-                events: {
-                    onLoaded: this.$onSecurityClassSelectLoaded
-                }
-            }).inject(
-                SecurityClassElm
-            );
-
-            // password types
-            this.$PasswordTypes = new PasswordTypes({
-                mode: 'edit'
-            }).inject(
-                this.$Elm.getElement(
-                    'div.pcsg-gpm-password-payload'
-                )
-            );
-
-            this.$CategorySelect = new CategorySelect().inject(
-                this.$Elm.getElement(
-                    '.pcsg-gpm-password-create-category'
-                )
-            );
-
-            this.$CategorySelectPrivate = new CategorySelectPrivate().inject(
-                this.$Elm.getElement(
-                    '.pcsg-gpm-password-create-category-private'
-                )
-            );
-
             return this.$Elm;
         },
 
@@ -352,7 +314,47 @@ define('package/sequry/core/bin/controls/password/Create', [
          * event : on inject
          */
         $onInject: function () {
-            this.$Elm.getElement('input.pcsg-gpm-password-title').focus();
+            Actors.checkAuthentication().then(function() {
+                // insert security class select
+                var SecurityClassElm = this.$Elm.getElement(
+                    'span.pcsg-gpm-security-classes'
+                );
+
+                this.$OwnerSelectElm = this.$Elm.getElement(
+                    'div.pcsg-gpm-password-owner'
+                );
+
+                this.$SecurityClassSelect = new SecurityClassSelectSlider({
+                    events: {
+                        onLoaded: this.$onSecurityClassSelectLoaded
+                    }
+                }).inject(
+                    SecurityClassElm
+                );
+
+                // password types
+                this.$PasswordTypes = new PasswordTypes({
+                    mode: 'edit'
+                }).inject(
+                    this.$Elm.getElement(
+                        'div.pcsg-gpm-password-payload'
+                    )
+                );
+
+                this.$CategorySelect = new CategorySelect().inject(
+                    this.$Elm.getElement(
+                        '.pcsg-gpm-password-create-category'
+                    )
+                );
+
+                this.$CategorySelectPrivate = new CategorySelectPrivate().inject(
+                    this.$Elm.getElement(
+                        '.pcsg-gpm-password-create-category-private'
+                    )
+                );
+
+                this.$Elm.getElement('input.pcsg-gpm-password-title').focus();
+            }.bind(this));
         },
 
         /**

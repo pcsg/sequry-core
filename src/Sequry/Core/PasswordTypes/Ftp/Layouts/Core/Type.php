@@ -24,14 +24,15 @@ class Type extends AbstractPasswordTypeLayout
         $lgPrefix = 'sequry.panel.template.';
 
         return [
-            'hostLabel'           => $L->get($lg, $lgPrefix . 'host'),
-            'hostPlaceholder'     => $L->get($lg, $lgPrefix . 'hostPlaceholder'),
-            'userLabel'           => $L->get($lg, $lgPrefix . 'user'),
-            'userPlaceholder'     => $L->get($lg, $lgPrefix . 'userPlaceholder'),
-            'passwordLabel'       => $L->get($lg, $lgPrefix . 'password'),
-            'passwordPlaceholder' => $L->get($lg, $lgPrefix . 'passwordPlaceholder'),
-            'noteLabel'           => $L->get($lg, $lgPrefix . 'note'),
-            'notePlaceholder'     => $L->get($lg, $lgPrefix . 'notePlaceholder')
+            'hostLabel'                => $L->get($lg, $lgPrefix . 'host'),
+            'hostPlaceholder'          => $L->get($lg, $lgPrefix . 'hostPlaceholder'),
+            'userLabel'                => $L->get($lg, $lgPrefix . 'user'),
+            'userPlaceholder'          => $L->get($lg, $lgPrefix . 'userPlaceholder'),
+            'passwordLabel'            => $L->get($lg, $lgPrefix . 'password'),
+            'passwordPlaceholder'      => $L->get($lg, $lgPrefix . 'passwordPlaceholder'),
+            'generatePasswordBtnTitle' => $L->get($lg, 'sequry.utils.button.passwordGenerate'),
+            'noteLabel'                => $L->get($lg, $lgPrefix . 'note'),
+            'notePlaceholder'          => $L->get($lg, $lgPrefix . 'notePlaceholder')
         ];
     }
 }

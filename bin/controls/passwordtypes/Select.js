@@ -4,12 +4,6 @@
  * @module package/sequry/core/bin/controls/passwordtypes/Select
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/buttons/Select
- * @require qui/controls/loader/Loader
- * @require package/sequry/core/bin/classes/Passwords
- * @require css!package/sequry/core/bin/controls/passwordtypes/Select.css
- *
  * @event onLoaded [this] - fires when security classes are loaded
  */
 define('package/sequry/core/bin/controls/passwordtypes/Select', [
