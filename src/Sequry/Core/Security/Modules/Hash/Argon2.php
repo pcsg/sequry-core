@@ -14,6 +14,9 @@ use function Sodium\randombytes_buf;
  */
 class Argon2 implements IHash
 {
+    const PWHASH_OPSLIMIT = 4;
+    const PWHASH_MEMLIMIT = 33554432;
+
     /**
      * Creates a hash
      *
@@ -39,8 +42,8 @@ class Argon2 implements IHash
                 \SODIUM_CRYPTO_STREAM_KEYBYTES,
                 $str->getString(),
                 $salt,
-                \SODIUM_CRYPTO_PWHASH_OPSLIMIT_SENSITIVE,
-                \SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_SENSITIVE,
+                self::PWHASH_MEMLIMIT,
+                self::PWHASH_OPSLIMIT,
                 \SODIUM_CRYPTO_PWHASH_ALG_ARGON2I13
             );
         } catch (\Exception $Exception) {
