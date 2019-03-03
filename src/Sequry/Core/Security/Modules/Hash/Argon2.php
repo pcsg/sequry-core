@@ -39,8 +39,8 @@ class Argon2 implements IHash
                 \SODIUM_CRYPTO_STREAM_KEYBYTES,
                 $str->getString(),
                 $salt,
-                \SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
-                \SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE,
+                \SODIUM_CRYPTO_PWHASH_OPSLIMIT_SENSITIVE,
+                \SODIUM_CRYPTO_PWHASH_SCRYPTSALSA208SHA256_OPSLIMIT_SENSITIVE,
                 \SODIUM_CRYPTO_PWHASH_ALG_ARGON2I13
             );
         } catch (\Exception $Exception) {
