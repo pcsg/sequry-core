@@ -6,6 +6,8 @@ use Sequry\Core\Security\Interfaces\IHash;
 use QUI;
 use ParagonIE\ConstantTime\Binary;
 use Sequry\Core\Security\HiddenString;
+use function Sodium\crypto_pwhash;
+use function Sodium\randombytes_buf;
 
 /**
  * This class provides a hashing API for the sequry/core module
@@ -24,7 +26,7 @@ class Argon2 implements IHash
     public static function create(HiddenString $str, $salt = null)
     {
         if (is_null($salt)) {
-            $salt = \Sodium\randombytes_buf(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
+            $salt = randombytes_buf(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
             if (Binary::safeStrlen($salt) > \SODIUM_CRYPTO_PWHASH_SALTBYTES) {
@@ -33,7 +35,7 @@ class Argon2 implements IHash
         }
 
         try {
-            $hash = \Sodium\crypto_pwhash(
+            $hash = crypto_pwhash(
                 \SODIUM_CRYPTO_STREAM_KEYBYTES,
                 $str->getString(),
                 $salt,
