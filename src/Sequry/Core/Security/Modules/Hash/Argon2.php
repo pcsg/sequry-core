@@ -38,7 +38,8 @@ class Argon2 implements IHash
                 $str->getString(),
                 $salt,
                 \SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
-                \SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
+                \SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE,
+                \SODIUM_CRYPTO_PWHASH_ALG_ARGON2I13
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
