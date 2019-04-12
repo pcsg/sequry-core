@@ -8,18 +8,13 @@
  */
 define('package/sequry/core/bin/controls/passwordtypes/Content', [
 
-    'qui/QUI',
     'qui/controls/Control',
-    'Locale',
-
     'package/sequry/core/bin/controls/passwordtypes/Select',
 
     'css!package/sequry/core/bin/controls/passwordtypes/Content.css'
 
-], function (QUI, QUIControl, QUILocale, TypeSelect) {
+], function (QUIControl, TypeSelect) {
     "use strict";
-
-    var lg = 'sequry/core';
 
     return new Class({
 
@@ -38,7 +33,6 @@ define('package/sequry/core/bin/controls/passwordtypes/Content', [
         initialize: function (options) {
             this.parent(options);
 
-            this.$TypeSelect          = null;
             this.$PasswordTypeControl = null;
             this.$ContentElm          = null;
             this.$passwordType        = null;
@@ -61,14 +55,14 @@ define('package/sequry/core/bin/controls/passwordtypes/Content', [
             this.$Elm.set({
                 'class': 'pcsg-gpm-password-typecontent',
                 html   : '<div class="pcsg-gpm-password-typecontent-select"></div>' +
-                '<div class="pcsg-gpm-password-typecontent-content"></div>'
+                    '<div class="pcsg-gpm-password-typecontent-content"></div>'
             });
 
             this.$ContentElm = this.$Elm.getElement('.pcsg-gpm-password-typecontent-content');
 
             var TypeSelectElm = this.$Elm.getElement('.pcsg-gpm-password-typecontent-select');
 
-            this.$TypeSelect = new TypeSelect({
+            new TypeSelect({
                 initialValue: this.getAttribute('type'),
                 events      : {
                     onChange: this.$loadContent
@@ -150,7 +144,7 @@ define('package/sequry/core/bin/controls/passwordtypes/Content', [
         /**
          * Event: onDestroy
          */
-        $onDestroy: function() {
+        $onDestroy: function () {
             this.$CurrentData = null;
         }
     });

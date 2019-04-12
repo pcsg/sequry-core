@@ -153,7 +153,7 @@ class PasswordLink
         $url = $Project->getVHost(true);
         $url .= $Site->getUrlRewritten(array(), array(
             'id'   => $this->id,
-            'hash' => \Sodium\bin2hex($this->access['hash'])
+            'hash' => \sodium_bin2hex($this->access['hash'])
         ));
 
         return $url;
@@ -198,9 +198,9 @@ class PasswordLink
 
         $access = json_decode($access->getString(), true);
 
-        $access['hash']           = \Sodium\hex2bin($access['hash']);
-        $access['encryptionSalt'] = \Sodium\hex2bin($access['encryptionSalt']);
-        $access['dataKey']        = new HiddenString(\Sodium\hex2bin($access['dataKey']));
+        $access['hash']           = \sodium_hex2bin($access['hash']);
+        $access['encryptionSalt'] = \sodium_hex2bin($access['encryptionSalt']);
+        $access['dataKey']        = new HiddenString(\sodium_hex2bin($access['dataKey']));
         $this->access             = $access;
 
         // check date
@@ -239,7 +239,7 @@ class PasswordLink
             ));
         }
 
-        if (!hash_equals(\Sodium\hex2bin($hash), $this->access['hash'])) {
+        if (!hash_equals(\sodium_hex2bin($hash), $this->access['hash'])) {
             throw new Exception(array(
                 'sequry/core',
                 'exception.passwordlink.invalid_hash'
@@ -359,11 +359,11 @@ class PasswordLink
         if (empty($this->access['dataKey'])) {
             $access['dataKey'] = null;
         } else {
-            $access['dataKey'] = \Sodium\bin2hex($this->access['dataKey']->getString());
+            $access['dataKey'] = \sodium_bin2hex($this->access['dataKey']->getString());
         }
 
-        $access['hash']           = \Sodium\bin2hex($this->access['hash']);
-        $access['encryptionSalt'] = \Sodium\bin2hex($this->access['encryptionSalt']);
+        $access['hash']           = \sodium_bin2hex($this->access['hash']);
+        $access['encryptionSalt'] = \sodium_bin2hex($this->access['encryptionSalt']);
         $access                   = new HiddenString(json_encode($access));
         $access                   = SymmetricCrypto::encrypt($access, Utils::getSystemPasswordLinkKey());
 

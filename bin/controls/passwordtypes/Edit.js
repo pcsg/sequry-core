@@ -4,17 +4,6 @@
  * @module package/sequry/core/bin/controls/passwordtypes/Edit
  * @author www.pcsg.de (Patrick Müller)
  *
- * @require qui/QUI
- * @require qui/controls/Control
- * @require Mustache
- * @require Locale
- * @require package/sequry/core/bin/classes/Passwords
- * @require package/sequry/core/bin/controls/auth/Authenticate
- * @require package/sequry/core/bin/controls/securityclasses/Select
- * @require package/sequry/core/bin/controls/actors/EligibleActorSelect
- * @require text!package/sequry/core/bin/controls/passwordtypes/Edit.html
- * @require css!package/sequry/core/bin/controls/passwordtypes/Edit.css
- *
  * @event onLoaded [this]
  */
 define('package/sequry/core/bin/controls/passwordtypes/Edit', [
@@ -26,12 +15,11 @@ define('package/sequry/core/bin/controls/passwordtypes/Edit', [
     'Ajax',
     'Locale',
 
-    'package/sequry/core/bin/controls/passwordtypes/Select',
     'package/sequry/core/bin/Passwords',
 
     'css!package/sequry/core/bin/controls/passwordtypes/Edit.css'
 
-], function (QUIControl, QUIButton, QUILoader, QUIAjax, QUILocale, TypeSelect, Passwords) {
+], function (QUIControl, QUIButton, QUILoader, QUIAjax, QUILocale, Passwords) {
     "use strict";
 
     var lg = 'sequry/core';
@@ -47,13 +35,11 @@ define('package/sequry/core/bin/controls/passwordtypes/Edit', [
         ],
 
         options: {
-            type   : false, // initial type
-            Content: false // password content
+            type: false // initial type
         },
 
         initialize: function (options) {
             this.parent(options);
-            this.$TypeSelect = null;
 
             this.Loader = new QUILoader();
 
@@ -73,7 +59,7 @@ define('package/sequry/core/bin/controls/passwordtypes/Edit', [
             this.$Elm.set({
                 'class': 'pcsg-gpm-password-types-edit',
                 html   : '<div class="pcsg-gpm-password-types-edit-select"></div>' +
-                '<div class="pcsg-gpm-password-types-edit-content"></div>'
+                    '<div class="pcsg-gpm-password-types-edit-content"></div>'
             });
 
             this.Loader.inject(this.$Elm);

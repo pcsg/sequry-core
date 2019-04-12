@@ -796,6 +796,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="exception.passwordlink.permission_denied">
             <de><![CDATA[Sie haben nicht die nötige Berechtigung, um diesen Passwort-Link zu bearbeiten.]]></de>
         </locale>
+        <locale name="exception.passwordlink.no_password_access">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Password-Links für dieses Passwort abzurufen.]]></de>
+        </locale>
 
         <!-- Security/Handler/PasswordLinks -->
         <locale name="mail.passwordlink.greeting" html="true">
@@ -982,6 +985,12 @@ Viel Spaß mit Sequry!</p>
         </locale>
         <locale name="settings.module_settings.showPasswordLinkVHostSelect.description">
             <de><![CDATA[Ermöglicht bei Erstellung eines Passwort-Links den VHost anzugeben, der für die Generierung der Passwort-Link URL verwendet werden soll (nur möglich, wenn mehr als ein VHost im System angelegt ist)]]></de>
+        </locale>
+        <locale name="settings.module_settings.maxSessionLifetime.title">
+            <de><![CDATA[Maximale Session Lifetime (Sekunden)]]></de>
+        </locale>
+        <locale name="settings.module_settings.maxSessionLifetime.description" html="true">
+            <de><![CDATA[Maximale Anzahl an <b>Sekunden</b>, die ein Benutzer ohne Aktion in Sequry authentifiziert bleibt. Diese Einstellung überschreibt automatisch die identische Einstellung des QUIQQER-Grundsystems!]]></de>
         </locale>
 
         <locale name="user.gpm.title">

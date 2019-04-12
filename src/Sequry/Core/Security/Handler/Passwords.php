@@ -429,7 +429,7 @@ class Passwords
     /**
      * Checks if a user has access to a password
      *
-     * @param QUI\Users\User $User
+     * @param QUI\Interfaces\Users\User|QUI\Users\User $User
      * @param integer $passwordId - password ID
      *
      * @return bool - true if user has access; false if user does not have access

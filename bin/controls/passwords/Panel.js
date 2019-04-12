@@ -208,7 +208,7 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                 }, {
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.title'),
                     dataIndex: 'title',
-                    dataType : 'text',
+                    dataType : 'node',
                     width    : 200
                 }, {
                     header   : QUILocale.get(lg, 'controls.gpm.passwords.panel.tbl.header.description'),
@@ -609,6 +609,9 @@ define('package/sequry/core/bin/controls/passwords/Panel', [
                 if (!Data.canAccess) {
                     noAccessRows.push(i);
                 }
+
+                // Title
+                Row.title = document.createTextNode(Row.title);
 
                 // access type
                 Row.accessType = new Element('div', {

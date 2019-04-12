@@ -28,7 +28,7 @@ class Argon2 implements IHash
     public static function create(HiddenString $str, $salt = null)
     {
         if (is_null($salt)) {
-            $salt = \sodium_randombytes_buf(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
+            $salt = \random_bytes(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
             if (Binary::safeStrlen($salt) > \SODIUM_CRYPTO_PWHASH_SALTBYTES) {

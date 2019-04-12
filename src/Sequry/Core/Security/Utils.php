@@ -41,7 +41,7 @@ class Utils
         $str = '';
 
         $str .= self::getPackageVersion();
-        $str .= '|' . $module;
+        $str .= '|'.$module;
 
         return self::mb_str_pad($str, Crypto::VERSION_LENGTH, '$');
     }
@@ -72,7 +72,7 @@ class Utils
         $before         = $padBefore ? mb_substr($repeatedString, 0, floor($targetLen), $encoding) : '';
         $after          = $padAfter ? mb_substr($repeatedString, 0, ceil($targetLen), $encoding) : '';
 
-        return $before . $str . $after;
+        return $before.$str.$after;
     }
 
     /**
@@ -99,7 +99,7 @@ class Utils
      */
     public static function getSystemKeyPairAuthKey()
     {
-        $keyFile = ETC_DIR . 'plugins/sequry/gpm_auth_keypairs.key';
+        $keyFile = ETC_DIR.'plugins/sequry/gpm_auth_keypairs.key';
 
         // if key does not exit -> create
         if (!file_exists($keyFile)) {
@@ -107,10 +107,10 @@ class Utils
             file_put_contents($keyFile, $RandomKey->getValue());
 
             if (!file_exists($keyFile)) {
-                throw new QUI\Exception(array(
+                throw new QUI\Exception([
                     'sequry/core',
                     'exception.system.auth.key.file.not.found'
-                ), 404);
+                ], 404);
             }
         }
 
@@ -125,7 +125,7 @@ class Utils
      */
     public static function getSystemPasswordAuthKey()
     {
-        $keyFile = ETC_DIR . 'plugins/sequry/gpm_auth_passwords.key';
+        $keyFile = ETC_DIR.'plugins/sequry/gpm_auth_passwords.key';
 
         // if key does not exit -> create
         if (!file_exists($keyFile)) {
@@ -133,10 +133,10 @@ class Utils
             file_put_contents($keyFile, $RandomKey->getValue());
 
             if (!file_exists($keyFile)) {
-                throw new QUI\Exception(array(
+                throw new QUI\Exception([
                     'sequry/core',
                     'exception.system.auth.key.file.not.found'
-                ), 404);
+                ], 404);
             }
         }
 
@@ -151,7 +151,7 @@ class Utils
      */
     public static function getSystemPasswordLinkKey()
     {
-        $keyFile = ETC_DIR . 'plugins/sequry/gpm_password_links.key';
+        $keyFile = ETC_DIR.'plugins/sequry/gpm_password_links.key';
 
         // if key does not exit -> create
         if (!file_exists($keyFile)) {
@@ -159,10 +159,10 @@ class Utils
             file_put_contents($keyFile, $RandomKey->getValue());
 
             if (!file_exists($keyFile)) {
-                throw new QUI\Exception(array(
+                throw new QUI\Exception([
                     'sequry/core',
                     'exception.system.passwordlink.key.file.not.found'
-                ), 404);
+                ], 404);
             }
         }
 
@@ -178,10 +178,10 @@ class Utils
     public static function clearArray($data)
     {
         if (!is_array($data)) {
-            return array();
+            return [];
         }
 
-        $cleanData = array();
+        $cleanData = [];
 
         foreach ($data as $key => $str) {
             if (is_array($data[$key])) {
@@ -219,34 +219,82 @@ class Utils
      */
     public static function generatePassword()
     {
-        $passwordParts = array();
+        $passwordParts = [];
 
         // 3 to 5 numbers
-        for ($i = 0, $len = random_int(3,5); $i < $len; $i++) {
-            $passwordParts[] = random_int(0,9);
+        for ($i = 0, $len = random_int(3, 5); $i < $len; $i++) {
+            $passwordParts[] = random_int(0, 9);
         }
 
         // 3 to 5 special characters
-        $special = array('-', '_', '$', '@', '?');
+        $special = ['-', '_', '$', '@', '?'];
 
-        for ($i = 0, $len = random_int(3,5); $i < $len; $i++) {
-            $passwordParts[] = $special[random_int(0, (count($special)-1))];
+        for ($i = 0, $len = random_int(3, 5); $i < $len; $i++) {
+            $passwordParts[] = $special[random_int(0, (count($special) - 1))];
         }
 
         // 4 to 10 letters
-        $letters = array(
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-            'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-            'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
-        );
+        $letters = [
+            'a',
+            'b',
+            'c',
+            'd',
+            'e',
+            'f',
+            'g',
+            'h',
+            'i',
+            'j',
+            'k',
+            'l',
+            'm',
+            'n',
+            'o',
+            'p',
+            'q',
+            'r',
+            's',
+            't',
+            'u',
+            'v',
+            'w',
+            'x',
+            'y',
+            'z',
+            'A',
+            'B',
+            'C',
+            'D',
+            'E',
+            'F',
+            'G',
+            'H',
+            'I',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N',
+            'O',
+            'P',
+            'Q',
+            'R',
+            'S',
+            'T',
+            'U',
+            'V',
+            'W',
+            'X',
+            'Y',
+            'Z'
+        ];
 
-        for ($i = 0, $len = random_int(4,10); $i < $len; $i++) {
-            $passwordParts[] = $letters[random_int(0, (count($letters)-1))];
+        for ($i = 0, $len = random_int(4, 10); $i < $len; $i++) {
+            $passwordParts[] = $letters[random_int(0, (count($letters) - 1))];
         }
 
         // shuffle parts
-        for ($i = 0, $len = random_int(500,1000); $i < $len; $i++) {
+        for ($i = 0, $len = random_int(500, 1000); $i < $len; $i++) {
             shuffle($passwordParts);
         }
 
@@ -259,15 +307,16 @@ class Utils
      * @param string $arrayData - Data to be decoded
      * @return array
      */
-    public static function safeJsonDecode($arrayData) {
+    public static function safeJsonDecode($arrayData)
+    {
         if (!is_string($arrayData)) {
-            return array();
+            return [];
         }
 
         $array = json_decode($arrayData, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return array();
+            return [];
         }
 
         return $array;
@@ -281,7 +330,32 @@ class Utils
      */
     public static function isJson($str)
     {
+        if (!is_string($str)) {
+            return false;
+        }
+
         $str = json_decode($str, true);
         return json_last_error() === JSON_ERROR_NONE && is_array($str);
+    }
+
+    /**
+     * Sanitize possibly malicious HTML code
+     *
+     * @param string|array $data
+     * @return mixed
+     */
+    public static function sanitizeHtml(&$data)
+    {
+        if (is_string($data)) {
+            return htmlspecialchars($data, ENT_QUOTES);
+        }
+
+        if (is_array($data)) {
+            foreach ($data as $k => $v) {
+                $data[$k] = self::sanitizeHtml($v);
+            }
+        }
+
+        return $data;
     }
 }

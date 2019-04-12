@@ -5,6 +5,7 @@ namespace Sequry\Core\PasswordTypes\Website;
 use Sequry\Core\PasswordTypes\AbstractPasswordType;
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
+use Sequry\Core\Security\Utils;
 
 /**
  * Type class for Website password input type
@@ -20,7 +21,7 @@ class Type extends AbstractPasswordType
      * @return string - HTML template
      * @throws \Sequry\Core\Exception\Exception
      */
-    public static function getViewHtml($content = array())
+    public static function getViewHtml($content = [])
     {
         if (isset($content['url'])
             && !empty($content['url'])
@@ -28,15 +29,16 @@ class Type extends AbstractPasswordType
             $url = $content['url'];
 
             if (mb_strpos($url, '//') !== false) {
-                $url = '<a href="' . $url . '" target="_blank">' . $url . '</a>';
+                $url = '<a href="'.$url.'" target="_blank">'.$url.'</a>';
             }
 
             $content['url'] = $url;
         }
 
+        $content = Utils::sanitizeHtml($content);
         $content = array_merge($content, self::getTemplateTranslations());
 
-        return TemplateUtils::parseTemplate(self::getDir() . '/View.html', $content, true);
+        return TemplateUtils::parseTemplate(self::getDir().'/View.html', $content, true);
     }
 
     /**
@@ -60,12 +62,12 @@ class Type extends AbstractPasswordType
         $lg       = 'sequry/core';
         $lgPrefix = 'passwordtypes.website.label.';
 
-        return array(
-            'labelTitle'    => $L->get($lg, $lgPrefix . 'title'),
-            'labelUser'     => $L->get($lg, $lgPrefix . 'user'),
-            'labelPassword' => $L->get($lg, $lgPrefix . 'password'),
-            'labelUrl'      => $L->get($lg, $lgPrefix . 'url'),
+        return [
+            'labelTitle'    => $L->get($lg, $lgPrefix.'title'),
+            'labelUser'     => $L->get($lg, $lgPrefix.'user'),
+            'labelPassword' => $L->get($lg, $lgPrefix.'password'),
+            'labelUrl'      => $L->get($lg, $lgPrefix.'url'),
             'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
-        );
+        ];
     }
 }

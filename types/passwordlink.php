@@ -45,8 +45,8 @@ if (empty($_REQUEST['id']) || empty($_REQUEST['hash'])) {
             $Engine->assign([
                 'type'        => $Password->getDataType(),
                 'payLoadData' => json_encode($data['payload']),
-                'title'       => $PasswordLink->getContentTitle(),
-                'message'     => $PasswordLink->getContentMessage()
+                'title'       => htmlspecialchars($PasswordLink->getContentTitle()),
+                'message'     => htmlspecialchars($PasswordLink->getContentMessage())
             ]);
         }
     } catch (InvalidKeyException $Exception) {

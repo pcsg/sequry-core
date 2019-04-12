@@ -10,6 +10,7 @@ use Sequry\Core\Actors\CryptoGroup;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
+use Sequry\Core\Exception\PermissionDeniedException;
 use Sequry\Core\Password;
 use Sequry\Core\Security\HiddenString;
 use Sequry\Core\Security\KDF;
@@ -92,9 +93,9 @@ class PasswordLinks
 
         $dataAccess = [
             'password'          => $password,
-            'encryptionSalt'    => \Sodium\bin2hex($encryptionSalt),
-            'hash'              => \Sodium\bin2hex($hash),
-            'dataKey'           => \Sodium\bin2hex($passwordKey),
+            'encryptionSalt'    => \sodium_bin2hex($encryptionSalt),
+            'hash'              => \sodium_bin2hex($hash),
+            'dataKey'           => \sodium_bin2hex($passwordKey),
             'createDate'        => date('Y-m-d H:i:s'),
             'createUserId'      => $CreateUser->getId(),
             'createUserName'    => $CreateUser->getName(),
@@ -205,9 +206,17 @@ class PasswordLinks
      * @param array $searchParams (optional)
      * @param bool $countOnly (optional) - get count only
      * @return array
+     * @throws PermissionDeniedException
      */
     public static function getList($passwordId, $searchParams = [], $countOnly = false)
     {
+        if (!Passwords::hasPasswordAccess(QUI::getUserBySession(), $passwordId)) {
+            throw new PermissionDeniedException([
+                'sequry/core',
+                'exception.passwordlink.no_password_access'
+            ]);
+        }
+
         // ORDER BY
         $order = '`id`';
 
@@ -241,15 +250,20 @@ class PasswordLinks
             unset($where['active']);
         }
 
-        $result = QUI::getDataBase()->fetch([
-            'select' => [
-                'id',
-            ],
-            'from'   => Tables::passwordLink(),
-            'where'  => $where,
-            'order'  => $order,
-            'limit'  => $limit
-        ]);
+        try {
+            $result = QUI::getDataBase()->fetch([
+                'select' => [
+                    'id',
+                ],
+                'from'   => Tables::passwordLink(),
+                'where'  => $where,
+                'order'  => $order,
+                'limit'  => $limit
+            ]);
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+            $result = [];
+        }
 
         if ($countOnly) {
             return count($result);

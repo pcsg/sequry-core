@@ -5,6 +5,7 @@ namespace Sequry\Core\PasswordTypes\ApiKey;
 use Sequry\Core\PasswordTypes\AbstractPasswordType;
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
+use Sequry\Core\Security\Utils;
 
 /**
  * Type class for SecretKey password input type
@@ -20,7 +21,7 @@ class Type extends AbstractPasswordType
      * @return string - HTML template
      * @throws \Sequry\Core\Exception\Exception
      */
-    public static function getViewHtml($content = array())
+    public static function getViewHtml($content = [])
     {
         if (isset($content['url'])
             && !empty($content['url'])
@@ -30,7 +31,7 @@ class Type extends AbstractPasswordType
             preg_match('#https?:\/\/#i', $url, $matches);
 
             if (empty($matches)) {
-                $url = 'http://' . $url;
+                $url = 'http://'.$url;
             }
 
             $content['url'] = $url;
@@ -38,9 +39,10 @@ class Type extends AbstractPasswordType
             $content['url'] = '#';
         }
 
-        $content = array_merge($content, self::getTemplateTranslations());
+        $content['note'] = $content = Utils::sanitizeHtml($content);
+        $content         = array_merge($content, self::getTemplateTranslations());
 
-        return TemplateUtils::parseTemplate(self::getDir() . '/View.html', $content, true);
+        return TemplateUtils::parseTemplate(self::getDir().'/View.html', $content, true);
     }
 
     /**
@@ -64,11 +66,11 @@ class Type extends AbstractPasswordType
         $lg       = 'sequry/core';
         $lgPrefix = 'passwordtypes.apikey.label.';
 
-        return array(
-            'labelTitle' => $L->get($lg, $lgPrefix . 'title'),
-            'labelUrl'   => $L->get($lg, $lgPrefix . 'url'),
-            'labelKey'   => $L->get($lg, $lgPrefix . 'key'),
+        return [
+            'labelTitle' => $L->get($lg, $lgPrefix.'title'),
+            'labelUrl'   => $L->get($lg, $lgPrefix.'url'),
+            'labelKey'   => $L->get($lg, $lgPrefix.'key'),
             'labelNote'  => $L->get($lg, 'passwordtypes.label.note')
-        );
+        ];
     }
 }

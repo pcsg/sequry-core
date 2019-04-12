@@ -5,6 +5,7 @@ namespace Sequry\Core\PasswordTypes;
 use QUI;
 use QUI\Utils\Security\Orthos;
 use Sequry\Core\Exception\Exception;
+use Sequry\Core\Security\Utils;
 
 /**
  * Class TemplateUtils

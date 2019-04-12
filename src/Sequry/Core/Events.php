@@ -158,6 +158,15 @@ class Events
      */
     public static function onUserLogin($User)
     {
+        try {
+            // Automatically overwrite QUIQQER max_session_lifetime
+            $maxSessionLifeTime = (int)Settings::getCoreSetting('maxSessionLifetime');
+            QUI::$Conf->set('session', 'max_life_time', $maxSessionLifeTime);
+            QUI::$Conf->save();
+        } catch (\Exception $Exception) {
+            QUI\System\Log::writeException($Exception);
+        }
+
         // generate random 128-bit key and initialization vector
         $commKey = \Sodium\randombytes_buf(16);
         $iv      = \Sodium\randombytes_buf(
@@ -182,6 +191,10 @@ class Events
      */
     public static function onUserSaveBegin($User)
     {
+        // CHECK FOR E-MAIL ADDRESS EDIT
+
+
+        // CHECK FOR GROUP EDIT
         if (self::$addUsersViaGroup) {
             if (self::$addUsersViaGroupAuthenticated) {
                 throw new Exception([
@@ -380,8 +393,8 @@ class Events
      * Throws an exception so the standard user deletion progress is immediately aborted
      * and an own procedure can be called from the frontend
      *
-     * @return void
      * @param QUI\Users\User $User
+     * @return void
      * @throws QUI\Exception
      */
     public static function onUserDelete($User)
@@ -426,8 +439,8 @@ class Events
      * Throws an exception so the standard group deletion progress is immediately aborted
      * and an own procedure can be called from the frontend
      *
-     * @return void
      * @param QUI\Groups\Group $Group
+     * @return void
      * @throws QUI\Exception
      */
     public static function onGroupDelete($Group)
@@ -468,8 +481,8 @@ class Events
      */
     public static function onAdminLoad()
     {
-        $cssFile = URL_OPT_DIR . 'sequry/core/bin/style.css';
-        echo '<link href="' . $cssFile . '" rel="stylesheet" type="text/css"/>';
+        $cssFile = URL_OPT_DIR.'sequry/core/bin/style.css';
+        echo '<link href="'.$cssFile.'" rel="stylesheet" type="text/css"/>';
     }
 
     /**
@@ -481,8 +494,8 @@ class Events
      */
     public static function onAdminLoadFooter()
     {
-        $jsFile = URL_OPT_DIR . 'sequry/core/bin/onAdminLoadFooter.js';
-        echo '<script src="' . $jsFile . '"></script>';
+        $jsFile = URL_OPT_DIR.'sequry/core/bin/onAdminLoadFooter.js';
+        echo '<script src="'.$jsFile.'"></script>';
     }
 
     /**

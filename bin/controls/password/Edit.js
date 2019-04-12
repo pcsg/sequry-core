@@ -66,7 +66,6 @@ define('package/sequry/core/bin/controls/password/Edit', [
             this.$PasswordData          = null;
             this.$owner                 = false;
             this.$PassContent           = null;
-            this.$securityClassId       = false;
             this.$CategorySelect        = null;
             this.$CategorySelectPrivate = null;
             this.$OwnerSelect           = null;
