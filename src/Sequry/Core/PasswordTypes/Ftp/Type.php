@@ -5,6 +5,7 @@ namespace Sequry\Core\PasswordTypes\Ftp;
 use Sequry\Core\PasswordTypes\AbstractPasswordType;
 use Sequry\Core\PasswordTypes\TemplateUtils;
 use QUI;
+use Sequry\Core\Security\Utils;
 
 /**
  * Type class for Ftp password input type
@@ -20,7 +21,7 @@ class Type extends AbstractPasswordType
      * @return string - HTML template
      * @throws \Sequry\Core\Exception\Exception
      */
-    public static function getViewHtml($content = array())
+    public static function getViewHtml($content = [])
     {
         if (isset($content['host'])
             && !empty($content['host'])
@@ -30,7 +31,7 @@ class Type extends AbstractPasswordType
             if (mb_strpos($host, 'ftp://') === 0) {
                 $url = $host;
             } else {
-                $url = 'ftp://' . $host;
+                $url = 'ftp://'.$host;
             }
 
             $content['url'] = $url;
@@ -38,9 +39,10 @@ class Type extends AbstractPasswordType
             $content['url'] = '#';
         }
 
-        $content = array_merge($content, self::getTemplateTranslations());
+        $content['note'] = $content = Utils::sanitizeHtml($content);
+        $content         = array_merge($content, self::getTemplateTranslations());
 
-        return TemplateUtils::parseTemplate(self::getDir() . '/View.html', $content, true);
+        return TemplateUtils::parseTemplate(self::getDir().'/View.html', $content, true);
     }
 
     /**
@@ -64,13 +66,13 @@ class Type extends AbstractPasswordType
         $lg       = 'sequry/core';
         $lgPrefix = 'passwordtypes.ftp.label.';
 
-        return array(
-            'labelTitle'    => $L->get($lg, $lgPrefix . 'title'),
-            'labelHost'     => $L->get($lg, $lgPrefix . 'host'),
-            'labelUser'     => $L->get($lg, $lgPrefix . 'user'),
-            'labelPassword' => $L->get($lg, $lgPrefix . 'password'),
-            'labelUrl'      => $L->get($lg, $lgPrefix . 'url'),
+        return [
+            'labelTitle'    => $L->get($lg, $lgPrefix.'title'),
+            'labelHost'     => $L->get($lg, $lgPrefix.'host'),
+            'labelUser'     => $L->get($lg, $lgPrefix.'user'),
+            'labelPassword' => $L->get($lg, $lgPrefix.'password'),
+            'labelUrl'      => $L->get($lg, $lgPrefix.'url'),
             'labelNote'     => $L->get($lg, 'passwordtypes.label.note')
-        );
+        ];
     }
 }

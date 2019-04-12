@@ -191,6 +191,10 @@ class Events
      */
     public static function onUserSaveBegin($User)
     {
+        // CHECK FOR E-MAIL ADDRESS EDIT
+
+
+        // CHECK FOR GROUP EDIT
         if (self::$addUsersViaGroup) {
             if (self::$addUsersViaGroupAuthenticated) {
                 throw new Exception([

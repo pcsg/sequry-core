@@ -30,7 +30,7 @@ define('package/sequry/core/bin/controls/password/link/View', [
 
             this.addEvents({
                 onImport: this.$onImport
-            })
+            });
         },
 
         /**

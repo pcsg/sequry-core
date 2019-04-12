@@ -337,4 +337,25 @@ class Utils
         $str = json_decode($str, true);
         return json_last_error() === JSON_ERROR_NONE && is_array($str);
     }
+
+    /**
+     * Sanitize possibly malicious HTML code
+     *
+     * @param string|array $data
+     * @return mixed
+     */
+    public static function sanitizeHtml(&$data)
+    {
+        if (is_string($data)) {
+            return htmlspecialchars($data, ENT_QUOTES);
+        }
+
+        if (is_array($data)) {
+            foreach ($data as $k => $v) {
+                $data[$k] = self::sanitizeHtml($v);
+            }
+        }
+
+        return $data;
+    }
 }
