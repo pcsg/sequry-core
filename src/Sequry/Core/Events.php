@@ -13,6 +13,7 @@ use Sequry\Core\Constants\Crypto;
 use QUI\Package\Package;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Exception\Exception;
+use Sequry\Core\Security\ActionAuthenticator;
 use Sequry\Core\Security\Handler\CryptoActors;
 use Sequry\Core\Security\Handler\Authentication;
 use Sequry\Core\Security\Handler\PasswordLinks;
@@ -192,7 +193,29 @@ class Events
     public static function onUserSaveBegin($User)
     {
         // CHECK FOR E-MAIL ADDRESS EDIT
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
+                'email'
+            ],
+            'from'   => 'users',
+            'where'  => [
+                'id' => $User->getId()
+            ],
+            'limit'
+        ]);
 
+        if (!empty($result)) {
+            $email = $result[0]['email'];
+
+            if ($email !== $User->getAttribute('email')) {
+                ActionAuthenticator::checkActionAuthentication(
+                    'user_change_mail',
+                    [
+                        1
+                    ]
+                );
+            }
+        }
 
         // CHECK FOR GROUP EDIT
         if (self::$addUsersViaGroup) {

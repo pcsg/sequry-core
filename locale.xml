@@ -395,6 +395,9 @@
         <locale name="exception.auth.plugin.delete.user.no.permission">
             <de><![CDATA[Das Löschen der Registrierung für ein Authentifizierungs-Plugin kann nur durch einen SuperUser oder den Benutzer selbst vorgenommen werden.]]></de>
         </locale>
+        <locale name="exception.auth.plugin.wrong_authdata">
+            <de><![CDATA[Die Zugangsdaten für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] sind nicht korrekt.]]></de>
+        </locale>
 
         <!-- Class: Security\Handler\Authentication -->
         <locale name="exception.authentication.authenticate.error" html="true">
@@ -631,9 +634,6 @@
         <locale name="attention.securityclass.edit.groups.cannot.delete.group">
             <de>
                 <![CDATA[Die Gruppe #[groupId] kann nicht aus der Sicherheitsklasse #[securityClassId] entfernt werden. Gruppen können nur aus einer Sicherheitsklasse entfernt werden, wenn sie einer anderen Sicherheitsklasse zugeordnet oder direkt gelöscht werden.]]></de>
-        </locale>
-        <locale name="exception.securityclass.authenticate.wrong.authdata">
-            <de><![CDATA[Die Zugangsdaten für das Authentifizierungs-Plugin "[authPluginTitle]" #[authPluginId] sind nicht korrekt.]]></de>
         </locale>
         <locale name="exception.securityclass.authenticate.insufficient.authentication.count">
             <de><![CDATA[Zur Authentifizierung für die Sicherheitsklasse #[securityClassId] wurden nicht ausreichend Zugangsdaten übergeben. Sie müssen sich bei mindestens [requiredFactors] verschiedenen Faktoren authentifizieren.]]></de>
@@ -1241,6 +1241,10 @@ Viel Spaß mit Sequry!</p>
         <locale name="passwordtypes.text.label.text">
             <de><![CDATA[Geheimtext]]></de>
         </locale>
+
+        <!-- Class: Sequry\Core\Security\ActionAuthenticator -->
+
+
     </groups>
 
     <groups name="sequry/core" datatype="js">

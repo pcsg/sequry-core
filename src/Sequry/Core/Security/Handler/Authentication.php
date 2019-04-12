@@ -12,6 +12,7 @@ use Sequry\Core\Constants\Permissions;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Exception\Exception;
+use Sequry\Core\Exception\InvalidAuthDataException;
 use Sequry\Core\Exception\PermissionDeniedException;
 use Sequry\Core\Security\Authentication\Plugin;
 use Sequry\Core\Security\Authentication\SecurityClass;
@@ -69,6 +70,18 @@ class Authentication
      * @var bool
      */
     public static $sessionCache = false;
+
+    /**
+     * Authenticate for a single authentication plugin
+     *
+     * @param int $authPluginId
+     * @param mixed $authData
+     * @throws InvalidAuthDataException
+     */
+    public static function authenticate(int $authPluginId, $authData)
+    {
+
+    }
 
     /**
      * Return AuthKeyPair

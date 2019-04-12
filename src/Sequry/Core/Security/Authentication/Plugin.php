@@ -5,6 +5,7 @@ namespace Sequry\Core\Security\Authentication;
 use Sequry\Core\Actors\CryptoUser;
 use Sequry\Core\Constants\Tables;
 use Sequry\Core\Exception\Exception;
+use Sequry\Core\Exception\InvalidAuthDataException;
 use Sequry\Core\Security\AsymmetricCrypto;
 use Sequry\Core\Security\Handler\Authentication;
 use Sequry\Core\Security\Handler\CryptoActors;
@@ -43,21 +44,21 @@ class Plugin extends QUI\QDOM
      */
     public function __construct($id)
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'from'  => Tables::authPlugins(),
-            'where' => array(
+            'where' => [
                 'id' => (int)$id
-            )
-        ));
+            ]
+        ]);
 
         if (empty($result)) {
-            throw new Exception(array(
+            throw new Exception([
                 'sequry/core',
                 'exception.auth.plugin.not.found',
-                array(
+                [
                     'id' => $id
-                )
-            ), 404);
+                ]
+            ], 404);
         }
 
         $data = current($result);
@@ -69,10 +70,10 @@ class Plugin extends QUI\QDOM
         $t = json_decode($data['title'], true);
         $d = json_decode($data['description'], true);
 
-        $this->setAttributes(array(
+        $this->setAttributes([
             'title'       => $L->get($t[0], $t[1]),
             'description' => $L->get($d[0], $d[1])
-        ));
+        ]);
     }
 
     /**
@@ -121,7 +122,7 @@ class Plugin extends QUI\QDOM
      * @param HiddenString $information (optional) - authentication information
      * @param QUI\Users\User $User (optional) - if omitted use session user
      * @return true - if authenticated
-     * @throws QUI\Exception
+     * @throws InvalidAuthDataException
      */
     public function authenticate(HiddenString $information, $User = null)
     {
@@ -129,7 +130,24 @@ class Plugin extends QUI\QDOM
             $User = QUI::getUserBySession();
         }
 
-        return $this->AuthClass->authenticate($information, $User);
+        // @todo implement anti brute force mechanism
+
+        try {
+            return $this->AuthClass->authenticate($information, $User);
+        } catch (\Exception $Exception) {
+            $Exception = new InvalidAuthDataException([
+                'sequry/core',
+                'exception.auth.plugin.wrong_authdata',
+                [
+                    'authPluginId'    => $this->getId(),
+                    'authPluginTitle' => $this->getAttribute('title')
+                ]
+            ]);
+
+            $Exception->setAttribute('authPluginId', $this->getId());
+
+            throw $Exception;
+        }
     }
 
     /**
@@ -188,7 +206,7 @@ class Plugin extends QUI\QDOM
         $macValue = MAC::create(
             new HiddenString(
                 $publicKeyValue->getString()
-                . $encryptedPrivateKeyValue
+                .$encryptedPrivateKeyValue
             ),
             Utils::getSystemKeyPairAuthKey()
         );
@@ -197,25 +215,25 @@ class Plugin extends QUI\QDOM
             // put everything in the database
             QUI::getDataBase()->update(
                 Tables::keyPairsUser(),
-                array(
+                [
                     'publicKey'  => $publicKeyValue,
                     'privateKey' => $encryptedPrivateKeyValue,
                     'MAC'        => $macValue
-                ),
-                array(
+                ],
+                [
                     'userId'       => $User->getId(),
                     'authPluginId' => $this->id
-                )
+                ]
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addError(
-                'DB error while changing auth info for a user for an auth plugin: ' . $Exception->getMessage()
+                'DB error while changing auth info for a user for an auth plugin: '.$Exception->getMessage()
             );
 
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.auth.plugin.changeauth.database.error'
-            ));
+            ]);
         }
     }
 
@@ -244,13 +262,13 @@ class Plugin extends QUI\QDOM
             $AuthKey = $this->getDerivedKey($User);
         } catch (QUI\Database\Exception $Exception) {
             QUI\System\Log::addError(
-                'DB error while registering a user for an auth plugin: ' . $Exception->getMessage()
+                'DB error while registering a user for an auth plugin: '.$Exception->getMessage()
             );
 
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.auth.plugin.register.database.error'
-            ));
+            ]);
         }
 
         // if authentication information is correct, create new keypair for user
@@ -268,7 +286,7 @@ class Plugin extends QUI\QDOM
         $macValue = MAC::create(
             new HiddenString(
                 $publicKeyValue->getString()
-                . $encryptedPrivateKeyValue
+                .$encryptedPrivateKeyValue
             ),
             Utils::getSystemKeyPairAuthKey()
         );
@@ -279,23 +297,23 @@ class Plugin extends QUI\QDOM
             // put everything in the database
             $DB->insert(
                 Tables::keyPairsUser(),
-                array(
+                [
                     'userId'       => $User->getId(),
                     'authPluginId' => $this->id,
                     'publicKey'    => $publicKeyValue,
                     'privateKey'   => $encryptedPrivateKeyValue,
                     'MAC'          => $macValue
-                )
+                ]
             );
         } catch (QUI\Exception $Exception) {
             QUI\System\Log::addError(
-                'DB error while registering a user for an auth plugin: ' . $Exception->getMessage()
+                'DB error while registering a user for an auth plugin: '.$Exception->getMessage()
             );
 
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.auth.plugin.register.database.error'
-            ));
+            ]);
         }
 
         $newKeyPairId = $DB->getPDO()->lastInsertId();
@@ -338,14 +356,14 @@ class Plugin extends QUI\QDOM
                 continue;
             }
 
-            $result = $DB->fetch(array(
+            $result = $DB->fetch([
                 'from'  => $tbl,
-                'where' => array(
+                'where' => [
                     'groupId'       => $groupId,
                     'groupKey'      => null,
                     'userKeyPairId' => null
-                )
-            ));
+                ]
+            ]);
 
             if (empty($result)) {
                 continue;
@@ -353,13 +371,13 @@ class Plugin extends QUI\QDOM
 
             $data = current($result);
 
-            $entry = array(
+            $entry = [
                 'userId'          => $data['userId'],
                 'userKeyPairId'   => $keyPairId,
                 'groupId'         => $groupId,
                 'securityClassId' => $data['securityClassId'],
                 'groupKey'        => null
-            );
+            ];
 
             // calculate MAC
             $entry['MAC'] = MAC::create(
@@ -370,9 +388,9 @@ class Plugin extends QUI\QDOM
             $DB->update(
                 $tbl,
                 $entry,
-                array(
+                [
                     'id' => $data['id']
-                )
+                ]
             );
         }
     }
@@ -416,14 +434,14 @@ class Plugin extends QUI\QDOM
             $DerivedKey = $this->AuthClass->getDerivedKey($User);
             return $DerivedKey;
         } catch (\Exception $Exception) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.auth.plugin.derived.key.error',
-                array(
+                [
                     'pluginId' => $this->id,
                     'error'    => $Exception->getMessage()
-                )
-            ));
+                ]
+            ]);
         }
     }
 
@@ -452,10 +470,10 @@ class Plugin extends QUI\QDOM
         if ((int)$SessionUser->getId() !== $CryptoUser->getId()
             && !$SessionUser->isSU()
         ) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.auth.plugin.delete.user.no.permission',
-            ));
+            ]);
         }
 
         $this->AuthClass->deleteUser($CryptoUser);
