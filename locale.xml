@@ -796,6 +796,9 @@ Bitte geben Sie das Token in das entsprechende Eingabefeld im Wiederherstellungs
         <locale name="exception.passwordlink.permission_denied">
             <de><![CDATA[Sie haben nicht die nötige Berechtigung, um diesen Passwort-Link zu bearbeiten.]]></de>
         </locale>
+        <locale name="exception.passwordlink.no_password_access">
+            <de><![CDATA[Sie haben nicht die nötige Berechtigung, um Password-Links für dieses Passwort abzurufen.]]></de>
+        </locale>
 
         <!-- Security/Handler/PasswordLinks -->
         <locale name="mail.passwordlink.greeting" html="true">
