@@ -93,9 +93,9 @@ class PasswordLinks
 
         $dataAccess = [
             'password'          => $password,
-            'encryptionSalt'    => \Sodium\bin2hex($encryptionSalt),
-            'hash'              => \Sodium\bin2hex($hash),
-            'dataKey'           => \Sodium\bin2hex($passwordKey),
+            'encryptionSalt'    => \sodium_bin2hex($encryptionSalt),
+            'hash'              => \sodium_bin2hex($hash),
+            'dataKey'           => \sodium_bin2hex($passwordKey),
             'createDate'        => date('Y-m-d H:i:s'),
             'createUserId'      => $CreateUser->getId(),
             'createUserName'    => $CreateUser->getName(),
