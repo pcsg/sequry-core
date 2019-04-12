@@ -12,6 +12,9 @@ use Sequry\Core\Security\HiddenString;
  */
 class Argon2 implements IHash
 {
+    const PWHASH_OPSLIMIT = 4;
+    const PWHASH_MEMLIMIT = 33554432;
+
     /**
      * Creates a hash
      *
@@ -20,11 +23,12 @@ class Argon2 implements IHash
      * @return string - The hash
      *
      * @throws QUI\Exception
+     * @throws \Exception
      */
     public static function create(HiddenString $str, $salt = null)
     {
         if (is_null($salt)) {
-            $salt = \Sodium\randombytes_buf(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
+            $salt = \sodium_randombytes_buf(\SODIUM_CRYPTO_PWHASH_SALTBYTES);
         } else {
             // Argon2 needs a salt with fixed 16 bytes length
             if (Binary::safeStrlen($salt) > \SODIUM_CRYPTO_PWHASH_SALTBYTES) {
@@ -33,12 +37,13 @@ class Argon2 implements IHash
         }
 
         try {
-            $hash = \Sodium\crypto_pwhash(
+            $hash = \sodium_crypto_pwhash(
                 \SODIUM_CRYPTO_STREAM_KEYBYTES,
                 $str->getString(),
                 $salt,
-                \SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
-                \SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
+                self::PWHASH_OPSLIMIT,
+                self::PWHASH_MEMLIMIT,
+                \SODIUM_CRYPTO_PWHASH_ALG_ARGON2I13
             );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(

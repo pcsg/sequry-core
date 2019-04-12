@@ -36,7 +36,12 @@ class Halite4 implements IKDF
 
         try {
             $HiddenString = new ParagonieHiddenString($str->getString());
-            $DerivedKey = KeyFactory::deriveEncryptionKey($HiddenString, $salt);
+            $DerivedKey   = KeyFactory::deriveEncryptionKey(
+                $HiddenString,
+                $salt,
+                KeyFactory::INTERACTIVE,
+                \SODIUM_CRYPTO_PWHASH_ALG_ARGON2I13
+            );
         } catch (\Exception $Exception) {
             throw new QUI\Exception(
                 self::class . ' :: key derivation operation failed: ' . $Exception->getMessage()

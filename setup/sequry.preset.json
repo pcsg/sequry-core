@@ -1,0 +1,25 @@
+{
+  "project": {
+    "name": "Sequry",
+    "languages": {
+      "de": "true",
+      "en": "false"
+    }
+  },
+  "template": {
+    "name": "sequry/template",
+    "version": "^1|*@dev",
+    "start_layout": "layout\/startPage",
+    "default_layout": "layout\/noSidebar"
+  },
+  "packages": {
+    "sequry/core": "^1|*@dev"
+  },
+  "meta": {
+    "name": {
+      "en_GB": "Sequry - Team Password Manager",
+      "de_DE": "Sequry - Team Password Manager"
+    },
+    "icon": "fa-key"
+  }
+}
