@@ -983,6 +983,12 @@ Viel Spaß mit Sequry!</p>
         <locale name="settings.module_settings.showPasswordLinkVHostSelect.description">
             <de><![CDATA[Ermöglicht bei Erstellung eines Passwort-Links den VHost anzugeben, der für die Generierung der Passwort-Link URL verwendet werden soll (nur möglich, wenn mehr als ein VHost im System angelegt ist)]]></de>
         </locale>
+        <locale name="settings.module_settings.maxSessionLifetime.title">
+            <de><![CDATA[Maximale Session Lifetime (Sekunden)]]></de>
+        </locale>
+        <locale name="settings.module_settings.maxSessionLifetime.description" html="true">
+            <de><![CDATA[Maximale Anzahl an <b>Sekunden</b>, die ein Benutzer ohne Aktion in Sequry authentifiziert bleibt. Diese Einstellung überschreibt automatisch die identische Einstellung des QUIQQER-Grundsystems!]]></de>
+        </locale>
 
         <locale name="user.gpm.title">
             <de><![CDATA[Sequry]]></de>

@@ -23,6 +23,11 @@
                     <type><![CDATA[bool]]></type>
                     <defaultvalue>1</defaultvalue>
                 </conf>
+
+                <conf name="maxSessionLifetime">
+                    <type><![CDATA[integer]]></type>
+                    <defaultvalue>300</defaultvalue>
+                </conf>
             </section>
         </config>
 
@@ -100,6 +105,15 @@
                             </text>
                             <description>
                                 <locale group="sequry/core" var="settings.module_settings.reEncryptEnabled.description" />
+                            </description>
+                        </input>
+
+                        <input conf="settings.maxSessionLifetime" type="number">
+                            <text>
+                                <locale group="sequry/core" var="settings.module_settings.maxSessionLifetime.title" />
+                            </text>
+                            <description>
+                                <locale group="sequry/core" var="settings.module_settings.maxSessionLifetime.description" />
                             </description>
                         </input>
 
