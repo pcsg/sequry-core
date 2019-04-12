@@ -835,6 +835,9 @@ class Password extends QUI\QDOM
             $this->permissionDenied();
         }
 
+        // try to decrypt password to force authentication
+        $this->decrypt();
+
         try {
             $DB = QUI::getDataBase();
 
