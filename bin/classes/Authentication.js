@@ -4,19 +4,14 @@
  *
  * @module package/sequry/core/bin/classes/Authentication
  * @author www.pcsg.de (Patrick Müller)
- *
- * @require qui/QUI
- * @require qui/classes/DOM
- * @require Ajax
  */
 define('package/sequry/core/bin/classes/Authentication', [
 
-    'qui/QUI',
     'qui/classes/DOM',
     'Ajax',
     'Locale'
 
-], function (QUI, QUIDOM, QUIAjax, QUILocale) {
+], function (QUIDOM, QUIAjax, QUILocale) {
     "use strict";
 
     var lg  = 'sequry/core';
@@ -26,6 +21,65 @@ define('package/sequry/core/bin/classes/Authentication', [
 
         Extends: QUIDOM,
         Type   : 'package/sequry/core/bin/classes/Authentication',
+
+        /**
+         * Authentication with specific authentication plugins
+         *
+         * @param {String} actionKey
+         * @param {Array} authPluginIds
+         * @return {Promise}
+         */
+        actionAuthentication: function (actionKey, authPluginIds) {
+            return new Promise(function (resolve, reject) {
+                require([
+                    'package/sequry/core/bin/controls/auth/Authenticate'
+                ], function (AuthWindow) {
+                    var Popup = new AuthWindow({
+                        authPluginIds: authPluginIds,
+                        required     : authPluginIds.length,
+                        info         : 'Test', // @todo Locale,
+                        events       : {
+                            onSubmit: function (AuthData) {
+                                Popup.showLoader();
+
+                                QUIAjax.post(
+                                    'package_sequry_core_ajax_auth_action_authenticate',
+                                    function () {
+                                        Popup.close();
+                                        resolve();
+                                    },
+                                    {
+                                        package      : pkg,
+                                        actionKey    : actionKey,
+                                        authPluginIds: JSON.encode(authPluginIds),
+                                        authData     : JSON.encode(AuthData),
+                                        onError      : function (e) {
+                                            if (e.getAttribute('authPluginId')) {
+                                                Popup.displayAuthDataRecoveryOption(
+                                                    e.getAttribute('authPluginId')
+                                                );
+                                            }
+
+                                            Popup.hideLoader();
+                                        }
+                                    }
+                                );
+                            },
+                            onClose : function () {
+                                reject();
+                                Popup.close();
+                            },
+                            onAbort : function () {
+                                reject();
+                                Popup.close();
+                            }
+                        }
+                    });
+
+                    Popup.open();
+                });
+            });
+        },
 
         /**
          * Authentication for a specific security class

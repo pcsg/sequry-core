@@ -65,16 +65,16 @@ class SecurityClass extends QUI\QDOM
     {
         $id = (int)$id;
 
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'from'  => Tables::securityClasses(),
-            'where' => array(
+            'where' => [
                 'id' => $id
-            )
-        ));
+            ]
+        ]);
 
         if (empty($result)) {
             throw new Exception(
-                'Security class #' . $id . ' not found.',
+                'Security class #'.$id.' not found.',
                 404
             );
         }
@@ -85,10 +85,10 @@ class SecurityClass extends QUI\QDOM
         $this->requiredFactors    = $data['requiredFactors'];
         $this->allowPasswordLinks = $data['allowPasswordLinks'] == 1 ? true : false;
 
-        $this->setAttributes(array(
+        $this->setAttributes([
             'title'       => $data['title'],
             'description' => $data['description']
-        ));
+        ]);
     }
 
     /**
@@ -108,10 +108,10 @@ class SecurityClass extends QUI\QDOM
      */
     public function getAuthStatus()
     {
-        $status = array(
+        $status = [
             'authenticated' => false,
-            'authPlugins'   => array()
-        );
+            'authPlugins'   => []
+        ];
 
         $authCount = 0;
 
@@ -148,10 +148,10 @@ class SecurityClass extends QUI\QDOM
             || !is_array($authData)
         ) {
             // @todo eigenen 401 error code
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.securityclass.authenticate.authdata.not.given'
-            ));
+            ]);
         }
 
         if (is_null($CryptoUser)) {
@@ -179,23 +179,7 @@ class SecurityClass extends QUI\QDOM
                 continue;
             }
 
-            try {
-                $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
-            } catch (\Exception $Exception) {
-                $Exception = new InvalidAuthDataException(array(
-                    'sequry/core',
-                    'exception.securityclass.authenticate.wrong.authdata',
-                    array(
-                        'authPluginId'    => $AuthPlugin->getId(),
-                        'authPluginTitle' => $AuthPlugin->getAttribute('title')
-                    )
-                ));
-
-                $Exception->setAttribute('authPluginId', $AuthPlugin->getId());
-
-                throw $Exception;
-            }
-
+            $AuthPlugin->authenticate($authData[$AuthPlugin->getId()], $CryptoUser);
             $succesfulAuthenticationCount++;
 
             // On successful authentication, save derived key in session data
@@ -203,14 +187,14 @@ class SecurityClass extends QUI\QDOM
         }
 
         if ($succesfulAuthenticationCount < $this->requiredFactors) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.securityclass.authenticate.insufficient.authentication.count',
-                array(
+                [
                     'securityClassId' => $this->id,
                     'requiredFactors' => $this->requiredFactors
-                )
-            ));
+                ]
+            ]);
         }
 
         return true;
@@ -244,7 +228,7 @@ class SecurityClass extends QUI\QDOM
             return;
         }
 
-        throw new InvalidAuthDataException(array());
+        throw new InvalidAuthDataException([]);
     }
 
     /**
@@ -283,17 +267,17 @@ class SecurityClass extends QUI\QDOM
      */
     public function getAuthPluginIds()
     {
-        $ids = array();
+        $ids = [];
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'authPluginId'
-            ),
+            ],
             'from'   => Tables::securityClassesToAuthPlugins(),
-            'where'  => array(
+            'where'  => [
                 'securityClassId' => $this->id
-            )
-        ));
+            ]
+        ]);
 
         foreach ($result as $row) {
             $ids[] = $row['authPluginId'];
@@ -315,7 +299,7 @@ class SecurityClass extends QUI\QDOM
         }
 
         $ids     = $this->getAuthPluginIds();
-        $plugins = array();
+        $plugins = [];
 
         foreach ($ids as $id) {
             $plugins[] = Authentication::getAuthPlugin($id);
@@ -333,13 +317,13 @@ class SecurityClass extends QUI\QDOM
      */
     public function getAuthPluginCount()
     {
-        $result = QUI::getDataBase()->fetch(array(
+        $result = QUI::getDataBase()->fetch([
             'count' => 1,
             'from'  => Tables::securityClassesToAuthPlugins(),
-            'where' => array(
+            'where' => [
                 'securityClassId' => $this->id
-            )
-        ));
+            ]
+        ]);
 
         return current(current($result));
     }
@@ -382,8 +366,8 @@ class SecurityClass extends QUI\QDOM
      */
     public function getEligibleUserIds()
     {
-        $userIds         = array();
-        $eligibleUserIds = array();
+        $userIds         = [];
+        $eligibleUserIds = [];
         $plugins         = $this->getAuthPlugins();
 
         if (empty($plugins)) {
@@ -423,7 +407,7 @@ class SecurityClass extends QUI\QDOM
      */
     public function getGroups()
     {
-        $groups   = array();
+        $groups   = [];
         $groupIds = $this->getGroupIds();
 
         foreach ($groupIds as $groupId) {
@@ -440,17 +424,17 @@ class SecurityClass extends QUI\QDOM
      */
     public function getGroupIds()
     {
-        $eligibleGroupIds = array();
+        $eligibleGroupIds = [];
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'groupId'
-            ),
+            ],
             'from'   => Tables::keyPairsGroup(),
-            'where'  => array(
+            'where'  => [
                 'securityClassId' => $this->id
-            )
-        ));
+            ]
+        ]);
 
         foreach ($result as $row) {
             $eligibleGroupIds[] = $row['groupId'];
@@ -466,16 +450,16 @@ class SecurityClass extends QUI\QDOM
      */
     public function getPasswordIds()
     {
-        $ids    = array();
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $ids    = [];
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id'
-            ),
+            ],
             'from'   => Tables::passwords(),
-            'where'  => array(
+            'where'  => [
                 'securityClassId' => $this->id
-            )
-        ));
+            ]
+        ]);
 
         foreach ($result as $row) {
             $ids[] = $row['id'];
@@ -522,7 +506,7 @@ class SecurityClass extends QUI\QDOM
      */
     protected function suggestSearchEligibleUsers($search)
     {
-        $actors  = array();
+        $actors  = [];
         $userIds = $this->getEligibleUserIds();
 
         if (empty($userIds)) {
@@ -530,26 +514,26 @@ class SecurityClass extends QUI\QDOM
         }
 
         // search users_adress table
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'uid',
                 'company'
-            ),
+            ],
             'from'   => QUI::getDBTableName('users_address'),
-            'where'  => array(
-                'company' => array(
+            'where'  => [
+                'company' => [
                     'type'  => '%LIKE%',
                     'value' => $search
-                ),
-                'uid'     => array(
+                ],
+                'uid'     => [
                     'type'  => 'IN',
                     'value' => $userIds
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
 
-        $addressUserIds       = array();
-        $addressUserCompanies = array();
+        $addressUserIds       = [];
+        $addressUserCompanies = [];
 
         foreach ($result as $row) {
             $addressUserIds[]                  = $row['uid'];
@@ -558,47 +542,47 @@ class SecurityClass extends QUI\QDOM
 
         // search users table
         $sql   = "SELECT id, username, firstname, lastname";
-        $sql   .= " FROM `" . QUI::getDBTableName('users') . "`";
-        $where = array();
-        $binds = array();
+        $sql   .= " FROM `".QUI::getDBTableName('users')."`";
+        $where = [];
+        $binds = [];
 
-        $where[] = '`id` IN (' . implode(',', $userIds) . ')';
+        $where[] = '`id` IN ('.implode(',', $userIds).')';
 
-        $whereOr = array();
+        $whereOr = [];
 
         // add matches from users_address search
         if (!empty($addressUserIds)) {
-            $whereOr[] = '`id` IN (' . implode(',', $addressUserIds) . ')';
+            $whereOr[] = '`id` IN ('.implode(',', $addressUserIds).')';
         }
 
         $whereOr[]         = 'username LIKE :username';
-        $binds['username'] = array(
-            'value' => '%' . $search . '%',
+        $binds['username'] = [
+            'value' => '%'.$search.'%',
             'type'  => \PDO::PARAM_STR
-        );
+        ];
 
         $whereOr[]          = 'firstname LIKE :firstname';
-        $binds['firstname'] = array(
-            'value' => '%' . $search . '%',
+        $binds['firstname'] = [
+            'value' => '%'.$search.'%',
             'type'  => \PDO::PARAM_STR
-        );
+        ];
 
         $whereOr[]         = 'lastname LIKE :lastname';
-        $binds['lastname'] = array(
-            'value' => '%' . $search . '%',
+        $binds['lastname'] = [
+            'value' => '%'.$search.'%',
             'type'  => \PDO::PARAM_STR
-        );
+        ];
 
-        $where[] = '(' . implode(' OR ', $whereOr) . ')';
+        $where[] = '('.implode(' OR ', $whereOr).')';
 
-        $sql .= " WHERE " . implode(" AND ", $where);
+        $sql .= " WHERE ".implode(" AND ", $where);
 
         $PDO  = QUI::getDataBase()->getPDO();
         $Stmt = $PDO->prepare($sql);
 
         // bind search values
         foreach ($binds as $var => $bind) {
-            $Stmt->bindValue(':' . $var, $bind['value'], $bind['type']);
+            $Stmt->bindValue(':'.$var, $bind['value'], $bind['type']);
         }
 
         // fetch information for all corresponding passwords
@@ -607,15 +591,15 @@ class SecurityClass extends QUI\QDOM
             $result = $Stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Exception $Exception) {
             QUI\System\Log::addError(
-                self::class . ' :: suggestSearchEligibleUsers -> '
-                . $Exception->getMessage()
+                self::class.' :: suggestSearchEligibleUsers -> '
+                .$Exception->getMessage()
             );
 
-            return array();
+            return [];
         }
 
         foreach ($result as $row) {
-            $userNameParts = array();
+            $userNameParts = [];
 
             if (!empty($row['firstname'])) {
                 $userNameParts[] = $row['firstname'];
@@ -626,20 +610,20 @@ class SecurityClass extends QUI\QDOM
             }
 
             if (isset($addressUserCompanies[$row['id']])) {
-                $userNameParts[] = '[' . $addressUserCompanies[$row['id']] . ']';
+                $userNameParts[] = '['.$addressUserCompanies[$row['id']].']';
             }
 
             if (empty($userNameParts)) {
                 $userName = $row['username'];
             } else {
-                $userName = implode(' ', $userNameParts) . ' (' . $row['username'] . ')';
+                $userName = implode(' ', $userNameParts).' ('.$row['username'].')';
             }
 
-            $actors[] = array(
+            $actors[] = [
                 'id'   => $row['id'],
                 'name' => $userName,
                 'type' => 'user'
-            );
+            ];
         }
 
         return $actors;
@@ -653,37 +637,37 @@ class SecurityClass extends QUI\QDOM
      */
     protected function suggestSearchEligibleGroups($search)
     {
-        $actors   = array();
+        $actors   = [];
         $groupIds = $this->getGroupIds();
 
         if (empty($groupIds)) {
             return $actors;
         }
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id',
                 'name'
-            ),
+            ],
             'from'   => 'groups',
-            'where'  => array(
-                'id'   => array(
+            'where'  => [
+                'id'   => [
                     'type'  => 'IN',
                     'value' => $groupIds
-                ),
-                'name' => array(
+                ],
+                'name' => [
                     'type'  => '%LIKE%',
                     'value' => $search
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
 
         foreach ($result as $row) {
-            $actors[] = array(
+            $actors[] = [
                 'id'   => $row['id'],
                 'name' => $row['name'],
                 'type' => 'group'
-            );
+            ];
         }
 
         return $actors;
@@ -699,9 +683,9 @@ class SecurityClass extends QUI\QDOM
      */
     public function searchGroupsToAdd($search, $limit)
     {
-        $groups           = array();
+        $groups           = [];
         $allGroups        = QUI::getGroups()->getAllGroups(true);
-        $eligibleGroupIds = array();
+        $eligibleGroupIds = [];
 
         /** @var QUI\Groups\Group $Group */
         foreach ($allGroups as $Group) {
@@ -716,30 +700,30 @@ class SecurityClass extends QUI\QDOM
             return $groups;
         }
 
-        $result = QUI::getDataBase()->fetch(array(
-            'select' => array(
+        $result = QUI::getDataBase()->fetch([
+            'select' => [
                 'id',
                 'name'
-            ),
+            ],
             'from'   => 'groups',
-            'where'  => array(
-                'id'   => array(
+            'where'  => [
+                'id'   => [
                     'type'  => 'IN',
                     'value' => $eligibleGroupIds
-                ),
-                'name' => array(
+                ],
+                'name' => [
                     'type'  => '%LIKE%',
                     'value' => $search
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
 
         foreach ($result as $row) {
-            $groups[] = array(
+            $groups[] = [
                 'id'   => $row['id'],
                 'name' => $row['name'],
                 'type' => 'group'
-            );
+            ];
         }
 
         return $groups;
@@ -756,10 +740,10 @@ class SecurityClass extends QUI\QDOM
     public function edit($data)
     {
         if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.securityclass.create.no.permission'
-            ));
+            ]);
         }
 
         foreach ($data as $k => $v) {
@@ -803,10 +787,10 @@ class SecurityClass extends QUI\QDOM
     public function addAuthPlugin($AuthPlugin)
     {
         if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.securityclass.create.no.permission'
-            ));
+            ]);
         }
 
         if (in_array($AuthPlugin->getId(), $this->getAuthPluginIds())) {
@@ -815,10 +799,10 @@ class SecurityClass extends QUI\QDOM
 
         QUI::getDataBase()->insert(
             Tables::securityClassesToAuthPlugins(),
-            array(
+            [
                 'securityClassId' => $this->id,
                 'authPluginId'    => $AuthPlugin->getId()
-            )
+            ]
         );
     }
 
@@ -832,14 +816,14 @@ class SecurityClass extends QUI\QDOM
     {
         QUI::getDataBase()->update(
             Tables::securityClasses(),
-            array(
+            [
                 'title'              => $this->getAttribute('title'),
                 'description'        => $this->getAttribute('description'),
                 'allowPasswordLinks' => $this->allowPasswordLinks ? 1 : 0
-            ),
-            array(
+            ],
+            [
                 'id' => $this->getId()
-            )
+            ]
         );
     }
 
@@ -853,62 +837,62 @@ class SecurityClass extends QUI\QDOM
     public function delete()
     {
         if (!QUI\Permissions\Permission::hasPermission(Permissions::SECURITY_CLASS_EDIT)) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.securityclass.create.no.permission'
-            ));
+            ]);
         }
 
         $DB = QUI::getDataBase();
 
         // check if any passwords exist with this security class
         $count = $DB->fetch(
-            array(
+            [
                 'count' => 1,
                 'from'  => Tables::passwords(),
-                'where' => array(
+                'where' => [
                     'securityClassId' => $this->getId()
-                )
-            )
+                ]
+            ]
         );
 
         if (current(current($count)) > 0) {
-            throw new QUI\Exception(array(
+            throw new QUI\Exception([
                 'sequry/core',
                 'exception.securityclass.delete.still.in.use'
-            ));
+            ]);
         }
 
         // delete group keys for security class
         $DB->delete(
             Tables::keyPairsGroup(),
-            array(
+            [
                 'securityClassId' => $this->getId()
-            )
+            ]
         );
 
         // delete user group access for security class
         $DB->delete(
             Tables::usersToGroups(),
-            array(
+            [
                 'securityClassId' => $this->getId()
-            )
+            ]
         );
 
         // delete securityclass to auth entries
         $DB->delete(
             Tables::securityClassesToAuthPlugins(),
-            array(
+            [
                 'securityClassId' => $this->getId()
-            )
+            ]
         );
 
         // delete security class entry
         $DB->delete(
             Tables::securityClasses(),
-            array(
+            [
                 'id' => $this->getId()
-            )
+            ]
         );
 
         return true;
@@ -933,9 +917,9 @@ class SecurityClass extends QUI\QDOM
      */
     public function areGroupUsersEligible($Group)
     {
-        $result = $Group->getUsers(array(
+        $result = $Group->getUsers([
             'select' => 'id'
-        ));
+        ]);
 
         if (empty($result)) {
             return false;

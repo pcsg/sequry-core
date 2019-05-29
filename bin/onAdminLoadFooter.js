@@ -198,22 +198,36 @@ require([
 
     QUIAjax.registerGlobalJavaScriptCallback(
         'refreshGroupAdminPanels',
-        function() {
-            require(['package/sequry/core/bin/Actors'], function(Actors) {
+        function () {
+            require(['package/sequry/core/bin/Actors'], function (Actors) {
                 Actors.fireEvent('refreshGroupAdminPanels');
             });
         }
     );
 
-    window.addEvent('quiqqerLoaded', function() {
-        Actors.getGroupAdminStatus().then(function(Status) {
+    QUIAjax.registerGlobalJavaScriptCallback(
+        'actionAuthentication',
+        function (response, Data) {
+            require([
+                'package/sequry/core/bin/Authentication'
+            ], function (Authentication) {
+                Authentication.actionAuthentication(
+                    Data.actionKey,
+                    Data.authPluginIds
+                );
+            });
+        }
+    );
+
+    window.addEvent('quiqqerLoaded', function () {
+        Actors.getGroupAdminStatus().then(function (Status) {
             if (!Status.isGroupAdmin) {
                 return;
             }
 
             require([
                 'package/sequry/core/bin/controls/actors/groupadmins/GroupAdminButton'
-            ], function(GroupAdminButton) {
+            ], function (GroupAdminButton) {
                 new GroupAdminButton({
                     openRequests: Status.openRequests
                 }).inject(
