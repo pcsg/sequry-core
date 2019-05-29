@@ -39,8 +39,8 @@ class Type extends AbstractPasswordType
             $content['url'] = '#';
         }
 
-        $content['note'] = $content = Utils::sanitizeHtml($content);
-        $content         = array_merge($content, self::getTemplateTranslations());
+        $content = Utils::sanitizeHtml($content);
+        $content = array_merge($content, self::getTemplateTranslations());
 
         return TemplateUtils::parseTemplate(self::getDir().'/View.html', $content, true);
     }
