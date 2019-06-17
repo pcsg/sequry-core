@@ -23,23 +23,24 @@ class Type extends AbstractPasswordType
      */
     public static function getViewHtml($content = [])
     {
-        if (isset($content['url'])
-            && !empty($content['url'])
-        ) {
+        $content = Utils::sanitizeHtml($content);
+
+        if (!empty($content['url'])) {
             $url = $content['url'];
 
-            preg_match('#https?:\/\/#i', $url, $matches);
+            if (mb_strpos($url, '//') !== false) {
+                $urlSanitized = $url;
 
-            if (empty($matches)) {
-                $url = 'http://'.$url;
+                preg_match('#(https?:\/\/)(.*)#i', $url, $matches);
+
+                if (!empty($matches[1]) && !empty($matches[2])) {
+                    $urlSanitized = $matches[1].implode("/", array_map("urlencode", explode("/", $matches[2])));
+                }
+
+                $content['url'] = '<a href="'.$urlSanitized.'" target="_blank">'.$url.'</a>';
             }
-
-            $content['url'] = $url;
-        } else {
-            $content['url'] = '#';
         }
 
-        $content = Utils::sanitizeHtml($content);
         $content = array_merge($content, self::getTemplateTranslations());
 
         return TemplateUtils::parseTemplate(self::getDir().'/View.html', $content, true);
