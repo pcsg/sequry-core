@@ -23,9 +23,9 @@ class Type extends AbstractPasswordType
      */
     public static function getViewHtml($content = [])
     {
-        if (isset($content['host'])
-            && !empty($content['host'])
-        ) {
+        $content = Utils::sanitizeHtml($content);
+
+        if (!empty($content['host'])) {
             $host = $content['host'];
 
             if (mb_strpos($host, 'ftp://') === 0) {
@@ -34,12 +34,19 @@ class Type extends AbstractPasswordType
                 $url = 'ftp://'.$host;
             }
 
-            $content['url'] = $url;
+            $urlSanitized = $url;
+
+            preg_match('#(https?:\/\/)(.*)#i', $url, $matches);
+
+            if (!empty($matches[1]) && !empty($matches[2])) {
+                $urlSanitized = $matches[1].implode("/", array_map("urlencode", explode("/", $matches[2])));
+            }
+
+            $content['url'] = '<a href="'.$urlSanitized.'" target="_blank">'.$url.'</a>';
         } else {
             $content['url'] = '#';
         }
 
-        $content = Utils::sanitizeHtml($content);
         $content = array_merge($content, self::getTemplateTranslations());
 
         return TemplateUtils::parseTemplate(self::getDir().'/View.html', $content, true);
