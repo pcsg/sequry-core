@@ -210,7 +210,7 @@ class PasswordLinks
      */
     public static function getList($passwordId, $searchParams = [], $countOnly = false)
     {
-        if (!Passwords::hasPasswordAccess(QUI::getUserBySession(), $passwordId)) {
+        if (!Passwords::get($passwordId)->hasPasswordAccess(CryptoActors::getCryptoUser())) {
             throw new PermissionDeniedException([
                 'sequry/core',
                 'exception.passwordlink.no_password_access'
