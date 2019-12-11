@@ -1,32 +1,31 @@
 {
-  "name": "sequry/core",
-  "type": "quiqqer-application",
-  "description": "Password manager for sharing passwords in a team environment",
-  "version": "dev-master",
-  "license": "GPL-3.0+",
-  "authors": [
-    {
-      "name": "Patrick Müller",
-      "email": "support@pcsg.de",
-      "homepage": "https://www.pcsg.de",
-      "role": "Developer"
+    "name": "sequry\/core",
+    "type": "quiqqer-application",
+    "description": "Password manager for sharing passwords in a team environment",
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Patrick M\u00fcller",
+            "email": "support@pcsg.de",
+            "homepage": "https:\/\/www.pcsg.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "quiqqer\/quiqqer": "^1.1|dev-master|dev-dev",
+        "quiqqer\/tooltips": "^1|*@dev",
+        "phpseclib\/phpseclib": "^2",
+        "paragonie\/halite": "^4",
+        "ext-bcmath": "*",
+        "npm-asset\/clipboard": "1.5.16",
+        "sequry\/auth-password": "^1|*@dev",
+        "sequry\/template": "^1|*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sequry\\Core\\": "src\/Sequry\/Core\/",
+            "TQ\\Shamir\\": "lib\/tq\/shamir\/src\/"
+        }
     }
-  ],
-  "require": {
-    "php": "^7.2",
-    "quiqqer\/quiqqer": "^1.1|dev-master|dev-dev",
-    "quiqqer\/tooltips": "^1|*@dev",
-    "phpseclib\/phpseclib": "^2",
-    "paragonie\/halite": "^4",
-    "ext-bcmath": "*",
-    "npm-asset\/clipboard": "1.5.16",
-    "sequry/auth-password": "^1|*@dev",
-    "sequry/template": "^1|*@dev"
-  },
-  "autoload": {
-    "psr-4": {
-      "Sequry\\Core\\": "src/Sequry/Core/",
-      "TQ\\Shamir\\": "lib/tq/shamir/src/"
-    }
-  }
 }
